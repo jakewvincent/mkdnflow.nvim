@@ -1,7 +1,7 @@
 -- File navigation functions
 local M = {}
 
--- Get the path of the link under the cursor
+-- Private function to get the path of the link under the cursor
 local get_path = function()
     -- Get current cursor position
     local position = vim.api.nvim_win_get_cursor(0)
@@ -46,6 +46,7 @@ local get_path = function()
     end
 end
 
+-- Private function to determine whether something is a URL or not
 local is_url = function(string)
     -- This function based largely on the solution in <https://stackoverflow.com/questions/23590304/finding-a-url-in-a-string-lua-pattern>
     -- Table of top-level domains
@@ -94,7 +95,7 @@ local is_url = function(string)
     return(found_url)
 end
 
--- Function to open paths outside of vim
+-- Private function to open paths outside of vim
 local path_handler = function(path)
     local this_os = jit.os
     if this_os == "Linux" then
@@ -104,7 +105,7 @@ local path_handler = function(path)
     end
 end
 
--- Function to determine the path type (local, url, or filename)
+-- Private function to determine the path type (local, url, or filename)
 local path_type = function(path)
     if string.find(path, '^local:') then
         return('local')
@@ -115,28 +116,36 @@ local path_type = function(path)
     end
 end
 
--- Create the specified file at the specified path (relative to current file?)
+-- Function to create the specified file at the specified path (relative to
+-- current file?)
 M.createLink = function()
-    -- Get cursor position and the line the cursor is on
+    -- Get the cursor position
     local position = vim.api.nvim_win_get_cursor(0)
     local row = position[1]
     local col = position[2]
+    -- Get the text of the line the cursor is on
     local line = vim.api.nvim_get_current_line()
-    -- If in normal mode, get the word under the cursor and make a markdown link out of it
+    -- Get the word under the cursor
     local cursor_word = vim.fn.expand('<cword>')
+    -- Get the system date
     local date = os.date('%Y-%m-%d')
+    -- Make a markdown link out of the date and cursor
     local replacement = {'['..cursor_word..']'..'('..date..'_'..cursor_word..'.md)'}
 
+    -- Find the (first) position of the matched word in the line
     local left, right = string.find(line, cursor_word, nil, true)
 
+    -- Make sure it's not a duplicate of the word under the cursor, and if it
+    -- is, perform the search until a match is found whose right edge follows
+    -- the cursor position
     while right < col do
         left, right = string.find(line, cursor_word, right, true)
     end
 
-    -- Replace w/ the link
+    -- Replace the word under the cursor w/ the formatted link replacement
     vim.api.nvim_buf_set_text(0, row - 1, left - 1, row - 1, right, replacement)
 
-    -- If in visual mode, get the selection and make a markdown link out of it
+    -- TODO: If in visual mode, get the selection and make a markdown link out of it
 end
 
 -- Function to follow the path specified in the link under the cursor, or to
