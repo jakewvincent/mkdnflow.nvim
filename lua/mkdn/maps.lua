@@ -9,7 +9,4 @@ if maps then
     vim.api.nvim_set_keymap('n', '<S-Tab>', [[<Cmd>:MkdnPrevLink<CR>]], {noremap = true})
     vim.api.nvim_set_keymap('n', '<BS>', ':edit #<CR>', {noremap = true, silent = true})    -- bs to :e last file
     vim.api.nvim_set_keymap('n', '<CR>', [[<Cmd>:MkdnFollowPath<CR>]], {noremap = true})
-
-    -- tests
-    vim.api.nvim_set_keymap('n', '<leader>wd', [[<Cmd>:MkdnGetWord<CR>]], {noremap = true})
 end
