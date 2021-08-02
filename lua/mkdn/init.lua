@@ -1,4 +1,4 @@
--- mkdn.nvim (Tools for personal markdown notebook management)
+-- init.nvim (Tools for personal markdown notebook management)
 -- Copyright (C) 2021 Jake W. Vincent <https://github.com/jakewvincent>
 --
 -- This program is free software: you can redistribute it and/or modify
@@ -14,19 +14,57 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local mkdn = {}
+local init = {}
 
-mkdn.cursor = require('mkdn.cursor')
-mkdn.files = require('mkdn.files')
-mkdn.maps = require('mkdn.maps')
+-- Final config table (where defaults and user-provided config will be combined)
+init.config = {
+    default_mappings = true,
+    create_dirs = true,
+    create_files = 'relative',
+    filetypes = {md = true, rmd = true, markdown = true}
+}
 
--- Functions for moving the cursor
---local moves = require('mkdn.moves')
+init.loaded = nil
 
--- Functions for navigating files
---local nav = require('mkdn.nav')
+-- Private function to detect the file's extension
+local getFileType = function()
+    local buffer = vim.api.nvim_buf_get_name(0)
+    local ext = buffer:match("^.*%.(.+)$")
+    return(ext)
+end
 
--- Mappings
---local maps = require('mkdn.maps')
+init.setup = function(user_config)
 
-return mkdn
+    -- Record the user's config
+    for key, value in pairs(user_config) do
+        -- This loop won't run if no config is provided, but the rest of the
+        -- setup will still run.
+        init.config[key] = user_config[key]
+    end
+
+    -- Get the extension of the file being edited
+    local ft = getFileType()
+
+    -- Load the extension if the filetype has a match in config.filetypes
+    if init.config.filetypes[ft] then
+
+        -- Record load status (i.e. loaded)
+        init.loaded = true
+
+        -- Load functions
+        init.cursor = require('mkdn.cursor')
+        init.files = require('mkdn.files')
+
+        -- Only load the mappings if the user hasn't said "no"
+        if init.config.default_mappings == true then
+            require('mkdn.maps')
+        end
+
+    else
+        -- Record load status (i.e. not loaded)
+        init.loaded = false
+    end
+
+end
+
+return init
