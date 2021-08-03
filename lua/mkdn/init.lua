@@ -16,8 +16,9 @@
 
 local init = {}
 
--- Get first opened file/buffer path
+-- Get first opened file/buffer path and directory
 init.initial_buf = vim.api.nvim_buf_get_name(0)
+init.initial_dir = init.initial_buf:match('(.*%)/.*')
 
 -- Final config table (where defaults and user-provided config will be combined)
 init.config = {
