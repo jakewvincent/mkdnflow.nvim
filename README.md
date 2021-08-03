@@ -17,9 +17,9 @@ This plugin is designed to replicate a subset of the features of [Vimwiki](https
 
 ## ⚙️ Configuration
 
-## To do
+## ☑️ To do
 
 * [ ] Documentation
-* [ ] Intelligent <CR> when in lists, etc.
+* [ ] Intelligent \<CR\> when in lists, etc.
 * [ ] Fancy table creation & editing
 * [ ] ...
