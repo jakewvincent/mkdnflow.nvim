@@ -127,7 +127,8 @@ end
 -- Private function to open paths outside of vim
 local path_handler = function(path)
     if this_os == "Linux" then
-        vim.api.nvim_command('silent !xdg-open '..path..' &')
+        local se_path = vim.fn.shellescape(path)
+        vim.api.nvim_command('silent !xdg-open '..se_path..' &')
     else
         print(this_os_err)
     end
@@ -301,8 +302,34 @@ M.followPath = function()
 
         elseif path_type(path) == 'local' then
 
-            local real_path = vim.fn.shellescape(string.match(path, '^local:(.*)'))
-            path_handler(real_path)
+            -- Get what's after the local: tag
+            local real_path = string.match(path, '^local:(.*)')
+
+            if links_relative_to == 'current' then
+
+                -- Get the path of the current file
+                local cur_file = vim.api.nvim_buf_get_name(0)
+
+                -- Get the directory the current file is in
+                local cur_file_dir = string.match(cur_file, '(.*)/.-$')
+
+                -- Paste together the directory of the current file and the
+                -- directory path provided in the link
+                local paste = cur_file_dir..'/'..real_path
+
+                -- Pass to the path_handler function
+                path_handler(paste)
+
+            else
+                -- Otherwise, links are relative to the first-opened file
+                -- Paste together the directory of the first-opened file
+                -- and the path in the link
+                local paste = initial_dir..'/'..real_path
+
+                -- Pass to the path_handler function
+                path_handler(paste)
+
+            end
 
         end
     else
