@@ -16,6 +16,9 @@
 
 local init = {}
 
+-- Get first opened file/buffer path
+init.initial_buf = vim.api.nvim_buf_get_name(0)
+
 -- Final config table (where defaults and user-provided config will be combined)
 init.config = {
     default_mappings = true,
@@ -28,8 +31,7 @@ init.loaded = nil
 
 -- Private function to detect the file's extension
 local getFileType = function()
-    local buffer = vim.api.nvim_buf_get_name(0)
-    local ext = buffer:match("^.*%.(.+)$")
+    local ext = init.initial_buf:match("^.*%.(.+)$")
     return(ext)
 end
 
