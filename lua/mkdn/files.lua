@@ -1,4 +1,4 @@
--- mkdn.nvim (Tools for personal markdown notebook management)
+-- mkdn.nvim (Tools for personal markdown notebook navigation and management)
 -- Copyright (C) 2021 Jake W. Vincent <https://github.com/jakewvincent>
 --
 -- This program is free software: you can redistribute it and/or modify
