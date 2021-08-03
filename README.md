@@ -55,13 +55,14 @@ call dein#add('jakewvincent/mkdn.nvim')
 
 ## ✨ Features
 
-* Create links from the word under the cursor
-* \<Tab\> and \<S-Tab\> to jump to next and previous link in the file, respectively
-* Follow links relative to the first-opened file or the current file using \<CR\>
-    * \<CR\>ing on a link to any kind of text file will open it (i.e. `:e <filename>`).
-    * \<CR\>ing on a link to a file tagged with `local:`, e.g. [My Xournal notes](local:notes.xopp), will open that file with whatever the system's associated program is (using `xdg-open`).
-    * \<CR\>ing on a link to a web URL will open that link in your default browser.
-* Creates missing directories if a link goes to a file in a directory that doesn't exist.
+* Create links from the word under the cursor (mapped to \<CR\> by default)
+    * Currently, the filename provided for the path follows this pattern: `YYYY-MM-DD_<word>.md`, where `<word>` is the word under the cursor.
+* Jump to the next or previous link in the file (mapped to \<Tab\> and \<S-Tab\> by default, respectively)
+* Follow links relative to the first-opened file or the current file (mapped to \<CR\> by default)
+    * \<CR\>ing on a link to any kind of text file will open it (i.e. `:e <filename>`)
+    * \<CR\>ing on a link to a file tagged with `local:`, e.g. [My Xournal notes](local:notes.xopp), will open that file with whatever the system's associated program is (using `xdg-open`)
+    * \<CR\>ing on a link to a web URL will open that link in your default browser
+* Create missing directories if a link goes to a file in a directory that doesn't exist
 * \<BS\> to go to last-open file (has limitations; see [to do](#-to-do))
 * Enable/disable default keybindings (see [Configuration](#-configuration))
 
@@ -99,6 +100,9 @@ These default mappings can be disabled; see [Configuration](#-configuration).
 | \<S-Tab\> | n    | `:MkdnPrevLink<CR>`   | Move the cursor to the beginning of the previous link (if there is one)                                                                                      |
 | \<BS\>    | n    | `:edit #<CR>`         | Open the last-open file                                                                                                                                      |
 | \<CR\>    | n    | `:MkdnFollowPath<CR>` | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
+| --        | --   | `:MkdnGetPath<CR>`    | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets)                           |
+| --        | --   | `:MkdnCreateLink<CR>` | Replace the word under the cursor with a link in which the word under the cursor is the name of the link                                                     |
+
 
 
 ## ☑️ To do
@@ -108,4 +112,5 @@ These default mappings can be disabled; see [Configuration](#-configuration).
 * [ ] Fancy table creation & editing
 * [ ] Create links from visual selection (not just word under cursor)
 * [ ] Smarter/"deeper" navigation to previous files with \<BS\>
+* [ ] File naming options for link creation
 * [ ] ...
