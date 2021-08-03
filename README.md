@@ -1,6 +1,6 @@
 # ⬇️ mkdn.nvim
 
-Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8Fconfiguration) / [To do](#%EF%B8%8F-to-do)
+Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8F-configuration)/ [Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do)
 
 ### 📝 Description
 
@@ -65,7 +65,7 @@ call dein#add('jakewvincent/mkdn.nvim')
 * \<BS\> to go to last-open file (has limitations; see [to do](#-to-do))
 * Enable/disable default keybindings (see [Configuration](#-configuration))
 
-### Notes
+### ❗ Caveats/warnings
 
 * The plugin effectively won't start if the first-opened file is not one of the default or named extensions (see [Configuration](#-configuration)).
 
