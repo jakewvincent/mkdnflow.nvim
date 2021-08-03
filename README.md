@@ -63,12 +63,12 @@ call dein#add('jakewvincent/mkdn.nvim')
     * \<CR\>ing on a link to a file tagged with `local:`, e.g. [My Xournal notes](local:notes.xopp), will open that file with whatever the system's associated program is (using `xdg-open`)
     * \<CR\>ing on a link to a web URL will open that link in your default browser
 * Create missing directories if a link goes to a file in a directory that doesn't exist
-* \<BS\> to go to last-open file (has limitations; see [to do](#-to-do))
-* Enable/disable default keybindings (see [Configuration](#-configuration))
+* \<BS\> to go to last-open file (has limitations; see [to do](#%EF%B8%8F-to-do))
+* Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
 
 ### ❗ Caveats/warnings
 
-* The plugin effectively won't start if the first-opened file is not one of the default or named extensions (see [Configuration](#-configuration)).
+* The plugin effectively won't start if the first-opened file is not one of the default or named extensions (see [Configuration](#%EF%B8%8F-configuration)).
 
 ## ⚙️ Configuration
 
@@ -92,7 +92,7 @@ require('mkdn').setup({
 
 ### ❕ Commands and default mappings
 
-These default mappings can be disabled; see [Configuration](#-configuration).
+These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configuration).
 
 | Keymap    | Mode | Command               | Description                                                                                                                                                  |
 |---------- | ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
