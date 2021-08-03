@@ -1,4 +1,4 @@
-# ⬇️ mkdn.nvim
+# ⬇️ mkdnflow.nvim
 
 Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8F-configuration)/ [Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do)
 
@@ -6,7 +6,7 @@ Jump to: [Description](#-description) / [Requirements](#-requirements) / [Instal
 
 This plugin is designed to replicate the features I use most from [Vimwiki](https://github.com/vimwiki/vimwiki), implementing them in Lua instead of VimL. It is a set of functions and keybindings (optional, but enabled by default) that make it easy to navigate and manipulate personal markdown notebooks/journals/wikis in Neovim.
 
-If you have a suggestion or problem with anything, file an [issue](https://github.com/jakewvincent/mkdn.nvim/issues); or if you'd like to contribute, make a fork and submit a [pull request](https://github.com/jakewvincent/mkdn.nvim/pulls).
+If you have a suggestion or problem with anything, file an [issue](https://github.com/jakewvincent/mkdnflow.nvim/issues); or if you'd like to contribute, make a fork and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls).
 
 ### ⚡ Requirements
 
@@ -18,9 +18,9 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 ### init.lua
 #### [Packer](https://github.com/wbthomason/packer.nvim)
 ```lua
-use({'jakewvincent/mkdn.nvim',
+use({'jakewvincent/mkdnflow.nvim',
      config = function()
-        require('mkdn').setup({
+        require('mkdnflow').setup({
             -- Config goes here; leave blank for defaults
         })
      end
@@ -31,14 +31,14 @@ use({'jakewvincent/mkdn.nvim',
 ```lua
 require('paq')({
     -- Your other plugins;
-    'jakewvincent/mkdn.nvim';
+    'jakewvincent/mkdnflow.nvim';
     -- Your other plugins;
 })
 
 -- Include the setup function somewhere else in your init.lua/vim file, or the
 -- plugin won't activate itself:
 
-require('mkdn').setup({
+require('mkdnflow').setup({
     -- Config goes here; leave blank for defaults
 })
 ```
@@ -46,19 +46,19 @@ require('mkdn').setup({
 ### init.vim
 ```vim
 " Vim-Plug
-Plug 'jakewvincent/mkdn.nvim'
+Plug 'jakewvincent/mkdnflow.nvim'
 
 " NeoBundle
-NeoBundle 'jakewvincent/mkdn.nvim'
+NeoBundle 'jakewvincent/mkdnflow.nvim'
 
 " Vundle
-Bundle 'jakewvincent/mkdn.nvim'
+Bundle 'jakewvincent/mkdnflow.nvim'
 
 " Pathogen
-git clone https://github.com/jakewvincent/mkdn.nvim.git ~/.vim/bundle/vgit.nvim
+git clone https://github.com/jakewvincent/mkdnflow.nvim.git ~/.vim/bundle/vgit.nvim
 
 " Dein
-call dein#add('jakewvincent/mkdn.nvim')
+call dein#add('jakewvincent/mkdnflow.nvim')
 ```
 
 ## ✨ Features
@@ -83,7 +83,7 @@ call dein#add('jakewvincent/mkdn.nvim')
 Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the comments above each setting. To change these settings, specify new values for them wherever you've placed the setup function.
 
 ```lua
-require('mkdn').setup({
+require('mkdnflow').setup({
     -- Type: boolean. Use default mappings (see '❕Commands and default mappings').
     -- 'false' disables mappings
     default_mappings = true,        

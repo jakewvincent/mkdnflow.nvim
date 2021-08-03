@@ -1,4 +1,4 @@
--- mkdn.nvim (Tools for personal markdown notebook navigation and management)
+-- mkdnflow.nvim (Tools for personal markdown notebook navigation and management)
 -- Copyright (C) 2021 Jake W. Vincent <https://github.com/jakewvincent>
 --
 -- This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--- Mkdn mappings
+-- Mkdnflow mappings
 vim.api.nvim_set_keymap('n', '<Tab>', [[<Cmd>:MkdnNextLink<CR>]], {noremap = true})
 vim.api.nvim_set_keymap('n', '<S-Tab>', [[<Cmd>:MkdnPrevLink<CR>]], {noremap = true})
 vim.api.nvim_set_keymap('n', '<BS>', ':edit #<CR>', {noremap = true, silent = true})    -- bs to :e last file

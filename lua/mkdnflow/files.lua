@@ -1,4 +1,4 @@
--- mkdn.nvim (Tools for personal markdown notebook navigation and management)
+-- mkdnflow.nvim (Tools for personal markdown notebook navigation and management)
 -- Copyright (C) 2021 Jake W. Vincent <https://github.com/jakewvincent>
 --
 -- This program is free software: you can redistribute it and/or modify
@@ -22,11 +22,11 @@ local this_os = jit.os
 -- Generic OS message
 local this_os_err = 'Function unavailable for '..this_os..'. Please file an issue.'
 -- Get config setting for whether to make missing directories or not
-local create_dirs = require('mkdn').config.create_dirs
+local create_dirs = require('mkdnflow').config.create_dirs
 -- Get config setting for where links should be relative to
-local links_relative_to = require('mkdn').config.links_relative_to
+local links_relative_to = require('mkdnflow').config.links_relative_to
 -- Get directory of first-opened file
-local initial_dir = require('mkdn').initial_dir
+local initial_dir = require('mkdnflow').initial_dir
 
 
 

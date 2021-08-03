@@ -1,4 +1,4 @@
--- init.nvim (Tools for personal markdown notebook navigation and management)
+-- mkdnflow.nvim (Tools for personal markdown notebook navigation and management)
 -- Copyright (C) 2021 Jake W. Vincent <https://github.com/jakewvincent>
 --
 -- This program is free software: you can redistribute it and/or modify
@@ -55,12 +55,12 @@ init.setup = function(user_config)
         init.loaded = true
 
         -- Load functions
-        init.cursor = require('mkdn.cursor')
-        init.files = require('mkdn.files')
+        init.cursor = require('mkdnflow.cursor')
+        init.files = require('mkdnflow.files')
 
         -- Only load the mappings if the user hasn't said "no"
         if init.config.default_mappings == true then
-            require('mkdn.maps')
+            require('mkdnflow.maps')
         end
 
     else

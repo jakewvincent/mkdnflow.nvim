@@ -1,4 +1,4 @@
--- mkdn.nvim (Tools for personal markdown notebook navigation and management)
+-- mkdnflow.nvim (Tools for personal markdown notebook navigation and management)
 -- Copyright (C) 2021 Jake W. Vincent <https://github.com/jakewvincent>
 --
 -- This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Only define these commands if the plugin hasn't already been loaded
-if vim.fn.exists('g:loaded_mkdn') == 0 then
+if vim.fn.exists('g:loaded_mkdnflow') == 0 then
 
     -- Save user coptions
     local save_cpo = vim.api.nvim_get_option('cpoptions')
@@ -25,17 +25,17 @@ if vim.fn.exists('g:loaded_mkdn') == 0 then
     vim.api.nvim_set_option('cpoptions', cpo_defaults)
 
     -- Define commands
-    vim.api.nvim_exec("command! MkdnNextLink lua require('mkdn').cursor.toNextLink()", true)
-    vim.api.nvim_exec("command! MkdnPrevLink lua require('mkdn').cursor.toPrevLink()", true)
+    vim.api.nvim_exec("command! MkdnNextLink lua require('mkdnflow').cursor.toNextLink()", true)
+    vim.api.nvim_exec("command! MkdnPrevLink lua require('mkdnflow').cursor.toPrevLink()", true)
 
     -- Test commands
-    vim.api.nvim_exec("command! MkdnGetPath lua require('mkdn').files.getPath()", true)
-    vim.api.nvim_exec("command! MkdnFollowPath lua require('mkdn').files.followPath()", true)
-    vim.api.nvim_exec("command! MkdnCreateLink lua require('mkdn').files.createLink()", true)
+    vim.api.nvim_exec("command! MkdnGetPath lua require('mkdnflow').files.getPath()", true)
+    vim.api.nvim_exec("command! MkdnFollowPath lua require('mkdnflow').files.followPath()", true)
+    vim.api.nvim_exec("command! MkdnCreateLink lua require('mkdnflow').files.createLink()", true)
 
     -- Return coptions to user values
     vim.api.nvim_set_option('cpoptions', save_cpo)
 
     -- Record that the plugin has been loaded
-    vim.api.nvim_set_var('loaded_mkdn', true)
+    vim.api.nvim_set_var('loaded_mkdnflow', true)
 end
