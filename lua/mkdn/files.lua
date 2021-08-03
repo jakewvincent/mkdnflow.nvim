@@ -17,7 +17,20 @@
 -- File navigation functions
 local M = {}
 
--- Private function to get the path of the link under the cursor
+-- Get OS for use in a couple of functions
+local this_os = jit.os
+-- Generic OS message
+local this_os_err = 'Function unavailable for '..this_os..'. Please file an issue.'
+-- Get config setting for whether to make missing directories or not
+local create_dirs = require('mkdn').config.create_dirs
+-- Get config setting for where links should be relative to
+local links_relative_to = require('mkdn').config.links_relative_to
+-- Get directory of first-opened file
+local initial_dir = require('mkdn').initial_dir
+
+
+
+-- Private function to get path part of the link under the cursor, i.e. [](_)
 local get_path = function()
     -- Get current cursor position
     local position = vim.api.nvim_win_get_cursor(0)
@@ -113,11 +126,10 @@ end
 
 -- Private function to open paths outside of vim
 local path_handler = function(path)
-    local this_os = jit.os
     if this_os == "Linux" then
         vim.api.nvim_command('silent !xdg-open '..path..' &')
     else
-        print('File opening is not set up for your OS. Please file an issue.')
+        print(this_os_err)
     end
 end
 
@@ -164,21 +176,134 @@ M.createLink = function()
     -- TODO: If in visual mode, get the selection and make a markdown link out of it
 end
 
+-- Private function to see if directory exists
+-- Assumption: initially opened file is in an existing directory
+local dir_exists = function(path)
+    if this_os == "Linux" or this_os == "POSIX" then
+
+        -- Use the shell to determine if the path exists
+        os.execute('if [ -f "'..path..'" ]; then echo true; else echo false; fi>/tmp/mkdn_file_exists')
+        local file = io.open('/tmp/mkdn_file_exists', 'r')
+
+        -- Get the contents of the first (only) line & store as a boolean
+        local exists = file:read('*l')
+        if exists == 'false' then
+            exists = false
+        else
+            exists = true
+        end
+
+        -- Close the file
+        io.close(file)
+
+        -- Return the existence property of the path
+        return(exists)
+    else
+        -- Warn the user that they can't use the function on their OS
+        print(this_os_err)
+
+        -- Return a blep
+        return(nil)
+    end
+end
+
 -- Function to follow the path specified in the link under the cursor, or to
 -- create a link out of the word/selection under the cursor
 M.followPath = function()
+    -- Get the path in the link
     local path = get_path()
-    -- Check that there's a non-nil output of getPath()
+    -- Get the name of the file in the link path. Will return nil if the
+    -- link doesn't contain any directories.
+    local filename = string.match(path, '.*/(.-)$')
+    -- Get the name of the directory path to the file in the link path. Will
+    -- return nil if the link doesn't contain any directories.
+    local dir = string.match(path, '(.*)/.-$')
+
+    -- Check that there's a non-nil output of get_path()
     if path then
         -- If so, go to the path specified in the output
         if path_type(path) == 'filename' then
-            vim.cmd(':e '..path)
+
+            -- Check if the user wants directories to be created and if
+            -- a directory is specified in the link that we need to check
+            if create_dirs and dir then
+                -- If so, check how the user wants links to be interpreted
+                if links_relative_to == 'first' then
+                    -- Paste together the directory of the first-opened file
+                    -- and the directory in the link path
+                    local paste = initial_dir..'/'..dir
+
+                    -- See if the path exists
+                    local exists = dir_exists(paste)
+
+                    -- If the path doesn't exist, make it!
+                    if not exists then
+                        os.execute('mkdir -p '..paste)
+                    end
+
+                    -- And follow the path!
+                    vim.cmd(':e '..paste..'/'..filename)
+
+                else -- Otherwise, they want it relative to the current file
+
+                    -- So, get the path of the current file
+                    local cur_file = vim.api.nvim_buf_get_name(0)
+
+                    -- Get the directory the current file is in
+                    local cur_file_dir = string.match(cur_file, '(.*)/.-$')
+
+                    -- Paste together the directory of the current file and the
+                    -- directory path provided in the link
+                    local paste = cur_file_dir..'/'..dir
+
+                    -- See if the path exists
+                    local exists = dir_exists(paste)
+
+                    -- If the path doesn't exist, make it!
+                    if not exists then
+                        os.execute('mkdir -p '..paste)
+                    end
+
+                    -- And follow the path!
+                    vim.cmd(':e '..paste..'/'..filename)
+                end
+
+            -- Otherwise, if links are interpreted rel to first-opened file
+            elseif links_relative_to == 'current' then
+
+                -- Get the path of the current file
+                local cur_file = vim.api.nvim_buf_get_name(0)
+
+                -- Get the directory the current file is in
+                local cur_file_dir = string.match(cur_file, '(.*)/.-$')
+
+                -- Paste together the directory of the current file and the
+                -- directory path provided in the link
+                local paste = cur_file_dir..'/'..path
+
+                -- And follow the path!
+                vim.cmd(':e '..paste)
+
+            else -- Otherwise, links are relative to the first-opened file
+
+                -- Paste the dir of the first-opened file and path in the link
+                local paste = initial_dir..'/'..path
+
+                -- And follow the path!
+                vim.cmd(':e '..paste)
+
+            end
+
         elseif path_type(path) == 'url' then
+
             local se_path = vim.fn.shellescape(path)
             path_handler(se_path)
+
         elseif path_type(path) == 'local' then
+
             local real_path = vim.fn.shellescape(string.match(path, '^local:(.*)'))
             path_handler(real_path)
+
         end
     else
         M.createLink()
