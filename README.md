@@ -1,10 +1,10 @@
 # ⬇️ mkdn.nvim
 
-Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#-configuration)
+Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#-configuration) / [To do](#-to-do)
 
 ### 📝 Description
 
-This plugin is designed to replicate a subset of the features of [Vimwiki](https://github.com/vimwiki/vimwiki), implementing them in Lua instead of VimL.
+This plugin is designed to replicate the features I use most from [Vimwiki](https://github.com/vimwiki/vimwiki), implementing them in Lua instead of VimL.
 
 ### ⚡ Requirements
 
@@ -14,35 +14,41 @@ This plugin is designed to replicate a subset of the features of [Vimwiki](https
 ## 📦 Installation
 
 ### init.lua
+#### [Packer](https://github.com/wbthomason/packer.nvim)
 ```lua
--- Packer <https://github.com/wbthomason/packer.nvim>
 use({'jakewvincent/mkdn.nvim',
      config = function()
         require('mkdn').setup({})
      end
 })
+```
 
--- Paq <https://github.com/savq/paq-nvim>
+#### [Paq](https://github.com/savq/paq-nvim)
+```
 require('paq')({
         -- your other packages;
         'jakewvincent/mkdn.nvim';
         -- your other packages;
     })
 
--- For Paq, include the setup function somewhere else in your init.lua/vim file:
+-- Include the setup function somewhere else in your init.lua/vim file, or the plugin won't activate itself
 require('mkdn').setup({})
 ```
 
 ### init.vim
-```vimscript
-" Vim-Plug <https://github.com/junegunn/vim-plug>
+```vim
+" Vim-Plug
 Plug 'jakewvincent/mkdn.nvim'
+
 " NeoBundle
 NeoBundle 'jakewvincent/mkdn.nvim'
+
 " Vundle
 Bundle 'jakewvincent/mkdn.nvim'
+
 " Pathogen
 git clone https://github.com/jakewvincent/mkdn.nvim.git ~/.vim/bundle/vgit.nvim
+
 " Dein
 call dein#add('jakewvincent/mkdn.nvim')
 ```
@@ -65,11 +71,41 @@ call dein#add('jakewvincent/mkdn.nvim')
 
 ## ⚙️ Configuration
 
+Currently, the setup function uses the following defaults shown below. See the descriptions and non-default options in the comments.
+
+```lua
+require('mkdn').setup({
+    -- Type: boolean. Use default mappings (see below).
+    default_mappings = true,        -- 'false' disables mappings; see available commands below
+
+    -- Type: boolean. Create directories (recursively) if link contains a missing directory.
+    create_dirs = true,             -- 'false' prevents missing directories from being created
+
+    -- Type: string. Navigate to links relative to the directory of the first-opened file.
+    links_relative_to = 'first',    -- 'current' navigates links relative to currently open file
+
+    -- Type: key-value pair(s). Enable the plugin's features only when one of these filetypes is opened
+    filetypes = {md = true, rmd = true, markdown = true}
+})
+```
+
+### ❕ Commands and default mappings
+
+These default mappings can be disabled; see [Configuration](#-configuration).
+
+| Keymap    | Mode | Command               | Description                                                                                                                                                  |
+|---------- | ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| \<Tab\>   | n    | `:MkdnNextLink<CR>`   | Move cursor to the beginning of the next link (if there is a next link)                                                                                      |
+| \<S-Tab\> | n    | `:MkdnPrevLink<CR>`   | Move the cursor to the beginning of the previous link (if there is one)                                                                                      |
+| \<BS\>    | n    | `:edit #<CR>`         | Open the last-open file                                                                                                                                      |
+| \<CR\>    | n    | `:MkdnFollowPath<CR>` | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
+
+
 ## ☑️ To do
 
 * [ ] Documentation
 * [ ] Smart \<CR\> when in lists, etc.
 * [ ] Fancy table creation & editing
 * [ ] Create links from visual selection (not just word under cursor)
-* [ ] Smarter navigation to previous files with \<BS\>
+* [ ] Smarter/"deeper" navigation to previous files with \<BS\>
 * [ ] ...
