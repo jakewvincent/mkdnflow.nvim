@@ -20,7 +20,7 @@ local init = {}
 init.config = {
     default_mappings = true,
     create_dirs = true,
-    links_relative_to = 'current', -- other option: first
+    links_relative_to = 'first', -- other option: current
     filetypes = {md = true, rmd = true, markdown = true}
 }
 
