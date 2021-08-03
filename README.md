@@ -28,11 +28,11 @@ use({'jakewvincent/mkdn.nvim',
 ```
 
 #### [Paq](https://github.com/savq/paq-nvim)
-```
+```lua
 require('paq')({
-    -- your other packages;
+    -- Your other plugins;
     'jakewvincent/mkdn.nvim';
-    -- your other packages;
+    -- Your other plugins;
 })
 
 -- Include the setup function somewhere else in your init.lua/vim file, or the
@@ -71,7 +71,7 @@ call dein#add('jakewvincent/mkdn.nvim')
     * `<CR>`ing on a link to a file tagged with `local:`, e.g. [My Xournal notes](local:notes.xopp), will open that file with whatever the system's associated program is (using `xdg-open`)
     * `<CR>`ing on a link to a web URL will open that link in your default browser
 * Create missing directories if a link goes to a file in a directory that doesn't exist
-* `<BS>`` to go to last-open file (has limitations; see [to do](#%EF%B8%8F-to-do))
+* `<BS>` to go to last-open file (has limitations; see [to do](#%EF%B8%8F-to-do))
 * Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
 
 ### ❗ Caveats/warnings
