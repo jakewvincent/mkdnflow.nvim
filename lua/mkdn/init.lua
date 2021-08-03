@@ -20,7 +20,7 @@ local init = {}
 init.config = {
     default_mappings = true,
     create_dirs = true,
-    create_files = 'relative',
+    links_relative_to = 'current', -- other option: first
     filetypes = {md = true, rmd = true, markdown = true}
 }
 
@@ -36,7 +36,7 @@ end
 init.setup = function(user_config)
 
     -- Record the user's config
-    for key, value in pairs(user_config) do
+    for key, _ in pairs(user_config) do
         -- This loop won't run if no config is provided, but the rest of the
         -- setup will still run.
         init.config[key] = user_config[key]
