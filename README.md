@@ -1,6 +1,6 @@
 # ⬇️ mkdn.nvim
 
-Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#-configuration) / [To do](#-to-do)
+Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8Fconfiguration) / [To do](#%EF%B8%8F-to-do)
 
 ### 📝 Description
 
