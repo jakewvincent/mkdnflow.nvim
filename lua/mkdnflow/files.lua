@@ -127,8 +127,8 @@ end
 -- Private function to open paths outside of vim
 local path_handler = function(path)
     if this_os == "Linux" then
-        local se_path = vim.fn.shellescape(path)
-        vim.api.nvim_command('silent !xdg-open '..se_path..' &')
+        vim.api.nvim_command('silent !xdg-open '..path..' &')
+        print('Just issued command: silent !xdg-open '..path..' &')
     else
         print(this_os_err)
     end
