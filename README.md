@@ -1,4 +1,4 @@
-# ⬇️ mkdnflow.nvim
+# ⬇️ mkdnflow
 
 Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8F-configuration)/ [Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do)
 
@@ -119,10 +119,13 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 ## ☑️ To do
 
+* [X] Navigate between links (w/ `<Tab>` and `<S-Tab>`)
+* [X] Follow links internally and externally (w/ `<CR>`)
+* [X] Create links from word under cursor
+* [ ] Create links from visual selection (not just word under cursor)
 * [ ] Documentation
 * [ ] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
-* [ ] Create links from visual selection (not just word under cursor)
 * [ ] Smarter/"deeper" navigation to previous files with `<BS>`
 * [ ] File naming options for link creation
 * [ ] Compatibility with Windows and macOS
