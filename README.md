@@ -6,7 +6,7 @@ Jump to: [Description](#-description) / [Requirements](#-requirements) / [Instal
 
 This plugin is designed to replicate the features I use most from [Vimwiki](https://github.com/vimwiki/vimwiki), implementing them in Lua instead of VimL. It is a set of functions and keybindings (optional, but enabled by default) that make it easy to navigate and manipulate personal markdown notebooks/journals/wikis in Neovim.
 
-If you have a suggestion or problem with anything, file an [issue](https://github.com/jakewvincent/mkdnflow.nvim/issues); or if you'd like to contribute, make a fork and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls).
+If you have a suggestion or problem with anything, file an [issue](https://github.com/jakewvincent/mkdnflow.nvim/issues); or if you'd like to contribute, work on a fork of this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls).
 
 ### ⚡ Requirements
 
@@ -138,8 +138,10 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Documentation
 * [ ] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
-* [ ] Smarter/"deeper" navigation to previous files with `<BS>`
+* [ ] Smarter/"deeper" navigation to previous files with `<BS>` (currently, `<BS>` will only go one file back—pressing it again will return you to the file where you just hit `<BS>`)
 * [ ] File naming options for link creation
-* [ ] Compatibility with Windows and macOS
+* [ ] Full compatibility with Windows and macOS
 
 ## 🔗 Links
+* [Awesome Neovim's list of markdown plugins](https://rockerBOO/awesome-neovim#markdown) (a big list of plugins for Neovim)
+* [Vimwiki](https://github.com/vimwiki/vimwiki) (Full-featured journal navigation/maintenance)
