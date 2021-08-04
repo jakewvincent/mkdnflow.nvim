@@ -55,10 +55,18 @@ NeoBundle 'jakewvincent/mkdnflow.nvim'
 Bundle 'jakewvincent/mkdnflow.nvim'
 
 " Pathogen
-git clone https://github.com/jakewvincent/mkdnflow.nvim.git ~/.vim/bundle/vgit.nvim
+git clone https://github.com/jakewvincent/mkdnflow.nvim.git ~/.vim/bundle/mkdownflow.nvim
 
 " Dein
 call dein#add('jakewvincent/mkdnflow.nvim')
+
+" Include the setup function somewhere else in your init.vim file, or the
+" plugin won't activate itself:
+lua << EOF
+require('mkdnflow').setup({
+    -- Config goes here; leave blank for defaults
+})
+EOF
 ```
 
 ## ✨ Features
