@@ -211,17 +211,20 @@ end
 -- Function to follow the path specified in the link under the cursor, or to
 -- create a link out of the word/selection under the cursor
 M.followPath = function()
+
     -- Get the path in the link
     local path = get_path()
-    -- Get the name of the file in the link path. Will return nil if the
-    -- link doesn't contain any directories.
-    local filename = string.match(path, '.*/(.-)$')
-    -- Get the name of the directory path to the file in the link path. Will
-    -- return nil if the link doesn't contain any directories.
-    local dir = string.match(path, '(.*)/.-$')
 
     -- Check that there's a non-nil output of get_path()
     if path then
+
+        -- Get the name of the file in the link path. Will return nil if the
+        -- link doesn't contain any directories.
+        local filename = string.match(path, '.*/(.-)$')
+        -- Get the name of the directory path to the file in the link path. Will
+        -- return nil if the link doesn't contain any directories.
+        local dir = string.match(path, '(.*)/.-$')
+
         -- If so, go to the path specified in the output
         if path_type(path) == 'filename' then
 
