@@ -1,6 +1,6 @@
 # ⬇️ mkdnflow
 
-Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8F-configuration) / [Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do) / [Links](#-links)
+Jump to: [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8F-configuration) / [Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do) / [Links](#-links)
 
 ## 📝 Description
 
@@ -13,6 +13,11 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 * Linux (for full functionality)
 * Windows or macOS (for partial functionality; see [Caveats/warnings](#-caveats-warnings))
 * Neovim >= 0.5.0
+
+### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
+
+* For markdown only; Vimwiki doesn't use markdown by default, but you can set it to use markdown.
+* Intended to be lighter weight/less involved. This plugin doesn't and won't provide syntax highlighting and won't create new filetypes.
 
 ## 📦 Installation
 
