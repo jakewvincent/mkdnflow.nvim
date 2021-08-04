@@ -1,6 +1,6 @@
 # ⬇️ mkdnflow
 
-Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8F-configuration) / [Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do)
+Jump to: [Description](#-description) / [Requirements](#-requirements) / [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8F-configuration) / [Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do) / [Links](#-links)
 
 ## 📝 Description
 
@@ -10,7 +10,8 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 
 ### ⚡ Requirements
 
-* Linux
+* Linux (for full functionality)
+* Windows or macOS (for partial functionality; see [Caveats/warnings](#-caveats-warnings))
 * Neovim >= 0.5.0
 
 ## 📦 Installation
@@ -85,6 +86,9 @@ EOF
 ### ❗ Caveats/warnings
 
 * The plugin effectively won't start if the first-opened file is not one of the default or named extensions (see [Configuration](#%EF%B8%8F-configuration)).
+* On macOS and Windows, the plugin should successfully load, but the use of certain functions will result in a message in the command line: `Function unavailable for <your OS>`. The functionality currently unavailable for macOS and Windows includes:
+    * Opening local files and URLs outside of Neovim
+    * Following links within Neovim while `create_dirs` is enabled. If you are on macOS or Windows, you should set `create_dirs` to `false` and make sure that all directories you specify as part of a link already exist.
 
 ## ⚙️ Configuration
 
@@ -112,7 +116,7 @@ require('mkdnflow').setup({
 
 ### ❕ Commands and default mappings
 
-These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configuration).
+These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configuration). Commands with no mappings trigger functions that are called by the functions with mappings, but I've given them a command name so you can use them as independent functions if you'd like to.
 
 | Keymap    | Mode | Command               | Description                                                                                                                                                  |
 |---------- | ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -137,4 +141,5 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Smarter/"deeper" navigation to previous files with `<BS>`
 * [ ] File naming options for link creation
 * [ ] Compatibility with Windows and macOS
-* [ ] ...
+
+## 🔗 Links
