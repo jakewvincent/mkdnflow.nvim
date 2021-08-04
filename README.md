@@ -148,5 +148,5 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Full compatibility with Windows and macOS
 
 ## 🔗 Links
-* [Awesome Neovim's list of markdown plugins](https://rockerBOO/awesome-neovim#markdown) (a big list of plugins for Neovim)
+* [Awesome Neovim's list of markdown plugins](https://github.com/rockerBOO/awesome-neovim#markdown) (a big list of plugins for Neovim)
 * [Vimwiki](https://github.com/vimwiki/vimwiki) (Full-featured journal navigation/maintenance)
