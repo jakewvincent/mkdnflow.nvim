@@ -27,6 +27,9 @@ local create_dirs = require('mkdnflow').config.create_dirs
 local links_relative_to = require('mkdnflow').config.links_relative_to
 -- Get directory of first-opened file
 local initial_dir = require('mkdnflow').initial_dir
+-- Get config setting for file prefix (a string)
+local new_file_prefix = require('mkdnflow').config.new_file_prefix
+local prefix = loadstring('return('..new_file_prefix..')')
 
 
 
@@ -188,10 +191,8 @@ M.createLink = function()
     local line = vim.api.nvim_get_current_line()
     -- Get the word under the cursor
     local cursor_word = vim.fn.expand('<cword>')
-    -- Get the system date
-    local date = os.date('%Y-%m-%d')
     -- Make a markdown link out of the date and cursor
-    local replacement = {'['..cursor_word..']'..'('..date..'_'..cursor_word..'.md)'}
+    local replacement = {'['..cursor_word..']'..'('..prefix()..cursor_word..'.md)'}
 
     -- Find the (first) position of the matched word in the line
     local left, right = string.find(line, cursor_word, nil, true)
