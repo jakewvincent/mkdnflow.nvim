@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--- File navigation functions
+-- File and link navigation functions
 local M = {}
 
 -- Get OS for use in a couple of functions
@@ -30,7 +30,13 @@ local initial_dir = require('mkdnflow').initial_dir
 
 
 
--- Private function to get path part of the link under the cursor, i.e. [](_)
+--[[
+
+get_path() extracts the path part of a markdown link, i.e. the part in → []
+Returns a string--the string in the square brackets
+Private function
+
+--]]
 local get_path = function()
     -- Get current cursor position
     local position = vim.api.nvim_win_get_cursor(0)
@@ -75,7 +81,13 @@ local get_path = function()
     end
 end
 
--- Private function to determine whether something is a URL or not
+--[[
+
+is_url() determines whether a string is a URL
+Returns a boolean or nil
+Private function
+
+--]]
 local is_url = function(string)
     -- This function based largely on the solution in <https://stackoverflow.com/questions/23590304/finding-a-url-in-a-string-lua-pattern>
     -- Table of top-level domains
@@ -124,7 +136,13 @@ local is_url = function(string)
     return(found_url)
 end
 
--- Private function to open paths outside of vim
+--[[
+
+path_handler() handles vim-external paths, including local files or web URLs
+Returns nothing
+Private function
+
+--]]
 local path_handler = function(path)
     if this_os == "Linux" then
         vim.api.nvim_command('silent !xdg-open '..path..' &')
@@ -133,7 +151,16 @@ local path_handler = function(path)
     end
 end
 
--- Private function to determine the path type (local, url, or filename)
+--[[
+
+path_type() determines what kind of path is in a url
+Returns a string:
+     1. 'local' if the path has the 'local:' prefix, 'url' if the path
+     2. 'url' is the result of is_url(path) is true
+     3. 'filename' if (1) and (2) aren't true
+Private function
+
+--]]
 local path_type = function(path)
     if string.find(path, '^local:') then
         return('local')
@@ -144,8 +171,14 @@ local path_type = function(path)
     end
 end
 
--- Function to create the specified file at the specified path (relative to
--- current file?)
+--[[
+
+createLink() makes a link from the word under the cursor--or, if no word is
+under the cursor, produces the syntax for a md link: [](YYYY-MM-DD_.md)
+Returns nothing via stdout, but does insert text into the vim buffer
+Public function
+
+--]]
 M.createLink = function()
     -- Get the cursor position
     local position = vim.api.nvim_win_get_cursor(0)
@@ -176,8 +209,13 @@ M.createLink = function()
     -- TODO: If in visual mode, get the selection and make a markdown link out of it
 end
 
--- Private function to see if directory exists
--- Assumption: initially opened file is in an existing directory
+--[[
+
+dir_exists() determines whether the path specified as the argument exists
+NOTE: Assumes that the initially opened file is in an existing directory!
+Private function
+
+--]]
 local dir_exists = function(path)
     if this_os == "Linux" or this_os == "POSIX" then
 
@@ -207,8 +245,20 @@ local dir_exists = function(path)
     end
 end
 
--- Function to follow the path specified in the link under the cursor, or to
--- create a link out of the word/selection under the cursor
+--[[
+
+followPath() does something with the path in the link under the cursor:
+     1. Creates the file specified in the path, if the path is determined to
+        be a filename,
+     2. Uses path_handler to open the URL specified in the path, if the path
+        is determined to be a URL, or
+     3. Uses path_handler to open a local file at the specified path via the
+        system's default application for that filetype, if the path is dete-
+        rmined to be neither the filename for a text file nor a URL.
+Returns nothing
+Public function
+
+--]]
 M.followPath = function()
 
     -- Get the path in the link
@@ -339,4 +389,5 @@ M.followPath = function()
     end
 end
 
+-- Return all the functions added to the table M!
 return M
