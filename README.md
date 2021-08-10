@@ -78,7 +78,7 @@ EOF
 ## ✨ Features
 
 * Create links from the word under the cursor (mapped to `<CR>` by default)
-    * Currently, the filename provided for the path follows this pattern: `YYYY-MM-DD_<word>.md`, where `<word>` is the word under the cursor.
+    * The default filename provided for the path prefixes the word under the cursor with the date in YYYY-MM-DD format: `YYYY-MM-DD_<word>.md`. The prefix can be changed. See [Configuration](#%EF%B8%8F-configuration).
 * Jump to the next or previous link in the file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
 * Follow links relative to the first-opened file or the current file (mapped to `<CR>` by default)
     * `<CR>`ing on a link to any kind of text file will open it (i.e. `:e <filename>`)
@@ -101,21 +101,36 @@ Currently, the setup function uses the defaults shown below. See the description
 
 ```lua
 require('mkdnflow').setup({
-    -- Type: boolean. Use default mappings (see '❕Commands and default mappings').
+    -- Type: boolean. Use default mappings (see '❕Commands and default
+    --     mappings').
     -- 'false' disables mappings
     default_mappings = true,        
 
-    -- Type: boolean. Create directories (recursively) if link contains a missing directory.
+    -- Type: boolean. Create directories (recursively) if link contains a
+    --     missing directory.
     -- 'false' prevents missing directories from being created
     create_dirs = true,             
 
-    -- Type: string. Navigate to links relative to the directory of the first-opened file.
+    -- Type: string. Navigate to links relative to the directory of the first-
+    --     opened file.
     -- 'current' navigates links relative to currently open file
     links_relative_to = 'first',    
 
     -- Type: key-value pair(s). The plugin's features are enabled only when one
     -- of these filetypes is opened; otherwise, the plugin does nothing.
-    filetypes = {md = true, rmd = true, markdown = true}
+    filetypes = {md = true, rmd = true, markdown = true},
+
+    -- Type: boolean. When true, the createLinks() function tries to evaluate
+    --     the string provided as the value of new_file_prefix.
+    -- 'false' results in the value of new_file_prefix being used as a string,
+    --     i.e. it is not evaluated, and the prefix will be invariant.
+    evaluate_prefix = true,
+
+    -- Type: string. Defines the prefix that should be used to create new links.
+    --     This is evaluated at the time createLink() is run, which is to say
+    --     that it's run whenever <CR> is pressed (under the default mappings).
+    --     This makes for many interesting possibilities.
+    new_file_prefix = [[os.date('%Y-%m-%d_')]]
 })
 ```
 
@@ -139,12 +154,14 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [X] Navigate between links (w/ `<Tab>` and `<S-Tab>`)
 * [X] Follow links internally and externally (w/ `<CR>`)
 * [X] Create links from word under cursor
+* [X] File naming options for link creation
+    * [ ] Allow for vimscript functions in filename prefix
 * [ ] Create links from visual selection (not just word under cursor)
+* [ ] To-do list functions & mappings
 * [ ] Documentation
 * [ ] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
 * [ ] Smarter/"deeper" navigation to previous files with `<BS>` (currently, `<BS>` will only go one file back—pressing it again will return you to the file where you just hit `<BS>`)
-* [ ] File naming options for link creation
 * [ ] Full compatibility with Windows and macOS
 
 ## 🔗 Links
