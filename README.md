@@ -16,8 +16,8 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
 
-* For markdown only; Vimwiki doesn't use markdown by default, but you can set it to use markdown.
-* Intended to be lighter weight/less involved. This plugin doesn't and won't provide syntax highlighting and won't create new filetypes.
+* Vimwiki doesn't use markdown by default; mkdnflow only works for markdown.
+* I'm intending mkdnflow to be a little lighter weight/less involved than Vimwiki. Mkdnflow doesn't and won't provide syntax highlighting and won't create new filetypes.
 
 ## 📦 Installation
 
