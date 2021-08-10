@@ -26,7 +26,8 @@ init.config = {
     create_dirs = true,
     links_relative_to = 'first', -- other option: current
     filetypes = {md = true, rmd = true, markdown = true},
-    new_file_prefix = [[os.date('%Y-%m-%d_')]]
+    new_file_prefix = [[os.date('%Y-%m-%d_')]],
+    evaluate_prefix = true
 }
 
 init.loaded = nil
