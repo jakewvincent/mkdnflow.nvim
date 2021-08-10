@@ -27,11 +27,10 @@ local create_dirs = require('mkdnflow').config.create_dirs
 local links_relative_to = require('mkdnflow').config.links_relative_to
 -- Get directory of first-opened file
 local initial_dir = require('mkdnflow').initial_dir
--- Get config setting for file prefix (a string)
+-- Get the user's prefix string
 local new_file_prefix = require('mkdnflow').config.new_file_prefix
-local prefix = loadstring('return('..new_file_prefix..')')
-
-
+-- Get the user's prefix evaluation preference
+local evaluate_prefix = require('mkdnflow').config.evaluate_prefix
 
 --[[
 
@@ -183,6 +182,17 @@ Public function
 
 --]]
 M.createLink = function()
+    -- Make a variable for the prefix to use
+    local prefix = nil
+    -- If the user wants the prefix evaluated, eval when this function is run
+    -- (i.e. right here)
+    if evaluate_prefix then
+        prefix = loadstring("return "..new_file_prefix)()
+    -- Otherwise, just use the string provided by the user for the prefix
+    else
+        prefix = new_file_prefix
+    end
+
     -- Get the cursor position
     local position = vim.api.nvim_win_get_cursor(0)
     local row = position[1]
@@ -192,7 +202,7 @@ M.createLink = function()
     -- Get the word under the cursor
     local cursor_word = vim.fn.expand('<cword>')
     -- Make a markdown link out of the date and cursor
-    local replacement = {'['..cursor_word..']'..'('..prefix()..cursor_word..'.md)'}
+    local replacement = {'['..cursor_word..']'..'('..prefix..cursor_word..'.md)'}
 
     -- Find the (first) position of the matched word in the line
     local left, right = string.find(line, cursor_word, nil, true)
