@@ -17,5 +17,5 @@
 -- Mkdnflow mappings
 vim.api.nvim_set_keymap('n', '<Tab>', [[<Cmd>:MkdnNextLink<CR>]], {noremap = true})
 vim.api.nvim_set_keymap('n', '<S-Tab>', [[<Cmd>:MkdnPrevLink<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', '<BS>', ':edit #<CR>', {noremap = true, silent = true})    -- bs to :e last file
+vim.api.nvim_set_keymap('n', '<BS>', [[<Cmd>:MkdnGoBack<CR>]], {noremap = true})
 vim.api.nvim_set_keymap('n', '<CR>', [[<Cmd>:MkdnFollowPath<CR>]], {noremap = true})
