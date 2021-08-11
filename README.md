@@ -85,7 +85,7 @@ EOF
     * `<CR>`ing on a link to a file tagged with `local:`, e.g. `[My Xournal notes](local:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open`)
     * `<CR>`ing on a link to a web URL will open that link in your default browser
 * Create missing directories if a link goes to a file in a directory that doesn't exist
-* `<BS>` to go to last-open file (has limitations; see [to do](#%EF%B8%8F-to-do))
+* `<BS>` to go to previous file/buffer opened in the window
 * Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
 
 ### ❗ Caveats/warnings
@@ -142,7 +142,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 |---------- | ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `<Tab>`   | n    | `:MkdnNextLink<CR>`   | Move cursor to the beginning of the next link (if there is a next link)                                                                                      |
 | `<S-Tab>` | n    | `:MkdnPrevLink<CR>`   | Move the cursor to the beginning of the previous link (if there is one)                                                                                      |
-| `<BS>`    | n    | `:edit #<CR>`         | Open the last-open file                                                                                                                                      |
+| `<BS>`    | n    | `:edit #<CR>`         | Open the last-active buffer in the current window                                                                                                            |
 | `<CR>`    | n    | `:MkdnFollowPath<CR>` | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
 | --        | --   | `:MkdnGetPath<CR>`    | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets)                           |
 | --        | --   | `:MkdnCreateLink<CR>` | Replace the word under the cursor with a link in which the word under the cursor is the name of the link                                                     |
@@ -155,13 +155,13 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [X] Follow links internally and externally (w/ `<CR>`)
 * [X] Create links from word under cursor
 * [X] File naming options for link creation
-    * [ ] Allow for vimscript functions in filename prefix
+* [X] Smarter/"deeper" navigation to previous files with `<BS>`
+* [ ] Easy forward navigation through buffers
 * [ ] Create links from visual selection (not just word under cursor)
 * [ ] To-do list functions & mappings
 * [ ] Documentation
 * [ ] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
-* [ ] Smarter/"deeper" navigation to previous files with `<BS>` (currently, `<BS>` will only go one file back—pressing it again will return you to the file where you just hit `<BS>`)
 * [ ] Full compatibility with Windows and macOS
 
 ## 🔗 Links
