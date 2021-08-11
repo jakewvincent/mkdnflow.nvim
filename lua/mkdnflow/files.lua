@@ -400,5 +400,14 @@ M.followPath = function()
     end
 end
 
+M.goBack = function()
+    local bufnr = vim.fn.bufnr()
+    if bufnr > 1 then
+        vim.cmd('bprev')
+    else
+        print([[Can't go back any further!]])
+    end
+end
+
 -- Return all the functions added to the table M!
 return M
