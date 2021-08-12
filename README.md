@@ -82,7 +82,7 @@ EOF
 * Jump to the next or previous link in the file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
 * Follow links relative to the first-opened file or the current file (mapped to `<CR>` by default)
     * `<CR>`ing on a link to any kind of text file will open it (i.e. `:e <filename>`)
-    * `<CR>`ing on a link to a file tagged with `local:`, e.g. `[My Xournal notes](local:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open`)
+    * `<CR>`ing on a link to a file tagged with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open`)
     * `<CR>`ing on a link to a web URL will open that link in your default browser
 * Create missing directories if a link goes to a file in a directory that doesn't exist
 * `<BS>` to go to previous file/buffer opened in the window

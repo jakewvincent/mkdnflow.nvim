@@ -157,15 +157,15 @@ end
 
 path_type() determines what kind of path is in a url
 Returns a string:
-     1. 'local' if the path has the 'local:' prefix, 'url' if the path
+     1. 'file' if the path has the 'file:' prefix,
      2. 'url' is the result of is_url(path) is true
      3. 'filename' if (1) and (2) aren't true
 Private function
 
 --]]
 local path_type = function(path)
-    if string.find(path, '^local:') then
-        return('local')
+    if string.find(path, '^file:') then
+        return('file')
     elseif is_url(path) then
         return('url')
     else
@@ -365,8 +365,8 @@ M.followPath = function()
 
         elseif path_type(path) == 'local' then
 
-            -- Get what's after the local: tag
-            local real_path = string.match(path, '^local:(.*)')
+            -- Get what's after the file: tag
+            local real_path = string.match(path, '^file:(.*)')
 
             if links_relative_to == 'current' then
 
