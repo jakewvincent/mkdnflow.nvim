@@ -156,12 +156,15 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [X] Create links from word under cursor
 * [X] File naming options for link creation
 * [X] Smarter/"deeper" navigation to previous files with `<BS>`
-* [ ] Easy forward navigation through buffers
+* [ ] Easy forward navigation through buffers (with `<S-BS>`?)
 * [ ] Create links from visual selection (not just word under cursor)
+* [ ] "Undo" a link (replace link w/ the text part of the link)
 * [ ] To-do list functions & mappings
-* [ ] Documentation
+* [ ] Add documentation
 * [ ] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
+    * [ ] Add/remove columns and rows
+    * [ ] Navigation through table (maybe with `<Tab>` by default?)
 * [ ] Full compatibility with Windows and macOS
 
 ## 🔗 Links
