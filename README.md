@@ -157,7 +157,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [X] File naming options for link creation
 * [X] Smarter/"deeper" navigation to previous files with `<BS>`
 * [ ] Easy forward navigation through buffers (with `<S-BS>`?)
-* [ ] Create links from visual selection (not just word under cursor)
+* [X] Create links from visual selection (not just word under cursor)
 * [ ] "Undo" a link (replace link w/ the text part of the link)
 * [ ] To-do list functions & mappings
 * [ ] Add documentation

@@ -188,36 +188,107 @@ M.createLink = function()
     -- (i.e. right here)
     if evaluate_prefix then
         prefix = loadstring("return "..new_file_prefix)()
-    -- Otherwise, just use the string provided by the user for the prefix
+        -- Otherwise, just use the string provided by the user for the prefix
     else
         prefix = new_file_prefix
     end
+
+    -- Get mode from vim
+    local mode = vim.api.nvim_get_mode()['mode']
 
     -- Get the cursor position
     local position = vim.api.nvim_win_get_cursor(0)
     local row = position[1]
     local col = position[2]
-    -- Get the text of the line the cursor is on
-    local line = vim.api.nvim_get_current_line()
-    -- Get the word under the cursor
-    local cursor_word = vim.fn.expand('<cword>')
-    -- Make a markdown link out of the date and cursor
-    local replacement = {'['..cursor_word..']'..'('..prefix..cursor_word..'.md)'}
 
-    -- Find the (first) position of the matched word in the line
-    local left, right = string.find(line, cursor_word, nil, true)
+    -- If the current mode is 'normal', make link from word under cursor
+    if mode == 'n' then
+        -- Get the text of the line the cursor is on
+        local line = vim.api.nvim_get_current_line()
+        -- Get the word under the cursor
+        local cursor_word = vim.fn.expand('<cword>')
+        -- Make a markdown link out of the date and cursor
+        local replacement = {'['..cursor_word..']'..'('..prefix..cursor_word..'.md)'}
 
-    -- Make sure it's not a duplicate of the word under the cursor, and if it
-    -- is, perform the search until a match is found whose right edge follows
-    -- the cursor position
-    while right < col do
-        left, right = string.find(line, cursor_word, right, true)
+        -- Find the (first) position of the matched word in the line
+        local left, right = string.find(line, cursor_word, nil, true)
+
+        -- Make sure it's not a duplicate of the word under the cursor, and if it
+        -- is, perform the search until a match is found whose right edge follows
+        -- the cursor position
+        while right < col do
+            left, right = string.find(line, cursor_word, right, true)
+        end
+
+        -- Replace the word under the cursor w/ the formatted link replacement
+        vim.api.nvim_buf_set_text(0, row - 1, left - 1, row - 1, right, replacement)
+
+    -- If current mode is 'visual', make link from selection
+    elseif mode == 'v' then
+
+        -- Get the start of the visual selection (the end is the cursor position)
+        local com = vim.fn.getpos('v')
+
+        -- If the start of the visual selection is after the cursor position,
+        -- use the cursor position as start and the visual position as finish
+        local start = {}
+        local finish = {}
+        if com[3] > col then
+            start = {row - 1, col}
+            finish = {com[2] - 1, com[3] - 1 + com[4]}
+
+            local region =
+                vim.region(
+                    0,
+                    start,
+                    finish,
+                    vim.fn.visualmode(),
+                (vim.o.selection ~= 'exclusive')
+                )
+            local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
+            lines[1] = lines[1]:sub(region[start[1]][1] + 1, region[start[1]][2])
+            if start[1] ~= finish[1] then
+                lines[#lines] = lines[#lines]:sub(region[finish[1]][1] + 1, region[finish[1]][2])
+            end
+
+            -- Save the text selection & replace spaces with dashes
+            local text = table.concat(lines)
+            local path_text = string.gsub(text, " ", "-")
+
+            -- Set up the replacement
+            local replacement = {'['..text..']'..'('..prefix..path_text..'.md)'}
+
+            -- Replace the visual selection w/ the formatted link replacement
+            vim.api.nvim_buf_set_text(0, row - 1, col, com[2] - 1, com[3], replacement)
+        else
+            start = {com[2] - 1, com[3] - 1 + com[4]}
+            finish = {row - 1, col}
+
+            local region =
+                vim.region(
+                    0,
+                    start,
+                    finish,
+                    vim.fn.visualmode(),
+                (vim.o.selection ~= 'exclusive')
+                )
+            local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
+            lines[1] = lines[1]:sub(region[start[1]][1] + 1, region[start[1]][2])
+            if start[1] ~= finish[1] then
+                lines[#lines] = lines[#lines]:sub(region[finish[1]][1] + 1, region[finish[1]][2])
+            end
+
+            -- Save the text selection
+            local text = table.concat(lines)
+            local path_text = string.gsub(text, " ", "-")
+
+            -- Set up the replacement
+            local replacement = {'['..text..']'..'('..prefix..path_text..'.md)'}
+            -- Replace the visual selection w/ the formatted link replacement
+            vim.api.nvim_buf_set_text(0, com[2] - 1, com[3] - 1, row - 1, col + 1, replacement)
+        end
+
     end
-
-    -- Replace the word under the cursor w/ the formatted link replacement
-    vim.api.nvim_buf_set_text(0, row - 1, left - 1, row - 1, right, replacement)
-
-    -- TODO: If in visual mode, get the selection and make a markdown link out of it
 end
 
 --[[

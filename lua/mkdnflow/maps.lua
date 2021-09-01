@@ -19,3 +19,4 @@ vim.api.nvim_set_keymap('n', '<Tab>', [[<Cmd>:MkdnNextLink<CR>]], {noremap = tru
 vim.api.nvim_set_keymap('n', '<S-Tab>', [[<Cmd>:MkdnPrevLink<CR>]], {noremap = true})
 vim.api.nvim_set_keymap('n', '<BS>', [[<Cmd>:MkdnGoBack<CR>]], {noremap = true})
 vim.api.nvim_set_keymap('n', '<CR>', [[<Cmd>:MkdnFollowPath<CR>]], {noremap = true})
+vim.api.nvim_set_keymap('v', '<CR>', [[<Cmd>:MkdnFollowPath<CR>]], {noremap = true})
