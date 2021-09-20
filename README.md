@@ -167,7 +167,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [ ] Navigation through table (maybe with `<Tab>` by default?)
 * [ ] Full compatibility with Windows and macOS
 
-## 🪛 Recent changes
+## 🔧 Recent changes
 * Fixed [issue #2](https://github.com/jakewvincent/mkdnflow.nvim/issues/2). Paths with spaces and/or commas can now be created.
 
 ## 🔗 Links
