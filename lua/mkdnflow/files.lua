@@ -373,7 +373,11 @@ M.followPath = function()
 
                     -- If the path doesn't exist, make it!
                     if not exists then
-                        os.execute('mkdir -p '..paste)
+                        -- Escape spaces and commas
+                        sh_esc_paste = string.gsub(paste, " ", "\\ ")
+                        sh_esc_paste = string.gsub(paste, ",", "\\,")
+                        -- Send command to shell
+                        os.execute('mkdir -p '..sh_esc_paste)
                     end
 
                     -- And follow the path!
@@ -396,7 +400,11 @@ M.followPath = function()
 
                     -- If the path doesn't exist, make it!
                     if not exists then
-                        os.execute('mkdir -p '..paste)
+                        -- Escape spaces and commas
+                        sh_esc_paste = string.gsub(paste, " ", "\\ ")
+                        sh_esc_paste = string.gsub(paste, ",", "\\,")
+                        -- Send command to shell
+                        os.execute('mkdir -p '..sh_esc_paste)
                     end
 
                     -- And follow the path!
