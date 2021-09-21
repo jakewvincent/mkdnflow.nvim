@@ -27,7 +27,8 @@ init.config = {
     links_relative_to = 'first', -- other option: current
     filetypes = {md = true, rmd = true, markdown = true},
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
-    evaluate_prefix = true
+    evaluate_prefix = true,
+    load_tests = false
 }
 
 init.loaded = nil
@@ -63,6 +64,11 @@ init.setup = function(user_config)
         -- Only load the mappings if the user hasn't said "no"
         if init.config.default_mappings == true then
             require('mkdnflow.maps')
+        end
+
+        -- Only load tests if the user has said yes
+        if init.config.load_tests == true then
+            require('mkdnflow.tests')
         end
 
     else
