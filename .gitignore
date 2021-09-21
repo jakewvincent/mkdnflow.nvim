@@ -1,0 +1,3 @@
+# Ignore tests
+lua/mkdnflow/test.lua
+plugin/test.lua
