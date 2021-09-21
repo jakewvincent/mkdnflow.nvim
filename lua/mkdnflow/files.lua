@@ -327,6 +327,43 @@ local dir_exists = function(path)
     end
 end
 
+-- Create a local table to keep track of buffers for backwards navigation
+local buffer_stack = {}
+
+-- Add two tables
+buffer_stack.main = {}
+buffer_stack.pop_hist = {}
+
+buffer_stack.push = function(stack_name, bufnr)
+    -- Get the state of the named stack
+    local current_stack = buffer_stack[stack_name]
+    -- Make a new stack w/ the provided bufnr at the beginning
+    local new_stack = {bufnr}
+    -- Add the other values into the new stack
+    for i = 1, #current_stack, 1 do
+        table.insert(new_stack, current_stack[i])
+    end
+    -- Update the state of the named stack
+    buffer_stack[stack_name] = new_stack
+end
+
+buffer_stack.pop = function(stack_name)
+    -- Get stack's current state
+    local current_stack = buffer_stack[stack_name]
+    -- Add the value to be popped to history stack
+    buffer_stack.push('pop_hist', current_stack[1])
+    -- Remove the value from the copy of the named stack
+    table.remove(current_stack, 1)
+    -- Update the named stack
+    buffer_stack[stack_name] = current_stack
+end
+
+buffer_stack.report = function(stack_name)
+    for i = 1, #buffer_stack[stack_name], 1 do
+        print(buffer_stack[stack_name][i])
+    end
+end
+
 --[[
 
 followPath() does something with the path in the link under the cursor:
@@ -380,6 +417,8 @@ M.followPath = function()
                         os.execute('mkdir -p '..sh_esc_paste)
                     end
 
+                    -- Remember the buffer we're currently viewing
+                    buffer_stack.push('main', vim.api.nvim_win_get_buf(0))
                     -- And follow the path!
                     vim.cmd(':e '..paste..'/'..filename)
 
@@ -407,6 +446,8 @@ M.followPath = function()
                         os.execute('mkdir -p '..sh_esc_paste)
                     end
 
+                    -- Remember the buffer we're currently viewing
+                    buffer_stack.push('main', vim.api.nvim_win_get_buf(0))
                     -- And follow the path!
                     vim.cmd(':e '..paste..'/'..filename)
                 end
@@ -424,6 +465,8 @@ M.followPath = function()
                 -- directory path provided in the link
                 local paste = cur_file_dir..'/'..path
 
+                -- Remember the buffer we're currently viewing
+                buffer_stack.push('main', vim.api.nvim_win_get_buf(0))
                 -- And follow the path!
                 vim.cmd(':e '..paste)
 
@@ -432,6 +475,8 @@ M.followPath = function()
                 -- Paste the dir of the first-opened file and path in the link
                 local paste = initial_dir..'/'..path
 
+                -- Remember the buffer we're currently viewing
+                buffer_stack.push('main', vim.api.nvim_win_get_buf(0))
                 -- And follow the path!
                 vim.cmd(':e '..paste)
 
@@ -480,9 +525,13 @@ M.followPath = function()
 end
 
 M.goBack = function()
-    local bufnr = vim.fn.bufnr()
-    if bufnr > 1 then
-        vim.cmd('bprev')
+    local cur_bufnr = vim.api.nvim_win_get_buf(0)
+    if cur_bufnr > 1 then
+        local prev_buf = buffer_stack.main[1]
+        -- Go to buffer
+        vim.api.nvim_command("buffer "..prev_buf)
+        -- Pop the buffer we just navigated to off the top of the stack
+        buffer_stack.pop('main')
     else
         print([[Can't go back any further!]])
     end

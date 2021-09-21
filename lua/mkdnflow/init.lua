@@ -68,7 +68,7 @@ init.setup = function(user_config)
 
         -- Only load tests if the user has said yes
         if init.config.load_tests == true then
-            require('mkdnflow.tests')
+            init.tests = require('mkdnflow.tests')
         end
 
     else

@@ -168,7 +168,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Full compatibility with Windows and macOS
 
 ## 🔧 Recent changes
-* Fixed [issue #2](https://github.com/jakewvincent/mkdnflow.nvim/issues/2). Paths with spaces and/or commas can now be created.
+* 09/19/21: Fixed [issue #2](https://github.com/jakewvincent/mkdnflow.nvim/issues/2). Paths with spaces and/or commas can now be created.
+* 09/21/21: Fixed [issue #1](https://github.com/jakewvincent/mkdnflow.nvim/issues/1). Implemented a push-down stack to better handle backwards navigation through previously-opened buffers.
 
 ## 🔗 Links
 * Plugins that would complement mkdnflow:
