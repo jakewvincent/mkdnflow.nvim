@@ -97,7 +97,7 @@ EOF
 
 ## ⚙️ Configuration
 
-Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the comments above each setting. To change these settings, specify new values for them wherever you've placed the setup function.
+Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the comments above each setting. **To use these defaults, simply call the setup function without any argument:** `require('mkdnflow').setup({})`. To change these settings, specify new values for any of them them in the setup function.
 
 ```lua
 require('mkdnflow').setup({
@@ -132,6 +132,20 @@ require('mkdnflow').setup({
     --     This makes for many interesting possibilities.
     new_file_prefix = [[os.date('%Y-%m-%d_')]]
 })
+```
+
+### 👍 Recommended vim settings
+
+It is recommended to turn on `autowriteall` in Neovim. This will ensure that changes to buffers are saved when you navigate away from that buffer, e.g. by following a link to another file. See `:h awa`.
+
+```lua
+-- If you have an init.lua
+vim.o.autowriteall = true
+```
+
+```vim
+" If you have an init.vim
+set autowriteall
 ```
 
 ### ❕ Commands and default mappings
