@@ -93,7 +93,7 @@ EOF
 * The plugin effectively won't start if the first-opened file is not one of the default or named extensions (see [Configuration](#%EF%B8%8F-configuration)).
 * On Windows, the plugin should successfully load, but the use of certain functions will result in a message in the command line: `Function unavailable for Windows`. The functionality currently unavailable for Windows includes:
     * Opening local files and URLs outside of Neovim
-    * Following links within Neovim while `create_dirs` is enabled. If you are on macOS or Windows, you should set `create_dirs` to `false` and make sure that all directories you specify as part of a link already exist.
+    * Following links within Neovim while `create_dirs` is enabled. If you are on Windows, you should set `create_dirs` to `false` and make sure that all directories you specify as part of a link already exist.
 
 ## ⚙️ Configuration
 
