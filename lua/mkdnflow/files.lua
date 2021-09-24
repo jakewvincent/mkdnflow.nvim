@@ -148,6 +148,7 @@ Private function
 local path_handler = function(path)
     if this_os == "Linux" then
         vim.api.nvim_command('silent !xdg-open '..path..' &')
+        print("Tried to go to '"..path.."'.")
     elseif this_os == "OSX" then
         vim.api.nvim_command('silent !open '..path..' &')
     else
@@ -411,9 +412,8 @@ M.followPath = function()
 
                     -- If the path doesn't exist, make it!
                     if not exists then
-                        -- Escape spaces and commas
+                        -- Escape spaces
                         local sh_esc_paste = string.gsub(paste, " ", "\\ ")
-                        sh_esc_paste = string.gsub(sh_esc_paste, ",", "\\,")
                         -- Send command to shell
                         os.execute('mkdir -p '..sh_esc_paste)
                     end
@@ -440,9 +440,8 @@ M.followPath = function()
 
                     -- If the path doesn't exist, make it!
                     if not exists then
-                        -- Escape spaces and commas
+                        -- Escape spaces
                         local sh_esc_paste = string.gsub(paste, " ", "\\ ")
-                        sh_esc_paste = string.gsub(sh_esc_paste, ",", "\\,")
                         -- Send command to shell
                         os.execute('mkdir -p '..sh_esc_paste)
                     end
