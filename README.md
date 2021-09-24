@@ -156,7 +156,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 |---------- | ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `<Tab>`   | n    | `:MkdnNextLink<CR>`   | Move cursor to the beginning of the next link (if there is a next link)                                                                                      |
 | `<S-Tab>` | n    | `:MkdnPrevLink<CR>`   | Move the cursor to the beginning of the previous link (if there is one)                                                                                      |
-| `<BS>`    | n    | `:edit #<CR>`         | Open the last-active buffer in the current window                                                                                                            |
+| `<BS>`    | n    | `:MkdnGoBack<CR>`         | Open the last-active buffer in the current window                                                                                                            |
 | `<CR>`    | n    | `:MkdnFollowPath<CR>` | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
 | --        | --   | `:MkdnGetPath<CR>`    | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets)                           |
 | --        | --   | `:MkdnCreateLink<CR>` | Replace the word under the cursor with a link in which the word under the cursor is the name of the link                                                     |
