@@ -366,6 +366,24 @@ buffer_stack.report = function(stack_name)
     end
 end
 
+local escape_chars = function(string)
+    -- Which characters to match
+    local chars = "[ '&()$]"
+    -- Set up table of replacements
+    local replacements = {
+        [" "] = "\\ ",
+        ["'"] = "\\'",
+        ["&"] = "\\&",
+        ["("] = "\\(",
+        [")"] = "\\)",
+        ["$"] = "\\$",
+    }
+    -- Do the replacement
+    local escaped = string.gsub(string, chars, replacements)
+    -- Return the new string
+    return(escaped)
+end
+
 --[[
 
 followPath() does something with the path in the link under the cursor:
@@ -412,8 +430,8 @@ M.followPath = function()
 
                     -- If the path doesn't exist, make it!
                     if not exists then
-                        -- Escape spaces
-                        local sh_esc_paste = string.gsub(paste, " ", "\\ ")
+                        -- Escape special characters in path
+                        local sh_esc_paste = escape_chars(paste)
                         -- Send command to shell
                         os.execute('mkdir -p '..sh_esc_paste)
                     end
@@ -440,8 +458,8 @@ M.followPath = function()
 
                     -- If the path doesn't exist, make it!
                     if not exists then
-                        -- Escape spaces
-                        local sh_esc_paste = string.gsub(paste, " ", "\\ ")
+                        -- Escape special characters in path
+                        local sh_esc_paste = escape_chars(paste)
                         -- Send command to shell
                         os.execute('mkdir -p '..sh_esc_paste)
                     end
@@ -504,8 +522,10 @@ M.followPath = function()
                 -- directory path provided in the link
                 local paste = cur_file_dir..'/'..real_path
 
+                -- Escape special characters
+                local se_paste = escape_chars(paste)
                 -- Pass to the path_handler function
-                path_handler(paste)
+                path_handler(se_paste)
 
             else
                 -- Otherwise, links are relative to the first-opened file
@@ -513,8 +533,10 @@ M.followPath = function()
                 -- and the path in the link
                 local paste = initial_dir..'/'..real_path
 
+                -- Escape special characters
+                local se_paste = escape_chars(paste)
                 -- Pass to the path_handler function
-                path_handler(paste)
+                path_handler(se_paste)
 
             end
 
