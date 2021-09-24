@@ -148,6 +148,8 @@ Private function
 local path_handler = function(path)
     if this_os == "Linux" then
         vim.api.nvim_command('silent !xdg-open '..path..' &')
+    elseif this_os == "OSX" then
+        vim.api.nvim_command('silent !open '..path..' &')
     else
         print(this_os_err)
     end
@@ -299,7 +301,7 @@ Private function
 
 --]]
 local dir_exists = function(path)
-    if this_os == "Linux" or this_os == "POSIX" then
+    if this_os == "Linux" or this_os == "POSIX" or this_os == "OSX" then
 
         -- Use the shell to determine if the path exists
         os.execute('if [ -f "'..path..'" ]; then echo true; else echo false; fi>/tmp/mkdn_file_exists')
@@ -319,7 +321,6 @@ local dir_exists = function(path)
         -- Return the existence property of the path
         return(exists)
     else
-        -- Warn the user that they can't use the function on their OS
         print(this_os_err)
 
         -- Return a blep
@@ -487,7 +488,7 @@ M.followPath = function()
             local se_path = vim.fn.shellescape(path)
             path_handler(se_path)
 
-        elseif path_type(path) == 'local' then
+        elseif path_type(path) == 'file' then
 
             -- Get what's after the file: tag
             local real_path = string.match(path, '^file:(.*)')
