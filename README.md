@@ -10,8 +10,8 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 
 ### ⚡ Requirements
 
-* Linux (for full functionality)
-* Windows or macOS (for partial functionality; see [Caveats/warnings](#-caveats-warnings))
+* Linux or macOS (for full functionality)
+* Windows (for partial functionality; see [Caveats/warnings](#-caveats-warnings))
 * Neovim >= 0.5.0
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
@@ -91,7 +91,7 @@ EOF
 ### ❗ Caveats/warnings
 
 * The plugin effectively won't start if the first-opened file is not one of the default or named extensions (see [Configuration](#%EF%B8%8F-configuration)).
-* On macOS and Windows, the plugin should successfully load, but the use of certain functions will result in a message in the command line: `Function unavailable for <your OS>`. The functionality currently unavailable for macOS and Windows includes:
+* On Windows, the plugin should successfully load, but the use of certain functions will result in a message in the command line: `Function unavailable for Windows`. The functionality currently unavailable for Windows includes:
     * Opening local files and URLs outside of Neovim
     * Following links within Neovim while `create_dirs` is enabled. If you are on macOS or Windows, you should set `create_dirs` to `false` and make sure that all directories you specify as part of a link already exist.
 
@@ -179,11 +179,14 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Fancy table creation & editing
     * [ ] Add/remove columns and rows
     * [ ] Navigation through table (maybe with `<Tab>` by default?)
-* [ ] Full compatibility with Windows and macOS
+* [ ] Full compatibility with Windows
+* [X] Full compatibility with macOS
 
 ## 🔧 Recent changes
-* 09/19/21: Fixed [issue #2](https://github.com/jakewvincent/mkdnflow.nvim/issues/2). Paths with spaces and/or commas can now be created.
+* 09/23/21: Fixed [issue #3](https://github.com/jakewvincent/mkdnflow.nvim/issues/3)
+* 09/23/21: Added compatibility with macOS 
 * 09/21/21: Fixed [issue #1](https://github.com/jakewvincent/mkdnflow.nvim/issues/1). Implemented a push-down stack to better handle backwards navigation through previously-opened buffers.
+* 09/19/21: Fixed [issue #2](https://github.com/jakewvincent/mkdnflow.nvim/issues/2). Paths with spaces and/or commas can now be created.
 
 ## 🔗 Links
 * Plugins that would complement mkdnflow:
