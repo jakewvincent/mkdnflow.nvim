@@ -148,7 +148,6 @@ Private function
 local path_handler = function(path)
     if this_os == "Linux" then
         vim.api.nvim_command('silent !xdg-open '..path..' &')
-        print("Tried to go to '"..path.."'.")
     elseif this_os == "OSX" then
         vim.api.nvim_command('silent !open '..path..' &')
     else
