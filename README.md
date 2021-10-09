@@ -181,6 +181,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [ ] Navigation through table (maybe with `<Tab>` by default?)
 * [ ] Full compatibility with Windows
 * [X] Full compatibility with macOS
+* [ ] Add a config option to wrap to the beginning of the document when navigating between links
 
 ## 🔧 Recent changes
 * 09/23/21: Fixed [issue #3](https://github.com/jakewvincent/mkdnflow.nvim/issues/3)
