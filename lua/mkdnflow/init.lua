@@ -78,4 +78,27 @@ init.setup = function(user_config)
 
 end
 
+init.forceStart = function()
+    if init.loaded == true then
+        print("MkdnFlow already running!")
+    else
+        -- Record load status (i.e. loaded)
+        init.loaded = true
+
+        -- Load functions
+        init.cursor = require('mkdnflow.cursor')
+        init.files = require('mkdnflow.files')
+
+        -- Only load the mappings if the user hasn't said "no"
+        if init.config.default_mappings == true then
+            require('mkdnflow.maps')
+        end
+
+        -- Only load tests if the user has said yes
+        if init.config.load_tests == true then
+            init.tests = require('mkdnflow.tests')
+        end
+    end
+end
+
 return init
