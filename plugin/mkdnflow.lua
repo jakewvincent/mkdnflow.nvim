@@ -31,6 +31,7 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! MkdnFollowPath lua require('mkdnflow').files.followPath()", true)
     vim.api.nvim_exec("command! MkdnCreateLink lua require('mkdnflow').files.createLink()", true)
     vim.api.nvim_exec("command! MkdnGoBack lua require('mkdnflow').files.goBack()", true)
+    vim.api.nvim_exec("command! MkdnFlow lua require('mkdnflow').forceStart()", true)
 
     -- Return coptions to user values
     vim.api.nvim_set_option('cpoptions', save_cpo)
