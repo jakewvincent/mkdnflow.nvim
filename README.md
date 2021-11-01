@@ -90,7 +90,7 @@ EOF
 
 ### ❗ Caveats/warnings
 
-* The plugin won't start *automatically* if the first-opened file is not one of the default or named extensions (see [Configuration](#%EF%B8%8F-configuration)), but you can manually start the plugin with the defined command `:MkdnFlow`.
+* The plugin won't start *automatically* if the first-opened file is not one of the default or named extensions (see [Configuration](#%EF%B8%8F-configuration)), but you can manually start the plugin with the defined command `:Mkdnflow`.
 * On Windows, the plugin should successfully load, but the use of certain functions will result in a message in the command line: `Function unavailable for Windows`. The functionality currently unavailable for Windows includes:
     * Opening local files and URLs outside of Neovim
     * Following links within Neovim while `create_dirs` is enabled. If you are on Windows, you should set `create_dirs` to `false` and make sure that all directories you specify as part of a link already exist.
@@ -160,7 +160,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<CR>`    | n    | `:MkdnFollowPath<CR>` | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
 | --        | --   | `:MkdnGetPath<CR>`    | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets)                           |
 | --        | --   | `:MkdnCreateLink<CR>` | Replace the word under the cursor with a link in which the word under the cursor is the name of the link                                                     |
-| --        | --   | `:MkdnFlow<CR>`       | Manually start MkdnFlow                                                                                                                                      |
+| --        | --   | `:Mkdnflow<CR>`       | Manually start Mkdnflow                                                                                                                                      |
 
 
 
@@ -185,7 +185,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Add a config option to wrap to the beginning of the document when navigating between links
 
 ## 🔧 Recent changes
-* 10/30/21: Added capability for manually starting the plugin with `:MkdnFlow`, addressing [issue #5](https://github.com/jakewvincent/mkdnflow.nvim/issues/5)
+* 10/30/21: Added capability for manually starting the plugin with `:Mkdnflow`, addressing [issue #5](https://github.com/jakewvincent/mkdnflow.nvim/issues/5)
 * 09/23/21: Fixed [issue #3](https://github.com/jakewvincent/mkdnflow.nvim/issues/3)
 * 09/23/21: Added compatibility with macOS 
 * 09/21/21: Fixed [issue #1](https://github.com/jakewvincent/mkdnflow.nvim/issues/1). Implemented a push-down stack to better handle backwards navigation through previously-opened buffers.
