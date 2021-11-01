@@ -175,7 +175,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [X] Create links from visual selection (not just word under cursor)
 * [ ] "Undo" a link (replace link w/ the text part of the link)
 * [ ] To-do list functions & mappings
-* [ ] Add documentation
+* [X] Add documentation
 * [ ] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
     * [ ] Add/remove columns and rows
@@ -185,6 +185,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Add a config option to wrap to the beginning of the document when navigating between links
 
 ## 🔧 Recent changes
+* 11/01/21: Added vimdoc documentation
 * 10/30/21: Added capability for manually starting the plugin with `:Mkdnflow`, addressing [issue #5](https://github.com/jakewvincent/mkdnflow.nvim/issues/5)
 * 09/23/21: Fixed [issue #3](https://github.com/jakewvincent/mkdnflow.nvim/issues/3)
 * 09/23/21: Added compatibility with macOS 

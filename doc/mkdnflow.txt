@@ -1,0 +1,320 @@
+*Mkdnflow.nvim* Tools for markdown notebook navigation and management
+
+===============================================================================
+CONTENTS                                                            *Mkdnflow-help*
+
+  Description.............................|Mkdnflow-description|
+  Commands................................|Mkdnflow-commands|
+  Features................................|Mkdnflow-features|
+  Caveats and warnings....................|Mkdnflow-caveats|
+  Lua functions...........................|Mkdnflow-lua-functions|
+  Configuration...........................|Mkdnflow-configuration|
+  Mappings................................|Mkdnflow-mappings|
+  Recommended vim settings................|Mkdnflow-recommended-vim-settings|
+  Credits.................................|Mkdnflow-credits|
+  References..............................|Mkdnflow-references|
+
+===============================================================================
+Description                                              *Mkdnflow-description*
+
+This plugin is designed to replicate the features I use most from Vimwiki,
+implementing them in Lua instead of VimL. It is a set of functions and
+keybindings (optional, but enabled by default) that make it easy to navigate
+and manipulate personal markdown notebooks/journals/wikis in Neovim.
+
+If you have a suggestion or problem with anything, file an issue; or if you'd
+like to contribute, work on a fork of this repo and submit a pull request.
+
+===============================================================================
+Commands                                                    *Mkdnflow-commands*
+
+Mkdnflow provides the following commands for interacting with the contents of 
+markdown files:
+
+:MkdnNextLink
+  Move cursor to the beginning of the next link (if there is a next link).
+
+:MkdnPrevLink
+  Move the cursor to the beginning of the previous link (if there is one).
+
+:MkdnGoBack
+  Open the last-active buffer in the current window.
+
+:MkdnFollowPath
+  Open the link under the cursor, creating missing directories if desired, or
+  if there is no link under the cursor, make a link from the word under the
+  cursor.
+
+:MkdnGetPath
+  With a link under the cursor, extract (and return) just the path part of it
+  (i.e. the part in parentheses, following the brackets).
+
+:MkdnCreateLink
+  Replace the word under the cursor with a link in which the word under the
+  cursor is the name of the link.
+
+:Mkdnflow
+  Manually start Mkdnflow.
+
+===============================================================================
+Features                                                    *Mkdnflow-features*
+
+Create links from the word under the cursor (mapped to `<CR>` by default)
+  - The default filename provided for the path prefixes the word under the
+    cursor with the date in `YYYY-MM-DD` format: `YYYY-MM-DD_<word>.md`. The
+    prefix can be changed. See |Mkdnflow-configuration|.
+
+Jump to the next or previous link in the file (mapped to `<Tab>` and `<S-Tab>`
+by default, respectively)
+
+Follow links relative to the first-opened file or the current file (mapped to
+`<CR>` by default)
+  - `<CR>`ing on a link to any kind of text file will open it (i.e.
+    `:e <filename>`)
+  - `<CR>`ing on a link to a file tagged with `file:` (formerly local:), e.g.
+    [My Xournal notes](file:notes.xopp), will open that file with whatever the
+    system's associated program is for that filetype (using `xdg-open` on Linux
+    and `open` on macOS)
+  - `<CR>`ing on a link to a web URL will open that link in your default browser
+
+Create missing directories if a link goes to a file in a directory that doesn't
+exist
+
+`<BS>` to go to previous file/buffer opened in the window
+
+Enable/disable default keybindings (see |Mkdnflow-configuration|)
+
+===============================================================================
+Caveats and warnings                                         *Mkdnflow-caveats*
+
+The plugin won't start automatically if the first-opened file is not one of the
+default or named extensions (see Configuration), but you can manually start the
+plugin with the defined command `:MkdnFlow`.
+
+On Windows, the plugin should successfully load, but the use of certain
+functions will result in a message in the command line: Function unavailable
+for Windows. The functionality currently unavailable for Windows includes:
+  - Opening local files and URLs outside of Neovim
+  - Following links within Neovim while create_dirs is enabled. If you are on
+    Windows, you should set `create_dirs` to false and make sure that all
+    directories you specify as part of a link already exist.
+
+
+===============================================================================
+Lua functions                                          *Mkdnflow-lua-functions*
+
+Mkdnflow utilizes the following lua functions under the hood. The only one that
+is intended to be used directly is the setup function. The functions following
+that are utilized when the commands are called. Public functions use camel
+case, and local functions use snake case.
+
+Public functions~
+
+The following functions are defined in one of the files `init.lua`,
+`files.lua`, or `cursor.lua` but are ultimately returned as part of the table
+defined in `init.lua` for public use.
+
+require('Mkdnflow').setup(table)
+  Initializes the plugin using a configuration specified in the argument (a
+  table), but only if the filetype of the current buffer is matched in the list
+  of filetypes specified in the table (or one of the defaults). Providing an
+  empty table initializes the plugin using the defaults.
+
+require('Mkdnflow').forceStart()
+  Initializes the plugin using a configuration specified in the argument (a
+  table), regardless of what the current filetype is. Providing an empty table
+  initializes the plugin using the defaults.
+
+require('Mkdnflow').createLink()
+  Makes a link from the word under the cursor--or, if no word is under the
+  cursor, produces the syntax for a md link: []({name}.md). Returns nothing
+  via stdout, but inserts text into the vim buffer.
+
+require('Mkdnflow').followPath()
+  Does something with the path in the link under the cursor. If the path is a
+  filename, it creates the file specified in the path. If the path is a URL,
+  it uses `path_handler()` to open the URL specified in the path. If the path
+  is determined to be neither the filename for a text file nor a URL, it uses
+  `path_handler()` to open a local file at the specified path via the system's
+  default application for that filetype (if on macOS or Linux). Returns nothing.
+
+require('Mkdnflow').goBack()
+  Uses the buffer stack to go to the last-opened buffer.
+
+require('Mkdnflow').toNextLink()
+  Finds the next link in the file.
+
+require('Mkdnflow').toPrevLink()
+  Finds the previous link in the file.
+
+Local functions~
+
+The following functions are defined in one of the files `init.lua`,
+`files.lua`, or `cursor.lua` and are only accessible by referring to the files
+in which they're defined (as below).
+  
+require('Mkdnflow').init.getFileType()
+  Gets the filetype extension (if any) from the name of the current buffer.
+
+require('Mkdnflow').files.get_path(`md link`)
+  Extracts the path part of a markdown link, i.e. the part in `[]`. Returns a
+  string--the string in the square brackets.
+
+require('Mkdnflow').files.is_url(`string`)
+  Determines whether a string is a URL. Returns a boolean or nil.
+
+require('Mkdnflow').files.path_handler(`path`)
+  Handles vim-external paths, including local files and web URLS. Returns
+  nothing.
+
+require('Mkdnflow').files.path_type(`path`)
+  Determines what kind of path is in a URL. Returns a string: `file` if the
+  path has the 'file:' prefix, `url` if is_url(string) returns `true`, and
+  `filename` otherwise.
+
+require('Mkdnflow').files.dir_exists(`path`)
+  Determines whether the path specified as the argument exists. NOTE: This
+  assumes that the initially-opened file is in an existing directory!
+
+require('Mkdnflow').files.buffer_stack.push(`stack name`, `bufnr`)
+  Adds a buffer number to the top of the named stack.
+
+require('Mkdnflow').files.buffer_stack.pop(`stack name`)
+  Removes the buffer off of the top of the named stack.
+
+require('Mkdnflow').files.buffer_stack.report(`stack name`)
+  Prints out the buffers in the named stack. For inspection.
+
+require('Mkdnflow').files.escape_chars(`string`)
+  Escapes special shell characters: spaces, apostrophes, ampersands,
+  parentheses, and dollar signs.
+
+require('Mkdnflow').cursor.rev_get_line(`buffer`, `start`, `end`, `strict_indexing`)
+  Gets a line and reverses it.
+
+require('Mkdnflow').cursor.rev_indices(`right`, `left`, `string`)
+  Given two indices and a string, determines the equivalent indices for the
+  reversed version of that string.
+
+require('Mkdnflow').cursor.go_to(`pattern`, `reverse`)
+  Goes to the next matched pattern if the pattern is matched. If `reverse` is
+  `true`, performs a backwards search.
+
+
+===============================================================================
+Configuration                                          *Mkdnflow-configuration*
+
+To use Mkdnflow with the default behavior, just call the setup function in your
+init config and provide an empty table.
+
+>
+require('mkdnflow').setup({})
+<
+
+To change Mkdnflow's behavior, you can change any of the following elements by
+specifying a new value for them in the table passed to the setup function.
+
+default_mappings
+  Must be a boolean. If `true`, the default mappings are used. If `false`,
+  the default mappings are not used and you will have to specify your own.
+  Default: `true`.
+
+create_dirs
+  Must be a boolean. If `true`, directories are created (recursively) if
+  the link contains a missing directory. If `false`, missing directories are
+  not created. Default: `true`.
+
+links_relative_to
+  Must be one of two strings. If `first`, link navigation proceeds relative to
+  the directory of the first-opened file. If `current`, link navigation
+  proceeds relative to the currently visible file. Default: `first`.
+
+filetypes
+  Must be a table of key-value pairs, where the key is the name of a filetype
+  and the value is a boolean. The plugin's features are enabled only when one
+  of these filetypes is opened; otherwise, the plugin does nothing unless it
+  is manually started by calling `:Mkdnflow`. Default filetypes: `md`, `rmd`,
+  and `markdown`.
+
+evaluate_prefix
+  Must be a boolean. When `true`, the `createLinks()` function tries to
+  evaluate the string provided as the value of `new_file_prefix`. If `false`,
+  the value of `new_file_prefix` is prefixed to new files as a string. That
+  is, it is not evaluated. Default: `true`.
+
+new_file_prefix
+  Must be a string. Defines the prefix that should be used to create new links,
+  either something static (if `evaluate_prefix` is `false`) or variable (if 
+  `evaluate_prefix` is `true`). This is evaluated at the time `createLink()` is
+  run, which is to say that it's run whenever <CR> is pressed (under the
+  default mappings, anyway). This makes for many interesting possibilities, but
+  should be used with caution. Default: `[[os.date('%Y-%m-%d_')]]`, which
+  returns a string representing the current date to be prepended to the name
+  of your file: `YYYY-mm-dd_`. This helps with the organization of the
+  directory in which you keep your markdown files.
+
+A sample config showing the defaults:~
+>
+require('mkdnflow').setup({
+    default_mappings = true,        
+    create_dirs = true,             
+    links_relative_to = 'first',    
+    filetypes = {md = true, rmd = true, markdown = true},
+    evaluate_prefix = true,
+    new_file_prefix = [[os.date('%Y-%m-%d_')]]
+})
+<
+
+===============================================================================
+Mappings                                                    *Mkdnflow-mappings*
+
+These are the default mappings. If you would like to disable them, see
+|Mkdnflow-configuration|.
+
+<Tab> (normal mode)
+  Mapped to `:MkdnNextLink`. Moves the cursor to the beginning of the next
+  link (if there is a next link).
+
+<S-Tab> (normal mode)
+  Mapped to `:MkdnPrevLink`. Moves the cursor to the beginning of the previous
+  link (if there is one).
+
+<BS> (normal mode)
+  Mapped to `:MkdnGoBack`. Opens the last-active buffer in the current window.
+
+<CR> (normal mode)
+  Mapped to `:MkdnFollowPath`. Opens the link under the cursor, creating
+  missing directories if desired, or if there is no link under the cursor, make
+  a link from the word under the cursor.
+
+===============================================================================
+Recommended vim settings                    *Mkdnflow-recommended-vim-settings*
+
+I recommend turning on `autowriteall`. This will ensure that changes to buffers
+are saved when you navigate away from that buffer, e.g. by following a link to
+another file. See `:h awa`.
+
+===============================================================================
+Credits                                                      *Mkdnflow-credits*
+
+Mkdnflow is created and maintained by Jake Vincent <jakewvincent@gmail.com>,
+and you are free to use and extend it. Please consider opening a pull request
+if extended.
+
+Source is located at https://github.com/jakewvincent/mkdnflow.nvim
+
+===============================================================================
+Resources                                                  *Mkdnflow-resources*
+
+Plugins that would complement Mkdnflow:
+  - Paste links to images in markdown syntax: https://github.com/ekickx/clipboard-image.nvim
+  - Evaluate code blocks inside markdown documents: https://github.com/jubnzv/mdeval.nvim
+  - Markdown document preview plugins:
+    - https://github.com/iamcco/markdown-preview.nvim
+    - https://github.com/davidgranstrom/nvim-markdown-preview
+    - https://github.com/npxbr/glow.nvim
+    - https://github.com/jghauser/auto-pandoc.nvim
+
+A big list of plugins for Neovim: https://github.com/rockerBOO/awesome-neovim#markdown
+
+Full-featured journal navigation/maintenance: https://github.com/vimwiki/vimwiki
