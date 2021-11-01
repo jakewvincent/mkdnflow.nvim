@@ -35,7 +35,7 @@ local rev_indices = function(r, l, str)
     return left, right
 end
 
-local goTo = function(pattern, reverse)
+local go_to = function(pattern, reverse)
     -- Get current position of cursor
     local position = vim.api.nvim_win_get_cursor(0)
     local row = position[1]
@@ -137,13 +137,13 @@ end
 -- Find the next link
 M.toNextLink = function()
     local pattern = '%[.-%]%(.-%)'
-    goTo(pattern)
+    go_to(pattern)
 end
 
 -- Find the previous link
 M.toPrevLink = function()
     local pattern = '%).-%(%].-%['
-    goTo(pattern, true)
+    go_to(pattern, true)
 end
 
 return M
