@@ -28,7 +28,9 @@ init.config = {
     filetypes = {md = true, rmd = true, markdown = true},
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
     evaluate_prefix = true,
-    load_tests = false
+    load_tests = false,
+    wrap_to_beginning = false,
+    wrap_to_end = false
 }
 
 init.loaded = nil
