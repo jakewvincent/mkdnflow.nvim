@@ -185,6 +185,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [X] Add a config option to wrap to the beginning of the document when navigating between links (11/08/21)
 * [ ] Function to increase/decrease the level of headings
 * [ ] Jump to in-file locations by `<CR>`ing on links to headings
+* [ ] Easily rename file in link
 
 ## 🔧 Recent changes
 * 11/08/21: Add option to wrap to beginning/end of file when jumping to next/previous link. Off by default.
