@@ -127,8 +127,24 @@ local go_to = function(pattern, reverse)
                     left, right = string.find(line[1], pattern)
                 end
             else
-                -- If the line is nil, there is no next line and the loop should stop
-                unfound = nil
+                -- If the line is nil, there is no next line and the loop should stop (unless wrapping is on)
+                if reverse then
+                    -- If we're searching backwards and user wants the search to wrap, go to last line in file
+                    if require('mkdnflow').config.wrap_to_end == true then
+                        row = vim.api.nvim_buf_line_count(0) + 1
+                    -- Otherwise, search is done
+                    else
+                        unfound = nil
+                    end
+                else
+                    -- If we're searching forwards and user wants the search to wrap, go to first line in file
+                    if require('mkdnflow').config.wrap_to_beginning == true then
+                        row = 0
+                    -- Otherwise, search is done
+                    else
+                        unfound = nil
+                    end
+                end
             end
         end
     end
