@@ -4,7 +4,7 @@ Jump to: [Installation](#-installation) / [Features](#-features) / [Configuratio
 
 ## 📝 Description
 
-This plugin is designed to replicate the features I use most from [Vimwiki](https://github.com/vimwiki/vimwiki), implementing them in Lua instead of VimL. It is a set of functions and keybindings (optional, but enabled by default) that make it easy to navigate and manipulate personal markdown notebooks/journals/wikis in Neovim.
+This plugin is designed to replicate the features I use most from [Vimwiki](https://github.com/vimwiki/vimwiki), implementing them in Lua instead of VimL. It is a set of functions and keybindings (optional, but enabled by default) that make it easy to navigate and manipulate markdown notebooks/journals/wikis in Neovim.
 
 If you have a suggestion or problem with anything, file an [issue](https://github.com/jakewvincent/mkdnflow.nvim/issues); or if you'd like to contribute, work on a fork of this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls).
 
@@ -77,12 +77,12 @@ EOF
 
 ## ✨ Features
 
-* Create links from the word under the cursor (mapped to `<CR>` by default)
-    * The default filename provided for the path prefixes the word under the cursor with the date in YYYY-MM-DD format: `YYYY-MM-DD_<word>.md`. The prefix can be changed. See [Configuration](#%EF%B8%8F-configuration).
-* Jump to the next or previous link in the file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
-* Follow links relative to the first-opened file or the current file (mapped to `<CR>` by default)
-    * `<CR>`ing on a link to any kind of text file will open it (i.e. `:e <filename>`)
-    * `<CR>`ing on a link to a file tagged with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open` on linux or `open` on macOS)
+* Create links from (a) word under cursor or (b) visual selection (mapped to `<CR>` by default)
+    * Automatically prefix filenames created in the above manner with the current date: `YYYY-MM-DD_<word>.md`. The prefix can be changed; see [Configuration](#%EF%B8%8F-configuration).
+* Jump to the next/previous link in the file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
+* Follow links relative to the first-opened file **or** relative to the current file (mapped to `<CR>` by default)
+    * `<CR>`ing on a link to a text file will open it in the current window (i.e. `:e <filename>`)
+    * `<CR>`ing on a link to a file tagged with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open` on Linux or `open` on macOS)
     * `<CR>`ing on a link to a web URL will open that link in your default browser
 * Create missing directories if a link goes to a file in a directory that doesn't exist
 * `<BS>` to go to previous file/buffer opened in the window
@@ -165,24 +165,19 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## ☑️ To do
-
-* [X] Navigate between links (w/ `<Tab>` and `<S-Tab>`)
-* [X] Follow links internally and externally (w/ `<CR>`)
-* [X] Create links from word under cursor
-* [X] File naming options for link creation
-* [X] Smarter/"deeper" navigation to previous files with `<BS>`
-* [ ] Easy forward navigation through buffers (with `<S-BS>`?)
-* [X] Create links from visual selection (not just word under cursor)
+* [ ] Easy *forward* navigation through buffers (with `<S-BS>`?)
 * [ ] "Undo" a link (replace link w/ the text part of the link)
-* [ ] To-do list functions & mappings
-* [X] Add documentation
-* [ ] Smart `<CR>` when in lists, etc.
+* [ ] Lists
+    * [ ] To-do list functions & mappings
+    * [ ] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
+    * [ ] Create a table of x columns and y rows
     * [ ] Add/remove columns and rows
-    * [ ] Navigation through table (maybe with `<Tab>` by default?)
+    * [ ] Horizontal and vertical navigation through tables (with `<Tab>` and `<CR>`?)
 * [ ] Full compatibility with Windows
-* [X] Full compatibility with macOS
 * [ ] Add a config option to wrap to the beginning of the document when navigating between links
+* [ ] Function to increase/decrease the level of headings
+* [ ] Jump to in-file locations by `<CR>`ing on links to headings
 
 ## 🔧 Recent changes
 * 11/01/21: Added vimdoc documentation
