@@ -79,7 +79,7 @@ EOF
 
 * Create links from (a) word under cursor or (b) visual selection (mapped to `<CR>` by default)
     * Automatically prefix filenames created in the above manner with the current date: `YYYY-MM-DD_<word>.md`. The prefix can be changed; see [Configuration](#%EF%B8%8F-configuration).
-* Jump to the next/previous link in the file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
+* Jump to the next/previous link in the file, optionally wrapping to beginning/end of file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
 * Follow links relative to the first-opened file **or** relative to the current file (mapped to `<CR>` by default)
     * `<CR>`ing on a link to a text file will open it in the current window (i.e. `:e <filename>`)
     * `<CR>`ing on a link to a file tagged with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open` on Linux or `open` on macOS)
@@ -130,7 +130,14 @@ require('mkdnflow').setup({
     --     This is evaluated at the time createLink() is run, which is to say
     --     that it's run whenever <CR> is pressed (under the default mappings).
     --     This makes for many interesting possibilities.
-    new_file_prefix = [[os.date('%Y-%m-%d_')]]
+    new_file_prefix = [[os.date('%Y-%m-%d_')]],
+
+    -- Type: boolean. When true and Mkdnflow is searching for the next/previous
+    --     link in the file, it will wrap to the beginning of the file (if it's
+    --     reached the end) or wrap to the end of the file (if it's reached the
+    --     beginning during a backwards search).
+    wrap_to_beginning = false,
+    wrap_to_end = false
 })
 ```
 
@@ -175,11 +182,12 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [ ] Add/remove columns and rows
     * [ ] Horizontal and vertical navigation through tables (with `<Tab>` and `<CR>`?)
 * [ ] Full compatibility with Windows
-* [ ] Add a config option to wrap to the beginning of the document when navigating between links
+* [X] Add a config option to wrap to the beginning of the document when navigating between links (11/08/21)
 * [ ] Function to increase/decrease the level of headings
 * [ ] Jump to in-file locations by `<CR>`ing on links to headings
 
 ## 🔧 Recent changes
+* 11/08/21: Add option to wrap to beginning/end of file when jumping to next/previous link. Off by default.
 * 11/01/21: Added vimdoc documentation
 * 10/30/21: Added capability for manually starting the plugin with `:Mkdnflow`, addressing [issue #5](https://github.com/jakewvincent/mkdnflow.nvim/issues/5)
 * 09/23/21: Fixed [issue #3](https://github.com/jakewvincent/mkdnflow.nvim/issues/3)
