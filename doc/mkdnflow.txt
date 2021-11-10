@@ -1,7 +1,7 @@
 *Mkdnflow.nvim* Tools for markdown notebook navigation and management
 
 ===============================================================================
-CONTENTS                                                            *Mkdnflow-help*
+CONTENTS                                                        *Mkdnflow-help*
 
   Description.............................|Mkdnflow-description|
   Commands................................|Mkdnflow-commands|
@@ -208,8 +208,7 @@ To use Mkdnflow with the default behavior, just call the setup function in your
 init config and provide an empty table.
 
 >
-require('mkdnflow').setup({})
-<
+    require('mkdnflow').setup({})
 
 To change Mkdnflow's behavior, you can change any of the following elements by
 specifying a new value for them in the table passed to the setup function.
@@ -255,15 +254,16 @@ new_file_prefix
 
 A sample config showing the defaults:~
 >
-require('mkdnflow').setup({
-    default_mappings = true,        
-    create_dirs = true,             
-    links_relative_to = 'first',    
-    filetypes = {md = true, rmd = true, markdown = true},
-    evaluate_prefix = true,
-    new_file_prefix = [[os.date('%Y-%m-%d_')]]
-})
-<
+    require('mkdnflow').setup({
+        default_mappings = true,        
+        create_dirs = true,             
+        links_relative_to = 'first',    
+        filetypes = {md = true, rmd = true, markdown = true},
+        evaluate_prefix = true,
+        new_file_prefix = [[os.date('%Y-%m-%d_')]],
+        wrap_to_beginning = false,
+        wrap_to_end = false
+    })
 
 ===============================================================================
 Mappings                                                    *Mkdnflow-mappings*
@@ -273,11 +273,14 @@ These are the default mappings. If you would like to disable them, see
 
 <Tab> (normal mode)
   Mapped to `:MkdnNextLink`. Moves the cursor to the beginning of the next
-  link (if there is a next link).
+  link (if there is a next link). If `wrap_to_beginning` is true and there
+  is no next link before the end of the file, will wrap to the beginnning of
+  the file.
 
 <S-Tab> (normal mode)
   Mapped to `:MkdnPrevLink`. Moves the cursor to the beginning of the previous
-  link (if there is one).
+  link (if there is one). If `wrap_to_end` is true and there is no previous
+  link before the beginning of the file, will wrap to the end of the file.
 
 <BS> (normal mode)
   Mapped to `:MkdnGoBack`. Opens the last-active buffer in the current window.
