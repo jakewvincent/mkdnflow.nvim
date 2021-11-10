@@ -553,8 +553,12 @@ M.goBack = function()
         vim.api.nvim_command("buffer "..prev_buf)
         -- Pop the buffer we just navigated to off the top of the stack
         buffer_stack.pop('main')
+        -- Return a boolean if goBack succeeded (for users who want <BS> to do sth else if goBack isn't possible)
+        return(true)
     else
         print([[Can't go back any further!]])
+        -- Return a boolean if goBack fails
+        return(false)
     end
 end
 
