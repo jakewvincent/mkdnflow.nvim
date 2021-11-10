@@ -1,3 +1,4 @@
 # Ignore tests
 lua/mkdnflow/tests.lua
 plugin/tests.lua
+doc/tags
