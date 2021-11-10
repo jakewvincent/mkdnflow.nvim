@@ -169,6 +169,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | --        | --   | `:MkdnCreateLink<CR>` | Replace the word under the cursor with a link in which the word under the cursor is the name of the link                                                     |
 | --        | --   | `:Mkdnflow<CR>`       | Manually start Mkdnflow                                                                                                                                      |
 
+### Miscellaneous notes on remapping
+* The back-end function for `:MkdnGoBack`, `require('mkdnflow).files.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
 
 
 ## ☑️ To do
@@ -188,6 +190,12 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Easily rename file in link
 
 ## 🔧 Recent changes
+* 11/10/21: Merged [@pbogut's PR](https://github.com/jakewvincent/mkdnflow.nvim/pull/7), which modifies `require('mkdnflow').files.goBack()` to return a boolean (`true` if `goBack()` succeeds; `false` if `goBack()` isn't possible). For the default mappings, this causes no change in behavior, but users who wish `<BS>` to perform another function in the case that `goBack()` fails can now use `goBack()` in the antecedent of a conditional. @pbogut's mapping, for reference:
+```lua
+if not require('mkdnflow').files.goBack() then
+  vim.cmd('Dirvish %:p')
+end
+```
 * 11/08/21: Add option to wrap to beginning/end of file when jumping to next/previous link. Off by default.
 * 11/01/21: Added vimdoc documentation
 * 10/30/21: Added capability for manually starting the plugin with `:Mkdnflow`, addressing [issue #5](https://github.com/jakewvincent/mkdnflow.nvim/issues/5)
