@@ -41,6 +41,7 @@ local go_to = function(pattern, reverse)
     local row = position[1]
     local col = position[2]
     local line, rev_col, left, right, left_, right_ = nil
+    local already_wrapped = false
 
     if reverse then
         -- Get the line's contents
@@ -131,7 +132,12 @@ local go_to = function(pattern, reverse)
                 if reverse then
                     -- If we're searching backwards and user wants the search to wrap, go to last line in file
                     if require('mkdnflow').config.wrap_to_end == true then
-                        row = vim.api.nvim_buf_line_count(0) + 1
+                        if not already_wrapped then
+                            row = vim.api.nvim_buf_line_count(0) + 1
+                            already_wrapped = true
+                        else
+                            unfound = nil
+                        end
                     -- Otherwise, search is done
                     else
                         unfound = nil
@@ -139,7 +145,12 @@ local go_to = function(pattern, reverse)
                 else
                     -- If we're searching forwards and user wants the search to wrap, go to first line in file
                     if require('mkdnflow').config.wrap_to_beginning == true then
-                        row = 0
+                        if not already_wrapped then
+                            row = 0
+                            already_wrapped = true
+                        else
+                            unfound = nil
+                        end
                     -- Otherwise, search is done
                     else
                         unfound = nil
