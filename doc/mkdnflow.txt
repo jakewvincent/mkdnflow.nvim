@@ -114,23 +114,23 @@ The following functions are defined in one of the files `init.lua`,
 `files.lua`, or `cursor.lua` but are ultimately returned as part of the table
 defined in `init.lua` for public use.
 
-require('Mkdnflow').setup(table)
+require('mkdnflow').setup(table)
   Initializes the plugin using a configuration specified in the argument (a
   table), but only if the filetype of the current buffer is matched in the list
   of filetypes specified in the table (or one of the defaults). Providing an
   empty table initializes the plugin using the defaults.
 
-require('Mkdnflow').forceStart()
+require('mkdnflow').forceStart()
   Initializes the plugin using a configuration specified in the argument (a
   table), regardless of what the current filetype is. Providing an empty table
   initializes the plugin using the defaults.
 
-require('Mkdnflow').createLink()
+require('mkdnflow').createLink()
   Makes a link from the word under the cursor--or, if no word is under the
   cursor, produces the syntax for a md link: []({name}.md). Returns nothing
   via stdout, but inserts text into the vim buffer.
 
-require('Mkdnflow').followPath()
+require('mkdnflow').followPath()
   Does something with the path in the link under the cursor. If the path is a
   filename, it creates the file specified in the path. If the path is a URL,
   it uses `path_handler()` to open the URL specified in the path. If the path
@@ -138,13 +138,13 @@ require('Mkdnflow').followPath()
   `path_handler()` to open a local file at the specified path via the system's
   default application for that filetype (if on macOS or Linux). Returns nothing.
 
-require('Mkdnflow').goBack()
+require('mkdnflow').goBack()
   Uses the buffer stack to go to the last-opened buffer.
 
-require('Mkdnflow').toNextLink()
+require('mkdnflow').toNextLink()
   Finds the next link in the file.
 
-require('Mkdnflow').toPrevLink()
+require('mkdnflow').toPrevLink()
   Finds the previous link in the file.
 
 Local functions~
@@ -153,50 +153,50 @@ The following functions are defined in one of the files `init.lua`,
 `files.lua`, or `cursor.lua` and are only accessible by referring to the files
 in which they're defined (as below).
   
-require('Mkdnflow').init.getFileType()
+require('mkdnflow').init.getFileType()
   Gets the filetype extension (if any) from the name of the current buffer.
 
-require('Mkdnflow').files.get_path(`md link`)
+require('mkdnflow').files.get_path(`md link`)
   Extracts the path part of a markdown link, i.e. the part in `[]`. Returns a
   string--the string in the square brackets.
 
-require('Mkdnflow').files.is_url(`string`)
+require('mkdnflow').files.is_url(`string`)
   Determines whether a string is a URL. Returns a boolean or nil.
 
-require('Mkdnflow').files.path_handler(`path`)
+require('mkdnflow').files.path_handler(`path`)
   Handles vim-external paths, including local files and web URLS. Returns
   nothing.
 
-require('Mkdnflow').files.path_type(`path`)
+require('mkdnflow').files.path_type(`path`)
   Determines what kind of path is in a URL. Returns a string: `file` if the
   path has the 'file:' prefix, `url` if is_url(string) returns `true`, and
   `filename` otherwise.
 
-require('Mkdnflow').files.dir_exists(`path`)
+require('mkdnflow').files.dir_exists(`path`)
   Determines whether the path specified as the argument exists. NOTE: This
   assumes that the initially-opened file is in an existing directory!
 
-require('Mkdnflow').files.buffer_stack.push(`stack name`, `bufnr`)
+require('mkdnflow').files.buffer_stack.push(`stack name`, `bufnr`)
   Adds a buffer number to the top of the named stack.
 
-require('Mkdnflow').files.buffer_stack.pop(`stack name`)
+require('mkdnflow').files.buffer_stack.pop(`stack name`)
   Removes the buffer off of the top of the named stack.
 
-require('Mkdnflow').files.buffer_stack.report(`stack name`)
+require('mkdnflow').files.buffer_stack.report(`stack name`)
   Prints out the buffers in the named stack. For inspection.
 
-require('Mkdnflow').files.escape_chars(`string`)
+require('mkdnflow').files.escape_chars(`string`)
   Escapes special shell characters: spaces, apostrophes, ampersands,
   parentheses, and dollar signs.
 
-require('Mkdnflow').cursor.rev_get_line(`buffer`, `start`, `end`, `strict_indexing`)
+require('mkdnflow').cursor.rev_get_line(`buffer`, `start`, `end`, `strict_indexing`)
   Gets a line and reverses it.
 
-require('Mkdnflow').cursor.rev_indices(`right`, `left`, `string`)
+require('mkdnflow').cursor.rev_indices(`right`, `left`, `string`)
   Given two indices and a string, determines the equivalent indices for the
   reversed version of that string.
 
-require('Mkdnflow').cursor.go_to(`pattern`, `reverse`)
+require('mkdnflow').cursor.go_to(`pattern`, `reverse`)
   Goes to the next matched pattern if the pattern is matched. If `reverse` is
   `true`, performs a backwards search.
 
