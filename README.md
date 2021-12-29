@@ -183,11 +183,17 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [ ] Create a table of x columns and y rows
     * [ ] Add/remove columns and rows
     * [ ] Horizontal and vertical navigation through tables (with `<Tab>` and `<CR>`?)
+    * [ ] Make a way for the user to define specialized tables (e.g. time sheets)
 * [ ] Full compatibility with Windows
 * [X] Add a config option to wrap to the beginning of the document when navigating between links (11/08/21)
 * [ ] Function to increase/decrease the level of headings
 * [ ] Jump to in-file locations by `<CR>`ing on links to headings
 * [ ] Easily rename file in link
+* [ ] Better way of dealing w/ paths to directories
+    * Option to open in GUI or w/ some tool in vim?
+* [ ] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
+* [ ] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
+* [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 
 ## 🔧 Recent changes
 * 11/10/21: Merged [@pbogut's PR](https://github.com/jakewvincent/mkdnflow.nvim/pull/7), which modifies `require('mkdnflow').files.goBack()` to return a boolean (`true` if `goBack()` succeeds; `false` if `goBack()` isn't possible). For the default mappings, this causes no change in behavior, but users who wish `<BS>` to perform another function in the case that `goBack()` fails can now use `goBack()` in the antecedent of a conditional. @pbogut's mapping, for reference:
