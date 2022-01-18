@@ -381,6 +381,7 @@ local escape_chars = function(string)
         ["("] = "\\(",
         [")"] = "\\)",
         ["$"] = "\\$",
+        ["#"] = "\\#"
     }
     -- Do the replacement
     local escaped = string.gsub(string, chars, replacements)
