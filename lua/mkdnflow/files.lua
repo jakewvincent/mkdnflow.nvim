@@ -18,7 +18,10 @@
 local M = {}
 
 -- Get OS for use in a couple of functions
-local this_os = jit.os
+local this_os = 'Unknown'
+if jit then
+    this_os = jit.os
+end
 -- Generic OS message
 local this_os_err = 'Function unavailable for '..this_os..'. Please file an issue.'
 -- Get config setting for whether to make missing directories or not
