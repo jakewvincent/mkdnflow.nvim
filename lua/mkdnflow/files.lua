@@ -173,6 +173,8 @@ local path_type = function(path)
         return('file')
     elseif is_url(path) then
         return('url')
+    elseif string.find(path, '^~/') or string.find(path, '^/') or string.find('^%u:\\') then
+        return('absolute')
     else
         return('filename')
     end
