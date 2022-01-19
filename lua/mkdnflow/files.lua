@@ -303,11 +303,13 @@ NOTE: Assumes that the initially opened file is in an existing directory!
 Private function
 
 --]]
-local does_exist = function(path)
+local does_exist = function(type, path)
+    -- If type is not specified, use "d" (directory) by default
+    type = type or "d"
     if this_os == "Linux" or this_os == "POSIX" or this_os == "OSX" then
 
         -- Use the shell to determine if the path exists
-        os.execute('if [ -f "'..path..'" ]; then echo true; else echo false; fi>/tmp/mkdn_file_exists')
+        os.execute('if [ -'..type..' "'..path..'" ]; then echo true; else echo false; fi>/tmp/mkdn_file_exists')
         local file = io.open('/tmp/mkdn_file_exists', 'r')
 
         -- Get the contents of the first (only) line & store as a boolean
