@@ -513,7 +513,13 @@ M.followPath = function()
             -- Get what's after the file: tag
             local real_path = string.match(path, '^file:(.*)')
 
-            if links_relative_to == 'current' then
+            -- Check if path provided is absolute or relative to $HOME
+            if string.match(real_path, '^~/') or string.match(real_path, '^/') then
+
+                local se_paste = escape_chars(real_path)
+                path_handler(se_paste)
+
+            elseif links_relative_to == 'current' then
 
                 -- Get the path of the current file
                 local cur_file = vim.api.nvim_buf_get_name(0)
