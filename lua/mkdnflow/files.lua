@@ -295,12 +295,12 @@ end
 
 --[[
 
-dir_exists() determines whether the path specified as the argument exists
+does_exist() determines whether the path specified as the argument exists
 NOTE: Assumes that the initially opened file is in an existing directory!
 Private function
 
 --]]
-local dir_exists = function(path)
+local does_exist = function(path)
     if this_os == "Linux" or this_os == "POSIX" or this_os == "OSX" then
 
         -- Use the shell to determine if the path exists
@@ -426,7 +426,7 @@ M.followPath = function()
                     local paste = initial_dir..'/'..dir
 
                     -- See if the path exists
-                    local exists = dir_exists(paste)
+                    local exists = does_exist(paste)
 
                     -- If the path doesn't exist, make it!
                     if not exists then
@@ -454,7 +454,7 @@ M.followPath = function()
                     local paste = cur_file_dir..'/'..dir
 
                     -- See if the path exists
-                    local exists = dir_exists(paste)
+                    local exists = does_exist(paste)
 
                     -- If the path doesn't exist, make it!
                     if not exists then
