@@ -303,7 +303,7 @@ NOTE: Assumes that the initially opened file is in an existing directory!
 Private function
 
 --]]
-local does_exist = function(type, path)
+local does_exist = function(path, type)
     -- If type is not specified, use "d" (directory) by default
     type = type or "d"
     if this_os == "Linux" or this_os == "POSIX" or this_os == "OSX" then
@@ -519,7 +519,11 @@ M.followPath = function()
             if string.match(real_path, '^~/') or string.match(real_path, '^/') then
 
                 local se_paste = escape_chars(real_path)
-                path_handler(se_paste)
+                if does_exist(se_paste, "f") == false then
+                    print("That file doesn't seem to exist!")
+                else
+                    path_handler(se_paste)
+                end
 
             elseif links_relative_to == 'current' then
 
