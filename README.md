@@ -80,9 +80,10 @@ EOF
 * Create links from (a) word under cursor or (b) visual selection (mapped to `<CR>` by default)
     * Automatically prefix filenames created in the above manner with the current date: `YYYY-MM-DD_<word>.md`. The prefix can be changed; see [Configuration](#%EF%B8%8F-configuration).
 * Jump to the next/previous link in the file, optionally wrapping to beginning/end of file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
-* Follow links relative to the first-opened file **or** relative to the current file (mapped to `<CR>` by default)
+* Follow links relative to the first-opened file or current file (as specified in your config) or, if the path is prefixed with `file:`, the path can be absolute (starting with `/`) or relative to your home directory (starting with `~/`) (mapped to `<CR>` by default)
     * `<CR>`ing on a link to a text file will open it in the current window (i.e. `:e <filename>`)
-    * `<CR>`ing on a link to a file tagged with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open` on Linux or `open` on macOS)
+    * `<CR>`ing on a link to a file prefixed with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open` on Linux or `open` on macOS)
+    * `<CR>`ing on a link to an absolute path or a path in ~/, as long as that path is prefixed with `file:`, will open that file with the system's associated program for that filetype (see above)
     * `<CR>`ing on a link to a web URL will open that link in your default browser
 * Create missing directories if a link goes to a file in a directory that doesn't exist
 * `<BS>` to go to previous file/buffer opened in the window
@@ -191,7 +192,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Easily rename file in link
 * [ ] Better way of dealing w/ paths to directories
     * Option to open in GUI or w/ some tool in vim?
-* [ ] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
+* [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
 * [ ] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 
@@ -202,6 +203,7 @@ if not require('mkdnflow').files.goBack() then
   vim.cmd('Dirvish %:p')
 end
 ```
+* 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
 * 11/08/21: Add option to wrap to beginning/end of file when jumping to next/previous link. Off by default.
 * 11/01/21: Added vimdoc documentation
 * 10/30/21: Added capability for manually starting the plugin with `:Mkdnflow`, addressing [issue #5](https://github.com/jakewvincent/mkdnflow.nvim/issues/5)
