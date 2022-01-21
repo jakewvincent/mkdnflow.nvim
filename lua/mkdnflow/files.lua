@@ -150,7 +150,7 @@ Private function
 --]]
 local path_handler = function(path)
     if this_os == "Linux" then
-        vim.api.nvim_command('silent !xdg-open '..path..' &')
+        vim.api.nvim_command('silent !xdg-open '..path)
     elseif this_os == "OSX" then
         vim.api.nvim_command('silent !open '..path..' &')
     else
@@ -519,8 +519,14 @@ M.followPath = function()
             if string.match(real_path, '^~/') or string.match(real_path, '^/') then
 
                 local se_paste = escape_chars(real_path)
+
+                -- If the path starts with a tilde, replace it w/ $HOME
+                if string.match(real_path, '^~/') then
+                    se_paste = string.gsub(se_paste, '^~/', '$HOME/')
+                end
+
                 if does_exist(se_paste, "f") == false then
-                    print("That file doesn't seem to exist!")
+                    print(se_paste.." doesn't seem to exist!")
                 else
                     path_handler(se_paste)
                 end
