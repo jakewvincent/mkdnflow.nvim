@@ -37,7 +37,7 @@ init.loaded = nil
 
 -- Private function to detect the file's extension
 local getFileType = function()
-    local ext = init.initial_buf:match("^.*%.(.+)$")
+    local ext = string.lower(init.initial_buf:match("^.*%.(.+)$"))
     return(ext)
 end
 
