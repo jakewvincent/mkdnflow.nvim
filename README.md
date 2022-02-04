@@ -118,7 +118,9 @@ require('mkdnflow').setup({
     links_relative_to = 'first',    
 
     -- Type: key-value pair(s). The plugin's features are enabled only when one
-    -- of these filetypes is opened; otherwise, the plugin does nothing.
+    -- of these filetypes is opened; otherwise, the plugin does nothing. NOTE:
+    -- extensions are converted to lowercase, so any filetypes that convention-
+    -- ally use uppercase characters should be provided here in lowercase.
     filetypes = {md = true, rmd = true, markdown = true},
 
     -- Type: boolean. When true, the createLinks() function tries to evaluate
@@ -203,6 +205,7 @@ if not require('mkdnflow').files.goBack() then
   vim.cmd('Dirvish %:p')
 end
 ```
+* 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
 * 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
 * 11/08/21: Add option to wrap to beginning/end of file when jumping to next/previous link. Off by default.
 * 11/01/21: Added vimdoc documentation
