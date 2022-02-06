@@ -1,5 +1,5 @@
 -- mkdnflow.nvim (Tools for personal markdown notebook navigation and management)
--- Copyright (C) 2021 Jake W. Vincent <https://github.com/jakewvincent>
+-- Copyright (C) 2022 Jake W. Vincent <https://github.com/jakewvincent>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
