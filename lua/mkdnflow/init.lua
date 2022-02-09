@@ -30,7 +30,8 @@ init.config = {
     evaluate_prefix = true,
     load_tests = false,
     wrap_to_beginning = false,
-    wrap_to_end = false
+    wrap_to_end = false,
+    default_bib_path = nil
 }
 
 init.loaded = nil
