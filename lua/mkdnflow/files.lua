@@ -51,13 +51,16 @@ local get_path = function()
     -- Get the indices of the links in the line
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
     local link_pattern = '%[.-%]%(.-%)'                             -- What links look like
+    local bib_pattern = '%[.-@.-%]'                                 -- What bibliographic citations look like
     local indices = {}                                              -- Table for match indices
     local last_fin = 1                                              -- Last end index
+    local link_type = nil
     local unfound = true
+    -- TODO: Move the check overlap bit, which is repeated twice, to a function definition here, then call the function twice
     while unfound do
-        -- Get the indices of a match
+        -- Get the indices of any match on the current line
         local com, fin = string.find(line[1], link_pattern, last_fin)
-        -- Check if there's actually after last_fin
+        -- Check if there's a match that begins after the fin from the previous iteration of the loop
         if com and fin then
             -- If there is, check if the match overlaps with the cursor position
             if com - 1 <= col and fin - 1 >= col then
@@ -65,6 +68,25 @@ local get_path = function()
                 indices = {com = com, fin = fin}
                 -- End the loop
                 unfound = false
+                -- Note link type
+                link_type = 'address'
+            else
+                -- If it doesn't overlap, save the end index of the match so
+                -- we can look for a match following it on the next loop.
+                last_fin = fin
+            end
+            -- Check if there's a bibliographic citation anywhere in the line
+            com, fin = string.find(line[1], bib_pattern, last_fin)
+        -- If there was a match, see if the cursor is inside it
+        elseif com and fin then
+            -- If there is, check if the match overlaps with the cursor position
+            if com - 1 <= col and fin - 1 >= col then
+                -- If it does overlap, save the indices of the match
+                indices = {com = com, fin = fin}
+                -- End the loop
+                unfound = false
+                -- Note link type
+                link_type = 'bib'
             else
                 -- If it doesn't overlap, save the end index of the match so
                 -- we can look for a match following it on the next loop.
@@ -77,10 +99,15 @@ local get_path = function()
 
     -- Check if a link was found under the cursor
     if unfound == false then
-        -- If one was found, get the path part of the match and return it
-        local path_pattern = '%((.-)%)'
-        local path = string.match(string.sub(line[1], indices['com'], indices['fin']), path_pattern)
-        return(path)
+        -- If one was found and it's an address, get the path part of the match and return it
+        if link_type == 'address' then
+            local path_pattern = '%((.-)%)'
+            local path = string.match(string.sub(line[1], indices['com'], indices['fin']), path_pattern)
+            return(path)
+        else
+            local citation = string.match(string.sub(line[1], indices['com'], indices['fin']), bib_pattern)
+            return(citation)
+        end
     else
         return(nil)
     end
