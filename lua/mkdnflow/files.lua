@@ -76,9 +76,10 @@ local get_path = function()
                 last_fin = fin
             end
             -- Check if there's a bibliographic citation anywhere in the line
-            com, fin = string.find(line[1], bib_pattern, last_fin)
+        end
+        com, fin = string.find(line[1], bib_pattern, last_fin)
         -- If there was a match, see if the cursor is inside it
-        elseif com and fin then
+        if com and fin then
             -- If there is, check if the match overlaps with the cursor position
             if com - 1 <= col and fin - 1 >= col then
                 -- If it does overlap, save the indices of the match
@@ -103,12 +104,15 @@ local get_path = function()
         if link_type == 'address' then
             local path_pattern = '%((.-)%)'
             local path = string.match(string.sub(line[1], indices['com'], indices['fin']), path_pattern)
+            print("Found link with path: "..path)
             return(path)
         else
             local citation = string.match(string.sub(line[1], indices['com'], indices['fin']), bib_pattern)
+            print("Found citation with innards: "..citation)
             return(citation)
         end
     else
+        print("Found nothing!")
         return(nil)
     end
 end
