@@ -22,7 +22,8 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 ## 📦 Installation
 
 ### init.lua
-#### [Packer](https://github.com/wbthomason/packer.nvim)
+<details>
+<summary><h4>Install with <a href="https://github.com/wbthomason/packer.nvim">Packer</a></h4></summary>
 ```lua
 use({'jakewvincent/mkdnflow.nvim',
      config = function()
@@ -32,8 +33,10 @@ use({'jakewvincent/mkdnflow.nvim',
      end
 })
 ```
+</details>
 
-#### [Paq](https://github.com/savq/paq-nvim)
+<details>
+<summary><h4>Install with <a href="https://github.com/savq/paq-nvim">Paq</a></h4></summary>
 ```lua
 require('paq')({
     -- Your other plugins;
@@ -48,8 +51,11 @@ require('mkdnflow').setup({
     -- Config goes here; leave blank for defaults
 })
 ```
+</details>
 
 ### init.vim
+<details>
+<summary>Install with Vim-Plug, NeoBundle, Vundle, Pathogen, or Dein</summary>
 ```vim
 " Vim-Plug
 Plug 'jakewvincent/mkdnflow.nvim'
@@ -74,6 +80,7 @@ require('mkdnflow').setup({
 })
 EOF
 ```
+</details>
 
 ## ✨ Features
 
