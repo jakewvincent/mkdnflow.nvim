@@ -23,7 +23,7 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 
 ### init.lua
 <details>
-<summary><h4>Install with <a href="https://github.com/wbthomason/packer.nvim">Packer</a></h4></summary>
+<summary>Install with Packer</summary>
 ```lua
 use({'jakewvincent/mkdnflow.nvim',
      config = function()
@@ -36,7 +36,7 @@ use({'jakewvincent/mkdnflow.nvim',
 </details>
 
 <details>
-<summary><h4>Install with <a href="https://github.com/savq/paq-nvim">Paq</a></h4></summary>
+<summary>Install with Paq</summary>
 ```lua
 require('paq')({
     -- Your other plugins;
