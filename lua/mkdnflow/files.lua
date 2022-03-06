@@ -86,8 +86,7 @@ local get_path = function()
         if link_type == 'address' then
             local path_pattern = '%((.-)%)'
             local path = string.match(string.sub(line[1], indices['com'], indices['fin']), path_pattern)
-            print("Found link with path: "..path) -- TEST
-            return(path) -- TEST
+            return(path)
         end
     else -- If one wasn't found, perform another search, this time for citations
         unfound = true
@@ -115,12 +114,10 @@ local get_path = function()
         if unfound == false then
             if link_type == 'citation' then
                 local citation = string.match(string.sub(line[1], indices['com'], indices['fin']), bib_pattern)
-                --print("Found citation with innards: "..citation) -- TEST
                 return(citation)
             end
         else
             -- Below will need to be the else condition
-            print("Found nothing!")
             return(nil)
         end
     end
@@ -450,7 +447,6 @@ M.followPath = function(path)
     if not path then
         -- Get the path in the link
         path = get_path()
-        print(path)
     end
 
     -- Check that there's a non-nil output of get_path()
