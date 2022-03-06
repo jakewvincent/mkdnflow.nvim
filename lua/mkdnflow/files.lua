@@ -51,7 +51,7 @@ local get_path = function()
     -- Get the indices of the links in the line
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
     local link_pattern = '%[.-%]%(.-%)'                             -- What links look like
-    local bib_pattern = '%[.-@.-%]'                                 -- What bibliographic citations look like
+    local bib_pattern = '[^%a%d](@[^%s%p]+)[%s%p%c]?'               -- What bibliographic citations look like
     local indices = {}                                              -- Table for match indices
     local last_fin = 1                                              -- Last end index
     local link_type = nil
@@ -75,24 +75,6 @@ local get_path = function()
                 -- we can look for a match following it on the next loop.
                 last_fin = fin
             end
-            -- Check if there's a bibliographic citation anywhere in the line
-        end
-        com, fin = string.find(line[1], bib_pattern, last_fin)
-        -- If there was a match, see if the cursor is inside it
-        if com and fin then
-            -- If there is, check if the match overlaps with the cursor position
-            if com - 1 <= col and fin - 1 >= col then
-                -- If it does overlap, save the indices of the match
-                indices = {com = com, fin = fin}
-                -- End the loop
-                unfound = false
-                -- Note link type
-                link_type = 'bib'
-            else
-                -- If it doesn't overlap, save the end index of the match so
-                -- we can look for a match following it on the next loop.
-                last_fin = fin
-            end
         else
             unfound = nil
         end
@@ -104,16 +86,43 @@ local get_path = function()
         if link_type == 'address' then
             local path_pattern = '%((.-)%)'
             local path = string.match(string.sub(line[1], indices['com'], indices['fin']), path_pattern)
-            print("Found link with path: "..path)
-            return(path)
-        else
-            local citation = string.match(string.sub(line[1], indices['com'], indices['fin']), bib_pattern)
-            print("Found citation with innards: "..citation)
-            return(citation)
+            print("Found link with path: "..path) -- TEST
+            return(path) -- TEST
         end
-    else
-        print("Found nothing!")
-        return(nil)
+    else -- If one wasn't found, perform another search, this time for citations
+        unfound = true
+        while unfound do
+            com, fin = string.find(line[1], bib_pattern, last_fin)
+            -- If there was a match, see if the cursor is inside it
+            if com and fin then
+                -- If there is, check if the match overlaps with the cursor position
+                if com - 1 <= col and fin - 1 >= col then
+                    -- If it does overlap, save the indices of the match
+                    indices = {com = com, fin = fin}
+                    -- End the loop
+                    unfound = false
+                    -- Note link type
+                    link_type = 'citation'
+                else
+                    -- If it doesn't overlap, save the end index of the match so
+                    -- we can look for a match following it on the next loop.
+                    last_fin = fin
+                end
+            else
+                unfound = nil
+            end
+        end
+        if unfound == false then
+            if link_type == 'citation' then
+                local citation = string.match(string.sub(line[1], indices['com'], indices['fin']), bib_pattern)
+                --print("Found citation with innards: "..citation) -- TEST
+                return(citation)
+            end
+        else
+            -- Below will need to be the else condition
+            print("Found nothing!")
+            return(nil)
+        end
     end
 end
 
@@ -192,7 +201,7 @@ end
 --[[
 
 path_type() determines what kind of path is in a url
-Returns a string:
+Returns a string..bib_entry['fileurl']:
      1. 'file' if the path has the 'file:' prefix,
      2. 'url' is the result of is_url(path) is true
      3. 'filename' if (1) and (2) aren't true
@@ -204,6 +213,8 @@ local path_type = function(path)
         return('file')
     elseif is_url(path) then
         return('url')
+    elseif string.find(path, '^@') then
+        return('citation')
     else
         return('filename')
     end
@@ -434,10 +445,12 @@ Returns nothing
 Public function
 
 --]]
-M.followPath = function()
+M.followPath = function(path)
 
-    -- Get the path in the link
-    local path = get_path()
+    if not path then
+        -- Get the path in the link
+        path = get_path()
+    end
 
     -- Check that there's a non-nil output of get_path()
     if path then
@@ -556,7 +569,9 @@ M.followPath = function()
                     se_paste = string.gsub(se_paste, '^~/', '$HOME/')
                 end
 
-                if does_exist(se_paste, "f") == false then
+                -- If the file exists, handle it; otherwise, print a warning
+                -- Don't want to use the shell-escaped version; it will throw a false alert if there are escape chars
+                if does_exist(real_path, "f") == false then
                     print(se_paste.." doesn't seem to exist!")
                 else
                     path_handler(se_paste)
@@ -591,7 +606,13 @@ M.followPath = function()
                 path_handler(se_paste)
 
             end
-
+        elseif path_type(path) == 'citation' then
+            -- Pass to the citation_handler function from bib.lua to get highest-priority field in bib entry (if it exists)
+            local field = require('mkdnflow').bib.citationHandler(path)
+            -- Use this function to do sth with the information returned (if any)
+            if field then
+                M.followPath(field)
+            end
         end
     else
         M.createLink()
