@@ -31,7 +31,7 @@ init.config = {
     load_tests = false,
     wrap_to_beginning = false,
     wrap_to_end = false,
-    default_bib_path = nil,
+    default_bib_path = '/home/jake/Documents/library.bib',
     bib_refresh_trigger = 'init'
 }
 
@@ -64,6 +64,7 @@ init.setup = function(user_config)
         -- Load functions
         init.cursor = require('mkdnflow.cursor')
         init.files = require('mkdnflow.files')
+        init.bib = require('mkdnflow.bib')
 
         -- Only load the mappings if the user hasn't said "no"
         if init.config.default_mappings == true then
