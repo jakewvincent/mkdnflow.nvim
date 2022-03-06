@@ -22,7 +22,9 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 ## 📦 Installation
 
 ### init.lua
-#### [Packer](https://github.com/wbthomason/packer.nvim)
+<details>
+<summary>Install with Packer</summary><p>
+
 ```lua
 use({'jakewvincent/mkdnflow.nvim',
      config = function()
@@ -33,7 +35,11 @@ use({'jakewvincent/mkdnflow.nvim',
 })
 ```
 
-#### [Paq](https://github.com/savq/paq-nvim)
+</p></details>
+
+<details>
+<summary>Install with Paq</summary><p>
+
 ```lua
 require('paq')({
     -- Your other plugins;
@@ -49,7 +55,12 @@ require('mkdnflow').setup({
 })
 ```
 
+</p></details>
+
 ### init.vim
+<details>
+<summary>Install with Vim-Plug, NeoBundle, Vundle, Pathogen, or Dein</summary><p>
+
 ```vim
 " Vim-Plug
 Plug 'jakewvincent/mkdnflow.nvim'
@@ -74,6 +85,8 @@ require('mkdnflow').setup({
 })
 EOF
 ```
+
+</p></details>
 
 ## ✨ Features
 
@@ -202,14 +215,14 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 
 ## 🔧 Recent changes
+* 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
+* 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
 * 11/10/21: Merged [@pbogut's PR](https://github.com/jakewvincent/mkdnflow.nvim/pull/7), which modifies `require('mkdnflow').files.goBack()` to return a boolean (`true` if `goBack()` succeeds; `false` if `goBack()` isn't possible). For the default mappings, this causes no change in behavior, but users who wish `<BS>` to perform another function in the case that `goBack()` fails can now use `goBack()` in the antecedent of a conditional. @pbogut's mapping, for reference:
 ```lua
 if not require('mkdnflow').files.goBack() then
   vim.cmd('Dirvish %:p')
 end
 ```
-* 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
-* 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
 * 11/08/21: Add option to wrap to beginning/end of file when jumping to next/previous link. Off by default.
 * 11/01/21: Added vimdoc documentation
 * 10/30/21: Added capability for manually starting the plugin with `:Mkdnflow`, addressing [issue #5](https://github.com/jakewvincent/mkdnflow.nvim/issues/5)
