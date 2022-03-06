@@ -71,6 +71,8 @@ local find_bib_entry = function(citation)
                 print('No entry found for "'..citekey..'"!')
             end
         end
+    else
+        print('Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.')
     end
 end
 
