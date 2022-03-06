@@ -140,7 +140,10 @@ require('mkdnflow').setup({
     --     reached the end) or wrap to the end of the file (if it's reached the
     --     beginning during a backwards search).
     wrap_to_beginning = false,
-    wrap_to_end = false
+    wrap_to_end = false,
+    -- Type: string. This is the path where mkdnflow will look for a .bib file
+    --     when acting upon markdown citations.
+    default_bib_path = ''
 })
 ```
 
