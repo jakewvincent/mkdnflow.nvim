@@ -51,7 +51,7 @@ local get_path = function()
     -- Get the indices of the links in the line
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
     local link_pattern = '%[.-%]%(.-%)'                             -- What links look like
-    local bib_pattern = '[^%a%d](@[^%s%p]+)[%s%p%c]?'               -- What bibliographic citations look like
+    local bib_pattern = '[^%a%d]-(@[^%s%p]+)[%s%p%c]?'               -- What bibliographic citations look like
     local indices = {}                                              -- Table for match indices
     local last_fin = 1                                              -- Last end index
     local link_type = nil
@@ -450,6 +450,7 @@ M.followPath = function(path)
     if not path then
         -- Get the path in the link
         path = get_path()
+        print(path)
     end
 
     -- Check that there's a non-nil output of get_path()
