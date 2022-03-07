@@ -212,6 +212,8 @@ local path_type = function(path)
         return('url')
     elseif string.find(path, '^@') then
         return('citation')
+    elseif string.find(path, '^#') then
+        return('anchor')
     else
         return('filename')
     end
