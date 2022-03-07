@@ -98,6 +98,9 @@ EOF
     * `<CR>`ing on a link to a file prefixed with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open` on Linux or `open` on macOS)
     * `<CR>`ing on a link to an absolute path or a path in ~/, as long as that path is prefixed with `file:`, will open that file with the system's associated program for that filetype (see above)
     * `<CR>`ing on a link to a web URL will open that link in your default browser
+* 🆕 Open files or websites associated with citations (using `<CR>`).
+    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in your config (see [Configuration](#%EF%B8%8F-configuration))
+    * `<CR>`ing on a citation (e.g. `@Chomsky1957`, with or without square brackets around it) will open a file or website, depending on what fields are provided in the bib file. It opens whichever of these bib fields it finds first, prioritizing the higher items: `file > url > doi > howpublished`
 * Create missing directories if a link goes to a file in a directory that doesn't exist
 * `<BS>` to go to previous file/buffer opened in the window
 * Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
@@ -191,7 +194,6 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 ### Miscellaneous notes on remapping
 * The back-end function for `:MkdnGoBack`, `require('mkdnflow).files.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
 
-
 ## ☑️ To do
 * [ ] Easy *forward* navigation through buffers (with `<S-BS>`?)
 * [ ] "Undo" a link (replace link w/ the text part of the link)
@@ -213,10 +215,16 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
 * [ ] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
+* [ ] Improve citation functionality
+    - [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 
 ## 🔧 Recent changes
+* 03/06/22: Added ability to search .bib files and act on relevant information in bib entries when the cursor is in a citation and `<CR>` is pressed
 * 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
 * 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
+
+<details>
+<summary>Older changes</summary><p>
 * 11/10/21: Merged [@pbogut's PR](https://github.com/jakewvincent/mkdnflow.nvim/pull/7), which modifies `require('mkdnflow').files.goBack()` to return a boolean (`true` if `goBack()` succeeds; `false` if `goBack()` isn't possible). For the default mappings, this causes no change in behavior, but users who wish `<BS>` to perform another function in the case that `goBack()` fails can now use `goBack()` in the antecedent of a conditional. @pbogut's mapping, for reference:
 ```lua
 if not require('mkdnflow').files.goBack() then
@@ -230,6 +238,7 @@ end
 * 09/23/21: Added compatibility with macOS 
 * 09/21/21: Fixed [issue #1](https://github.com/jakewvincent/mkdnflow.nvim/issues/1). Implemented a push-down stack to better handle backwards navigation through previously-opened buffers.
 * 09/19/21: Fixed [issue #2](https://github.com/jakewvincent/mkdnflow.nvim/issues/2). Paths with spaces can now be created.
+</p><details>
 
 ## 🔗 Links
 * Plugins that would complement mkdnflow:
