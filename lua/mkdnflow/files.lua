@@ -444,6 +444,9 @@ Public function
 --]]
 M.followPath = function(path)
 
+    -- Path can be provided as an argument (this is currently only used when
+    -- this function retrieves a path from the citation handler). If no path
+    -- is provided as an arg, get the path under the cursor via get_path().
     if not path then
         -- Get the path in the link
         path = get_path()
