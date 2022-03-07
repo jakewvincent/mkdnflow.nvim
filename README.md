@@ -225,6 +225,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 <details>
 <summary>Older changes</summary><p>
+
 * 11/10/21: Merged [@pbogut's PR](https://github.com/jakewvincent/mkdnflow.nvim/pull/7), which modifies `require('mkdnflow').files.goBack()` to return a boolean (`true` if `goBack()` succeeds; `false` if `goBack()` isn't possible). For the default mappings, this causes no change in behavior, but users who wish `<BS>` to perform another function in the case that `goBack()` fails can now use `goBack()` in the antecedent of a conditional. @pbogut's mapping, for reference:
 ```lua
 if not require('mkdnflow').files.goBack() then
@@ -238,6 +239,7 @@ end
 * 09/23/21: Added compatibility with macOS 
 * 09/21/21: Fixed [issue #1](https://github.com/jakewvincent/mkdnflow.nvim/issues/1). Implemented a push-down stack to better handle backwards navigation through previously-opened buffers.
 * 09/19/21: Fixed [issue #2](https://github.com/jakewvincent/mkdnflow.nvim/issues/2). Paths with spaces can now be created.
+
 </p><details>
 
 ## 🔗 Links
