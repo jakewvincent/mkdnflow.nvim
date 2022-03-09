@@ -50,7 +50,7 @@ local get_path = function()
 
     -- Get the indices of the links in the line
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
-    local link_pattern = '%[.-%]%(.-%)'                             -- What links look like
+    local link_pattern = '%b[](%b())'                             -- What links look like
     local bib_pattern = '[^%a%d]-(@[^%s%p]+)[%s%p%c]?'               -- What bibliographic citations look like
     local indices = {}                                              -- Table for match indices
     local last_fin = 1                                              -- Last end index
@@ -84,8 +84,9 @@ local get_path = function()
     if unfound == false then
         -- If one was found and it's an address, get the path part of the match and return it
         if link_type == 'address' then
-            local path_pattern = '%((.-)%)'
-            local path = string.match(string.sub(line[1], indices['com'], indices['fin']), path_pattern)
+            local path_pattern = '%b[](%b())'
+            local path = string.sub(string.match(string.sub(line[1], indices['com'], indices['fin']), path_pattern), 2, -2)
+            print(path)
             return(path)
         end
     else -- If one wasn't found, perform another search, this time for citations
@@ -608,6 +609,8 @@ M.followPath = function(path)
                 path_handler(se_paste)
 
             end
+        elseif path_type(path) == 'anchor' then
+            print("Found an anchor link! That's about all I can do at this point, unfortunately.")
         elseif path_type(path) == 'citation' then
             -- Pass to the citation_handler function from bib.lua to get highest-priority field in bib entry (if it exists)
             local field = require('mkdnflow').bib.citationHandler(path)
