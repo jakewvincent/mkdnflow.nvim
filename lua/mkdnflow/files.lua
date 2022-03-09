@@ -613,7 +613,7 @@ M.followPath = function(path)
             print("Found an anchor link! That's about all I can do at this point, unfortunately.")
         elseif path_type(path) == 'citation' then
             -- Pass to the citation_handler function from bib.lua to get highest-priority field in bib entry (if it exists)
-            local field = require('mkdnflow').bib.citationHandler(path)
+            local field = require('mkdnflow.bib').citationHandler(path)
             -- Use this function to do sth with the information returned (if any)
             if field then
                 M.followPath(field)
