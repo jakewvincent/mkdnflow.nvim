@@ -351,19 +351,16 @@ local does_exist = function(path, type)
     if this_os == "Linux" or this_os == "POSIX" or this_os == "OSX" then
 
         -- Use the shell to determine if the path exists
-        os.execute('if [ -'..type..' "'..path..'" ]; then echo true; else echo false; fi>/tmp/mkdn_file_exists')
-        local file = io.open('/tmp/mkdn_file_exists', 'r')
+        local handle = io.popen('if [ -'..type..' "'..path..'" ]; then echo true; else echo false; fi')
+        local exists = handle:read('*l')
+        io.close(handle)
 
         -- Get the contents of the first (only) line & store as a boolean
-        local exists = file:read('*l')
         if exists == 'false' then
             exists = false
         else
             exists = true
         end
-
-        -- Close the file
-        io.close(file)
 
         -- Return the existence property of the path
         return(exists)
@@ -574,7 +571,7 @@ M.followPath = function(path)
 
                 -- If the file exists, handle it; otherwise, print a warning
                 -- Don't want to use the shell-escaped version; it will throw a false alert if there are escape chars
-                if does_exist(real_path, "f") == false then
+                if does_exist(se_paste, "f") == false and does_exist(se_paste, "d") == false then
                     print(se_paste.." doesn't seem to exist!")
                 else
                     path_handler(se_paste)
