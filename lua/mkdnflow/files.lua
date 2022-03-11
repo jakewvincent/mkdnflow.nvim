@@ -522,7 +522,7 @@ M.followPath = function()
                     se_paste = string.gsub(se_paste, '^~/', '$HOME/')
                 end
 
-                if does_exist(se_paste, "f") == false then
+                if does_exist(se_paste, "f") == false and does_exist(se_paste, "d") == false then
                     print(se_paste.." doesn't seem to exist!")
                 else
                     path_handler(se_paste)
