@@ -29,6 +29,12 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 * Create missing directories if a link goes to a file in a directory that doesn't exist
 * `<BS>` to go to previous file/buffer opened in the window
 
+### Act on citations
+* If a default .bib file is specified in your mkdnflow [configuration](#%EF%B8%8F-configuration), `<CR>`ing on a citation key (e.g. `@Chomsky1957`) will try to do one of the following (in the following order, stopping if it succeeds):
+    - Open a file specified under that citation key using your OS's default program for that filetype, if one is specified in your bib file
+    - Open a URL specified under that citation key in your default browser
+    - Open a DOI specified under that citation key in your default browser
+
 ### Keybindings
 * Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
 
