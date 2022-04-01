@@ -36,7 +36,7 @@ local find_bib_entry = function(citation)
             if line then
                 local begin_entry = string.find(line, '^@')
                 if begin_entry then
-                    local match = string.match(line, '{'..citekey..',')
+                    local match = string.match(line, '{%s-'..citekey..'%s-,')
                     if match then
                         --print("Found the entry for "..citation.."!") -- TEST
                         local bib_entry = {}
