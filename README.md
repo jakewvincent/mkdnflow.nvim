@@ -8,6 +8,17 @@ This plugin is designed to replicate the features I use most from [Vimwiki](http
 
 If you have a suggestion or problem with anything, file an [issue](https://github.com/jakewvincent/mkdnflow.nvim/issues); or if you'd like to contribute, work on a fork of this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls).
 
+### ⚡ Requirements
+
+* Linux or macOS (for full functionality)
+* Windows (for partial functionality; see [Caveats/warnings](#-caveats-warnings))
+* Neovim >= 0.5.0
+
+### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
+
+* Vimwiki doesn't use markdown by default; mkdnflow only works for markdown.
+* I'm intending mkdnflow to be a little lighter weight/less involved than Vimwiki. Mkdnflow doesn't and won't provide syntax highlighting and won't create new filetypes.
+
 ## ✨ Features
 
 ### Link creation
@@ -37,17 +48,6 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 
 ### Keybindings
 * Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
-
-### ⚡ Requirements
-
-* Linux or macOS (for full functionality)
-* Windows (for partial functionality; see [Caveats/warnings](#-caveats-warnings))
-* Neovim >= 0.5.0
-
-### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
-
-* Vimwiki doesn't use markdown by default; mkdnflow only works for markdown.
-* I'm intending mkdnflow to be a little lighter weight/less involved than Vimwiki. Mkdnflow doesn't and won't provide syntax highlighting and won't create new filetypes.
 
 ## 📦 Installation
 
