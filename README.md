@@ -8,6 +8,23 @@ This plugin is designed to replicate the features I use most from [Vimwiki](http
 
 If you have a suggestion or problem with anything, file an [issue](https://github.com/jakewvincent/mkdnflow.nvim/issues); or if you'd like to contribute, work on a fork of this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls).
 
+## ✨ Features
+
+* Create links from (a) word under cursor or (b) visual selection (mapped to `<CR>` by default)
+    * Automatically prefix filenames created in the above manner with the current date: `YYYY-MM-DD_<word>.md`. The prefix can be changed; see [Configuration](#%EF%B8%8F-configuration).
+* Jump to the next/previous link in the file, optionally wrapping to beginning/end of file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
+* Follow links relative to the first-opened file or current file (as specified in your config) or, if the path is prefixed with `file:`, the path can be absolute (starting with `/`) or relative to your home directory (starting with `~/`) (mapped to `<CR>` by default)
+    * `<CR>`ing on a link to a text file will open it in the current window (i.e. `:e <filename>`)
+    * `<CR>`ing on a link to a file prefixed with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open` on Linux or `open` on macOS)
+    * `<CR>`ing on a link to an absolute path or a path in ~/, as long as that path is prefixed with `file:`, will open that file with the system's associated program for that filetype (see above)
+    * `<CR>`ing on a link to a web URL will open that link in your default browser
+* 🆕 Open files or websites associated with citations (using `<CR>`).
+    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in your config (see [Configuration](#%EF%B8%8F-configuration))
+    * `<CR>`ing on a citation (e.g. `@Chomsky1957`, with or without square brackets around it) will open a file or website, depending on what fields are provided in the bib file. It opens whichever of these bib fields it finds first, prioritizing the higher items: `file > url > doi > howpublished`
+* Create missing directories if a link goes to a file in a directory that doesn't exist
+* `<BS>` to go to previous file/buffer opened in the window
+* Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
+
 ### ⚡ Requirements
 
 * Linux or macOS (for full functionality)
@@ -87,23 +104,6 @@ EOF
 ```
 
 </p></details>
-
-## ✨ Features
-
-* Create links from (a) word under cursor or (b) visual selection (mapped to `<CR>` by default)
-    * Automatically prefix filenames created in the above manner with the current date: `YYYY-MM-DD_<word>.md`. The prefix can be changed; see [Configuration](#%EF%B8%8F-configuration).
-* Jump to the next/previous link in the file, optionally wrapping to beginning/end of file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
-* Follow links relative to the first-opened file or current file (as specified in your config) or, if the path is prefixed with `file:`, the path can be absolute (starting with `/`) or relative to your home directory (starting with `~/`) (mapped to `<CR>` by default)
-    * `<CR>`ing on a link to a text file will open it in the current window (i.e. `:e <filename>`)
-    * `<CR>`ing on a link to a file prefixed with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open` on Linux or `open` on macOS)
-    * `<CR>`ing on a link to an absolute path or a path in ~/, as long as that path is prefixed with `file:`, will open that file with the system's associated program for that filetype (see above)
-    * `<CR>`ing on a link to a web URL will open that link in your default browser
-* 🆕 Open files or websites associated with citations (using `<CR>`).
-    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in your config (see [Configuration](#%EF%B8%8F-configuration))
-    * `<CR>`ing on a citation (e.g. `@Chomsky1957`, with or without square brackets around it) will open a file or website, depending on what fields are provided in the bib file. It opens whichever of these bib fields it finds first, prioritizing the higher items: `file > url > doi > howpublished`
-* Create missing directories if a link goes to a file in a directory that doesn't exist
-* `<BS>` to go to previous file/buffer opened in the window
-* Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
 
 ### ❗ Caveats/warnings
 
