@@ -86,7 +86,6 @@ local get_path = function()
         if link_type == 'address' then
             local path_pattern = '%b[](%b())'
             local path = string.sub(string.match(string.sub(line[1], indices['com'], indices['fin']), path_pattern), 2, -2)
-            print(path)
             return(path)
         end
     else -- If one wasn't found, perform another search, this time for citations
