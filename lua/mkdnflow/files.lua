@@ -198,7 +198,7 @@ end
 --[[
 
 path_type() determines what kind of path is in a url
-Returns a string..bib_entry['fileurl']:
+Returns a string:
      1. 'file' if the path has the 'file:' prefix,
      2. 'url' is the result of is_url(path) is true
      3. 'filename' if (1) and (2) aren't true
@@ -216,6 +216,29 @@ local path_type = function(path)
         return('anchor')
     else
         return('filename')
+    end
+end
+
+--[[
+
+format_link() creates a formatted link from whatever text is passed to it
+Returns a string:
+     1. '[string of text](<prefix>_string-of-text.md)' in most cases
+     2. '[anchor link](#anchor-link)' if the text starts with a hash (#)
+Private function
+
+--]]
+local format_link = function(text)
+    if string.sub(text, 0, 1) == '#' then
+        local path_text = '#'..string.lower(string.gsub(string.gsub(string.gsub(text, '[^%a%s]', ''), '^ ', ''), ' ', '-'))
+        text = string.gsub(text, '^#- ', '')
+        local replacement = {'['..text..']'..'('..path_text..')'}
+        return(replacement)
+    else
+        local path_text = string.gsub(text, " ", "-")
+        -- Set up the replacement
+        local replacement = {'['..text..']'..'('..prefix..path_text..'.md)'}
+        return(replacement)
     end
 end
 
@@ -299,10 +322,7 @@ M.createLink = function()
 
             -- Save the text selection & replace spaces with dashes
             local text = table.concat(lines)
-            local path_text = string.gsub(text, " ", "-")
-
-            -- Set up the replacement
-            local replacement = {'['..text..']'..'('..prefix..path_text..'.md)'}
+            local replacement = format_link(text)
 
             -- Replace the visual selection w/ the formatted link replacement
             vim.api.nvim_buf_set_text(0, row - 1, col, com[2] - 1, com[3], replacement)
@@ -326,10 +346,7 @@ M.createLink = function()
 
             -- Save the text selection
             local text = table.concat(lines)
-            local path_text = string.gsub(text, " ", "-")
-
-            -- Set up the replacement
-            local replacement = {'['..text..']'..'('..prefix..path_text..'.md)'}
+            local replacement = format_link(text)
             -- Replace the visual selection w/ the formatted link replacement
             vim.api.nvim_buf_set_text(0, com[2] - 1, com[3] - 1, row - 1, col + 1, replacement)
         end
