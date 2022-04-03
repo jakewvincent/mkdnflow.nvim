@@ -221,24 +221,36 @@ end
 
 --[[
 
-format_link() creates a formatted link from whatever text is passed to it
+formatLink() creates a formatted link from whatever text is passed to it
 Returns a string:
      1. '[string of text](<prefix>_string-of-text.md)' in most cases
      2. '[anchor link](#anchor-link)' if the text starts with a hash (#)
-Private function
+Public function
 
 --]]
-local format_link = function(text)
+M.formatLink = function(text, part)
     if string.sub(text, 0, 1) == '#' then
         local path_text = '#'..string.lower(string.gsub(string.gsub(string.gsub(text, '[^%a%s]', ''), '^ ', ''), ' ', '-'))
         text = string.gsub(text, '^#- ', '')
         local replacement = {'['..text..']'..'('..path_text..')'}
-        return(replacement)
+        if part == nil then
+            return(replacement)
+        elseif part == 1 then
+            return(text)
+        elseif part == 2 then
+            return(path_text)
+        end
     else
         local path_text = string.gsub(text, " ", "-")
         -- Set up the replacement
         local replacement = {'['..text..']'..'('..prefix..path_text..'.md)'}
-        return(replacement)
+        if part == nil then
+            return(replacement)
+        elseif part == 1 then
+            return(text)
+        elseif part == 2 then
+            return(path_text)
+        end
     end
 end
 
@@ -322,7 +334,7 @@ M.createLink = function()
 
             -- Save the text selection & replace spaces with dashes
             local text = table.concat(lines)
-            local replacement = format_link(text)
+            local replacement = M.formatLink(text)
 
             -- Replace the visual selection w/ the formatted link replacement
             vim.api.nvim_buf_set_text(0, row - 1, col, com[2] - 1, com[3], replacement)
@@ -346,7 +358,7 @@ M.createLink = function()
 
             -- Save the text selection
             local text = table.concat(lines)
-            local replacement = format_link(text)
+            local replacement = M.formatLink(text)
             -- Replace the visual selection w/ the formatted link replacement
             vim.api.nvim_buf_set_text(0, com[2] - 1, com[3] - 1, row - 1, col + 1, replacement)
         end
@@ -638,7 +650,7 @@ M.followPath = function(path)
 
             end
         elseif path_type(path) == 'anchor' then
-            print("Found an anchor link! That's about all I can do at this point, unfortunately.")
+            require('mkdnflow.cursor').toHeader(path)
         elseif path_type(path) == 'citation' then
             -- Pass to the citation_handler function from bib.lua to get highest-priority field in bib entry (if it exists)
             local field = require('mkdnflow.bib').citationHandler(escape_lua_chars(path))
