@@ -27,6 +27,9 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 
 ### Jump to links
 * Jump to the next/previous link in the file, optionally wrapping to beginning/end of file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
+* 🆕 Jump to headings in the current file that match an anchor link. Headings must start with a hash, and the path part of the link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
+    * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
+    * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
 
 ### Act on links
 * Follow links relative to the first-opened file or current file (as specified in your config) or, if the path is prefixed with `file:`, the path can be absolute (starting with `/`) or relative to your home directory (starting with `~/`) (mapped to `<CR>` by default)
@@ -221,17 +224,18 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Full compatibility with Windows
 * [X] Add a config option to wrap to the beginning of the document when navigating between links (11/08/21)
 * [ ] Function to increase/decrease the level of headings
-* [ ] Jump to in-file locations by `<CR>`ing on links to headings
+* [X] Jump to in-file locations by `<CR>`ing on links to headings
 * [ ] Easily rename file in link
 * [ ] Better way of dealing w/ paths to directories
     * Option to open in GUI or w/ some tool in vim?
 * [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
-* [ ] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
+* [X] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 * [ ] Improve citation functionality
     - [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 
 ## 🔧 Recent changes
+* 04/03/22: Added ability to jump to headings if a link is an anchor link
 * 03/06/22: Added ability to search .bib files and act on relevant information in bib entries when the cursor is in a citation and `<CR>` is pressed
 * 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
 * 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
