@@ -161,6 +161,39 @@ local go_to = function(pattern, reverse)
     end
 end
 
+-- Function to find a heading for the text passed in from an anchor link
+local go_to_heading = function(anchor_text)
+    -- Record which line we're on; chances are the link goes to something later,
+    -- so we'll start looking from here onwards and then circle back to the beginning
+    local position = vim.api.nvim_win_get_cursor(0)
+    local starting_row = position[1]
+    local unfound = true
+    local row = starting_row
+    while unfound do
+        local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
+        -- If the line has contents, do the thing
+        if line[1] then
+            -- Does the line start with a hash?
+            local has_heading = string.find(line[1], '^#')
+            if has_heading then
+                heading_as_anchor = require('mkdnflow.files').formatLink(line[1], 2)
+                if anchor_text == heading_as_anchor then
+                    vim.api.nvim_win_set_cursor(0, {row, 0})
+                    unfound = false
+                end
+            end
+            row = row + 1
+            if row == starting_row then
+                unfound = nil
+                print("Couldn't find a heading matching "..anchor_text.."!")
+            end
+        else
+            -- Start searching from the beginning
+            row = 1
+        end
+    end
+end
+
 -- Find the next link
 M.toNextLink = function()
     -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)
@@ -172,6 +205,11 @@ end
 M.toPrevLink = function()
     local pattern = '%b)['
     go_to(pattern, true)
+end
+
+-- Find a particular heading in the file
+M.toHeading = function(anchor_text)
+    go_to_heading(anchor_text)
 end
 
 return M
