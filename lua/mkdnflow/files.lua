@@ -650,7 +650,7 @@ M.followPath = function(path)
 
             end
         elseif path_type(path) == 'anchor' then
-            require('mkdnflow.cursor').toHeader(path)
+            require('mkdnflow.cursor').toHeading(path)
         elseif path_type(path) == 'citation' then
             -- Pass to the citation_handler function from bib.lua to get highest-priority field in bib entry (if it exists)
             local field = require('mkdnflow.bib').citationHandler(escape_lua_chars(path))
