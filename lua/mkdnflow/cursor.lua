@@ -212,4 +212,21 @@ M.toHeading = function(anchor_text)
     go_to_heading(anchor_text)
 end
 
+-- Yank the current line as an anchor link (assumes current line is a heading)
+M.yankAsAnchorLink = function()
+    -- Get the row number and the line contents
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
+    -- See if the line starts with a hash
+    local is_heading = string.find(line[1], '^#')
+    if is_heading then
+        -- Format the line as an anchor link
+        local anchor_link = require('mkdnflow.files').formatLink(line[1])
+        -- Add to the unnamed register
+        vim.cmd('let @"="'..anchor_link[1]..'"')
+    else
+        print("The current line is not a heading!")
+    end
+end
+
 return M
