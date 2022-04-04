@@ -25,6 +25,7 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 * Create links (to other markdown documents) from (a) word under cursor or (b) visual selection (mapped to `<CR>` by default)
     * Automatically prefix filenames created in the above manner with the current date: `YYYY-MM-DD_<word>.md`. The prefix can be changed; see [Configuration](#%EF%B8%8F-configuration).
     * 🆕 Create anchor links from a visual selection if the selection starts with `#` 
+    * 🆕 Yank an anchor link out of a heading on the current line (mapped to `ya` by default)
 
 ### Jump to links
 * Jump to the next/previous link in the file, optionally wrapping to beginning/end of file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
