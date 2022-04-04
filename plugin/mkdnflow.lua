@@ -27,6 +27,8 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     -- Define commands
     vim.api.nvim_exec("command! MkdnNextLink lua require('mkdnflow').cursor.toNextLink()", true)
     vim.api.nvim_exec("command! MkdnPrevLink lua require('mkdnflow').cursor.toPrevLink()", true)
+    vim.api.nvim_exec("command! MkdnNextHeading lua require('mkdnflow').cursor.toHeading(nil)", true)
+    vim.api.nvim_exec("command! MkdnPrevHeading lua require('mkdnflow').cursor.toHeading(nil, true)", true)
     vim.api.nvim_exec("command! MkdnGetPath lua require('mkdnflow').files.getPath()", true)
     vim.api.nvim_exec("command! MkdnFollowPath lua require('mkdnflow').files.followPath()", true)
     vim.api.nvim_exec("command! MkdnCreateLink lua require('mkdnflow').files.createLink()", true)

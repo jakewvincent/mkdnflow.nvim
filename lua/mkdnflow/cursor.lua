@@ -162,34 +162,66 @@ local go_to = function(pattern, reverse)
 end
 
 -- Function to find a heading for the text passed in from an anchor link
-local go_to_heading = function(anchor_text)
+-- If no argument is provided, go to the next found heading
+local go_to_heading = function(anchor_text, reverse)
+    print(reverse == nil)
     -- Record which line we're on; chances are the link goes to something later,
     -- so we'll start looking from here onwards and then circle back to the beginning
     local position = vim.api.nvim_win_get_cursor(0)
     local starting_row = position[1]
     local unfound = true
-    local row = starting_row
+    local row
+    if reverse then
+        row = starting_row - 1
+    else
+        row = starting_row + 1
+    end
     while unfound do
-        local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
+        local line
+        if reverse then
+            line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
+        else
+            line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
+        end
         -- If the line has contents, do the thing
         if line[1] then
             -- Does the line start with a hash?
             local has_heading = string.find(line[1], '^#')
             if has_heading then
-                heading_as_anchor = require('mkdnflow.files').formatLink(line[1], 2)
-                if anchor_text == heading_as_anchor then
+                if anchor_text == nil then
+                    -- Send the cursor there
                     vim.api.nvim_win_set_cursor(0, {row, 0})
                     unfound = false
+                else
+                    -- Format current heading to see if it matches our search term
+                    heading_as_anchor = require('mkdnflow.files').formatLink(line[1], 2)
+                    if anchor_text == heading_as_anchor then
+                        -- If it's a match, send the cursor there and stop the while loop
+                        vim.api.nvim_win_set_cursor(0, {row, 0})
+                        unfound = false
+                    end
                 end
             end
-            row = row + 1
+            if reverse then
+                row = row - 1
+            else
+                row = row + 1
+            end
             if row == starting_row then
                 unfound = nil
-                print("Couldn't find a heading matching "..anchor_text.."!")
+                if anchor_text == nil then
+                    print("Couldn't find a heading to go to!")
+                else
+                    print("Couldn't find a heading matching "..anchor_text.."!")
+                end
             end
         else
             -- Start searching from the beginning
-            row = 1
+            if reverse then
+                row = vim.api.nvim_buf_line_count(0) + 1
+            else
+                row = 1
+            end
         end
     end
 end
@@ -208,8 +240,8 @@ M.toPrevLink = function(pattern)
 end
 
 -- Find a particular heading in the file
-M.toHeading = function(anchor_text)
-    go_to_heading(anchor_text)
+M.toHeading = function(anchor_text, reverse)
+    go_to_heading(anchor_text, reverse)
 end
 
 -- Yank the current line as an anchor link (assumes current line is a heading)
