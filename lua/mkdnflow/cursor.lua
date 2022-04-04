@@ -195,15 +195,15 @@ local go_to_heading = function(anchor_text)
 end
 
 -- Find the next link
-M.toNextLink = function()
+M.toNextLink = function(pattern)
     -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)
-    local pattern = '%b[)'
+    pattern = pattern or '%b[)'
     go_to(pattern)
 end
 
 -- Find the previous link
-M.toPrevLink = function()
-    local pattern = '%b)['
+M.toPrevLink = function(pattern)
+    pattern = pattern or '%b)['
     go_to(pattern, true)
 end
 
