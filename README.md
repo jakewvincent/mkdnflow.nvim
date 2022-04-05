@@ -170,9 +170,9 @@ require('mkdnflow').setup({
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
 
     -- Type: boolean. When true and Mkdnflow is searching for the next/previous
-    --     link in the file, it will wrap to the beginning of the file (if it's
-    --     reached the end) or wrap to the end of the file (if it's reached the
-    --     beginning during a backwards search).
+    --     link or heading in the file, it will wrap to the beginning of the
+    -- file (if it's reached the end) or wrap to the end of the file (if it's
+    -- reached the beginning during a backwards search).
     wrap_to_beginning = false,
     wrap_to_end = false,
     -- Type: string. This is the path where mkdnflow will look for a .bib file

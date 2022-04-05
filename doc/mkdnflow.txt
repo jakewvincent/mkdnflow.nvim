@@ -221,15 +221,16 @@ new_file_prefix
   directory in which you keep your markdown files.
 
 wrap_to_beginning
-  Must be a boolean. If true, when jumping to the next link in a doc, the search
-  will proceed from the beginning of the document if there are no more links be-
-  tween the current cursor position and the end of the document. Default: `false`
+  Must be a boolean. If true, when jumping to the next link or heading in a doc,
+  the search will proceed from the beginning of the document if there are no mo-
+  re links between the current cursor position and the end of the document. De-
+  fault: `false`
 
 wrap_to_end
-  Must be a boolean. If true, when jumping to the previous link in a doc, the s-
-  earch will proceed from the end of the document if there are no more links be-
-  tween the current cursor position and the beginning of the document. Default:
-  `false`.
+  Must be a boolean. If true, when jumping to the previous link or heading in a
+  doc, the search will proceed from the end of the document if there are no more
+  links between the current cursor position and the beginning of the document.
+  Default: `false`.
 
 default_bib_path
   Must be a string. Tells Mkdnflow where to find the .bib file to search for
