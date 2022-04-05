@@ -241,6 +241,17 @@ M.formatLink = function(text, part)
             return(path_text)
         end
     else
+        -- Make a variable for the prefix to use
+        local prefix = nil
+        -- If the user wants the prefix evaluated, eval when this function is run
+        -- (i.e. right here)
+        if evaluate_prefix then
+            prefix = loadstring("return "..new_file_prefix)()
+            -- Otherwise, just use the string provided by the user for the prefix
+        else
+            prefix = new_file_prefix
+        end
+
         local path_text = string.gsub(text, " ", "-")
         -- Set up the replacement
         local replacement = {'['..text..']'..'('..prefix..path_text..'.md)'}
