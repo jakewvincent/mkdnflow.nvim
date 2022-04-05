@@ -217,9 +217,19 @@ local go_to_heading = function(anchor_text, reverse)
         else
             -- If the line does not have contents, start searching from the beginning
             if reverse then
-                row = vim.api.nvim_buf_line_count(0)
+                if anchor_link ~= nil or require('mkdnflow').config.wrap_to_beginning == true then
+                    row = vim.api.nvim_buf_line_count(0)
+                else
+                    unfound = nil
+                    print("There are no more headings after the beginning of the document!")
+                end
             else
-                row = 1
+                if anchor_link ~= nil or require('mkdnflow').config.wrap_to_end == true then
+                    row = 1
+                else
+                    unfound = nil
+                    print("There are no more headings before the end of the document!")
+                end
             end
         end
     end
