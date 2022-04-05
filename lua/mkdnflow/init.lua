@@ -32,7 +32,6 @@ init.config = {
     wrap_to_beginning = false,
     wrap_to_end = false,
     default_bib_path = '',
-    bib_refresh_trigger = 'init'
 }
 
 init.loaded = nil
