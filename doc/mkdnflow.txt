@@ -37,6 +37,12 @@ markdown files:
 :MkdnPrevLink
   Move the cursor to the beginning of the previous link (if there is one).
 
+:MkdnNextHeading
+  Move the cursor to the next heading in the document (if there is one).
+
+:MkdnPrevHeading
+  Move the cursor to the previous heading in the document (if there is one).
+
 :MkdnGoBack
   Open the last-active buffer in the current window.
 
@@ -53,6 +59,10 @@ markdown files:
   Replace the word under the cursor with a link in which the word under the
   cursor is the name of the link.
 
+:MkdnYankAnchorLink
+  Add a formatted anchor link to the unnamed register (clipboard) if the curre-
+  nt line that the cursor is on is a heading.
+
 :Mkdnflow
   Manually start Mkdnflow.
 
@@ -64,8 +74,16 @@ Create links from the word under the cursor (mapped to `<CR>` by default)
     cursor with the date in `YYYY-MM-DD` format: `YYYY-MM-DD_<word>.md`. The
     prefix can be changed. See |Mkdnflow-configuration|.
 
+Create links from a visual selection (mapped to `<CR>` by default)
+  - If visual selection begins with a hash, an anchor link will be created. Ot-
+  herwise, a link to a markdown document named after the visual selection will
+  be created.
+
 Jump to the next or previous link in the file (mapped to `<Tab>` and `<S-Tab>`
 by default, respectively)
+
+Jump to the next or previous heading in the file (mapped to `<leader>mn` and
+`<leader>mp`, respectively)
 
 Follow links relative to the first-opened file or the current file (mapped to
 `<CR>` by default)
@@ -77,12 +95,24 @@ Follow links relative to the first-opened file or the current file (mapped to
     and `open` on macOS)
   - `<CR>`ing on a link to a web URL will open that link in your default browser
 
+Act on citations (mapped to `<CR>` by default) if `default_bib_path` is specif-
+ied in the table passed to the setup function (see |Mkdnflow-configuration|)
+  - If a citation key is found and has a file associated with it, Mkdnflow tri-
+  es to open the file. If there's no file and is a URL, Mkdnflow opens the URL
+  in the default browser. If there's no URL and is a DOI, Mkdnflow opens the
+  DOI in the default browser. Otherwise, no action is taken.
+
+Yank a formatted anchor link if the line the cursor is currently on is a heading
+
+Follow anchor links to the first-matching heading in the file
+
 Create missing directories if a link goes to a file in a directory that doesn't
 exist
 
 `<BS>` to go to previous file/buffer opened in the window
 
-Enable/disable default keybindings (see |Mkdnflow-configuration|)
+Enable/disable default keybindings (see |Mkdnflow-configuration|) or specify
+your own
 
 ===============================================================================
 Caveats and warnings                                         *Mkdnflow-caveats*
@@ -105,32 +135,29 @@ Lua functions                                          *Mkdnflow-lua-functions*
 
 Mkdnflow utilizes the following lua functions under the hood. The only one that
 is intended to be used directly is the setup function. The functions following
-that are utilized when the commands are called. Public functions use camel
-case, and local functions use snake case.
-
-Public functions~
+that are utilized when the commands are called.
 
 The following functions are defined in one of the files `init.lua`,
 `files.lua`, or `cursor.lua` but are ultimately returned as part of the table
 defined in `init.lua` for public use.
 
-require('mkdnflow').setup(table)
+require('mkdnflow.init').setup(table)
   Initializes the plugin using a configuration specified in the argument (a
   table), but only if the filetype of the current buffer is matched in the list
   of filetypes specified in the table (or one of the defaults). Providing an
   empty table initializes the plugin using the defaults.
 
-require('mkdnflow').forceStart()
+require('mkdnflow.init').forceStart()
   Initializes the plugin using a configuration specified in the argument (a
   table), regardless of what the current filetype is. Providing an empty table
   initializes the plugin using the defaults.
 
-require('mkdnflow').createLink()
+require('mkdnflow.files').createLink()
   Makes a link from the word under the cursor--or, if no word is under the
   cursor, produces the syntax for a md link: []({name}.md). Returns nothing
   via stdout, but inserts text into the vim buffer.
 
-require('mkdnflow').followPath()
+require('mkdnflow.files').followPath()
   Does something with the path in the link under the cursor. If the path is a
   filename, it creates the file specified in the path. If the path is a URL,
   it uses `path_handler()` to open the URL specified in the path. If the path
@@ -138,68 +165,14 @@ require('mkdnflow').followPath()
   `path_handler()` to open a local file at the specified path via the system's
   default application for that filetype (if on macOS or Linux). Returns nothing.
 
-require('mkdnflow').goBack()
+require('mkdnflow.files').goBack()
   Uses the buffer stack to go to the last-opened buffer.
 
-require('mkdnflow').toNextLink()
+require('mkdnflow.cursor').toNextLink()
   Finds the next link in the file.
 
-require('mkdnflow').toPrevLink()
+require('mkdnflow.cursor').toPrevLink()
   Finds the previous link in the file.
-
-Local functions~
-
-The following functions are defined in one of the files `init.lua`,
-`files.lua`, or `cursor.lua` and are only accessible by referring to the files
-in which they're defined (as below).
-  
-require('mkdnflow').init.getFileType()
-  Gets the filetype extension (if any) from the name of the current buffer.
-
-require('mkdnflow').files.get_path(`md link`)
-  Extracts the path part of a markdown link, i.e. the part in `[]`. Returns a
-  string--the string in the square brackets.
-
-require('mkdnflow').files.is_url(`string`)
-  Determines whether a string is a URL. Returns a boolean or nil.
-
-require('mkdnflow').files.path_handler(`path`)
-  Handles vim-external paths, including local files and web URLS. Returns
-  nothing.
-
-require('mkdnflow').files.path_type(`path`)
-  Determines what kind of path is in a URL. Returns a string: `file` if the
-  path has the 'file:' prefix, `url` if is_url(string) returns `true`, and
-  `filename` otherwise.
-
-require('mkdnflow').files.dir_exists(`path`)
-  Determines whether the path specified as the argument exists. NOTE: This
-  assumes that the initially-opened file is in an existing directory!
-
-require('mkdnflow').files.buffer_stack.push(`stack name`, `bufnr`)
-  Adds a buffer number to the top of the named stack.
-
-require('mkdnflow').files.buffer_stack.pop(`stack name`)
-  Removes the buffer off of the top of the named stack.
-
-require('mkdnflow').files.buffer_stack.report(`stack name`)
-  Prints out the buffers in the named stack. For inspection.
-
-require('mkdnflow').files.escape_chars(`string`)
-  Escapes special shell characters: spaces, apostrophes, ampersands,
-  parentheses, and dollar signs.
-
-require('mkdnflow').cursor.rev_get_line(`buffer`, `start`, `end`, `strict_indexing`)
-  Gets a line and reverses it.
-
-require('mkdnflow').cursor.rev_indices(`right`, `left`, `string`)
-  Given two indices and a string, determines the equivalent indices for the
-  reversed version of that string.
-
-require('mkdnflow').cursor.go_to(`pattern`, `reverse`)
-  Goes to the next matched pattern if the pattern is matched. If `reverse` is
-  `true`, performs a backwards search.
-
 
 ===============================================================================
 Configuration                                          *Mkdnflow-configuration*
@@ -212,11 +185,6 @@ init config and provide an empty table.
 
 To change Mkdnflow's behavior, you can change any of the following elements by
 specifying a new value for them in the table passed to the setup function.
-
-default_mappings
-  Must be a boolean. If `true`, the default mappings are used. If `false`,
-  the default mappings are not used and you will have to specify your own.
-  Default: `true`.
 
 create_dirs
   Must be a boolean. If `true`, directories are created (recursively) if
@@ -252,24 +220,66 @@ new_file_prefix
   of your file: `YYYY-mm-dd_`. This helps with the organization of the
   directory in which you keep your markdown files.
 
+wrap_to_beginning
+  Must be a boolean. If true, when jumping to the next link in a doc, the search
+  will proceed from the beginning of the document if there are no more links be-
+  tween the current cursor position and the end of the document. Default: `false`
+
+wrap_to_end
+  Must be a boolean. If true, when jumping to the previous link in a doc, the s-
+  earch will proceed from the end of the document if there are no more links be-
+  tween the current cursor position and the beginning of the document. Default:
+  `false`.
+
+default_bib_path
+  Must be a string. Tells Mkdnflow where to find the .bib file to search for
+  citation keys in.
+
+use_mappings_table
+  Must be a boolean. If `true` and nothing is specified for `mappings`, the def-
+  ault mappings are used. If `true` and a table is passed under the `mappings`
+  key, then default mappings are overridden if a value is provided in the table.
+  If `false`, the default mappings are not used and you will have to specify yo-
+  ur own outside of the setup function. Default: `true`.
+
+mappings
+  Must be a table of key-value pairs, where the key is the name of the command
+  and the value is the key(s) to map the function to.
+
+
 A sample config showing the defaults:~
 >
     require('mkdnflow').setup({
-        default_mappings = true,        
-        create_dirs = true,             
-        links_relative_to = 'first',    
+        create_dirs = true,
+        links_relative_to = 'first', -- other option: current
         filetypes = {md = true, rmd = true, markdown = true},
-        evaluate_prefix = true,
         new_file_prefix = [[os.date('%Y-%m-%d_')]],
+        evaluate_prefix = true,
         wrap_to_beginning = false,
-        wrap_to_end = false
+        wrap_to_end = false,
+        default_bib_path = '',
+        use_mappings_table = true,
+        mappings = {
+            MkdnNextLink = '<Tab>',
+            MkdnPrevLink = '<S-Tab>',
+            MkdnNextHeading = '<leader>mn',
+            MkdnPrevHeading = '<leader>mp',
+            MkdnGoBack = '<BS>',
+            MkdnFollowPath = '<CR>',
+            MkdnYankAnchorLink = 'ya'
+        }
     })
 
 ===============================================================================
 Mappings                                                    *Mkdnflow-mappings*
 
 These are the default mappings. If you would like to disable them, see
-|Mkdnflow-configuration|.
+|Mkdnflow-configuration|. NEW: Mappings can now be changed on a case-by-case
+basis by passing a table value under the 'mappings' key in the setup function. 
+For now, the old 'default_mappings' key is still respected. (If it is set to
+false in your config, the default mappings below will not be loaded. Note, ho-
+wever, that this will eventually be replaced by the new key `use_mappings_tabl-
+e`.)
 
 <Tab> (normal mode)
   Mapped to `:MkdnNextLink`. Moves the cursor to the beginning of the next
@@ -286,9 +296,32 @@ These are the default mappings. If you would like to disable them, see
   Mapped to `:MkdnGoBack`. Opens the last-active buffer in the current window.
 
 <CR> (normal mode)
-  Mapped to `:MkdnFollowPath`. Opens the link under the cursor, creating
-  missing directories if desired, or if there is no link under the cursor, make
-  a link from the word under the cursor.
+  Mapped to `:MkdnFollowPath`. If a link to a .md file is under the cursor, op-
+  ens the link under the cursor, creating missing directories if desired. If
+  there is a citation under the cursor, open any of the following (in order of
+  priority): a file associated with the citation key, a website associated with
+  the citation key, or a DOI associated with the citation key. If there is an
+  anchor link under the cursor, jumps to a matching heading in the current file
+  (if one exists). If there is no link under the cursor, make a link from the
+  word under the cursor.
+
+  When used in visual mode, <CR> does one of two things: creates a link to a .md
+  file from the visual selection, or if the visual selection starts with a hash
+  symbol, creates an anchor link to a heading of the name specified by the visu-
+  al selection.
+
+ya (normal mode)
+  Mapped to `:MkdnYankAnchorLink`. If the cursor is on the same line as a headi-
+  ng, a formatted link to that heading is added to the unnamed register (clipbo-
+  ard).
+
+<leader>mn (normal mode)
+  Mapped to `:MkdnNextHeading`. Moves the cursor to the next heading in the
+  file.
+
+<leader>mp (normal mode)
+  Mapped to `:MkdnPrevHeading`. Moves the cursor to the previous heding in the
+  file (if one exists).
 
 ===============================================================================
 Recommended vim settings                    *Mkdnflow-recommended-vim-settings*
