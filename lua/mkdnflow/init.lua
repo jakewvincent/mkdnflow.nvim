@@ -43,14 +43,25 @@ local getFileType = function()
     return(ext ~= nil and string.lower(ext) or '')
 end
 
+-- Private function to merge the user_config with the default config
+function merge_tables(default_table, user_table)
+    for key, value in pairs(user_table) do
+        if type(value) == 'table' then
+            if type(default_table[key] or false) == 'table' then
+                merge_tables(default_table[key] or {}, user_table[key] or {})
+            else
+                default_table[key] = value
+            end
+        else
+            default_table[key] = value
+        end
+    end
+end
+
 init.setup = function(user_config)
 
     -- Record the user's config
-    for key, _ in pairs(user_config) do
-        -- This loop won't run if no config is provided, but the rest of the
-        -- setup will still run.
-        init.config[key] = user_config[key]
-    end
+    merge_tables(init.config, user_config)
 
     -- Get the extension of the file being edited
     local ft = getFileType()
