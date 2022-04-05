@@ -88,6 +88,10 @@ init.setup = function(user_config)
         -- Only load the mappings if the user hasn't said "no"
         if init.config.mappings == true then
             require('mkdnflow.maps')
+        elseif init.config.mappings ~= false and init.config.default_mappings == true then
+            -- For backwards compatibility
+            print("⬇️ Mkdnflow: NOTE: Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
+            require('mkdnflow.maps')
         end
 
         -- Only load tests if the user has said yes
