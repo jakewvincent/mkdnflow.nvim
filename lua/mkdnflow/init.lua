@@ -32,6 +32,15 @@ init.config = {
     wrap_to_beginning = false,
     wrap_to_end = false,
     default_bib_path = '',
+    mappings = {
+        MkdnNextLink = '<Tab>',
+        MkdnPrevLink = '<S-Tab>',
+        MkdnNextHeading = '<leader>mn',
+        MkdnPrevHeading = '<leader>mp',
+        MkdnGoBack = '<BS>',
+        MkdnFollowPath = '<CR>',
+        MkdnYankAnchorLink = 'ya'
+    }
 }
 
 init.loaded = nil

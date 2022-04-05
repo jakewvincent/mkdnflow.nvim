@@ -15,11 +15,11 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Mkdnflow mappings
-vim.api.nvim_set_keymap('n', '<Tab>', [[<Cmd>:MkdnNextLink<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', '<S-Tab>', [[<Cmd>:MkdnPrevLink<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>mn', [[<Cmd>:MkdnNextHeading<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>mp', [[<Cmd>:MkdnPrevHeading<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', '<BS>', [[<Cmd>:MkdnGoBack<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', '<CR>', [[<Cmd>:MkdnFollowPath<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('v', '<CR>', [[<Cmd>:MkdnFollowPath<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', 'ya', [[<Cmd>:MkdnYankAnchorLink<CR>]], {noremap = true})
+mappings = require('mkdnflow.init').config.mappings
+
+for command, mapping in pairs(mappings) do
+    vim.api.nvim_set_keymap('n', mapping, '<Cmd>:'..command..'<CR>', {noremap = true})
+    if command == 'MkdnFollowPath' then
+        vim.api.nvim_set_keymap('v', mapping, '<Cmd>:'..command..'<CR>', {noremap = true})
+    end
+end
