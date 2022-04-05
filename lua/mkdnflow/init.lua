@@ -22,7 +22,7 @@ init.initial_dir = init.initial_buf:match('(.*)/.-')
 
 -- Final config table (where defaults and user-provided config will be combined)
 init.config = {
-    default_mappings = true,
+    mappings = true,
     create_dirs = true,
     links_relative_to = 'first', -- other option: current
     filetypes = {md = true, rmd = true, markdown = true},
@@ -86,7 +86,7 @@ init.setup = function(user_config)
         init.bib = require('mkdnflow.bib')
 
         -- Only load the mappings if the user hasn't said "no"
-        if init.config.default_mappings == true then
+        if init.config.mappings == true then
             require('mkdnflow.maps')
         end
 
