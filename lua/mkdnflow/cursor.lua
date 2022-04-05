@@ -164,7 +164,6 @@ end
 -- Function to find a heading for the text passed in from an anchor link
 -- If no argument is provided, go to the next found heading
 local go_to_heading = function(anchor_text, reverse)
-    print(reverse == nil)
     -- Record which line we're on; chances are the link goes to something later,
     -- so we'll start looking from here onwards and then circle back to the beginning
     local position = vim.api.nvim_win_get_cursor(0)
