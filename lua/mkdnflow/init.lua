@@ -22,7 +22,6 @@ init.initial_dir = init.initial_buf:match('(.*)/.-')
 
 -- Final config table (where defaults and user-provided config will be combined)
 init.config = {
-    mappings = true,
     create_dirs = true,
     links_relative_to = 'first', -- other option: current
     filetypes = {md = true, rmd = true, markdown = true},
@@ -32,6 +31,7 @@ init.config = {
     wrap_to_beginning = false,
     wrap_to_end = false,
     default_bib_path = '',
+    use_mappings_table = true,
     mappings = {
         MkdnNextLink = '<Tab>',
         MkdnPrevLink = '<S-Tab>',
@@ -86,12 +86,11 @@ init.setup = function(user_config)
         init.bib = require('mkdnflow.bib')
 
         -- Only load the mappings if the user hasn't said "no"
-        if init.config.mappings == true then
+        if init.config.use_mappings_table == true and user_config.default_mappings ~= false then
             require('mkdnflow.maps')
-        elseif init.config.mappings ~= false and init.config.default_mappings == true then
-            -- For backwards compatibility
-            print("⬇️ Mkdnflow: NOTE: Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
-            require('mkdnflow.maps')
+            if user_config.default_mappings == true then
+                print("⬇️ Mkdnflow: NOTE: Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
+            end
         end
 
         -- Only load tests if the user has said yes
