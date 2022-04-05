@@ -188,7 +188,7 @@ local go_to_heading = function(anchor_text, reverse)
             local has_heading = string.find(line[1], '^#')
             if has_heading then
                 if anchor_text == nil then
-                    -- Send the cursor there
+                    -- Send the cursor to the heading
                     vim.api.nvim_win_set_cursor(0, {row, 0})
                     unfound = false
                 else
@@ -215,9 +215,9 @@ local go_to_heading = function(anchor_text, reverse)
                 end
             end
         else
-            -- Start searching from the beginning
+            -- If the line does not have contents, start searching from the beginning
             if reverse then
-                row = vim.api.nvim_buf_line_count(0) + 1
+                row = vim.api.nvim_buf_line_count(0)
             else
                 row = 1
             end
