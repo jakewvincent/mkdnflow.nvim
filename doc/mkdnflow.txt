@@ -82,8 +82,8 @@ Create links from a visual selection (mapped to `<CR>` by default)
 Jump to the next or previous link in the file (mapped to `<Tab>` and `<S-Tab>`
 by default, respectively)
 
-Jump to the next or previous heading in the file (mapped to `<leader>mn` and
-`<leader>mp`, respectively)
+Jump to the next or previous heading in the file (mapped to `<leader>]` and
+`<leader>[`, respectively)
 
 Follow links relative to the first-opened file or the current file (mapped to
 `<CR>` by default)
@@ -263,8 +263,8 @@ A sample config showing the defaults:~
         mappings = {
             MkdnNextLink = '<Tab>',
             MkdnPrevLink = '<S-Tab>',
-            MkdnNextHeading = '<leader>mn',
-            MkdnPrevHeading = '<leader>mp',
+            MkdnNextHeading = '<leader>]',
+            MkdnPrevHeading = '<leader>[',
             MkdnGoBack = '<BS>',
             MkdnFollowPath = '<CR>',
             MkdnYankAnchorLink = 'ya'
@@ -316,11 +316,11 @@ ya (normal mode)
   ng, a formatted link to that heading is added to the unnamed register (clipbo-
   ard).
 
-<leader>mn (normal mode)
+<leader>] (normal mode)
   Mapped to `:MkdnNextHeading`. Moves the cursor to the next heading in the
   file.
 
-<leader>mp (normal mode)
+<leader>[ (normal mode)
   Mapped to `:MkdnPrevHeading`. Moves the cursor to the previous heding in the
   file (if one exists).
 
