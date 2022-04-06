@@ -46,13 +46,14 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 * `<BS>` to go to previous file/buffer opened in the window
 
 ### Act on citations
-* If a default .bib file is specified in your mkdnflow [configuration](#%EF%B8%8F-configuration), `<CR>`ing on a citation key (e.g. `@Chomsky1957`) will try to do one of the following (in the following order, stopping if it succeeds):
+* 🆕If a default .bib file is specified in your mkdnflow [configuration](#%EF%B8%8F-configuration), `<CR>`ing on a citation key (e.g. `@Chomsky1957`) will try to do one of the following (in the following order, stopping if it succeeds):
     - Open a file specified under that citation key using your OS's default program for that filetype, if one is specified in your bib file
     - Open a URL specified under that citation key in your default browser
     - Open a DOI specified under that citation key in your default browser
 
 ### Keybindings
 * Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
+    - 🆕 Modify default keybindings individually in table passed to setup function (see [Configuration](#%EF%B8%8F-configuration))
 
 ## 📦 Installation
 
@@ -136,11 +137,6 @@ Currently, the setup function uses the defaults shown below. See the description
 
 ```lua
 require('mkdnflow').setup({
-    -- Type: boolean. Use default mappings (see '❕Commands and default
-    --     mappings').
-    -- 'false' disables mappings
-    default_mappings = true,        
-
     -- Type: boolean. Create directories (recursively) if link contains a
     --     missing directory.
     -- 'false' prevents missing directories from being created
@@ -177,7 +173,22 @@ require('mkdnflow').setup({
     wrap_to_end = false,
     -- Type: string. This is the path where mkdnflow will look for a .bib file
     --     when acting upon markdown citations.
-    default_bib_path = ''
+    default_bib_path = '',
+    -- Type: boolean. Use mapping table (see '❕Commands and default mappings').
+    -- 'false' disables mappings and prevents user from modifying mappings via
+    -- the 'mappings' table.
+    use_mappings_table = true,        
+    -- Type: table. Keys should be the names of commands (see :h Mkdnflow-comma-
+    -- nds for a list), and values should be strings indicating the key mapping.
+    mappings = {
+        MkdnNextLink = '<Tab>',
+        MkdnPrevLink = '<S-Tab>',
+        MkdnNextHeading = '<leader>]',
+        MkdnPrevHeading = '<leader>[',
+        MkdnGoBack = '<BS>',
+        MkdnFollowPath = '<CR>',
+        MkdnYankAnchorLink = 'ya'
+    }
 })
 ```
 
@@ -199,15 +210,18 @@ set autowriteall
 
 These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configuration). Commands with no mappings trigger functions that are called by the functions with mappings, but I've given them a command name so you can use them as independent functions if you'd like to.
 
-| Keymap    | Mode | Command               | Description                                                                                                                                                  |
-|---------- | ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `<Tab>`   | n    | `:MkdnNextLink<CR>`   | Move cursor to the beginning of the next link (if there is a next link)                                                                                      |
-| `<S-Tab>` | n    | `:MkdnPrevLink<CR>`   | Move the cursor to the beginning of the previous link (if there is one)                                                                                      |
-| `<BS>`    | n    | `:MkdnGoBack<CR>`     | Open the last-active buffer in the current window                                                                                                            |
-| `<CR>`    | n    | `:MkdnFollowPath<CR>` | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
-| --        | --   | `:MkdnGetPath<CR>`    | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets)                           |
-| --        | --   | `:MkdnCreateLink<CR>` | Replace the word under the cursor with a link in which the word under the cursor is the name of the link                                                     |
-| --        | --   | `:Mkdnflow<CR>`       | Manually start Mkdnflow                                                                                                                                      |
+| Keymap       | Mode | Command               | Description                                                                                                                                                  |
+|--------------| ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<Tab>`      | n    | `:MkdnNextLink<CR>`       | Move cursor to the beginning of the next link (if there is a next link)                                                                                      |
+| `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`       | Move the cursor to the beginning of the previous link (if there is one)                                                                                      |
+| `<leader>]` | n    | `:MkdnNextHeading<CR>`    | Move the cursor to the beginning of the next heading (if there is one)                                                                                      |
+| `<leader>[` | n    | `:MkdnPrevHeading<CR>`    | Move the cursor to the beginning of the previous heading (if there is one)                                                                                      |
+| `ya`         | n    | `:MkdnYankAnchorLink<CR>` | Yank a formatted anchor link (if cursor is currently on a line with a heading)                                                                                  |
+| `<BS>`       | n    | `:MkdnGoBack<CR>`         | Open the last-active buffer in the current window                                                                                                            |
+| `<CR>`       | n    | `:MkdnFollowPath<CR>`     | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
+| --           | --   | `:MkdnGetPath<CR>`        | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets)                           |
+| --           | --   | `:MkdnCreateLink<CR>`     | Replace the word under the cursor with a link in which the word under the cursor is the name of the link                                                     |
+| --           | --   | `:Mkdnflow<CR>`           | Manually start Mkdnflow                                                                                                                                      |
 
 ### Miscellaneous notes on remapping
 * The back-end function for `:MkdnGoBack`, `require('mkdnflow).files.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
@@ -237,6 +251,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     - [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 
 ## 🔧 Recent changes
+* 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings
 * 04/03/22: Added ability to jump to headings if a link is an anchor link
 * 03/06/22: Added ability to search .bib files and act on relevant information in bib entries when the cursor is in a citation and `<CR>` is pressed
 * 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
