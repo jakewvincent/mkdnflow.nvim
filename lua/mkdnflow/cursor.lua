@@ -238,13 +238,13 @@ end
 -- Find the next link
 M.toNextLink = function(pattern)
     -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)
-    pattern = pattern or '%b[)'
+    pattern = pattern or '%b[]%b()'
     go_to(pattern)
 end
 
 -- Find the previous link
 M.toPrevLink = function(pattern)
-    pattern = pattern or '%b)['
+    pattern = pattern or '%b)(%b]['
     go_to(pattern, true)
 end
 
