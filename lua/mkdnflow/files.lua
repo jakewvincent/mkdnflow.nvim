@@ -230,7 +230,11 @@ Public function
 --]]
 M.formatLink = function(text, part)
     if string.sub(text, 0, 1) == '#' then
-        local path_text = '#'..string.lower(string.gsub(string.gsub(string.gsub(text, '[^%a%s]', ''), '^ ', ''), ' ', '-'))
+        text = string.gsub(text, '[^%a%s]', '')
+        text = string.gsub(text, '^ ', '')
+        text = string.gsub(text, ' ', '-')
+        text = string.gsub(text, '%-%-', '-')
+        local path_text = '#'..string.lower(text)
         text = string.gsub(text, '^#- ', '')
         local replacement = {'['..text..']'..'('..path_text..')'}
         if part == nil then
