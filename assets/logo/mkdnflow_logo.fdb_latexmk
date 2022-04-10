@@ -1,13 +1,12 @@
 # Fdb version 3
-["xdvipdfmx"] 1649554589 ".build/mkdnflow_logo.xdv" ".build/mkdnflow_logo.pdf" ".build/mkdnflow_logo" 1649554589
-  ".build/mkdnflow_logo.xdv" 1649554589 9916 944e4dfd8b1780b6d38ca9f030908c86 "xelatex"
+["xdvipdfmx"] 1649557859 "mkdnflow_logo.xdv" "mkdnflow_logo.pdf" "mkdnflow_logo" 1649557859
+  "mkdnflow_logo.xdv" 1649557859 9916 51c5a2c253a5dfc7e46e4377cab7f276 "xelatex"
   (generated)
-  ".build/mkdnflow_logo.pdf"
-["xelatex"] 1649554588 "/home/jake/Dropbox/dev/neovim_plugins/mkdnflow.nvim/assets/logo/mkdnflow_logo.tex" ".build/mkdnflow_logo.xdv" "mkdnflow_logo" 1649554589
-  ".build/mkdnflow_logo.aux" 1649554589 32 3985256e7290058c681f74d7a3565a19 "xelatex"
+  "mkdnflow_logo.pdf"
+["xelatex"] 1649557858 "/home/jake/Dropbox/dev/neovim_plugins/mkdnflow.nvim/assets/logo/mkdnflow_logo.tex" "mkdnflow_logo.xdv" "mkdnflow_logo" 1649557859
   "/dev/null" 0 -1 0 ""
   "/home/jake/.texlive2021/texmf-var/web2c/xetex/xelatex.fmt" 1636097726 3585349 f1b42a17880c967fd76e732cfa8e52ab ""
-  "/home/jake/Dropbox/dev/neovim_plugins/mkdnflow.nvim/assets/logo/mkdnflow_logo.tex" 1649554582 1273 e455456517b6e87340b3452758e80959 ""
+  "/home/jake/Dropbox/dev/neovim_plugins/mkdnflow.nvim/assets/logo/mkdnflow_logo.tex" 1649557858 606 87384f6fba2ae0cf879e7ad6ce680c6b ""
   "/usr/share/texlive/texmf-dist/tex/generic/iftex/ifluatex.sty" 1572645307 492 1994775aa15b0d1289725a0b1bbc2d4c ""
   "/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty" 1583617216 6501 4011d89d9621e0b0901138815ba5ff29 ""
   "/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex" 1601326656 992 855ff26741653ab54814101ca36e153c ""
@@ -110,8 +109,10 @@
   "/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty" 1463002160 55589 34128738f682d033422ca125f82e5d62 ""
   "/usr/share/texlive/texmf-dist/tex/latex/xkeyval/xkeyval.sty" 1605910342 4902 efb3d66683a2da2a232f71e3a571a899 ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1642711416 40136 b05acc85e8425979e52682d98a2bcacf ""
-  "mkdnflow_logo.tex" 1649554582 1273 e455456517b6e87340b3452758e80959 ""
+  "mkdnflow_logo.aux" 1649557859 32 3985256e7290058c681f74d7a3565a19 "xelatex"
+  "mkdnflow_logo.png" 1649557859 5199 e8fedb7e78256cf13806e5ffb350bcab ""
+  "mkdnflow_logo.tex" 1649557858 606 87384f6fba2ae0cf879e7ad6ce680c6b ""
   (generated)
-  ".build/mkdnflow_logo.aux"
-  ".build/mkdnflow_logo.log"
-  ".build/mkdnflow_logo.xdv"
+  "mkdnflow_logo.aux"
+  "mkdnflow_logo.log"
+  "mkdnflow_logo.xdv"

@@ -1,5 +1,5 @@
-%! TEX program = xelatex
-\documentclass[tikz]{standalone}
+%! TEX program = tikz_image
+\documentclass[convert]{standalone}
 \usepackage{fontspec}
 \setmainfont{Noto Sans}
 \usepackage{tikz}
@@ -13,16 +13,3 @@
 \end{tikzpicture}
 
 \end{document}
-%
-%\foreach \i in {0,...,4} \node[draw,diamond] (\i) at (2*\i,0) {$\i$};
-%\foreach \i [count=\j] in {0,...,3} {
-%    \draw[->] (\i) to[bend left] (\j);
-%    \draw[->] (\i) to[bend right] (\j);
-%}
-%\path[->] (1) to[bend left] node[midway,above,inner sep=2pt] {1/4} (2);
-%\path[->] (0) to[bend right] node[midway,below,inner sep=2pt] {1/4} (1);
-%\draw[->] (0) to[out=-150,in=150,loop] node[midway,left,inner sep=2pt] {1} ();
-%\draw[->] (1) to[out=-60,in=-120,loop] node[midway,below,inner sep=2pt] {1/2} ();
-%\draw[->] (2) to[out=-60,in=-120,loop] ();
-%\draw[->] (3) to[out=-60,in=-120,loop] ();
-%\draw[->] (4) to[out=30,in=-30,loop] node[midway,right,inner sep=2pt] {1} ();

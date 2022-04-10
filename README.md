@@ -1,5 +1,4 @@
-![](/assets/.build/mkdnflow_logo.png?raw=true)
-⬇️ mkdnflow
+![](https://github.com/jakewvincent/mkdnflow.nvim/blob/main/assets/logo/mkdnflow_logo.png?raw=true)
 
 Jump to: [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8F-configuration) / [Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do) / [Recent changes](#-recent-changes) / [Other plugins and links](#-links)
 
