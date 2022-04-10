@@ -235,6 +235,24 @@ local go_to_heading = function(anchor_text, reverse)
     end
 end
 
+-- Increase/decrease heading level
+M.changeHeadingLevel = function(change)
+    -- Get the row number and the line contents
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
+    -- See if the line starts with a hash
+    local is_heading = string.find(line[1], '^#')
+    if is_heading then
+        if change == 'decrease' then
+            -- Remove a hash
+            vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 0, {'#'})
+        else
+            -- Add a hash
+            vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 1, {''})
+        end
+    end
+end
+
 -- Find the next link
 M.toNextLink = function(pattern)
     -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)

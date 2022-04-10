@@ -39,7 +39,9 @@ init.config = {
         MkdnPrevHeading = '<leader>[',
         MkdnGoBack = '<BS>',
         MkdnFollowPath = '<CR>',
-        MkdnYankAnchorLink = 'ya'
+        MkdnYankAnchorLink = 'ya',
+        MkdnIncreaseHeading = '+',
+        MkdnDecreaseHeading = '-'
     }
 }
 
