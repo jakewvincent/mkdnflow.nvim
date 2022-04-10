@@ -1,4 +1,4 @@
-![](/assets/.build/mkdnflow_logo.png)
+![](/assets/.build/mkdnflow_logo.png?raw=true)
 ⬇️ mkdnflow
 
 Jump to: [Installation](#-installation) / [Features](#-features) / [Configuration](#%EF%B8%8F-configuration) / [Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do) / [Recent changes](#-recent-changes) / [Other plugins and links](#-links)
