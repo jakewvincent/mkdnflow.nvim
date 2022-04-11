@@ -18,10 +18,7 @@
 local M = {}
 
 -- Get OS for use in a couple of functions
-local this_os = 'Unknown'
-if jit then
-    this_os = jit.os
-end
+local this_os = vim.loop.os_uname().sysname
 -- Generic OS message
 local this_os_err = 'Function unavailable for '..this_os..'. Please file an issue.'
 -- Get config setting for whether to make missing directories or not
@@ -188,7 +185,7 @@ Private function
 local path_handler = function(path)
     if this_os == "Linux" then
         vim.api.nvim_command('silent !xdg-open '..path)
-    elseif this_os == "OSX" then
+    elseif this_os == "Darwin" then
         vim.api.nvim_command('silent !open '..path..' &')
     else
         print(this_os_err)
@@ -391,7 +388,7 @@ Private function
 local does_exist = function(path, type)
     -- If type is not specified, use "d" (directory) by default
     type = type or "d"
-    if this_os == "Linux" or this_os == "POSIX" or this_os == "OSX" then
+    if this_os == "Linux" or this_os == "POSIX" or this_os == "Darwin" then
 
         -- Use the shell to determine if the path exists
         local handle = io.popen('if [ -'..type..' "'..path..'" ]; then echo true; else echo false; fi')
