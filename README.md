@@ -55,6 +55,9 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 * Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
     - 🆕 Modify default keybindings individually in table passed to setup function (see [Configuration](#%EF%B8%8F-configuration))
 
+### Manipulate headings
+* 🆕 Increase/decrease heading levels (mapped to +/- by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when convertedto HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
+
 ## 📦 Installation
 
 ### init.lua
@@ -216,9 +219,11 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`       | Move the cursor to the beginning of the previous link (if there is one)                                                                                      |
 | `<leader>]` | n    | `:MkdnNextHeading<CR>`    | Move the cursor to the beginning of the next heading (if there is one)                                                                                      |
 | `<leader>[` | n    | `:MkdnPrevHeading<CR>`    | Move the cursor to the beginning of the previous heading (if there is one)                                                                                      |
-| `ya`         | n    | `:MkdnYankAnchorLink<CR>` | Yank a formatted anchor link (if cursor is currently on a line with a heading)                                                                                  |
 | `<BS>`       | n    | `:MkdnGoBack<CR>`         | Open the last-active buffer in the current window                                                                                                            |
 | `<CR>`       | n    | `:MkdnFollowPath<CR>`     | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
+| `ya`         | n    | `:MkdnYankAnchorLink<CR>` | Yank a formatted anchor link (if cursor is currently on a line with a heading)                                                                                  |
+| `+`          | n    | `:MkdnIncreaseHeading<CR>` | Increase heading importance (remove hashes) |
+| `-`          | n    | `:MkdnDecreaseHeading<CR>` | Decrease heading importance (add hashes) |
 | --           | --   | `:MkdnGetPath<CR>`        | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets)                           |
 | --           | --   | `:MkdnCreateLink<CR>`     | Replace the word under the cursor with a link in which the word under the cursor is the name of the link                                                     |
 | --           | --   | `:Mkdnflow<CR>`           | Manually start Mkdnflow                                                                                                                                      |
@@ -238,19 +243,25 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [ ] Horizontal and vertical navigation through tables (with `<Tab>` and `<CR>`?)
     * [ ] Make a way for the user to define specialized tables (e.g. time sheets)
 * [ ] Full compatibility with Windows
-* [X] Add a config option to wrap to the beginning of the document when navigating between links (11/08/21)
-* [ ] Function to increase/decrease the level of headings
-* [X] Jump to in-file locations by `<CR>`ing on links to headings
 * [ ] Easily rename file in link
-* [ ] Better way of dealing w/ paths to directories
-    * Option to open in GUI or w/ some tool in vim?
-* [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
-* [X] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 * [ ] Improve citation functionality
     - [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 
+<details>
+<summary>Completed to-dos</summary><p>
+
+* [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
+* [X] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
+* [X] Add a config option to wrap to the beginning of the document when navigating between links (11/08/21)
+* [X] Function to increase/decrease the level of headings
+* [X] Jump to in-file locations by `<CR>`ing on links to headings
+
+</p></details>
+
+
 ## 🔧 Recent changes
+* 04/11/22: Added ability to change heading level
 * 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings
 * 04/03/22: Added ability to jump to headings if a link is an anchor link
 * 03/06/22: Added ability to search .bib files and act on relevant information in bib entries when the cursor is in a citation and `<CR>` is pressed
