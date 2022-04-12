@@ -63,6 +63,12 @@ markdown files:
   Add a formatted anchor link to the unnamed register (clipboard) if the curre-
   nt line that the cursor is on is a heading.
 
+:MkdnIncreaseHeading
+  Increase heading importance (remove hashes).
+
+:MkdnDecreaseHeading
+  Decrease heading importance (add hashes).
+
 :Mkdnflow
   Manually start Mkdnflow.
 
@@ -173,6 +179,12 @@ require('mkdnflow.cursor').toNextLink()
 
 require('mkdnflow.cursor').toPrevLink()
   Finds the previous link in the file.
+
+require('mkdnflow.cursor').changeHeadingLevel('increase')
+  Increases heading level importance (removes hashes)
+
+require('mkdnflow.cursor').changeHeadingLevel('decrease')
+  Decreases heading level importance (adds hashes)
 
 ===============================================================================
 Configuration                                          *Mkdnflow-configuration*
