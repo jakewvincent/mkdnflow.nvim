@@ -1,11 +1,8 @@
-<div style="text-align: center;">
-
-![](https://github.com/jakewvincent/mkdnflow.nvim/blob/main/assets/logo/mkdnflow_logo.png?raw=true)
-
-**Jump to**: [Features](#-features) / [Installation](#-installation) / [Configuration](#%EF%B8%8F-configuration)  
-[Commands & default mappings](#-commands-and-default-mappings) / [To do](#%EF%B8%8F-to-do) / [Recent changes](#-recent-changes) / [Other plugins and links](#-links)
-
-</div>
+<p align=center>
+<img src="assets/logo/mkdnflow_logo.png"><br/>
+   <strong>Jump to</strong>: <a href="#-features">Features</a> / <a href="#-installation">Installation</a> / <a href="#%EF%B8%8F-configuration">Configuration</a><br/>
+   <a href="#-commands-and-default-mappings">Commands & default mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a><br/><a href="#-links">Other plugins and links</a>
+</p>
 
 ## 📝 Description
 
