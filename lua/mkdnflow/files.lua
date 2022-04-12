@@ -188,7 +188,7 @@ local path_handler = function(path)
     elseif this_os == "Darwin" then
         vim.api.nvim_command('silent !open '..path..' &')
     else
-        print(this_os_err)
+        print('⬇️ : '..this_os_err)
     end
 end
 
@@ -405,7 +405,7 @@ local does_exist = function(path, type)
         -- Return the existence property of the path
         return(exists)
     else
-        print(this_os_err)
+        print('⬇️ : '..this_os_err)
 
         -- Return a blep
         return(nil)
@@ -627,7 +627,7 @@ M.followPath = function(path)
                 -- If the file exists, handle it; otherwise, print a warning
                 -- Don't want to use the shell-escaped version; it will throw a false alert if there are escape chars
                 if does_exist(se_paste, "f") == false and does_exist(se_paste, "d") == false then
-                    print(se_paste.." doesn't seem to exist!")
+                    print("⬇️ : "..se_paste.." doesn't seem to exist!")
                 else
                     path_handler(se_paste)
                 end
@@ -687,7 +687,7 @@ M.goBack = function()
         -- Return a boolean if goBack succeeded (for users who want <BS> to do sth else if goBack isn't possible)
         return(true)
     else
-        print([[Can't go back any further!]])
+        print('⬇️ : Can\'t go back any further!')
         -- Return a boolean if goBack fails
         return(false)
     end
