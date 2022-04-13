@@ -206,7 +206,7 @@ local go_to_heading = function(anchor_text, reverse)
             else
                 row = row + 1
             end
-            if row == starting_row then
+            if row == starting_row + 1 then
                 unfound = nil
                 if anchor_text == nil then
                     print("⬇️ : Couldn't find a heading to go to!")

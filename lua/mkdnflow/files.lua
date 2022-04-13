@@ -226,8 +226,9 @@ Public function
 
 --]]
 M.formatLink = function(text, part)
+    -- If the text starts with a hash, format the link as an anchor link
     if string.sub(text, 0, 1) == '#' then
-        text = string.gsub(text, '[^%a%s]', '')
+        text = string.gsub(text, '[^%a%s%d]', '')
         text = string.gsub(text, '^ ', '')
         text = string.gsub(text, ' ', '-')
         text = string.gsub(text, '%-%-', '-')
