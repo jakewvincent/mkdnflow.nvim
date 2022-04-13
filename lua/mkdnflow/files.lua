@@ -228,13 +228,13 @@ Public function
 M.formatLink = function(text, part)
     -- If the text starts with a hash, format the link as an anchor link
     if string.sub(text, 0, 1) == '#' then
-        text = string.gsub(text, '[^%a%s%d]', '')
-        text = string.gsub(text, '^ ', '')
-        text = string.gsub(text, ' ', '-')
-        text = string.gsub(text, '%-%-', '-')
-        local path_text = '#'..string.lower(text)
-        text = string.gsub(text, '^#- ', '')
-        local replacement = {'['..text..']'..'('..path_text..')'}
+        local name = string.gsub(text, '^#* *', '')
+        local path_text = string.gsub(text, '[^%a%s%d]', '')
+        path_text = string.gsub(path_text, '^ ', '')
+        path_text = string.gsub(path_text, ' ', '-')
+        path_text = string.gsub(path_text, '%-%-', '-')
+        path_text = '#'..string.lower(path_text)
+        local replacement = {'['..name..']'..'('..path_text..')'}
         if part == nil then
             return(replacement)
         elseif part == 1 then
