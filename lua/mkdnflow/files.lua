@@ -461,7 +461,7 @@ local escape_chars = function(string)
         ["("] = "\\(",
         [")"] = "\\)",
         ["$"] = "\\$",
-        ["#"] = "\\#"
+        ["#"] = "\\#",
     }
     -- Do the replacement
     local escaped = string.gsub(string, chars, replacements)
@@ -476,7 +476,8 @@ local escape_lua_chars = function(string)
     local replacements = {
         ["-"] = "%-",
         ["."] = "%.",
-        ["'"] = "\'"
+        ["'"] = "\'",
+        ['"'] = '\"'
     }
     -- Do the replacement
     local escaped = string.gsub(string, chars, replacements)

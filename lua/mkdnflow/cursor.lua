@@ -285,8 +285,9 @@ M.yankAsAnchorLink = function()
     if is_heading then
         -- Format the line as an anchor link
         local anchor_link = require('mkdnflow.files').formatLink(line[1])
+        anchor_link = string.gsub(anchor_link[1], '"', '\\"')
         -- Add to the unnamed register
-        vim.cmd('let @"="'..anchor_link[1]..'"')
+        vim.cmd('let @"="'..anchor_link..'"')
     else
         print("⬇️ : The current line is not a heading!")
     end
