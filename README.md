@@ -6,9 +6,9 @@
 
 ## 📝 Description
 
-This plugin is designed to replicate the features I use most from [Vimwiki](https://github.com/vimwiki/vimwiki), implementing them in Lua instead of VimL. It is a set of functions and keybindings (optional, but enabled by default) that make it easy to navigate and manipulate markdown notebooks/journals/wikis in Neovim.
+This plugin is designed to facilitate the use of notebooks/journals/wikis written in [markdown](https://markdownguide.org). It is a set of functions and and mappings to those functions which make it easy to navigate and manipulate markdown notebooks/journals/wikis in Neovim. The original goal of Mkdnflow was to replicate some features from [Vimwiki](https://github.com/vimwiki/vimwiki) in Lua instead of VimL, but my current goal for this project is to make this plugin as useful as possible for anyone using Neovim who maintains a set of markdown notes and wishes to keep those notes organized and connected.
 
-If you have a suggestion or problem with anything, file an [issue](https://github.com/jakewvincent/mkdnflow.nvim/issues); or if you'd like to contribute, work on a fork of this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls).
+I keep tabs on the project's [issue](https://github.com/jakewvincent/mkdnflow.nvim/issues) and appreciate feature requests, suggestions, and bug reports. If you'd like to contribute to the plugin, fork of this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls) with your changes or additions. If you need Lua resources, see [this page](https://neovim.io/doc/lua-resources/) for a starting point or run `:h lua` or `:h api` in Neovim.
 
 ### ⚡ Requirements
 
@@ -20,6 +20,7 @@ If you have a suggestion or problem with anything, file an [issue](https://githu
 
 * Vimwiki doesn't use markdown by default; mkdnflow only works for markdown.
 * I'm intending mkdnflow to be a little lighter weight/less involved than Vimwiki. Mkdnflow doesn't and won't provide syntax highlighting and won't create new filetypes.
+* Written in Lua
 
 ## ✨ Features
 
