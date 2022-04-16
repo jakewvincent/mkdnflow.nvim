@@ -418,30 +418,20 @@ local buffer_stack = {}
 
 -- Add two tables
 buffer_stack.main = {}
-buffer_stack.pop_hist = {}
+buffer_stack.hist = {}
 
 buffer_stack.push = function(stack_name, bufnr)
-    -- Get the state of the named stack
-    local current_stack = buffer_stack[stack_name]
-    -- Make a new stack w/ the provided bufnr at the beginning
-    local new_stack = {bufnr}
-    -- Add the other values into the new stack
-    for i = 1, #current_stack, 1 do
-        table.insert(new_stack, current_stack[i])
-    end
-    -- Update the state of the named stack
-    buffer_stack[stack_name] = new_stack
+    table.insert(buffer_stack[stack_name], 1, bufnr)
 end
 
 buffer_stack.pop = function(stack_name)
-    -- Get stack's current state
-    local current_stack = buffer_stack[stack_name]
-    -- Add the value to be popped to history stack
-    buffer_stack.push('pop_hist', current_stack[1])
-    -- Remove the value from the copy of the named stack
-    table.remove(current_stack, 1)
-    -- Update the named stack
-    buffer_stack[stack_name] = current_stack
+    --table.insert(buffer_stack.hist, 1, buffer_stack[stack_name][1])
+    table.remove(buffer_stack[stack_name], 1)
+end
+
+buffer_stack.undo_pop = function(stack_name)
+    table.insert(buffer_stack[stack_name], 1, buffer_stack.hist[1])
+    table.remove(buffer_stack.hist, 1)
 end
 
 buffer_stack.report = function(stack_name)
@@ -681,6 +671,9 @@ end
 M.goBack = function()
     local cur_bufnr = vim.api.nvim_win_get_buf(0)
     if cur_bufnr > 1 then
+        -- Add current buffer number to history
+        buffer_stack.push('hist', cur_bufnr)
+        -- Get previous buffer number
         local prev_buf = buffer_stack.main[1]
         -- Go to buffer
         vim.api.nvim_command("buffer "..prev_buf)
@@ -692,6 +685,24 @@ M.goBack = function()
         print('⬇️ : Can\'t go back any further!')
         -- Return a boolean if goBack fails
         return(false)
+    end
+end
+
+M.goForward = function()
+    -- Get current buffer number
+    local cur_bufnr = vim.api.nvim_win_get_buf(0)
+    -- Get historical buffer number
+    local hist_bufnr = buffer_stack.hist[1]
+
+    -- If there is a buffer number in the history stack, do the thing; if not, print a warning
+    if hist_bufnr then
+        buffer_stack.push('main', cur_bufnr)
+        -- Go to the historical buffer number
+        vim.api.nvim_command("buffer "..hist_bufnr)
+        -- Pop historical buffer stack
+        buffer_stack.pop('hist')
+    else
+        print('⬇️ : Can\'t go forward any further!')
     end
 end
 

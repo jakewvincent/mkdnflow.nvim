@@ -38,6 +38,7 @@ init.config = {
         MkdnNextHeading = '<leader>]',
         MkdnPrevHeading = '<leader>[',
         MkdnGoBack = '<BS>',
+        MkdnGoForward = '<Del>',
         MkdnFollowPath = '<CR>',
         MkdnYankAnchorLink = 'ya',
         MkdnIncreaseHeading = '+',
