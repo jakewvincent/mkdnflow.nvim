@@ -8,7 +8,7 @@
 
 This plugin is designed for the *fluent* navigation of notebooks/journals/wikis written in [markdown](https://markdownguide.org). It is a set of functions and and mappings to those functions which make it easy to navigate and manipulate markdown notebooks/journals/wikis in Neovim. The original goal of Mkdnflow was to replicate some features from [Vimwiki](https://github.com/vimwiki/vimwiki) in Lua instead of VimL, but my current goal for this project is to make this plugin as useful as possible for anyone using Neovim who maintains a set of markdown notes and wishes to keep those notes organized and connected.
 
-I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.nvim/issues) and appreciate feature requests, suggestions, and bug reports. If you'd like to contribute to the plugin, fork of this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls) with your changes or additions. If you need Lua resources, see [this page](https://neovim.io/doc/lua-resources/) for a starting point or run `:h lua` or `:h api` in Neovim.
+I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.nvim/issues) and appreciate feature requests, suggestions, and bug reports. If you'd like to contribute to the plugin, fork this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls) with your changes or additions. If you need Lua resources, see [this page](https://neovim.io/doc/lua-resources/) for a starting point or run `:h lua` or `:h api` in Neovim.
 
 ### ⚡ Requirements
 
