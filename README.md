@@ -46,7 +46,10 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in your config (see [Configuration](#%EF%B8%8F-configuration))
     * `<CR>`ing on a citation (e.g. `@Chomsky1957`, with or without square brackets around it) will open a file or website, depending on what fields are provided in the bib file. It opens whichever of these bib fields it finds first, prioritizing the higher items: `file > url > doi > howpublished`
 * Create missing directories if a link goes to a file in a directory that doesn't exist
-* `<BS>` to go to previous file/buffer opened in the window
+
+### Backward and forward navigation
+* `<BS>` to go to previous file/buffer opened in the current window
+* `<Del>` to go to subsequent file/buffer opened in the current window (i.e. one that you just `<BS>`ed away from)
 
 ### Act on citations
 * 🆕 If a default .bib file is specified in your mkdnflow [configuration](#%EF%B8%8F-configuration), `<CR>`ing on a citation key (e.g. `@Chomsky1957`) will try to do one of the following (in the following order, stopping if it succeeds):
@@ -192,6 +195,7 @@ require('mkdnflow').setup({
         MkdnNextHeading = '<leader>]',
         MkdnPrevHeading = '<leader>[',
         MkdnGoBack = '<BS>',
+        MkdnGoForward = '<Del>',
         MkdnFollowPath = '<CR>',
         MkdnYankAnchorLink = 'ya',
         MkdnIncreaseHeading = '+',
@@ -224,7 +228,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`       | Move the cursor to the beginning of the previous link (if there is one)                                                                                      |
 | `<leader>]` | n    | `:MkdnNextHeading<CR>`    | Move the cursor to the beginning of the next heading (if there is one)                                                                                      |
 | `<leader>[` | n    | `:MkdnPrevHeading<CR>`    | Move the cursor to the beginning of the previous heading (if there is one)                                                                                      |
-| `<BS>`       | n    | `:MkdnGoBack<CR>`         | Open the last-active buffer in the current window                                                                                                            |
+| `<BS>`       | n    | `:MkdnGoBack<CR>`         | Open the historically last-active buffer in the current window                                                                                                            |
+| `<Del>`       | n    | `:MkdnGoForward<CR>`         | Open the buffer that was historically navigated away from in the current window                                                                                                            |
 | `<CR>`       | n    | `:MkdnFollowPath<CR>`     | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
 | `ya`         | n    | `:MkdnYankAnchorLink<CR>` | Yank a formatted anchor link (if cursor is currently on a line with a heading)                                                                                  |
 | `+`          | n    | `:MkdnIncreaseHeading<CR>` | Increase heading importance (remove hashes) |
@@ -237,7 +242,6 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * The back-end function for `:MkdnGoBack`, `require('mkdnflow).files.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
 
 ## ☑️ To do
-* [ ] Easy *forward* navigation through buffers (with `<S-BS>`?)
 * [ ] "Undo" a link (replace link w/ the text part of the link)
 * [ ] Lists
     * [ ] To-do list functions & mappings
@@ -256,6 +260,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Easy *forward* navigation through buffers (with ~~`<S-BS>`~~ `<Del>`?)
 * [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
 * [X] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
 * [X] Add a config option to wrap to the beginning of the document when navigating between links (11/08/21)
@@ -266,6 +271,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/16/22: Added forward navigation (~undoing 'back')
 * 04/11/22: Added ability to change heading level
 * 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings
 * 04/03/22: Added ability to jump to headings if a link is an anchor link

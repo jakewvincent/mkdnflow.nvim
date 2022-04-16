@@ -44,7 +44,11 @@ markdown files:
   Move the cursor to the previous heading in the document (if there is one).
 
 :MkdnGoBack
-  Open the last-active buffer in the current window.
+  Open the historically last-active buffer in the current window.
+
+:MkdnGoForward
+  Open the buffer that was historically last navigated away from in the current
+  window.
 
 :MkdnFollowPath
   Open the link under the cursor, creating missing directories if desired, or
@@ -115,7 +119,8 @@ Follow anchor links to the first-matching heading in the file
 Create missing directories if a link goes to a file in a directory that doesn't
 exist
 
-`<BS>` to go to previous file/buffer opened in the window
+`<BS>` to go to previous file/buffer opened in the window and `<Del>` to go to
+the subsequent file/buffer opened in the window.
 
 Enable/disable default keybindings (see |Mkdnflow-configuration|) or specify
 your own
@@ -172,7 +177,10 @@ require('mkdnflow.files').followPath()
   default application for that filetype (if on macOS or Linux). Returns nothing.
 
 require('mkdnflow.files').goBack()
-  Uses the buffer stack to go to the last-opened buffer.
+  Uses the main buffer stack to go to the last-opened buffer.
+
+require('mkdnflow.files').goForward()
+  Uses the historical buffer stack to go to the last-opened buffer.
 
 require('mkdnflow.cursor').toNextLink()
   Finds the next link in the file.
@@ -278,8 +286,11 @@ A sample config showing the defaults:~
             MkdnNextHeading = '<leader>]',
             MkdnPrevHeading = '<leader>[',
             MkdnGoBack = '<BS>',
+            MkdnGoForward = '<Del>',
             MkdnFollowPath = '<CR>',
-            MkdnYankAnchorLink = 'ya'
+            MkdnYankAnchorLink = 'ya',
+            MkdnIncreaseHeading = '+',
+            MkdnDecreaseHeading = '-'
         }
     })
 
@@ -305,8 +316,20 @@ e`.)
   link (if there is one). If `wrap_to_end` is true and there is no previous
   link before the beginning of the file, will wrap to the end of the file.
 
+<leader>] (normal mode)
+  Mapped to `:MkdnNextHeading`. Moves the cursor to the next heading in the
+  file.
+
+<leader>[ (normal mode)
+  Mapped to `:MkdnPrevHeading`. Moves the cursor to the previous heding in the
+  file (if one exists).
+
 <BS> (normal mode)
   Mapped to `:MkdnGoBack`. Opens the last-active buffer in the current window.
+
+<Del> (normal mode)
+  Mapped to `:MkdnGoForward`. Opens the buffer that was historically last navi-
+  gated away from in the current window.
 
 <CR> (normal mode)
   Mapped to `:MkdnFollowPath`. If a link to a .md file is under the cursor, op-
@@ -328,20 +351,24 @@ ya (normal mode)
   ng, a formatted link to that heading is added to the unnamed register (clipbo-
   ard).
 
-<leader>] (normal mode)
-  Mapped to `:MkdnNextHeading`. Moves the cursor to the next heading in the
-  file.
++ (normal mode)
+  Mapped to `:MkdnIncreaseHeading`. If the cursor is on a line with a heading 
+  and the heading is not already the highest possible (one hash), remove a hash
+  (to *increase* the heading importance). When rendered in a browser from a con-
+  verted HTML document, this usually means the heading will be larger in size.
 
-<leader>[ (normal mode)
-  Mapped to `:MkdnPrevHeading`. Moves the cursor to the previous heding in the
-  file (if one exists).
+- (normal mode)
+  Mapped to `:MkdnDecreaseHeading`. If the cursor is on a line with a heading,
+  add a hash (to *decrease* the heading importance). When rendered in a browser
+  from a converted HTML document, this usually means the heading will be smalle-
+  r.
 
 ===============================================================================
 Recommended vim settings                    *Mkdnflow-recommended-vim-settings*
 
-I recommend turning on `autowriteall`. This will ensure that changes to buffers
-are saved when you navigate away from that buffer, e.g. by following a link to
-another file. See `:h awa`.
+I recommend turning on `autowriteall` for markdown documents. This will ensure
+that changes to buffers are saved when you navigate away from that buffer, e.g.
+by following a link to another file. See `:h awa`.
 
 ===============================================================================
 Credits                                                      *Mkdnflow-credits*
