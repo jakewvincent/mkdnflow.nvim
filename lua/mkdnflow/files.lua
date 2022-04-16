@@ -421,20 +421,18 @@ buffer_stack.main = {}
 buffer_stack.hist = {}
 
 buffer_stack.push = function(stack_name, bufnr)
+    -- Add the provided buffer number to the first position in the provided
+    -- stack, pushing down the others in the provided stack
     table.insert(buffer_stack[stack_name], 1, bufnr)
 end
 
 buffer_stack.pop = function(stack_name)
-    --table.insert(buffer_stack.hist, 1, buffer_stack[stack_name][1])
+    -- Remove the topmost element in the provided stack
     table.remove(buffer_stack[stack_name], 1)
 end
 
-buffer_stack.undo_pop = function(stack_name)
-    table.insert(buffer_stack[stack_name], 1, buffer_stack.hist[1])
-    table.remove(buffer_stack.hist, 1)
-end
-
 buffer_stack.report = function(stack_name)
+    -- Print out the contents of a stack
     for i = 1, #buffer_stack[stack_name], 1 do
         print(buffer_stack[stack_name][i])
     end
@@ -668,6 +666,15 @@ M.followPath = function(path)
     end
 end
 
+--[[
+
+goBack() gets the current buffer number to see if it's greater than 1. If it
+is, the current buffer is not the first that was opened, and there is a buffer
+to go back to. It gets the previous buffer number from the buffer stack, goes
+there, and then pops the top element from the main stack.
+Public function
+
+--]]
 M.goBack = function()
     local cur_bufnr = vim.api.nvim_win_get_buf(0)
     if cur_bufnr > 1 then
@@ -679,7 +686,7 @@ M.goBack = function()
         vim.api.nvim_command("buffer "..prev_buf)
         -- Pop the buffer we just navigated to off the top of the stack
         buffer_stack.pop('main')
-        -- Return a boolean if goBack succeeded (for users who want <BS> to do sth else if goBack isn't possible)
+        -- return a boolean if goback succeeded (for users who want <bs> to do sth else if goback isn't possible)
         return(true)
     else
         print('⬇️ : Can\'t go back any further!')
@@ -688,21 +695,38 @@ M.goBack = function()
     end
 end
 
+--[[
+
+goForward() looks at the historical buffer stack to see if there's anything to
+be navigated to. If there is, it adds the current buffer to the main stack,
+goes to the buffer at the top of the history stack, and pops it from the histo-
+ry stack. Returns `true` if successful, `false` if it fails.
+Public function
+
+--]]
 M.goForward = function()
     -- Get current buffer number
     local cur_bufnr = vim.api.nvim_win_get_buf(0)
     -- Get historical buffer number
     local hist_bufnr = buffer_stack.hist[1]
 
-    -- If there is a buffer number in the history stack, do the thing; if not, print a warning
+    -- If there is a buffer number in the history stack, do the following; if
+    -- not, print a warning
     if hist_bufnr then
         buffer_stack.push('main', cur_bufnr)
         -- Go to the historical buffer number
         vim.api.nvim_command("buffer "..hist_bufnr)
         -- Pop historical buffer stack
         buffer_stack.pop('hist')
+        -- Return a boolean if goForward succeeded (for users who want <Del> to
+        -- do sth else if goForward isn't possible)
+        return(true)
     else
+        -- Print out an error if there's nothing in the historical buffer stack
         print('⬇️ : Can\'t go forward any further!')
+        -- Return a boolean if goForward failed (for users who want <Del> to do
+        -- sth else if goForward isn't possible)
+        return(false)
     end
 end
 
