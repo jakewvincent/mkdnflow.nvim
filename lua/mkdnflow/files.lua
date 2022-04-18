@@ -343,7 +343,7 @@ M.formatLink = function(text, part)
 
         local path_text = string.gsub(text, " ", "-")
         -- Set up the replacement
-        local replacement = {'['..text..']'..'('..prefix..path_text..'.md)'}
+        local replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..'.md)'}
         if part == nil then
             return(replacement)
         elseif part == 1 then
@@ -399,7 +399,7 @@ M.createLink = function()
             local cursor_word = vim.fn.expand('<cword>')
             -- Make a markdown link out of the date and cursor
             local replacement = {
-                '['..cursor_word..']'..'('..prefix..cursor_word..'.md)'
+                '['..cursor_word..']'..'('..prefix..string.lower(cursor_word)..'.md)'
             }
 
             -- Find the (first) position of the matched word in the line
