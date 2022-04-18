@@ -49,7 +49,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### Backward and forward navigation
 * `<BS>` to go to previous file/buffer opened in the current window
-* `<Del>` to go to subsequent file/buffer opened in the current window (i.e. one that you just `<BS>`ed away from)
+* 🆕 `<Del>` to go to subsequent file/buffer opened in the current window (i.e. one that you just `<BS>`ed away from)
 
 ### Act on citations
 * 🆕 If a default .bib file is specified in your mkdnflow [configuration](#%EF%B8%8F-configuration), `<CR>`ing on a citation key (e.g. `@Chomsky1957`) will try to do one of the following (in the following order, stopping if it succeeds):
