@@ -135,12 +135,12 @@ end
 
 --[[
 
-is_url() determines whether a string is a URL
+has_url() determines whether a string is a URL
 Returns a boolean or nil
 Private function
 
 --]]
-local is_url = function(string)
+local has_url = function(string)
     -- This function based largely on the solution in https://stackoverflow.com/
     -- questions/23590304/finding-a-url-in-a-string-lua-pattern
     -- Table of top-level domains
@@ -262,7 +262,7 @@ end
 path_type() determines what kind of path is in a url
 Returns a string:
      1. 'file' if the path has the 'file:' prefix,
-     2. 'url' is the result of is_url(path) is true
+     2. 'url' is the result of has_url(path) is true
      3. 'filename' if (1) and (2) aren't true
 Private function
 
@@ -270,7 +270,7 @@ Private function
 local path_type = function(path)
     if string.find(path, '^file:') then
         return('file')
-    elseif is_url(path) then
+    elseif has_url(path) then
         return('url')
     elseif string.find(path, '^@') then
         return('citation')
