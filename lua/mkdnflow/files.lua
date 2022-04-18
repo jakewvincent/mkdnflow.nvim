@@ -136,11 +136,15 @@ end
 --[[
 
 has_url() determines whether a string is a URL
-Returns a boolean or nil
+Arguments: the string to lok for a url in; (optional) what should be returned--
+either 'boolean' [default] or 'positions'.
+Returns: a boolean or nil if to_return is empty or 'boolean'; positions of url
+if to_return is 'positions'.
 Private function
 
 --]]
-local has_url = function(string)
+local has_url = function(string, to_return)
+    to_return = to_return or 'boolean'
     -- This function based largely on the solution in https://stackoverflow.com/
     -- questions/23590304/finding-a-url-in-a-string-lua-pattern
     -- Table of top-level domains
@@ -212,8 +216,9 @@ local has_url = function(string)
     end
 
     -- For each group in the match, do some stuff
-    for pos_start, url, prot, subd, tld, colon, port, slash, path in
-        string:gmatch('()(([%w_.~!*:@&+$/?%%#-]-)(%w[-.%w]*%.)(%w+)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))')
+    local com, fin
+    for pos_start, url, prot, subd, tld, colon, port, slash, path, pos_end in
+        string:gmatch('()(([%w_.~!*:@&+$/?%%#-]-)(%w[-.%w]*%.)(%w+)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))()')
     do
         if protocols[prot:lower()] == (1 - #slash) * #path and not subd:find('%W%W')
             and (colon == '' or port ~= '' and port + 0 < 65536)
@@ -222,22 +227,30 @@ local has_url = function(string)
         then
             finished[pos_start] = true
             found_url = true
+            com, fin = pos_start, pos_end
         end
     end
 
-    for pos_start, url, prot, dom, colon, port, slash, path in
-        string:gmatch('()((%f[%w]%a+://)(%w[-.%w]*)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))')
+    for pos_start, url, prot, dom, colon, port, slash, path, pos_end in
+        string:gmatch('()((%f[%w]%a+://)(%w[-.%w]*)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))()')
         do
         if not finished[pos_start] and not (dom..'.'):find('%W%W')
             and protocols[prot:lower()] == (1 - #slash) * #path
             and (colon == '' or port ~= '' and port + 0 < 65536)
         then
             found_url = true
+            com, fin = pos_start, pos_end
         end
     end
 
     if found_url ~= true then found_url = false end
-    return(found_url)
+    if to_return == 'boolean' then
+        return(found_url)
+    elseif to_return == 'positions' then
+        if found_url then
+            return com, fin
+        end
+    end
 end
 
 --[[
@@ -364,28 +377,37 @@ M.createLink = function()
     if mode == 'n' then
         -- Get the text of the line the cursor is on
         local line = vim.api.nvim_get_current_line()
-        -- Get the word under the cursor
-        local cursor_word = vim.fn.expand('<cword>')
-        -- Make a markdown link out of the date and cursor
-        local replacement = {
-            '['..cursor_word..']'..'('..prefix..cursor_word..'.md)'
-        }
+        local url_start, url_end = has_url(line, 'positions')
+        if url_start and col >= url_start - 1 and col < url_end - 1 then
+            -- Prepare the replacement
+            local replacement = {
+                '[]'..'('..line:sub(url_start, url_end - 1)..')'
+            }
+            -- Replace
+            vim.api.nvim_buf_set_text(0, row - 1, url_start - 1, row - 1, url_end - 1, replacement)
+        else
+            -- Get the word under the cursor
+            local cursor_word = vim.fn.expand('<cword>')
+            -- Make a markdown link out of the date and cursor
+            local replacement = {
+                '['..cursor_word..']'..'('..prefix..cursor_word..'.md)'
+            }
 
-        -- Find the (first) position of the matched word in the line
-        local left, right = string.find(line, cursor_word, nil, true)
+            -- Find the (first) position of the matched word in the line
+            local left, right = string.find(line, cursor_word, nil, true)
 
-        -- Make sure it's not a duplicate of the word under the cursor, and if it
-        -- is, perform the search until a match is found whose right edge follows
-        -- the cursor position
-        while right < col do
-            left, right = string.find(line, cursor_word, right, true)
+            -- Make sure it's not a duplicate of the word under the cursor, and if it
+            -- is, perform the search until a match is found whose right edge follows
+            -- the cursor position
+            while right < col do
+                left, right = string.find(line, cursor_word, right, true)
+            end
+
+            -- Replace the word under the cursor w/ the formatted link replacement
+            vim.api.nvim_buf_set_text(
+                0, row - 1, left - 1, row - 1, right, replacement
+            )
         end
-
-        -- Replace the word under the cursor w/ the formatted link replacement
-        vim.api.nvim_buf_set_text(
-            0, row - 1, left - 1, row - 1, right, replacement
-        )
-
     -- If current mode is 'visual', make link from selection
     elseif mode == 'v' then
 
