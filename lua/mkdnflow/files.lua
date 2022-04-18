@@ -137,14 +137,15 @@ end
 
 has_url() determines whether a string is a URL
 Arguments: the string to lok for a url in; (optional) what should be returned--
-either 'boolean' [default] or 'positions'.
+either 'boolean' [default] or 'positions'; (optional) current cursor position
 Returns: a boolean or nil if to_return is empty or 'boolean'; positions of url
 if to_return is 'positions'.
 Private function
 
 --]]
-local has_url = function(string, to_return)
+local has_url = function(string, to_return, col)
     to_return = to_return or 'boolean'
+    col = col or nil
     -- This function based largely on the solution in https://stackoverflow.com/
     -- questions/23590304/finding-a-url-in-a-string-lua-pattern
     -- Table of top-level domains
@@ -227,7 +228,11 @@ local has_url = function(string, to_return)
         then
             finished[pos_start] = true
             found_url = true
-            com, fin = pos_start, pos_end
+            if col then
+                if col >= pos_start - 1 and col < pos_end - 1 then
+                    com, fin = pos_start, pos_end
+                end
+            end
         end
     end
 
@@ -239,7 +244,11 @@ local has_url = function(string, to_return)
             and (colon == '' or port ~= '' and port + 0 < 65536)
         then
             found_url = true
-            com, fin = pos_start, pos_end
+            if col then
+                if col >= pos_start - 1 and col < pos_end - 1 then
+                    com, fin = pos_start, pos_end
+                end
+            end
         end
     end
 
@@ -377,8 +386,8 @@ M.createLink = function()
     if mode == 'n' then
         -- Get the text of the line the cursor is on
         local line = vim.api.nvim_get_current_line()
-        local url_start, url_end = has_url(line, 'positions')
-        if url_start and col >= url_start - 1 and col < url_end - 1 then
+        local url_start, url_end = has_url(line, 'positions', col)
+        if url_start and url_end then
             -- Prepare the replacement
             local replacement = {
                 '[]'..'('..line:sub(url_start, url_end - 1)..')'
