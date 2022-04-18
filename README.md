@@ -29,6 +29,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * Automatically prefix filenames created in the above manner with the current date: `YYYY-MM-DD_<word>.md`. The prefix can be changed; see [Configuration](#%EF%B8%8F-configuration).
     * 🆕 Create anchor links from a visual selection if the selection starts with `#` 
     * 🆕 Yank an anchor link out of a heading on the current line (mapped to `ya` by default)
+    * 🆕 If what's under the cursor is identified as a URL, create a link from that URL
 
 ### Jump to links
 * Jump to the next/previous link in the file, optionally wrapping to beginning/end of file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
@@ -271,6 +272,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/18/22: If URL is under cursor, make a link from the whole URL (addresses [issue #18](https://github.com/jakewvincent/mkdnflow.nvim/issues/18))
 * 04/16/22: Added forward navigation (~undoing 'back')
 * 04/11/22: Added ability to change heading level
 * 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings

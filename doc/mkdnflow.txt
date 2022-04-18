@@ -83,6 +83,7 @@ Create links from the word under the cursor (mapped to `<CR>` by default)
   - The default filename provided for the path prefixes the word under the
     cursor with the date in `YYYY-MM-DD` format: `YYYY-MM-DD_<word>.md`. The
     prefix can be changed. See |Mkdnflow-configuration|.
+  - If a URL is under the cursor, create a link from the URL.
 
 Create links from a visual selection (mapped to `<CR>` by default)
   - If visual selection begins with a hash, an anchor link will be created. Ot-
@@ -165,8 +166,9 @@ require('mkdnflow.init').forceStart()
 
 require('mkdnflow.files').createLink()
   Makes a link from the word under the cursor--or, if no word is under the
-  cursor, produces the syntax for a md link: []({name}.md). Returns nothing
-  via stdout, but inserts text into the vim buffer.
+  cursor, produces the syntax for a md link: []({prefix-}.md). If there's a URL
+  under the cursor, the whole URL is made into a link. Returns nothing via std-
+  out, but inserts text into the vim buffer.
 
 require('mkdnflow.files').followPath()
   Does something with the path in the link under the cursor. If the path is a
@@ -339,7 +341,7 @@ e`.)
   the citation key, or a DOI associated with the citation key. If there is an
   anchor link under the cursor, jumps to a matching heading in the current file
   (if one exists). If there is no link under the cursor, make a link from the
-  word under the cursor.
+  word (or URL) under the cursor.
 
   When used in visual mode, <CR> does one of two things: creates a link to a .md
   file from the visual selection, or if the visual selection starts with a hash
