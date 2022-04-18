@@ -215,10 +215,10 @@ local has_url = function(string)
     for pos_start, url, prot, subd, tld, colon, port, slash, path in
         string:gmatch('()(([%w_.~!*:@&+$/?%%#-]-)(%w[-.%w]*%.)(%w+)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))')
     do
-        if protocols[prot:lower()] == (1 - #slash) * #path and not subd:find'%W%W'
+        if protocols[prot:lower()] == (1 - #slash) * #path and not subd:find('%W%W')
             and (colon == '' or port ~= '' and port + 0 < 65536)
-            and (tlds[tld:lower()] or tld:find'^%d+$' and subd:find'^%d+%.%d+%.%d+%.$'
-            and max_of_four(tld, subd:match'^(%d+)%.(%d+)%.(%d+)%.$') < 256)
+            and (tlds[tld:lower()] or tld:find('^%d+$') and subd:find('^%d+%.%d+%.%d+%.$')
+            and max_of_four(tld, subd:match('^(%d+)%.(%d+)%.(%d+)%.$')) < 256)
         then
             finished[pos_start] = true
             found_url = true
@@ -226,9 +226,9 @@ local has_url = function(string)
     end
 
     for pos_start, url, prot, dom, colon, port, slash, path in
-        string:gmatch'()((%f[%w]%a+://)(%w[-.%w]*)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))'
+        string:gmatch('()((%f[%w]%a+://)(%w[-.%w]*)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))')
         do
-        if not finished[pos_start] and not (dom..'.'):find'%W%W'
+        if not finished[pos_start] and not (dom..'.'):find('%W%W')
             and protocols[prot:lower()] == (1 - #slash) * #path
             and (colon == '' or port ~= '' and port + 0 < 65536)
         then
