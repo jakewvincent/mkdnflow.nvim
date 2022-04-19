@@ -207,16 +207,16 @@ require('mkdnflow').setup({
 
 ### 👍 Recommended vim settings
 
-It is recommended to turn on `autowriteall` in Neovim. This will ensure that changes to buffers are saved when you navigate away from that buffer, e.g. by following a link to another file. See `:h awa`.
+I recommended turning on `autowriteall` in Neovim *for markdown filetypes*. This will ensure that changes to buffers are saved when you navigate away from that buffer, e.g. by following a link to another file. See `:h awa`.
 
 ```lua
 -- If you have an init.lua
-vim.o.autowriteall = true
+vim.cmd('autocmd FileType markdown set autowriteall')
 ```
 
 ```vim
 " If you have an init.vim
-set autowriteall
+autocmd FileType markdown set autowriteall
 ```
 
 ### ❕ Commands and default mappings
