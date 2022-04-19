@@ -42,7 +42,8 @@ init.config = {
         MkdnFollowPath = '<CR>',
         MkdnYankAnchorLink = 'ya',
         MkdnIncreaseHeading = '+',
-        MkdnDecreaseHeading = '-'
+        MkdnDecreaseHeading = '-',
+        MkdnToggleToDo = '<C-Space>'
     }
 }
 
@@ -87,12 +88,13 @@ init.setup = function(user_config)
         init.cursor = require('mkdnflow.cursor')
         init.files = require('mkdnflow.files')
         init.bib = require('mkdnflow.bib')
+        init.lists = require('mkdnflow.lists')
 
         -- Only load the mappings if the user hasn't said "no"
         if init.config.use_mappings_table == true and user_config.default_mappings ~= false then
             require('mkdnflow.maps')
             if user_config.default_mappings == true then
-                print("⬇️ Mkdnflow: NOTE: Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
+                print("⬇️ : NOTE - Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
             end
         end
 
@@ -118,6 +120,8 @@ init.forceStart = function()
         -- Load functions
         init.cursor = require('mkdnflow.cursor')
         init.files = require('mkdnflow.files')
+        init.bib = require('mkdnflow.bib')
+        init.lists = require('mkdnflow.lists')
 
         -- Only load the mappings if the user hasn't said "no"
         if init.config.default_mappings == true then

@@ -39,6 +39,7 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! Mkdnflow lua require('mkdnflow').forceStart()", true)
     vim.api.nvim_exec("command! MkdnIncreaseHeading lua require('mkdnflow').cursor.changeHeadingLevel('increase')", true)
     vim.api.nvim_exec("command! MkdnDecreaseHeading lua require('mkdnflow').cursor.changeHeadingLevel('decrease')", true)
+    vim.api.nvim_exec("command! MkdnToggleToDo lua require('mkdnflow').lists.toggleToDo()", true)
 
     -- Return coptions to user values
     vim.api.nvim_set_option('cpoptions', save_cpo)
