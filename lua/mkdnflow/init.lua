@@ -20,11 +20,15 @@ local init = {}
 init.initial_buf = vim.api.nvim_buf_get_name(0)
 init.initial_dir = init.initial_buf:match('(.*)/.-')
 
--- Final config table (where defaults and user-provided config will be combined)
-init.config = {
+-- Default config table (where defaults and user-provided config will be combined)
+local default_config = {
     create_dirs = true,
     links_relative_to = 'first', -- other option: current
-    filetypes = {md = true, rmd = true, markdown = true},
+    filetypes = {
+        md = true,
+        rmd = true,
+        markdown = true
+    },
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
     evaluate_prefix = true,
     load_tests = false,
@@ -47,6 +51,9 @@ init.config = {
     }
 }
 
+-- Table to store merged configs
+init.config = {}
+-- Initialize a variable for status
 init.loaded = nil
 
 -- Private function to detect the file's extension
@@ -56,24 +63,34 @@ local getFileType = function()
 end
 
 -- Private function to merge the user_config with the default config
-function merge_tables(default_table, user_table)
-    for key, value in pairs(user_table) do
+local merge_configs = function(defaults, user_config)
+    local config = {}
+    for key, value in pairs(defaults) do
         if type(value) == 'table' then
-            if type(default_table[key] or false) == 'table' then
-                merge_tables(default_table[key] or {}, user_table[key] or {})
-            else
-                default_table[key] = value
+            subtable = {}
+            for key_, value_ in pairs(value) do
+                if user_config[key][key_] then
+                    subtable[key_] = user_config[key][key_]
+                else
+                    subtable[key_] = value[key_]
+                end
             end
+            config[key] = subtable
         else
-            default_table[key] = value
+            if user_config[key] then
+                config[key] = user_config[key]
+            else
+                config[key] = defaults[key]
+            end
         end
     end
+    return config
 end
 
 init.setup = function(user_config)
 
     -- Record the user's config
-    merge_tables(init.config, user_config)
+    init.config = merge_configs(default_config, user_config)
 
     -- Get the extension of the file being edited
     local ft = getFileType()
