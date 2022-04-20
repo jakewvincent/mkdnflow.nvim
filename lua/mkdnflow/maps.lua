@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Mkdnflow mappings
-mappings = require('mkdnflow.init').config.mappings
+local mappings = require('mkdnflow').config.mappings
 
 for command, mapping in pairs(mappings) do
     vim.api.nvim_set_keymap('n', mapping, '<Cmd>:'..command..'<CR>', {noremap = true})
