@@ -73,6 +73,13 @@ markdown files:
 :MkdnDecreaseHeading
   Decrease heading importance (add hashes).
 
+:MkdnToggleToDo
+  Toggle a to-do list item's completion status. To-do item must be in a markdown
+  -style list, e.g.:
+>
+    * [ ] Email boss
+    * [ ] Submit résumé
+
 :Mkdnflow
   Manually start Mkdnflow.
 
@@ -125,6 +132,8 @@ the subsequent file/buffer opened in the window.
 
 Enable/disable default keybindings (see |Mkdnflow-configuration|) or specify
 your own
+
+Toggle to-do list item's completion status (`<C-Space>` by default)
 
 ===============================================================================
 Caveats and warnings                                         *Mkdnflow-caveats*
@@ -195,6 +204,9 @@ require('mkdnflow.cursor').changeHeadingLevel('increase')
 
 require('mkdnflow.cursor').changeHeadingLevel('decrease')
   Decreases heading level importance (adds hashes)
+
+require('mkdnflow.lists').toggleToDo()
+  Toggle a to-do list item's completion status
 
 ===============================================================================
 Configuration                                          *Mkdnflow-configuration*
@@ -365,12 +377,21 @@ ya (normal mode)
   from a converted HTML document, this usually means the heading will be smalle-
   r.
 
+<C-Space> (normal mode)
+  Mapped to `:MkdnToggleToDo`. If the cursor is on a line with a to-do item in
+  a markdown list, the status of the to-do item will be cycled between the fol-
+  lowing states, looping back to the beginning if needed: [ ] ~ [-] ~ [X].
+
 ===============================================================================
 Recommended vim settings                    *Mkdnflow-recommended-vim-settings*
 
 I recommend turning on `autowriteall` for markdown documents. This will ensure
 that changes to buffers are saved when you navigate away from that buffer, e.g.
 by following a link to another file. See `:h awa`.
+
+One way to do this would be to use an autocmd, such as below:
+> 
+    vim.cmd('autocmd FileType markdown set autowriteall') 
 
 ===============================================================================
 Credits                                                      *Mkdnflow-credits*

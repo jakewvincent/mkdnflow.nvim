@@ -63,7 +63,10 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     - 🆕 Modify default keybindings individually in table passed to setup function (see [Configuration](#%EF%B8%8F-configuration))
 
 ### Manipulate headings
-* 🆕 Increase/decrease heading levels (mapped to +/- by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when convertedto HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
+* 🆕 Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when convertedto HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
+
+### 🆕 Lists
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling `* [ ] ...` will yield `* [-] ...`; toggling `* [-] ...` will yield `* [X] ...`; and toggling `* [X] ...` will yield `* [ ] ...`.
 
 ## 📦 Installation
 
@@ -200,7 +203,8 @@ require('mkdnflow').setup({
         MkdnFollowPath = '<CR>',
         MkdnYankAnchorLink = 'ya',
         MkdnIncreaseHeading = '+',
-        MkdnDecreaseHeading = '-'
+        MkdnDecreaseHeading = '-',
+        MkdnToggleToDo = '<C-Space>'
     }
 })
 ```
@@ -223,29 +227,30 @@ autocmd FileType markdown set autowriteall
 
 These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configuration). Commands with no mappings trigger functions that are called by the functions with mappings, but I've given them a command name so you can use them as independent functions if you'd like to.
 
-| Keymap       | Mode | Command               | Description                                                                                                                                                  |
-|--------------| ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `<Tab>`      | n    | `:MkdnNextLink<CR>`       | Move cursor to the beginning of the next link (if there is a next link)                                                                                      |
-| `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`       | Move the cursor to the beginning of the previous link (if there is one)                                                                                      |
-| `<leader>]` | n    | `:MkdnNextHeading<CR>`    | Move the cursor to the beginning of the next heading (if there is one)                                                                                      |
-| `<leader>[` | n    | `:MkdnPrevHeading<CR>`    | Move the cursor to the beginning of the previous heading (if there is one)                                                                                      |
-| `<BS>`       | n    | `:MkdnGoBack<CR>`         | Open the historically last-active buffer in the current window                                                                                                            |
-| `<Del>`       | n    | `:MkdnGoForward<CR>`         | Open the buffer that was historically navigated away from in the current window                                                                                                            |
-| `<CR>`       | n    | `:MkdnFollowPath<CR>`     | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
-| `ya`         | n    | `:MkdnYankAnchorLink<CR>` | Yank a formatted anchor link (if cursor is currently on a line with a heading)                                                                                  |
+| Keymap       | Mode | Command                    | Description |
+|--------------| ---- | -------------------------- | ------------|
+| `<Tab>`      | n    | `:MkdnNextLink<CR>`        | Move cursor to the beginning of the next link (if there is a next link) |
+| `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`        | Move the cursor to the beginning of the previous link (if there is one) |
+| `<leader>]`  | n    | `:MkdnNextHeading<CR>`     | Move the cursor to the beginning of the next heading (if there is one) |
+| `<leader>[`  | n    | `:MkdnPrevHeading<CR>`     | Move the cursor to the beginning of the previous heading (if there is one) |
+| `<BS>`       | n    | `:MkdnGoBack<CR>`          | Open the historically last-active buffer in the current window |
+| `<Del>`      | n    | `:MkdnGoForward<CR>`       | Open the buffer that was historically navigated away from in the current window |
+| `<CR>`       | n    | `:MkdnFollowPath<CR>`      | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
+| `ya`         | n    | `:MkdnYankAnchorLink<CR>`  | Yank a formatted anchor link (if cursor is currently on a line with a heading) |
 | `+`          | n    | `:MkdnIncreaseHeading<CR>` | Increase heading importance (remove hashes) |
 | `-`          | n    | `:MkdnDecreaseHeading<CR>` | Decrease heading importance (add hashes) |
-| --           | --   | `:MkdnGetPath<CR>`        | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets)                           |
-| --           | --   | `:MkdnCreateLink<CR>`     | Replace the word under the cursor with a link in which the word under the cursor is the name of the link                                                     |
-| --           | --   | `:Mkdnflow<CR>`           | Manually start Mkdnflow                                                                                                                                      |
+| `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`      | Toggle to-do list item's completion status |
+| --           | --   | `:MkdnGetPath<CR>`         | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets) |
+| --           | --   | `:MkdnCreateLink<CR>`      | Replace the word under the cursor with a link in which the word under the cursor is the name of the link |
+| --           | --   | `:Mkdnflow<CR>`            | Manually start Mkdnflow |
 
 ### Miscellaneous notes on remapping
 * The back-end function for `:MkdnGoBack`, `require('mkdnflow).files.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
 
 ## ☑️ To do
 * [ ] "Undo" a link (replace link w/ the text part of the link)
-* [ ] Lists
-    * [ ] To-do list functions & mappings
+* [-] Lists
+    * [-] To-do list functions & mappings
     * [ ] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
     * [ ] Create a table of x columns and y rows
@@ -272,18 +277,20 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/20/22: Fix for [issue #22](https://github.com/jakewvincent/mkdnflow.nvim/issues/22)
+* 04/19/22: Toggle to-do list item's completion status
 * 04/18/22: If URL is under cursor, make a link from the whole URL (addresses [issue #18](https://github.com/jakewvincent/mkdnflow.nvim/issues/18))
 * 04/16/22: Added forward navigation (~undoing 'back')
 * 04/11/22: Added ability to change heading level
 * 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings
 * 04/03/22: Added ability to jump to headings if a link is an anchor link
 * 03/06/22: Added ability to search .bib files and act on relevant information in bib entries when the cursor is in a citation and `<CR>` is pressed
-* 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
-* 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
 
 <details>
 <summary>Older changes</summary><p>
 
+* 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
+* 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
 * 11/10/21: Merged [@pbogut's PR](https://github.com/jakewvincent/mkdnflow.nvim/pull/7), which modifies `require('mkdnflow').files.goBack()` to return a boolean (`true` if `goBack()` succeeds; `false` if `goBack()` isn't possible). For the default mappings, this causes no change in behavior, but users who wish `<BS>` to perform another function in the case that `goBack()` fails can now use `goBack()` in the antecedent of a conditional. @pbogut's mapping, for reference:
 ```lua
 if not require('mkdnflow').files.goBack() then
