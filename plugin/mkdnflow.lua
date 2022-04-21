@@ -32,6 +32,7 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! MkdnGetPath lua require('mkdnflow').files.getPath()", true)
     vim.api.nvim_exec("command! MkdnFollowPath lua require('mkdnflow').files.followPath()", true)
     vim.api.nvim_exec("command! MkdnCreateLink lua require('mkdnflow').files.createLink()", true)
+    vim.api.nvim_exec("command! MkdnDestroyLink lua require('mkdnflow').files.destroyLink()", true)
     vim.api.nvim_exec("command! MkdnYankAnchorLink lua require('mkdnflow').cursor.yankAsAnchorLink()", true)
     vim.api.nvim_exec("command! MkdnGoBack lua require('mkdnflow').files.goBack()", true)
     vim.api.nvim_exec("command! MkdnGoForward lua require('mkdnflow').files.goForward()", true)
