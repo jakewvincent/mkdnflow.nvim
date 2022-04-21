@@ -94,7 +94,8 @@ local get_link_part = function(part)
                         name_pattern
                     ), 2, -2
                 )
-                return(name)
+                -- Return the name and the indices of the link
+                return name, indices['com'], indices['fin'], row
             end
         elseif part == 'path' then
             if link_type == 'address' then
@@ -508,6 +509,20 @@ M.createLink = function()
         end
 
     end
+end
+
+--[[
+
+destroyLink() replaces any link the cursor is currently overlapping with just
+the name part of the link.
+Public function
+
+--]]
+M.destroyLink = function()
+    -- Get link name, indices, and row the cursor is currently on
+    local link_name, com, fin, row = get_link_part('name')
+    -- Replace the link with just the name
+    vim.api.nvim_buf_set_text(0, row - 1, com - 1, row - 1, fin, {link_name})
 end
 
 --[[
