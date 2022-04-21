@@ -31,7 +31,6 @@ local default_config = {
     },
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
     evaluate_prefix = true,
-    load_tests = false,
     wrap_to_beginning = false,
     wrap_to_end = false,
     default_bib_path = '',
@@ -89,25 +88,19 @@ local merge_configs = function(defaults, user_config)
 end
 
 init.setup = function(user_config)
-
     -- Record the user's config
     init.config = merge_configs(default_config, user_config)
-
     -- Get the extension of the file being edited
     local ft = getFileType()
-
     -- Load the extension if the filetype has a match in config.filetypes
     if init.config.filetypes[ft] then
-
         -- Record load status (i.e. loaded)
         init.loaded = true
-
         -- Load functions
         init.cursor = require('mkdnflow.cursor')
         init.files = require('mkdnflow.files')
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
-
         -- Only load the mappings if the user hasn't said "no"
         if init.config.use_mappings_table == true and user_config.default_mappings ~= false then
             require('mkdnflow.maps')
@@ -115,17 +108,10 @@ init.setup = function(user_config)
                 print("⬇️ : NOTE - Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
             end
         end
-
-        -- Only load tests if the user has said yes
-        if init.config.load_tests == true then
-            init.tests = require('mkdnflow.tests')
-        end
-
     else
         -- Record load status (i.e. not loaded)
         init.loaded = false
     end
-
 end
 
 init.forceStart = function()
@@ -134,21 +120,14 @@ init.forceStart = function()
     else
         -- Record load status (i.e. loaded)
         init.loaded = true
-
         -- Load functions
         init.cursor = require('mkdnflow.cursor')
         init.files = require('mkdnflow.files')
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
-
         -- Only load the mappings if the user hasn't said "no"
         if init.config.default_mappings == true then
             require('mkdnflow.maps')
-        end
-
-        -- Only load tests if the user has said yes
-        if init.config.load_tests == true then
-            init.tests = require('mkdnflow.tests')
         end
     end
 end
