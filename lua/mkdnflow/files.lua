@@ -34,12 +34,14 @@ local evaluate_prefix = require('mkdnflow').config.evaluate_prefix
 
 --[[
 
-get_path() extracts the path part of a markdown link, i.e. the part in → ()
+get_link_part() extracts part of a markdown link, i.e. the part in [] or ().
 Returns a string--the string in the square brackets
 Private function
 
 --]]
-local get_path = function()
+local get_link_part = function(part)
+    -- Use 'path' as part if no argument provided
+    part = part or 'path'
     -- Get current cursor position
     local position = vim.api.nvim_win_get_cursor(0)
     local row = position[1]
@@ -81,17 +83,30 @@ local get_path = function()
 
     -- Check if a link was found under the cursor
     if unfound == false then
-        -- If one was found and it's an address, get the path part of the match
+        -- If one was found and it's an address, get correct part of the match
         -- and return it
-        if link_type == 'address' then
-            local path_pattern = '%b[](%b())'
-            local path = string.sub(
-                string.match(
-                    string.sub(line[1], indices['com'], indices['fin']),
-                    path_pattern
-                ), 2, -2
-            )
-            return(path)
+        if part == 'name' then
+            if link_type == 'address' then
+                local name_pattern = '(%b[])%b()'
+                local name = string.sub(
+                    string.match(
+                        string.sub(line[1], indices['com'], indices['fin']),
+                        name_pattern
+                    ), 2, -2
+                )
+                return(name)
+            end
+        elseif part == 'path' then
+            if link_type == 'address' then
+                local path_pattern = '%b[](%b())'
+                local path = string.sub(
+                    string.match(
+                        string.sub(line[1], indices['com'], indices['fin']),
+                        path_pattern
+                    ), 2, -2
+                )
+                return(path)
+            end
         end
     else -- If one wasn't found, perform another search, this time for citations
         unfound = true
@@ -609,13 +624,13 @@ M.followPath = function(path)
 
     -- Path can be provided as an argument (this is currently only used when
     -- this function retrieves a path from the citation handler). If no path
-    -- is provided as an arg, get the path under the cursor via get_path().
+    -- is provided as an arg, get the path under the cursor via get_link_part().
     if not path then
         -- Get the path in the link
-        path = get_path()
+        path = get_link_part('path')
     end
 
-    -- Check that there's a non-nil output of get_path()
+    -- Check that there's a non-nil output of get_link_part()
     if path then
 
         -- Get the name of the file in the link path. Will return nil if the
