@@ -410,6 +410,9 @@ M.createLink = function()
             }
             -- Replace
             vim.api.nvim_buf_set_text(0, row - 1, url_start - 1, row - 1, url_end - 1, replacement)
+            -- Move the cursor to the name part of the link and change mode
+            vim.api.nvim_win_set_cursor(0, {row, url_start})
+            vim.cmd('startinsert')
         else
             -- Get the word under the cursor
             local cursor_word = vim.fn.expand('<cword>')
