@@ -34,7 +34,7 @@ local evaluate_prefix = require('mkdnflow').config.evaluate_prefix
 
 --[[
 
-get_path() extracts the path part of a markdown link, i.e. the part in → []
+get_path() extracts the path part of a markdown link, i.e. the part in → ()
 Returns a string--the string in the square brackets
 Private function
 
