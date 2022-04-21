@@ -47,7 +47,8 @@ local default_config = {
         MkdnYankAnchorLink = 'ya',
         MkdnIncreaseHeading = '+',
         MkdnDecreaseHeading = '-',
-        MkdnToggleToDo = '<C-Space>'
+        MkdnToggleToDo = '<C-Space>',
+        MkdnDestroyLink = '<M-CR>'
     }
 }
 
