@@ -155,10 +155,19 @@ require('mkdnflow').setup({
     -- 'false' prevents missing directories from being created
     create_dirs = true,             
 
-    -- Type: string. Navigate to links relative to the directory of the first-
-    --     opened file.
-    -- 'current' navigates links relative to currently open file
-    links_relative_to = 'first',    
+    -- Type: table. The 'target' key specifies what the priority perspective s-
+    -- hould be. The default is whatever file is opened first. 'fallback' spec-
+    -- ifies a backup perspective if the target perspective cannot be determin-
+    -- ed. Other options: 'root'. 'root_tell' should be a string telling mkdnf-
+    -- low how to identify the root directory if 'target' or 'fallback' is set
+    -- to 'root'. The tell should be a file in the root directory, e.g. '.git',
+    -- 'index.md', or any arbitrary file that can reliably be used to identify
+    -- the root directory of your notebook/wiki.
+    links_relative_to = {
+            target = 'first',
+            fallback = 'current',
+            root_tell = false
+        },    
 
     -- Type: key-value pair(s). The plugin's features are enabled only when one
     -- of these filetypes is opened; otherwise, the plugin does nothing. NOTE:
