@@ -265,7 +265,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 <summary>Completed to-dos</summary><p>
 
 * [X] "Undo" a link (replace link w/ the text part of the link)
-* [X] Easy *forward* navigation through buffers (with ~~`<S-BS>`~~ `<Del>`?)
+* [X] Easy *forward* navigation through buffers (with ~~`<S-BS>?`~~ `<Del>`)
 * [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
 * [X] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
 * [X] Add a config option to wrap to the beginning of the document when navigating between links (11/08/21)
