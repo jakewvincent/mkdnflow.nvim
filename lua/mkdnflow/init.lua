@@ -19,8 +19,8 @@ local default_config = {
     create_dirs = true,
     links_relative_to = {
         target = 'first',
-        fallback = 'root',
-        root_tell = 'index.md'
+        fallback = 'current',
+        root_tell = false
     },
     filetypes = {
         md = true,
@@ -84,7 +84,6 @@ end
 local get_root_dir_unix = function(dir, root_tell)
     -- List files in directory
     local search_is_on, root = true, nil
-    local iteration = 1
     while search_is_on do
         local pfile = io.popen('ls -a "'..dir..'"')
         for filename in pfile:lines() do
@@ -98,16 +97,13 @@ local get_root_dir_unix = function(dir, root_tell)
         if search_is_on then
             if dir == '/' or dir == '~/' then
                 search_is_on = false
-                print('⬇️ : No suitable root directory found!')
                 return(nil)
             else
                 local last_tried = dir
                 dir = dir:match('(.*)/')
                 if dir == '' then dir = '/' end
-                print("Changed "..last_tried.." to "..dir)
             end
         else
-            print('⬇️ : Root directory found: '..root)
             return(root)
         end
     end
@@ -125,6 +121,8 @@ init.loaded = nil
 
 -- Run setup
 init.setup = function(user_config)
+    local compat = require('mkdnflow.compat')
+    user_config = compat.userConfigCheck(user_config)
     -- Record the user's config
     init.config = merge_configs(default_config, user_config)
     -- Get the extension of the file being edited
@@ -140,7 +138,7 @@ init.setup = function(user_config)
         init.buffers = require('mkdnflow.buffers')
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
-        init.files = require('mkdnflow.compat')
+        init.files = compat
         -- Only load the mappings if the user hasn't said "no"
         if init.config.use_mappings_table == true and user_config.default_mappings ~= false then
             require('mkdnflow.maps')
@@ -151,6 +149,22 @@ init.setup = function(user_config)
     else
         -- Record load status (i.e. not loaded)
         init.loaded = false
+    end
+
+    -- Determine perspective
+    local links_relative_to = init.config.links_relative_to
+    if links_relative_to.target == 'root' then
+        local root_tell = links_relative_to.root_tell
+        if root_tell then
+            init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
+            if init.root_dir then
+                print('⬇️ : Root directory found: '..init.root_dir)
+            else
+                print('⬇️ : No suitable root directory found!')
+            end
+        else
+            print('⬇️ : No tell was provided for the root directory!')
+        end
     end
 end
 
@@ -175,5 +189,6 @@ init.forceStart = function()
         end
     end
 end
+
 
 return init
