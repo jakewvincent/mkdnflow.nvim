@@ -24,9 +24,9 @@ init.initial_dir = init.initial_buf:match('(.*)/.-')
 local default_config = {
     create_dirs = true,
     links_relative_to = {
-        target = {'root', 'index.md'},
-        fallback = 'first'
-        -- other option: current
+        target = 'root',
+        fallback = 'first',
+        root_tell = 'index.md'
     },
     filetypes = {
         md = true,
