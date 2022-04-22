@@ -98,7 +98,9 @@ init.setup = function(user_config)
         init.loaded = true
         -- Load functions
         init.cursor = require('mkdnflow.cursor')
-        init.files = require('mkdnflow.files')
+        init.paths = require('mkdnflow.paths')
+        init.links = require('mkdnflow.links')
+        init.buffers = require('mkdnflow.buffers')
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
         -- Only load the mappings if the user hasn't said "no"
@@ -122,7 +124,9 @@ init.forceStart = function()
         init.loaded = true
         -- Load functions
         init.cursor = require('mkdnflow.cursor')
-        init.files = require('mkdnflow.files')
+        init.paths = require('mkdnflow.paths')
+        init.links = require('mkdnflow.links')
+        init.buffers = require('mkdnflow.buffers')
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
         -- Only load the mappings if the user hasn't said "no"

@@ -14,7 +14,9 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local M = {}
+-- Modules
+local links = require('mkdnflow.links')
+local config = require('mkdnflow').config
 
 -- Function to get line and reverse the string data of the returned object
 local rev_get_line = function(buffer, start, end_, strict_indexing)
@@ -131,7 +133,7 @@ local go_to = function(pattern, reverse)
                 -- If the line is nil, there is no next line and the loop should stop (unless wrapping is on)
                 if reverse then
                     -- If we're searching backwards and user wants the search to wrap, go to last line in file
-                    if require('mkdnflow').config.wrap_to_end == true then
+                    if config.wrap_to_end == true then
                         if not already_wrapped then
                             row = vim.api.nvim_buf_line_count(0) + 1
                             already_wrapped = true
@@ -144,7 +146,7 @@ local go_to = function(pattern, reverse)
                     end
                 else
                     -- If we're searching forwards and user wants the search to wrap, go to first line in file
-                    if require('mkdnflow').config.wrap_to_beginning == true then
+                    if config.wrap_to_beginning == true then
                         if not already_wrapped then
                             row = 0
                             already_wrapped = true
@@ -193,7 +195,7 @@ local go_to_heading = function(anchor_text, reverse)
                     unfound = false
                 else
                     -- Format current heading to see if it matches our search term
-                    heading_as_anchor = require('mkdnflow.files').formatLink(line[1], 2)
+                    heading_as_anchor = links.formatLink(line[1], 2)
                     if anchor_text == heading_as_anchor then
                         -- If it's a match, send the cursor there and stop the while loop
                         vim.api.nvim_win_set_cursor(0, {row, 0})
@@ -217,14 +219,14 @@ local go_to_heading = function(anchor_text, reverse)
         else
             -- If the line does not have contents, start searching from the beginning
             if reverse then
-                if anchor_link ~= nil or require('mkdnflow').config.wrap_to_beginning == true then
+                if anchor_link ~= nil or config.wrap_to_beginning == true then
                     row = vim.api.nvim_buf_line_count(0)
                 else
                     unfound = nil
                     print("⬇️ : There are no more headings after the beginning of the document!")
                 end
             else
-                if anchor_link ~= nil or require('mkdnflow').config.wrap_to_end == true then
+                if anchor_link ~= nil or config.wrap_to_end == true then
                     row = 1
                 else
                     unfound = nil
@@ -234,6 +236,8 @@ local go_to_heading = function(anchor_text, reverse)
         end
     end
 end
+
+local M = {}
 
 -- Increase/decrease heading level
 M.changeHeadingLevel = function(change)
@@ -284,7 +288,7 @@ M.yankAsAnchorLink = function()
     local is_heading = string.find(line[1], '^#')
     if is_heading then
         -- Format the line as an anchor link
-        local anchor_link = require('mkdnflow.files').formatLink(line[1])
+        local anchor_link = links.formatLink(line[1])
         anchor_link = string.gsub(anchor_link[1], '"', '\\"')
         -- Add to the unnamed register
         vim.cmd('let @"="'..anchor_link..'"')

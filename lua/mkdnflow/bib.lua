@@ -15,7 +15,6 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Bibliography functions
-local M = {}
 
 -- Retrieve default bibliography path
 local bib_path = require('mkdnflow').config.default_bib_path
@@ -75,6 +74,8 @@ local find_bib_entry = function(citation)
         print('Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.')
     end
 end
+
+local M = {}
 
 M.citationHandler = function(citation)
     local citekey, bib_entry = find_bib_entry(citation)
