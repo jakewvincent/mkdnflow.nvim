@@ -23,7 +23,11 @@ init.initial_dir = init.initial_buf:match('(.*)/.-')
 -- Default config table (where defaults and user-provided config will be combined)
 local default_config = {
     create_dirs = true,
-    links_relative_to = 'first', -- other option: current
+    links_relative_to = {
+        target = {'root', 'index.md'},
+        fallback = 'first'
+        -- other option: current
+    },
     filetypes = {
         md = true,
         rmd = true,
