@@ -103,6 +103,7 @@ init.setup = function(user_config)
         init.buffers = require('mkdnflow.buffers')
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
+        init.files = require('mkdnflow.compat')
         -- Only load the mappings if the user hasn't said "no"
         if init.config.use_mappings_table == true and user_config.default_mappings ~= false then
             require('mkdnflow.maps')
@@ -129,6 +130,7 @@ init.forceStart = function()
         init.buffers = require('mkdnflow.buffers')
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
+        init.files = require('mkdnflow.compat')
         -- Only load the mappings if the user hasn't said "no"
         if init.config.default_mappings == true then
             require('mkdnflow.maps')
