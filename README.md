@@ -240,17 +240,15 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `+`          | n    | `:MkdnIncreaseHeading<CR>` | Increase heading importance (remove hashes) |
 | `-`          | n    | `:MkdnDecreaseHeading<CR>` | Decrease heading importance (add hashes) |
 | `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`      | Toggle to-do list item's completion status |
-| --           | --   | `:MkdnGetPath<CR>`         | With a link under the cursor, extract (and return) just the path part of it (i.e. the part in parentheses, following the brackets) |
 | --           | --   | `:MkdnCreateLink<CR>`      | Replace the word under the cursor with a link in which the word under the cursor is the name of the link |
 | --           | --   | `:Mkdnflow<CR>`            | Manually start Mkdnflow |
 
 ### Miscellaneous notes on remapping
-* The back-end function for `:MkdnGoBack`, `require('mkdnflow).files.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
+* The back-end function for `:MkdnGoBack`, `require('mkdnflow).buffers.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
 
 ## ☑️ To do
-* [ ] "Undo" a link (replace link w/ the text part of the link)
-* [-] Lists
-    * [-] To-do list functions & mappings
+* [ ] Lists
+    * [ ] To-do list functions & mappings
     * [ ] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
     * [ ] Create a table of x columns and y rows
@@ -266,6 +264,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] "Undo" a link (replace link w/ the text part of the link)
 * [X] Easy *forward* navigation through buffers (with ~~`<S-BS>`~~ `<Del>`?)
 * [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
 * [X] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
@@ -277,6 +276,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/20/22: Added ability to replace a link with just its name (effectively undoing the link) -- mapped to `<M-CR>` by default (Alt-Enter)
 * 04/20/22: Fix for [issue #22](https://github.com/jakewvincent/mkdnflow.nvim/issues/22)
 * 04/19/22: Toggle to-do list item's completion status
 * 04/18/22: If URL is under cursor, make a link from the whole URL (addresses [issue #18](https://github.com/jakewvincent/mkdnflow.nvim/issues/18))
@@ -291,9 +291,9 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 * 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
 * 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
-* 11/10/21: Merged [@pbogut's PR](https://github.com/jakewvincent/mkdnflow.nvim/pull/7), which modifies `require('mkdnflow').files.goBack()` to return a boolean (`true` if `goBack()` succeeds; `false` if `goBack()` isn't possible). For the default mappings, this causes no change in behavior, but users who wish `<BS>` to perform another function in the case that `goBack()` fails can now use `goBack()` in the antecedent of a conditional. @pbogut's mapping, for reference:
+* 11/10/21: Merged [@pbogut's PR](https://github.com/jakewvincent/mkdnflow.nvim/pull/7), which modifies `require('mkdnflow').buffers.goBack()` to return a boolean (`true` if `goBack()` succeeds; `false` if `goBack()` isn't possible). For the default mappings, this causes no change in behavior, but users who wish `<BS>` to perform another function in the case that `goBack()` fails can now use `goBack()` in the antecedent of a conditional. @pbogut's mapping, for reference:
 ```lua
-if not require('mkdnflow').files.goBack() then
+if not require('mkdnflow').buffers.goBack() then
   vim.cmd('Dirvish %:p')
 end
 ```

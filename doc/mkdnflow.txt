@@ -55,10 +55,6 @@ markdown files:
   if there is no link under the cursor, make a link from the word under the
   cursor.
 
-:MkdnGetPath
-  With a link under the cursor, extract (and return) just the path part of it
-  (i.e. the part in parentheses, following the brackets).
-
 :MkdnCreateLink
   Replace the word under the cursor with a link in which the word under the
   cursor is the name of the link.
@@ -159,27 +155,27 @@ is intended to be used directly is the setup function. The functions following
 that are utilized when the commands are called.
 
 The following functions are defined in one of the files `init.lua`,
-`files.lua`, or `cursor.lua` but are ultimately returned as part of the table
+`paths.lua`, `buffers.lua`, `links.lua`, `bib.lua`, or `cursor.lua` but are ultimately returned as part of the table
 defined in `init.lua` for public use.
 
-require('mkdnflow.init').setup(table)
+require('mkdnflow').setup(table)
   Initializes the plugin using a configuration specified in the argument (a
   table), but only if the filetype of the current buffer is matched in the list
   of filetypes specified in the table (or one of the defaults). Providing an
   empty table initializes the plugin using the defaults.
 
-require('mkdnflow.init').forceStart()
+require('mkdnflow').forceStart()
   Initializes the plugin using a configuration specified in the argument (a
   table), regardless of what the current filetype is. Providing an empty table
   initializes the plugin using the defaults.
 
-require('mkdnflow.files').createLink()
+require('mkdnflow.links').createLink()
   Makes a link from the word under the cursor--or, if no word is under the
   cursor, produces the syntax for a md link: []({prefix-}.md). If there's a URL
   under the cursor, the whole URL is made into a link. Returns nothing via std-
   out, but inserts text into the vim buffer.
 
-require('mkdnflow.files').followPath()
+require('mkdnflow.paths').followPath()
   Does something with the path in the link under the cursor. If the path is a
   filename, it creates the file specified in the path. If the path is a URL,
   it uses `path_handler()` to open the URL specified in the path. If the path
@@ -187,10 +183,10 @@ require('mkdnflow.files').followPath()
   `path_handler()` to open a local file at the specified path via the system's
   default application for that filetype (if on macOS or Linux). Returns nothing.
 
-require('mkdnflow.files').goBack()
+require('mkdnflow.buffers').goBack()
   Uses the main buffer stack to go to the last-opened buffer.
 
-require('mkdnflow.files').goForward()
+require('mkdnflow.buffers').goForward()
   Uses the historical buffer stack to go to the last-opened buffer.
 
 require('mkdnflow.cursor').toNextLink()
