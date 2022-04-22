@@ -74,8 +74,8 @@ local merge_configs = function(defaults, user_config)
     return config
 end
 
--- Private function to detect the file's extension
-local getFileType = function(string)
+-- Private function to detect the extension of a filename passed as a string
+local get_file_type = function(string)
     local ext = string:match("^.*%.(.+)$")
     return(ext ~= nil and string.lower(ext) or '')
 end
@@ -91,11 +91,12 @@ init.config = {}
 -- Initialize a variable for load status
 init.loaded = nil
 
+-- Run setup
 init.setup = function(user_config)
     -- Record the user's config
     init.config = merge_configs(default_config, user_config)
     -- Get the extension of the file being edited
-    local ft = getFileType(init.initial_buf)
+    local ft = get_file_type(init.initial_buf)
     -- Load the extension if the filetype has a match in config.filetypes
     if init.config.filetypes[ft] then
         -- Record load status (i.e. loaded)
@@ -121,6 +122,7 @@ init.setup = function(user_config)
     end
 end
 
+-- Force start
 init.forceStart = function()
     if init.loaded == true then
         print("MkdnFlow already running!")
