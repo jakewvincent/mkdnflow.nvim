@@ -18,8 +18,8 @@
 local default_config = {
     create_dirs = true,
     links_relative_to = {
-        target = 'root',
-        fallback = 'first',
+        target = 'first',
+        fallback = 'root',
         root_tell = 'index.md'
     },
     filetypes = {
