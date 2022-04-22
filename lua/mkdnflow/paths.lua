@@ -342,7 +342,7 @@ M.followPath = function(path)
             end
         end
     else
-        M.createLink()
+        links.createLink()
     end
 end
 
