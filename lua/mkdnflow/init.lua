@@ -14,12 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local init = {}
-
--- Get first opened file/buffer path and directory
-init.initial_buf = vim.api.nvim_buf_get_name(0)
-init.initial_dir = init.initial_buf:match('(.*)/.-')
-
 -- Default config table (where defaults and user-provided config will be combined)
 local default_config = {
     create_dirs = true,
@@ -55,24 +49,13 @@ local default_config = {
     }
 }
 
--- Table to store merged configs
-init.config = {}
--- Initialize a variable for status
-init.loaded = nil
-
--- Private function to detect the file's extension
-local getFileType = function()
-    local ext = init.initial_buf:match("^.*%.(.+)$")
-    return(ext ~= nil and string.lower(ext) or '')
-end
-
 -- Private function to merge the user_config with the default config
 local merge_configs = function(defaults, user_config)
     local config = {}
     for key, value in pairs(defaults) do
         if type(value) == 'table' then
-            subtable = {}
-            for key_, value_ in pairs(value) do
+            local subtable = {}
+            for key_, _ in pairs(value) do
                 if user_config[key][key_] then
                     subtable[key_] = user_config[key][key_]
                 else
@@ -89,6 +72,23 @@ local merge_configs = function(defaults, user_config)
         end
     end
     return config
+end
+
+
+-- Initialize "init" table
+local init = {}
+-- Get first opened file/buffer path and directory
+init.initial_buf = vim.api.nvim_buf_get_name(0)
+init.initial_dir = init.initial_buf:match('(.*)/.-')
+-- Table to store merged configs
+init.config = {}
+-- Initialize a variable for load status
+init.loaded = nil
+
+-- Private function to detect the file's extension
+local getFileType = function()
+    local ext = init.initial_buf:match("^.*%.(.+)$")
+    return(ext ~= nil and string.lower(ext) or '')
 end
 
 init.setup = function(user_config)
