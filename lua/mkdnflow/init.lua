@@ -80,6 +80,38 @@ local get_file_type = function(string)
     return(ext ~= nil and string.lower(ext) or '')
 end
 
+-- Private function to identify root directory
+local get_root_dir_unix = function(dir, root_tell)
+    -- List files in directory
+    local search_is_on, root = true, nil
+    local iteration = 1
+    while search_is_on do
+        local pfile = io.popen('ls -a "'..dir..'"')
+        for filename in pfile:lines() do
+            local match = filename == root_tell
+            if match then
+                root = dir
+                search_is_on = false
+            end
+        end
+        pfile:close()
+        if search_is_on then
+            if dir == '/' or dir == '~/' then
+                search_is_on = false
+                print('⬇️ : No suitable root directory found!')
+                return(nil)
+            else
+                local last_tried = dir
+                dir = dir:match('(.*)/')
+                if dir == '' then dir = '/' end
+                print("Changed "..last_tried.." to "..dir)
+            end
+        else
+            print('⬇️ : Root directory found: '..root)
+            return(root)
+        end
+    end
+end
 
 -- Initialize "init" table
 local init = {}
