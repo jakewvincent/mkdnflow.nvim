@@ -156,7 +156,6 @@ followPath() does something with the path in the link under the cursor:
 Returns nothing
 --]]
 M.followPath = function(path)
-
     -- Path can be provided as an argument (this is currently only used when
     -- this function retrieves a path from the citation handler). If no path
     -- is provided as an arg, get the path under the cursor via getLinkPart().
@@ -164,10 +163,8 @@ M.followPath = function(path)
         -- Get the path in the link
         path = links.getLinkPart('path')
     end
-
     -- Check that there's a non-nil output of getLinkPart()
     if path then
-
         -- Get the name of the file in the link path. Will return nil if the
         -- link doesn't contain any directories.
         local filename = string.match(path, '.*/(.-)$')
