@@ -14,10 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local buffers = require('mkdnflow.buffers')
-local init = require('mkdnflow.init')
-local paths = require('mkdnflow.paths')
-
 local M = {}
 
 --[[
@@ -27,7 +23,7 @@ lity. (The compat module is called as files in init.lua.)
 TODO: Remove this function in June 2022
 --]]
 M.goBack = function()
-    buffers.goBack()
+    require('mkdnflow.buffers').goBack()
     print("⬇️ : Friendly warning - references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
@@ -38,7 +34,7 @@ functionality. (The compat module is called as files in init.lua.)
 TODO: Remove this function in June 2022
 --]]
 M.goForward = function()
-    buffers.goForward()
+    require('mkdnflow.buffers').goForward()
     print("⬇️ : Friendly warning - references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
@@ -46,7 +42,7 @@ end
 followPath()
 --]]
 M.followPath = function(path)
-    links.followLink(path)
+    require('mkdnflow.links').followLink(path)
     print('⬇️ : Friendly warning - the use of followPath() will soon stop working. See :h mkdnflow-changes, commit c1cf25...')
 end
 
