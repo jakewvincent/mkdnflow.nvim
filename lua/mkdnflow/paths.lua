@@ -177,7 +177,6 @@ M.followPath = function(path)
 
         -- If so, go to the path specified in the output
         if path_type(path) == 'filename' then
-
             -- Check if the user wants directories to be created and if
             -- a directory is specified in the link that we need to check
             if create_dirs and dir then
@@ -199,10 +198,8 @@ M.followPath = function(path)
                     -- Paste together the directory of the first-opened file
                     -- and the directory in the link path
                     local paste = initial_dir..'/'..dir
-
                     -- See if the path exists
                     local exists = does_exist(paste)
-
                     -- If the path doesn't exist, make it!
                     if not exists then
                         -- Escape special characters in path
@@ -210,27 +207,21 @@ M.followPath = function(path)
                         -- Send command to shell
                         os.execute('mkdir -p '..sh_esc_paste)
                     end
-
                     -- Remember the buffer we're currently viewing
                     buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
                     -- And follow the path!
                     vim.cmd(':e '..paste..'/'..filename)
 
                 else -- Otherwise, they want it relative to the current file
-
                     -- So, get the path of the current file
                     local cur_file = vim.api.nvim_buf_get_name(0)
-
                     -- Get the directory the current file is in
                     local cur_file_dir = string.match(cur_file, '(.*)/.-$')
-
                     -- Paste together the directory of the current file and the
                     -- directory path provided in the link
                     local paste = cur_file_dir..'/'..dir
-
                     -- See if the path exists
                     local exists = does_exist(paste)
-
                     -- If the path doesn't exist, make it!
                     if not exists then
                         -- Escape special characters in path
@@ -238,7 +229,6 @@ M.followPath = function(path)
                         -- Send command to shell
                         os.execute('mkdir -p '..se_paste)
                     end
-
                     -- Remember the buffer we're currently viewing
                     buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
                     -- And follow the path!
@@ -256,54 +246,39 @@ M.followPath = function(path)
                 -- And follow the path!
                 vim.cmd(':e '..paste)
             elseif links_relative_to == 'current' then
-
                 -- Get the path of the current file
                 local cur_file = vim.api.nvim_buf_get_name(0)
-
                 -- Get the directory the current file is in
                 local cur_file_dir = string.match(cur_file, '(.*)/.-$')
-
                 -- Paste together the directory of the current file and the
                 -- directory path provided in the link
                 local paste = cur_file_dir..'/'..path
-
                 -- Remember the buffer we're currently viewing
                 buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
                 -- And follow the path!
                 vim.cmd(':e '..paste)
 
             else -- Otherwise, links are relative to the first-opened file
-
                 -- Paste the dir of the first-opened file and path in the link
                 local paste = initial_dir..'/'..path
-
                 -- Remember the buffer we're currently viewing
                 buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
                 -- And follow the path!
                 vim.cmd(':e '..paste)
-
             end
-
         elseif path_type(path) == 'url' then
-
             local se_path = vim.fn.shellescape(path)
             path_handler(se_path)
-
         elseif path_type(path) == 'file' then
-
             -- Get what's after the file: tag
             local real_path = string.match(path, '^file:(.*)')
-
             -- Check if path provided is absolute or relative to $HOME
             if string.match(real_path, '^~/') or string.match(real_path, '^/') then
-
                 local se_paste = escape_chars(real_path)
-
                 -- If the path starts with a tilde, replace it w/ $HOME
                 if string.match(real_path, '^~/') then
                     se_paste = string.gsub(se_paste, '^~/', '$HOME/')
                 end
-
                 -- If the file exists, handle it; otherwise, print a warning
                 -- Don't want to use the shell-escaped version; it will throw a
                 -- false alert if there are escape chars
@@ -313,7 +288,6 @@ M.followPath = function(path)
                 else
                     path_handler(se_paste)
                 end
-
             elseif links_relative_to == 'root' then
                 -- Paste together root directory path and path in link
                 local paste = root_dir..'/'..real_path
@@ -322,19 +296,15 @@ M.followPath = function(path)
                 -- Pass to the path_handler function
                 path_handler(se_paste)
             elseif links_relative_to == 'current' then
-
                 -- Get the path of the current file
                 local cur_file = vim.api.nvim_buf_get_name(0)
-
                 -- Get the directory the current file is in
                 local cur_file_dir = string.match(cur_file, '(.*)/.-$')
-
                 -- Paste together the directory of the current file and the
                 -- directory path provided in the link, and escape for shell
                 local se_paste = escape_chars(cur_file_dir..'/'..real_path)
                 -- Pass to the path_handler function
                 path_handler(se_paste)
-
             else
                 -- Otherwise, links are relative to the first-opened file, so
                 -- paste together the directory of the first-opened file and the
@@ -342,7 +312,6 @@ M.followPath = function(path)
                 local se_paste = escape_chars(initial_dir..'/'..real_path)
                 -- Pass to the path_handler function
                 path_handler(se_paste)
-
             end
         elseif path_type(path) == 'anchor' then
             cursor.toHeading(path)
