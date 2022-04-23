@@ -189,8 +189,8 @@ M.followPath = function(path)
                     local exists = does_exist(paste)
                     -- If the path doesn't exist, make it
                     if not exists then
-                        local sh_esc_paste = escape_chars(paste)
-                        os.execute('mkdir -p '..sh_esc_paste)
+                        local se_paste = escape_chars(paste)
+                        os.execute('mkdir -p '..se_paste)
                     end
                     -- Remember the buffer we're currently in and follow path
                     buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
@@ -234,9 +234,9 @@ M.followPath = function(path)
                     -- If the path doesn't exist, make it!
                     if not exists then
                         -- Escape special characters in path
-                        local sh_esc_paste = escape_chars(paste)
+                        local se_paste = escape_chars(paste)
                         -- Send command to shell
-                        os.execute('mkdir -p '..sh_esc_paste)
+                        os.execute('mkdir -p '..se_paste)
                     end
 
                     -- Remember the buffer we're currently viewing
@@ -330,22 +330,16 @@ M.followPath = function(path)
                 local cur_file_dir = string.match(cur_file, '(.*)/.-$')
 
                 -- Paste together the directory of the current file and the
-                -- directory path provided in the link
-                local paste = cur_file_dir..'/'..real_path
-
-                -- Escape special characters
-                local se_paste = escape_chars(paste)
+                -- directory path provided in the link, and escape for shell
+                local se_paste = escape_chars(cur_file_dir..'/'..real_path)
                 -- Pass to the path_handler function
                 path_handler(se_paste)
 
             else
-                -- Otherwise, links are relative to the first-opened file
-                -- Paste together the directory of the first-opened file
-                -- and the path in the link
-                local paste = initial_dir..'/'..real_path
-
-                -- Escape special characters
-                local se_paste = escape_chars(paste)
+                -- Otherwise, links are relative to the first-opened file, so
+                -- paste together the directory of the first-opened file and the
+                -- path in the link and escape for the shell
+                local se_paste = escape_chars(initial_dir..'/'..real_path)
                 -- Pass to the path_handler function
                 path_handler(se_paste)
 
