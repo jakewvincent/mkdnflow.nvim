@@ -19,7 +19,7 @@ local mappings = require('mkdnflow').config.mappings
 
 for command, mapping in pairs(mappings) do
     vim.api.nvim_set_keymap('n', mapping, '<Cmd>:'..command..'<CR>', {noremap = true})
-    if command == 'MkdnFollowPath' then
+    if command == 'MkdnFollowLink' then
         vim.api.nvim_set_keymap('v', mapping, '<Cmd>:'..command..'<CR>', {noremap = true})
     end
 end
