@@ -20,19 +20,21 @@ local init = require('mkdnflow.init')
 local M = {}
 
 M.goBack = function()
+    -- TODO: Remove this function in June 2022
     buffers.goBack()
-    print("⬇️ : WARNING - files.lua in mkdnflow is deprecated. Please replace any references to `files` in your config with references to `buffers` (e.g. change `require('mkdnflow').files.goBack()` to `require('mkdnflow').buffers.goBack()`).")
+    print("⬇️ : Friendly warning - references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
 M.goForward = function()
+    -- TODO: Remove this function in June 2022
     buffers.goForward()
-    print("⬇️ : WARNING - files.lua in mkdnflow is deprecated. Please replace any references to `files` in your config with references to `buffers` (e.g. change `require('mkdnflow').files.goForward()` to `require('mkdnflow').buffers.goForward()`).")
+    print("⬇️ : Friendly warning - references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
 M.userConfigCheck = function(user_config)
     if user_config.links_relative_to then
         if type(user_config.links_relative_to) ~= 'table' then
-            print('⬇️ : WARNING - the links_relative_to key in the table passed to the mkdnflow setup function should now be associated with a table value. See :h mkdnflow-recent_changes')
+            print('⬇️ : Friendly warning - the links_relative_to key in the table passed to the setup function should now be associated with a table value. See :h mkdnflow-changes, commit 75c8ec...')
             if user_config.links_relative_to == 'current' then
                 local table = {
                     target = 'current',
