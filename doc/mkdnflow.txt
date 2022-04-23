@@ -13,6 +13,7 @@ CONTENTS                                                        *Mkdnflow-help*
   Recommended vim settings................|Mkdnflow-recommended-vim-settings|
   Credits.................................|Mkdnflow-credits|
   References..............................|Mkdnflow-references|
+  Breaking changes........................|Mkdnflow-changes|
 
 ===============================================================================
 Description                                              *Mkdnflow-description*
@@ -413,3 +414,34 @@ Plugins that would complement Mkdnflow:
 A big list of plugins for Neovim: https://github.com/rockerBOO/awesome-neovim#markdown
 
 Full-featured journal navigation/maintenance: https://github.com/vimwiki/vimwiki
+
+===============================================================================
+Recent breaking changes                                      *Mkdnflow-changes*
+
+commit 75c8ecc5c81bd048b6cd452f30ebde54db258165
+Author: Jake Vincent <jakewvincent@gmail.com>
+Date:   Fri Apr 22 13:32:54 2022 -0700
+
+Starting in this commit, mkdnflow now expects the `links_relative_to` key in
+your config (or in the default config) to point to a table, rather than a stri-
+ng (see |Mkdnflow-configuration|). For now, if you have customized `links_rela-
+tive_to` and it currently points to a string (i.e. 'first' or 'current'), a
+compatibility function will read your config and (internally) convert it into
+the expected format before overwriting the default settings with any you specif-
+y.
+
+commit 511e8ed5a89a1d117ae4ff3e93cf3d1d14338a1c
+Author: Jake Vincent <jakewvincent@gmail.com>
+Date:   Thu Apr 21 20:16:39 2022 -0700
+
+In this commit, the growing `files.lua` module was split into three separate
+modules to improve organization. Link-related functions were moved into
+`links.lua`, buffer-related ones into `buffers.lua`, and path-related ones
+into `paths.lua`. The only reason you're likely to be reading this is if you
+received a friendly warning about referencing files.goBack() or
+files.goForward(). A compatibility module was added to temporarily ensure
+compatibility, but you should replace any references to `files` with references
+to `buffers`. For instance:
+
+  `require('mkdnflow').files.goBack()` -> `require('mkdnflow').buffers.goBack()`
+  `require('mkdnflow').files.goForward()` -> `require('mkdnflow').buffers.goForward()`
