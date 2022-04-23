@@ -229,20 +229,25 @@ open() handles vim-external paths, including local files or web URLs
 Returns nothing
 --]]
 local open = function(path)
-    -- If the file exists, handle it; otherwise, print a warning
-    -- Don't want to use the shell-escaped version; it will throw a
-    -- false alert if there are escape chars
-    if does_exist(path, "f") == false and
-        does_exist(path, "d") == false then
-        print("⬇️ : "..path.." doesn't seem to exist!")
-    else
+    local shell_open = function(path_)
         if this_os == "Linux" then
-            vim.api.nvim_command('silent !xdg-open '..path)
+            vim.api.nvim_command('silent !xdg-open '..path_)
         elseif this_os == "Darwin" then
-            vim.api.nvim_command('silent !open '..path..' &')
+            vim.api.nvim_command('silent !open '..path_..' &')
         else
             print('⬇️ : '..this_os_err)
         end
+    end
+    -- If the file exists, handle it; otherwise, print a warning
+    -- Don't want to use the shell-escaped version; it will throw a
+    -- false alert if there are escape chars
+    if links.hasUrl(path) then
+        shell_open(path)
+    elseif does_exist(path, "f") == false and
+        does_exist(path, "d") == false then
+        print("⬇️ : "..path.." doesn't seem to exist!")
+    else
+        shell_open(path)
     end
 end
 
