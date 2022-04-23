@@ -444,4 +444,20 @@ M.destroyLink = function()
     vim.api.nvim_buf_set_text(0, row - 1, com - 1, row - 1, fin, {link_name})
 end
 
+--[[
+followLink()
+--]]
+M.followLink = function(path)
+    -- Path can be provided as an argument (this is currently only used when
+    -- this function retrieves a path from the citation handler). If no path
+    -- is provided as an arg, get the path under the cursor via getLinkPart().
+    path = path or M.getLinkPart('path')
+    local handlePath = require('mkdnflow.paths').handlePath
+    if path then
+        handlePath(path)
+    else
+        M.createLink()
+    end
+end
+
 return M
