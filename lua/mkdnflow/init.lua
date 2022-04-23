@@ -84,8 +84,12 @@ end
 local get_root_dir_unix = function(dir, root_tell)
     -- List files in directory
     local search_is_on, root = true, nil
+    -- Until the root directory is found, keep looking higher and higher
+    -- each pass
     while search_is_on do
+        -- Get the output of running ls -a in dir
         local pfile = io.popen('ls -a "'..dir..'"')
+        -- Check the list of files for the tell
         for filename in pfile:lines() do
             local match = filename == root_tell
             if match then
@@ -96,11 +100,14 @@ local get_root_dir_unix = function(dir, root_tell)
         pfile:close()
         if search_is_on then
             if dir == '/' or dir == '~/' then
+                -- If we've reached the highest directory possible, call off
+                -- the search and return nothing
                 search_is_on = false
                 return(nil)
             else
-                local last_tried = dir
+                -- If there's still more to remove, remove it
                 dir = dir:match('(.*)/')
+                -- If dir is an empty string, look for the tell in *root* root
                 if dir == '' then dir = '/' end
             end
         else
@@ -121,13 +128,14 @@ init.loaded = nil
 
 -- Run setup
 init.setup = function(user_config)
+    -- Read compatibility module & pass user config through config checker
     local compat = require('mkdnflow.compat')
     user_config = compat.userConfigCheck(user_config)
-    -- Record the user's config
+    -- Overwrite defaults w/ user's config settings, if any
     init.config = merge_configs(default_config, user_config)
     -- Get the extension of the file being edited
     local ft = get_file_type(init.initial_buf)
-    -- Load the extension if the filetype has a match in config.filetypes
+    -- Load extension if the filetype has a match in config.filetypes
     if init.config.filetypes[ft] then
         -- Record load status (i.e. loaded)
         init.loaded = true
@@ -154,7 +162,10 @@ init.setup = function(user_config)
     -- Determine perspective
     local links_relative_to = init.config.links_relative_to
     if links_relative_to.target == 'root' then
+        -- Retrieve the root 'tell'
         local root_tell = links_relative_to.root_tell
+        -- If one was provided, try to find the root directory for the
+        -- notebook/wiki using the tell
         if root_tell then
             init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
             if init.root_dir then
@@ -163,7 +174,7 @@ init.setup = function(user_config)
                 print('⬇️ : No suitable root directory found!')
             end
         else
-            print('⬇️ : No tell was provided for the root directory!')
+            print('⬇️ : No tell was provided for the root directory. See :h mkdnflow-configuration.')
         end
     end
 end
