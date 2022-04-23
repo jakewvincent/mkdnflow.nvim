@@ -42,9 +42,12 @@ M.goForward = function()
 end
 
 --[[
-
+userConfigCheck() will check a user config for particular settings that have
+since been migrated to another setting or another format. It returns an equiva-
+lent user config that is upgraded to the new format.
 --]]
 M.userConfigCheck = function(user_config)
+    -- Inspect links_relative_to setting, if specified
     if user_config.links_relative_to then
         if type(user_config.links_relative_to) ~= 'table' then
             print('⬇️ : Friendly warning - the links_relative_to key in the table passed to the setup function should now be associated with a table value. See :h mkdnflow-changes, commit 75c8ec...')
