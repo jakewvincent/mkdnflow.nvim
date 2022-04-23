@@ -16,6 +16,7 @@
 
 local buffers = require('mkdnflow.buffers')
 local init = require('mkdnflow.init')
+local paths = require('mkdnflow.paths')
 
 local M = {}
 
@@ -39,6 +40,14 @@ TODO: Remove this function in June 2022
 M.goForward = function()
     buffers.goForward()
     print("⬇️ : Friendly warning - references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
+end
+
+--[[
+followPath()
+--]]
+M.followPath = function(path)
+    links.followLink(path)
+    print('⬇️ : Friendly warning - the use of followPath() will soon stop working. See :h mkdnflow-changes, commit c1cf25...')
 end
 
 --[[
