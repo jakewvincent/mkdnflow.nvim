@@ -19,14 +19,15 @@
 -- Retrieve default bibliography path
 local bib_path = require('mkdnflow').config.default_bib_path
 
+--[[
+find_bib_entry() takes a citation
+--]]
 -- Citation finder function
 local find_bib_entry = function(citation)
     -- Remove @
     local citekey = string.sub(citation, 2, -1)
-
     -- Open bibliography file
     local bib_file = io.open(bib_path, 'r')
-
     -- If the file exists, search it line-by-line for the citekey
     if bib_file then
         local unfound = true
@@ -67,16 +68,22 @@ local find_bib_entry = function(citation)
             else
                 unfound = nil
                 bib_file:close()
-                print('No entry found for "'..citekey..'"!')
+                print('⬇️ : No entry found for "'..citekey..'"!')
             end
         end
     else
-        print('Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.')
+        print('⬇️ : Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.')
     end
 end
 
 local M = {}
 
+--[[
+citationHandler() takes a citation passes it to find_bib_entry. If a match
+is found in the bib file, this function decides what to return depending option
+the information found in that bib entry. If nothing relevant was found, it
+prints a warning message and returns nothing.
+--]]
 M.citationHandler = function(citation)
     local citekey, bib_entry = find_bib_entry(citation)
     if citekey and bib_entry then
@@ -93,7 +100,7 @@ M.citationHandler = function(citation)
             local howpublished = bib_entry['howpublished']
             return howpublished
         else
-            print('Bib entry with citekey "'..citekey..'" had no relevant content!')
+            print('⬇️ : Bib entry with citekey "'..citekey..'" had no relevant content!')
             return nil
         end
     end

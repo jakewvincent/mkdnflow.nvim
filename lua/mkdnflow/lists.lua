@@ -17,6 +17,10 @@
 -- File and link navigation functions
 local M = {}
 
+--[[
+toggleToDo() retrieves a line when called, checks if it has a to-do item with
+[ ], [-], or [X], and changes the completion status to the next in line.
+--]]
 M.toggleToDo = function()
     -- Get the line the cursor is on
     local line = vim.api.nvim_get_current_line()

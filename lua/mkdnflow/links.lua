@@ -25,11 +25,8 @@ local evaluate_prefix = config.evaluate_prefix
 local M = {}
 
 --[[
-
 getLinkPart() extracts part of a markdown link, i.e. the part in [] or ().
 Returns a string--the string in the square brackets
-Public function
-
 --]]
 M.getLinkPart = function(part)
     -- Use 'path' as part if no argument provided
@@ -38,7 +35,6 @@ M.getLinkPart = function(part)
     local position = vim.api.nvim_win_get_cursor(0)
     local row = position[1]
     local col = position[2]
-
     -- Get the indices of the links in the line
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
     local link_pattern = '%b[](%b())' -- What links look like
@@ -142,14 +138,11 @@ M.getLinkPart = function(part)
 end
 
 --[[
-
 hasUrl() determines whether a string is a URL
 Arguments: the string to lok for a url in; (optional) what should be returned--
 either 'boolean' [default] or 'positions'; (optional) current cursor position
 Returns: a boolean or nil if to_return is empty or 'boolean'; positions of url
 if to_return is 'positions'.
-Private function
-
 --]]
 M.hasUrl = function(string, to_return, col)
     to_return = to_return or 'boolean'
@@ -204,7 +197,6 @@ M.hasUrl = function(string, to_return, col)
         va = true, vc = true, ve = true, vg = true, vi = true, vn = true,
         vu = true, web = true, wf = true, ws = true, xxx = true, ye = true,
         yt = true, yu = true, za = true, zm = true, zr = true, zw = true}
-
     -- Table of protocols
     local protocols = {
         [''] = 0,
@@ -212,18 +204,14 @@ M.hasUrl = function(string, to_return, col)
         ['https://'] = 0,
         ['ftp://'] = 0
     }
-
     -- Table for status of url search
     local finished = {}
-
     -- URL identified
     local found_url = nil
-
     -- Function to return the max value of the four inputs
     local max_of_four = function(a, b, c, d)
         return math.max(a + 0, b + 0, c + 0, d + 0)
     end
-
     -- For each group in the match, do some stuff
     local com, fin
     for pos_start, url, prot, subd, tld, colon, port, slash, path, pos_end in
@@ -243,7 +231,7 @@ M.hasUrl = function(string, to_return, col)
             end
         end
     end
-
+    -- TODO: add comment
     for pos_start, url, prot, dom, colon, port, slash, path, pos_end in
         string:gmatch('()((%f[%w]%a+://)(%w[-.%w]*)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))()')
         do
@@ -259,7 +247,7 @@ M.hasUrl = function(string, to_return, col)
             end
         end
     end
-
+    -- TODO: add comment
     if found_url ~= true then found_url = false end
     if to_return == 'boolean' then
         return(found_url)
@@ -271,13 +259,10 @@ M.hasUrl = function(string, to_return, col)
 end
 
 --[[
-
 formatLink() creates a formatted link from whatever text is passed to it
 Returns a string:
      1. '[string of text](<prefix>_string-of-text.md)' in most cases
      2. '[anchor link](#anchor-link)' if the text starts with a hash (#)
-Public function
-
 --]]
 M.formatLink = function(text, part)
     -- If the text starts with a hash, format the link as an anchor link
@@ -307,9 +292,8 @@ M.formatLink = function(text, part)
         else
             prefix = new_file_prefix
         end
-
-        local path_text = string.gsub(text, " ", "-")
         -- Set up the replacement
+        local path_text = string.gsub(text, " ", "-")
         local replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..'.md)'}
         if part == nil then
             return(replacement)
@@ -322,12 +306,9 @@ M.formatLink = function(text, part)
 end
 
 --[[
-
 createLink() makes a link from the word under the cursor--or, if no word is
 under the cursor, produces the syntax for a md link: [](YYYY-MM-DD_.md)
 Returns nothing via stdout, but does insert text into the vim buffer
-Public function
-
 --]]
 M.createLink = function()
     -- Make a variable for the prefix to use
@@ -340,15 +321,12 @@ M.createLink = function()
     else
         prefix = new_file_prefix
     end
-
     -- Get mode from vim
     local mode = vim.api.nvim_get_mode()['mode']
-
     -- Get the cursor position
     local position = vim.api.nvim_win_get_cursor(0)
     local row = position[1]
     local col = position[2]
-
     -- If the current mode is 'normal', make link from word under cursor
     if mode == 'n' then
         -- Get the text of the line the cursor is on
@@ -371,17 +349,14 @@ M.createLink = function()
             local replacement = {
                 '['..cursor_word..']'..'('..prefix..string.lower(cursor_word)..'.md)'
             }
-
             -- Find the (first) position of the matched word in the line
             local left, right = string.find(line, cursor_word, nil, true)
-
             -- Make sure it's not a duplicate of the word under the cursor, and if it
             -- is, perform the search until a match is found whose right edge follows
             -- the cursor position
             while right < col do
                 left, right = string.find(line, cursor_word, right, true)
             end
-
             -- Replace the word under the cursor w/ the formatted link replacement
             vim.api.nvim_buf_set_text(
                 0, row - 1, left - 1, row - 1, right, replacement
@@ -389,10 +364,8 @@ M.createLink = function()
         end
     -- If current mode is 'visual', make link from selection
     elseif mode == 'v' then
-
         -- Get the start of the visual selection (the end is the cursor position)
         local com = vim.fn.getpos('v')
-
         -- If the start of the visual selection is after the cursor position,
         -- use the cursor position as start and the visual position as finish
         local start = {}
@@ -400,7 +373,6 @@ M.createLink = function()
         if com[3] > col then
             start = {row - 1, col}
             finish = {com[2] - 1, com[3] - 1 + com[4]}
-
             local region =
                 vim.region(
                     0,
@@ -420,11 +392,9 @@ M.createLink = function()
                     region[finish[1]][1] + 1, region[finish[1]][2]
                 )
             end
-
             -- Save the text selection & replace spaces with dashes
             local text = table.concat(lines)
             local replacement = M.formatLink(text)
-
             -- Replace the visual selection w/ the formatted link replacement
             vim.api.nvim_buf_set_text(
                 0, row - 1, col, com[2] - 1, com[3], replacement
@@ -432,7 +402,6 @@ M.createLink = function()
         else
             start = {com[2] - 1, com[3] - 1 + com[4]}
             finish = {row - 1, col}
-
             local region =
                 vim.region(
                     0,
@@ -452,7 +421,6 @@ M.createLink = function()
                     region[finish[1]][1] + 1, region[finish[1]][2]
                 )
             end
-
             -- Save the text selection
             local text = table.concat(lines)
             local replacement = M.formatLink(text)
@@ -466,11 +434,8 @@ M.createLink = function()
 end
 
 --[[
-
 destroyLink() replaces any link the cursor is currently overlapping with just
 the name part of the link.
-Public function
-
 --]]
 M.destroyLink = function()
     -- Get link name, indices, and row the cursor is currently on

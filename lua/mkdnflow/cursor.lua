@@ -18,7 +18,9 @@
 local links = require('mkdnflow.links')
 local config = require('mkdnflow').config
 
--- Function to get line and reverse the string data of the returned object
+--[[
+rev_get_line() retrieves line text and reverses it
+--]]
 local rev_get_line = function(buffer, start, end_, strict_indexing)
     local line = vim.api.nvim_buf_get_lines(buffer, start, end_, strict_indexing)
     if line[1] then
@@ -27,7 +29,10 @@ local rev_get_line = function(buffer, start, end_, strict_indexing)
     return line
 end
 
--- Function to search reversed string & return indices for non-reversed string
+--[[
+rev_indices() takes two indices and a string and returns the equivalent indices
+for the reversed string
+--]]
 local rev_indices = function(r, l, str)
     local right, left = nil, nil
     if r and l then
@@ -37,6 +42,10 @@ local rev_indices = function(r, l, str)
     return left, right
 end
 
+--[[
+go_to() sends the cursor to the beginning of the next instance of a pattern. If
+'reverse' is 'true', it looks backwards.
+--]]
 local go_to = function(pattern, reverse)
     -- Get current position of cursor
     local position = vim.api.nvim_win_get_cursor(0)
@@ -58,21 +67,17 @@ local go_to = function(pattern, reverse)
         -- Get start & end indices of match (if any)
         left, right = string.find(line[1], pattern)
     end
-
     -- As long as a match hasn't been found, keep looking as long as possible!
     local unfound = true
     while unfound do
-
         -- See if there's a match on the current line.
         if left and right then
             if reverse then
-
                 -- If there is, see if the cursor is before the match
                 if rev_col + 1 < right_ then
                     -- If it is, send the cursor to the start of the match
                     vim.api.nvim_win_set_cursor(0, {row, left - 1})
                     unfound = false
-
                 -- If it isn't, search after the end of the previous match.
                 else
                     -- These values will be used on the next iteration of the loop.
@@ -81,13 +86,11 @@ local go_to = function(pattern, reverse)
                 end
 
             else
-
                 -- If there is, see if the cursor is before the match
                 if col + 1 < left then
                     -- If it is, send the cursor to the start of the match
                     vim.api.nvim_win_set_cursor(0, {row, left - 1})
                     unfound = false
-
                 -- If it isn't, search after the end of the previous match.
                 else
                     -- These values will be used on the next iteration of the loop.
@@ -95,7 +98,6 @@ local go_to = function(pattern, reverse)
                 end
 
             end
-
         -- If there's not a match on the current line, keep checking line-by-line
         else
             -- Update row to search next line
@@ -104,7 +106,6 @@ local go_to = function(pattern, reverse)
             else
                 row = row + 1
             end
-
             -- Since we're on the next line, column position no longer matters
             -- and we want to make sure that col is always less than left
             if reverse then
@@ -112,14 +113,12 @@ local go_to = function(pattern, reverse)
             else
                 col = -1
             end
-
             -- Get the content of the next line (if any)
             if reverse then
                 line = rev_get_line(0, row - 1, row, false)
             else
                 line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
             end
-
             -- Check if the line is a real line
             if line[1] then
                 -- If it's a real line, search it
@@ -163,8 +162,10 @@ local go_to = function(pattern, reverse)
     end
 end
 
--- Function to find a heading for the text passed in from an anchor link
--- If no argument is provided, go to the next found heading
+--[[
+go_to_heading() finds a heading for the text passed in from an anchor link. If
+no argument is provided, it goes to the next heading it can find, if possible.
+--]]
 local go_to_heading = function(anchor_text, reverse)
     -- Record which line we're on; chances are the link goes to something later,
     -- so we'll start looking from here onwards and then circle back to the beginning
@@ -239,7 +240,10 @@ end
 
 local M = {}
 
--- Increase/decrease heading level
+--[[
+changeHeadingLevel() changes the importance of a heading by adding or removing
+a hash symbol. Fewer hashes = more important.
+--]]
 M.changeHeadingLevel = function(change)
     -- Get the row number and the line contents
     local row = vim.api.nvim_win_get_cursor(0)[1]
@@ -261,25 +265,39 @@ M.changeHeadingLevel = function(change)
     end
 end
 
--- Find the next link
+--[[
+toNextLink() goes to the next link according to an optional pattern passed as an
+argument. If no pattern is passed in, it looks for the default markdown link
+pattern.
+--]]
 M.toNextLink = function(pattern)
     -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)
     pattern = pattern or '%b[]%b()'
     go_to(pattern)
 end
 
--- Find the previous link
+--[[
+toPrevLink() goes to the previous link according to an optional pattern passed
+as an argument. If no pattern is passed in, it looks for the default markdown
+link pattern.
+--]]
 M.toPrevLink = function(pattern)
     pattern = pattern or '%b)(%b]['
     go_to(pattern, true)
 end
 
--- Find a particular heading in the file
+--[[
+toHeading() finds a particular heading in the file
+--]]
 M.toHeading = function(anchor_text, reverse)
     go_to_heading(anchor_text, reverse)
 end
 
--- Yank the current line as an anchor link (assumes current line is a heading)
+--[[
+yankAsAnchorLink() takes the current line, converts it into an anchor link int-
+ernally, an adds the link to the register, effectively yanking the heading as
+an anchor link. Assumes current line is a heading.
+--]]
 M.yankAsAnchorLink = function()
     -- Get the row number and the line contents
     local row = vim.api.nvim_win_get_cursor(0)[1]

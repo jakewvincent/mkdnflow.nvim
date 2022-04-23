@@ -191,7 +191,7 @@ end
 -- Force start
 init.forceStart = function()
     if init.loaded == true then
-        print("MkdnFlow already running!")
+        print("⬇️ : Mkdnflow already running!")
     else
         -- Record load status (i.e. loaded)
         init.loaded = true

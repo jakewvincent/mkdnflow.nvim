@@ -17,7 +17,6 @@
 
 -- Get OS for use in a couple of functions
 local this_os = require('mkdnflow').this_os
-print(this_os)
 -- Generic OS message
 local this_os_err = 'Function unavailable for '..this_os..'. Please file an issue.'
 -- Get config setting for whether to make missing directories or not
@@ -36,11 +35,8 @@ local cursor = require('mkdnflow.cursor')
 local links = require('mkdnflow.links')
 
 --[[
-
 path_handler() handles vim-external paths, including local files or web URLs
 Returns nothing
-Private function
-
 --]]
 local path_handler = function(path)
     if this_os == "Linux" then
@@ -53,14 +49,11 @@ local path_handler = function(path)
 end
 
 --[[
-
 path_type() determines what kind of path is in a url
 Returns a string:
      1. 'file' if the path has the 'file:' prefix,
      2. 'url' is the result of hasUrl(path) is true
      3. 'filename' if (1) and (2) aren't true
-Private function
-
 --]]
 local path_type = function(path)
     if string.find(path, '^file:') then
@@ -78,42 +71,38 @@ end
 
 
 --[[
-
 does_exist() determines whether the path specified as the argument exists
 NOTE: Assumes that the initially opened file is in an existing directory!
-Private function
-
 --]]
 local does_exist = function(path, type)
     -- If type is not specified, use "d" (directory) by default
     type = type or "d"
     if this_os == "Linux" or this_os == "POSIX" or this_os == "Darwin" then
-
         -- Use the shell to determine if the path exists
         local handle = io.popen(
             'if [ -'..type..' "'..path..'" ]; then echo true; else echo false; fi'
         )
         local exists = handle:read('*l')
         io.close(handle)
-
         -- Get the contents of the first (only) line & store as a boolean
         if exists == 'false' then
             exists = false
         else
             exists = true
         end
-
         -- Return the existence property of the path
         return(exists)
     else
         print('⬇️ : '..this_os_err)
-
-        -- Return a blep
+        -- Return nothing in the else case
         return(nil)
     end
 end
 
-
+--[[
+escape_chars() escapes the set of characters in 'chars' with the mappings in
+'replacements'. For shell escapes.
+--]]
 local escape_chars = function(string)
     -- Which characters to match
     local chars = "[ '&()$]"
@@ -133,6 +122,10 @@ local escape_chars = function(string)
     return(escaped)
 end
 
+--[[
+escape_lua_chars() escapes the set of characters in 'chars' with the mappings
+provided in 'replacements'. For Lua escapes.
+--]]
 local escape_lua_chars = function(string)
     -- Which characters to match
     local chars = "[-.'\"a]"
@@ -152,7 +145,6 @@ end
 local M = {}
 
 --[[
-
 followPath() does something with the path in the link under the cursor:
      1. Creates the file specified in the path, if the path is determined to
         be a filename,
@@ -162,8 +154,6 @@ followPath() does something with the path in the link under the cursor:
         system's default application for that filetype, if the path is dete-
         rmined to be neither the filename for a text file nor a URL.
 Returns nothing
-Public function
-
 --]]
 M.followPath = function(path)
 

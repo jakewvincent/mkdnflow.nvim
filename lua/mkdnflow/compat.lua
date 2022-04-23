@@ -19,18 +19,31 @@ local init = require('mkdnflow.init')
 
 local M = {}
 
+--[[
+goBack() calls the version of goBack() in the buffers module. This is here so
+that anyone calling goBack from the old files module will still have functiona-
+lity. (The compat module is called as files in init.lua.)
+TODO: Remove this function in June 2022
+--]]
 M.goBack = function()
-    -- TODO: Remove this function in June 2022
     buffers.goBack()
     print("⬇️ : Friendly warning - references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
+--[[
+goForward() calls the version of goForward() in the buffers module. This is
+here so that anyone calling goForward from the old files module will still have
+functionality. (The compat module is called as files in init.lua.)
+TODO: Remove this function in June 2022
+--]]
 M.goForward = function()
-    -- TODO: Remove this function in June 2022
     buffers.goForward()
     print("⬇️ : Friendly warning - references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
+--[[
+
+--]]
 M.userConfigCheck = function(user_config)
     if user_config.links_relative_to then
         if type(user_config.links_relative_to) ~= 'table' then

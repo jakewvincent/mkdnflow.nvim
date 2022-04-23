@@ -32,21 +32,11 @@ M.pop = function(stack_name)
     table.remove(stack_name, 1)
 end
 
-local report = function(stack_name)
-    -- Print out the contents of a stack
-    for i = 1, #stack_name, 1 do
-        print(stack_name[i])
-    end
-end
-
 --[[
-
 goBack() gets the current buffer number to see if it's greater than 1. If it
 is, the current buffer is not the first that was opened, and there is a buffer
 to go back to. It gets the previous buffer number from the buffer stack, goes
 there, and then pops the top element from the main stack.
-Public function
-
 --]]
 M.goBack = function()
     local cur_bufnr = vim.api.nvim_win_get_buf(0)
@@ -70,20 +60,16 @@ M.goBack = function()
 end
 
 --[[
-
 goForward() looks at the historical buffer stack to see if there's anything to
 be navigated to. If there is, it adds the current buffer to the main stack,
 goes to the buffer at the top of the history stack, and pops it from the histo-
 ry stack. Returns `true` if successful, `false` if it fails.
-Public function
-
 --]]
 M.goForward = function()
     -- Get current buffer number
     local cur_bufnr = vim.api.nvim_win_get_buf(0)
     -- Get historical buffer number
     local hist_bufnr = M.hist[1]
-
     -- If there is a buffer number in the history stack, do the following; if
     -- not, print a warning
     if hist_bufnr then
