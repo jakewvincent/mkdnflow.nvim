@@ -418,6 +418,19 @@ Full-featured journal navigation/maintenance: https://github.com/vimwiki/vimwiki
 ===============================================================================
 Recent breaking changes                                      *Mkdnflow-changes*
 
+commit c1cf25f061e29be5ed7b9e5d44e5f0f427d46444 (HEAD -> dev)
+Author: Jake Vincent <jakewvincent@gmail.com>
+Date:   Sat Apr 23 16:10:04 2022 -0700
+
+This commit contained a reorganization of the function in `files.lua` that was
+called followPath(). The higher-level functionality of followPath() was shipped
+off to a new function called followLink(), which is located in the new links m-
+odule. The vim command MkdnFollowPath was at around the same time changed to
+MkdnFollowLink. If you have any custom commands or references to either MkdnFo-
+llowPath or files.followPath(), please use MkdnFollowLink and/or
+links.followLink() from now on.
+
+
 commit 75c8ecc5c81bd048b6cd452f30ebde54db258165
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Fri Apr 22 13:32:54 2022 -0700
