@@ -37,6 +37,12 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
     * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
 
+### Customize perspective
+* Specify what perspective the plugin-should take when interpreting links to files. There are three options:
+    1. Interpret links relative to the first-opened file (default behavior)
+    2. Interpret links relative to the file open in the current buffer
+    3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, you must set `links_relative_to.target` to `root` in your config and specify a "tell" for the root directory under `links_relative_to.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [Configuration](#%EF%B8%8F-configuration) for the default config and an example of how to configure the `links_relative_to` table.
+
 ### Act on links
 * Follow links relative to the first-opened file or current file (as specified in your config) or, if the path is prefixed with `file:`, the path can be absolute (starting with `/`) or relative to your home directory (starting with `~/`) (mapped to `<CR>` by default)
     * `<CR>`ing on a link to a text file will open it in the current window (i.e. `:e <filename>`)
@@ -146,7 +152,7 @@ EOF
 
 ## ⚙️ Configuration
 
-Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the comments above each setting. **To use these defaults, simply call the setup function without any argument:** `require('mkdnflow').setup({})`. To change these settings, specify new values for any of them them in the setup function.
+Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the comments above each setting. **To use these defaults, simply call the setup function with an empty table as the argument:** `require('mkdnflow').setup({})`. To change these settings, specify new values for any of them them in the setup function.
 
 ```lua
 require('mkdnflow').setup({
@@ -209,7 +215,7 @@ require('mkdnflow').setup({
         MkdnPrevHeading = '<leader>[',
         MkdnGoBack = '<BS>',
         MkdnGoForward = '<Del>',
-        MkdnFollowPath = '<CR>',
+        MkdnFollowLink = '<CR>',
         MkdnYankAnchorLink = 'ya',
         MkdnIncreaseHeading = '+',
         MkdnDecreaseHeading = '-',
@@ -244,7 +250,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<leader>[`  | n    | `:MkdnPrevHeading<CR>`     | Move the cursor to the beginning of the previous heading (if there is one) |
 | `<BS>`       | n    | `:MkdnGoBack<CR>`          | Open the historically last-active buffer in the current window |
 | `<Del>`      | n    | `:MkdnGoForward<CR>`       | Open the buffer that was historically navigated away from in the current window |
-| `<CR>`       | n    | `:MkdnFollowPath<CR>`      | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
+| `<CR>`       | n    | `:MkdnFollowLink<CR>`      | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
 | `ya`         | n    | `:MkdnYankAnchorLink<CR>`  | Yank a formatted anchor link (if cursor is currently on a line with a heading) |
 | `+`          | n    | `:MkdnIncreaseHeading<CR>` | Increase heading importance (remove hashes) |
 | `-`          | n    | `:MkdnDecreaseHeading<CR>` | Decrease heading importance (add hashes) |
@@ -285,6 +291,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/23/22: Major reorganization of followPath() function which ships off some of its old functionality to the new links module and much of it to smaller, path-type-specific functions in the new paths module
+* 04/22/22: Added ability to identify the notebook/wiki's root directory by specifying a "tell" in the config (a file that can be used to identify the root)
 * 04/20/22: Added ability to replace a link with just its name (effectively undoing the link) -- mapped to `<M-CR>` by default (Alt-Enter)
 * 04/20/22: Fix for [issue #22](https://github.com/jakewvincent/mkdnflow.nvim/issues/22)
 * 04/19/22: Toggle to-do list item's completion status
