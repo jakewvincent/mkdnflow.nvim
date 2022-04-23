@@ -171,7 +171,6 @@ M.followPath = function(path)
         -- Get the name of the directory path to the file in the link path. Will
         -- return nil if the link doesn't contain any directories.
         local dir = string.match(path, '(.*)/.-$')
-
         -- If so, go to the path specified in the output
         if path_type(path) == 'filename' then
             -- Check if the user wants directories to be created and if
@@ -208,7 +207,6 @@ M.followPath = function(path)
                     buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
                     -- And follow the path!
                     vim.cmd(':e '..paste..'/'..filename)
-
                 else -- Otherwise, they want it relative to the current file
                     -- So, get the path of the current file
                     local cur_file = vim.api.nvim_buf_get_name(0)
@@ -231,7 +229,6 @@ M.followPath = function(path)
                     -- And follow the path!
                     vim.cmd(':e '..paste..'/'..filename)
                 end
-
             -- Otherwise, if links are interpreted rel to first-opened file
             elseif links_relative_to == 'root' then
                 -- Get the path of the current file
@@ -254,7 +251,6 @@ M.followPath = function(path)
                 buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
                 -- And follow the path!
                 vim.cmd(':e '..paste)
-
             else -- Otherwise, links are relative to the first-opened file
                 -- Paste the dir of the first-opened file and path in the link
                 local paste = initial_dir..'/'..path
