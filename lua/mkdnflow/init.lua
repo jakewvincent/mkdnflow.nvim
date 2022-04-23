@@ -135,37 +135,35 @@ init.setup = function(user_config)
     user_config = compat.userConfigCheck(user_config)
     -- Overwrite defaults w/ user's config settings, if any
     init.config = merge_configs(default_config, user_config)
-    -- Determine perspective
-    local links_relative_to = init.config.links_relative_to
-    if links_relative_to.target == 'root' then
-        -- Retrieve the root 'tell'
-        local root_tell = links_relative_to.root_tell
-        -- If one was provided, try to find the root directory for the
-        -- notebook/wiki using the tell
-        if root_tell then
-            if init.this_os == 'Linux' or init.this_os == 'Darwin' then
-                init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
-                if init.root_dir then
-                    print('⬇️ : Root directory found: '..init.root_dir)
-                else
-                    print('⬇️ : No suitable root directory found!')
-                    init.config.links_relative_to.target = init.config.links_relative_to.fallback
-                end
-            else
-                print('⬇️ : Cannot yet search for root directory on '..init.this_os..' machines.')
-                init.config.links_relative_to.target = init.config.links_relative_to.fallback
-            end
-        else
-            print('⬇️ : No tell was provided for the root directory. See :h mkdnflow-configuration.')
-            init.config.links_relative_to.target = init.config.links_relative_to.fallback
-        end
-    end
     -- Get the extension of the file being edited
     local ft = get_file_type(init.initial_buf)
     -- Load extension if the filetype has a match in config.filetypes
     if init.config.filetypes[ft] then
-        -- Record load status (i.e. loaded)
-        init.loaded = true
+        -- Determine perspective
+        local links_relative_to = init.config.links_relative_to
+        if links_relative_to.target == 'root' then
+            -- Retrieve the root 'tell'
+            local root_tell = links_relative_to.root_tell
+            -- If one was provided, try to find the root directory for the
+            -- notebook/wiki using the tell
+            if root_tell then
+                if init.this_os == 'Linux' or init.this_os == 'Darwin' then
+                    init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
+                    if init.root_dir then
+                        print('⬇️ : Root directory found: '..init.root_dir)
+                    else
+                        print('⬇️ : No suitable root directory found!')
+                        init.config.links_relative_to.target = init.config.links_relative_to.fallback
+                    end
+                else
+                    print('⬇️ : Cannot yet search for root directory on '..init.this_os..' machines.')
+                    init.config.links_relative_to.target = init.config.links_relative_to.fallback
+                end
+            else
+                print('⬇️ : No tell was provided for the root directory. See :h mkdnflow-configuration.')
+                init.config.links_relative_to.target = init.config.links_relative_to.fallback
+            end
+        end
         -- Load functions
         init.cursor = require('mkdnflow.cursor')
         init.paths = require('mkdnflow.paths')
@@ -181,6 +179,8 @@ init.setup = function(user_config)
                 print("⬇️ : NOTE - Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
             end
         end
+        -- Record load status (i.e. loaded)
+        init.loaded = true
     else
         -- Record load status (i.e. not loaded)
         init.loaded = false
