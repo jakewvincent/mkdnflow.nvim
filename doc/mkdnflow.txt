@@ -51,7 +51,7 @@ markdown files:
   Open the buffer that was historically last navigated away from in the current
   window.
 
-:MkdnFollowPath
+:MkdnFollowLink
   Open the link under the cursor, creating missing directories if desired, or
   if there is no link under the cursor, make a link from the word under the
   cursor.
@@ -176,7 +176,7 @@ require('mkdnflow.links').createLink()
   under the cursor, the whole URL is made into a link. Returns nothing via std-
   out, but inserts text into the vim buffer.
 
-require('mkdnflow.paths').followPath()
+require('mkdnflow.links').followLink()
   Does something with the path in the link under the cursor. If the path is a
   filename, it creates the file specified in the path. If the path is a URL,
   it uses `path_handler()` to open the URL specified in the path. If the path
@@ -298,7 +298,7 @@ A sample config showing the defaults:~
             MkdnPrevHeading = '<leader>[',
             MkdnGoBack = '<BS>',
             MkdnGoForward = '<Del>',
-            MkdnFollowPath = '<CR>',
+            MkdnFollowLink = '<CR>',
             MkdnYankAnchorLink = 'ya',
             MkdnIncreaseHeading = '+',
             MkdnDecreaseHeading = '-'
@@ -343,7 +343,7 @@ e`.)
   gated away from in the current window.
 
 <CR> (normal mode)
-  Mapped to `:MkdnFollowPath`. If a link to a .md file is under the cursor, op-
+  Mapped to `:MkdnFollowLink`. If a link to a .md file is under the cursor, op-
   ens the link under the cursor, creating missing directories if desired. If
   there is a citation under the cursor, open any of the following (in order of
   priority): a file associated with the citation key, a website associated with
