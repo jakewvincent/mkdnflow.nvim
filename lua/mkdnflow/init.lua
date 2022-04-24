@@ -198,7 +198,7 @@ init.setup = function(user_config)
                     end
                 elseif init.this_os == 'Windows_NT' then
                     --init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
-                    print(init.initial_dir)
+                    print(init.initial_buf)
                     if init.root_dir then
                         print('⬇️  Root directory found: '..init.root_dir)
                     else
