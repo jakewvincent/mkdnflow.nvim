@@ -29,6 +29,7 @@ getLinkPart() extracts part of a markdown link, i.e. the part in [] or ().
 Returns a string--the string in the square brackets
 --]]
 M.getLinkPart = function(part)
+    print('looking for a link...')
     -- Use 'path' as part if no argument provided
     part = part or 'path'
     -- Get current cursor position
@@ -99,6 +100,7 @@ M.getLinkPart = function(part)
         end
     else -- If one wasn't found, perform another search, this time for citations
         unfound = true
+        last_fin = 1
         while unfound do
             local com, fin = string.find(line[1], bib_pattern, last_fin)
             -- If there was a match, see if the cursor is inside it
