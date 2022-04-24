@@ -80,7 +80,7 @@ local get_file_type = function(string)
     return(ext ~= nil and string.lower(ext) or '')
 end
 
--- Private function to identify root directory
+-- Private function to identify root directory on a unix machine
 local get_root_dir_unix = function(dir, root_tell)
     -- List files in directory
     local search_is_on, root = true, nil
@@ -109,6 +109,43 @@ local get_root_dir_unix = function(dir, root_tell)
                 dir = dir:match('(.*)/')
                 -- If dir is an empty string, look for the tell in *root* root
                 if dir == '' then dir = '/' end
+            end
+        else
+            return(root)
+        end
+    end
+end
+
+-- Private function to identify root directory on a windows machine
+local get_root_dir_windows = function(dir, root_tell)
+    -- List files in directory
+    local search_is_on, root = true, nil
+    -- Until the root directory is found, keep looking higher and higher
+    -- each pass
+    while search_is_on do
+        -- Get the output of running ls -a in dir
+        local pfile = io.popen('dir /w "'..dir..'"')
+        -- Check the list of files for the tell
+        for filename in pfile:lines() do
+            --local match = filename == root_tell
+            --if match then
+            --    root = dir
+            --    search_is_on = false
+            --end
+            print(filename)
+        end
+        pfile:close()
+        if search_is_on then
+            if dir == 'C:\\' then
+                -- If we've reached the highest directory possible, call off
+                -- the search and return nothing
+                search_is_on = false
+                return(nil)
+            else
+                -- If there's still more to remove, remove it
+                dir = dir:match('(.*)\\')
+                -- If dir is an empty string, look for the tell in *root* root
+                --if dir == '' then dir = '/' end
             end
         else
             return(root)
@@ -149,6 +186,14 @@ init.setup = function(user_config)
             if root_tell then
                 if init.this_os == 'Linux' or init.this_os == 'Darwin' then
                     init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
+                    if init.root_dir then
+                        print('⬇️  Root directory found: '..init.root_dir)
+                    else
+                        print('⬇️  No suitable root directory found!')
+                        init.config.links_relative_to.target = init.config.links_relative_to.fallback
+                    end
+                elseif init.this_os == 'Windows_NT' then
+                    init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
                     if init.root_dir then
                         print('⬇️  Root directory found: '..init.root_dir)
                     else
