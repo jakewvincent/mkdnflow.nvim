@@ -155,14 +155,6 @@ end
 
 -- Initialize "init" table
 local init = {}
--- Get first opened file/buffer path and directory
-init.initial_buf = vim.api.nvim_buf_get_name(0)
-if this_os == 'Windows_NT' then
-    init.initial_dir = init.initial_buf:match('(.*)\\.-')
-    print("Trying to get initial dir")
-else
-    init.initial_dir = init.initial_buf:match('(.*)/.-')
-end
 -- Table to store merged configs
 init.config = {}
 -- Initialize a variable for load status
@@ -172,6 +164,13 @@ init.loaded = nil
 init.setup = function(user_config)
     -- Get OS for use in a couple of functions
     init.this_os = vim.loop.os_uname().sysname
+    -- Get first opened file/buffer path and directory
+    init.initial_buf = vim.api.nvim_buf_get_name(0)
+    if this_os == 'Windows_NT' then
+        init.initial_dir = init.initial_buf:match('(.*)\\.-')
+    else
+        init.initial_dir = init.initial_buf:match('(.*)/.-')
+    end
     -- Read compatibility module & pass user config through config checker
     local compat = require('mkdnflow.compat')
     user_config = compat.userConfigCheck(user_config)
