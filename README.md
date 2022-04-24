@@ -170,10 +170,10 @@ require('mkdnflow').setup({
     -- 'index.md', or any arbitrary file that can reliably be used to identify
     -- the root directory of your notebook/wiki.
     links_relative_to = {
-            target = 'first',
-            fallback = 'current',
-            root_tell = false
-        },    
+        target = 'first',
+        fallback = 'current',
+        root_tell = false
+    },    
 
     -- Type: key-value pair(s). The plugin's features are enabled only when one
     -- of these filetypes is opened; otherwise, the plugin does nothing. NOTE:
