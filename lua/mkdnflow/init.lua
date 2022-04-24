@@ -127,12 +127,11 @@ local get_root_dir_windows = function(dir, root_tell)
         local pfile = io.popen('dir /b "'..dir..'"')
         -- Check the list of files for the tell
         for filename in pfile:lines() do
-            --local match = filename == root_tell
-            --if match then
-            --    root = dir
-            --    search_is_on = false
-            --end
-            print(filename)
+            local match = filename == root_tell
+            if match then
+                root = dir
+                search_is_on = false
+            end
         end
         pfile:close()
         if search_is_on then
@@ -145,7 +144,7 @@ local get_root_dir_windows = function(dir, root_tell)
                 -- If there's still more to remove, remove it
                 dir = dir:match('(.*)\\')
                 -- If dir is an empty string, look for the tell in *root* root
-                --if dir == '' then dir = '/' end
+                if dir == 'C:' then dir = 'C:\\' end
             end
         else
             return(root)
