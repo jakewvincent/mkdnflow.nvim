@@ -159,6 +159,7 @@ local init = {}
 init.initial_buf = vim.api.nvim_buf_get_name(0)
 if this_os == 'Windows_NT' then
     init.initial_dir = init.initial_buf:match('(.*)\\.-')
+    print("Trying to get initial dir")
 else
     init.initial_dir = init.initial_buf:match('(.*)/.-')
 end
@@ -199,6 +200,7 @@ init.setup = function(user_config)
                 elseif init.this_os == 'Windows_NT' then
                     --init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
                     print(init.initial_buf)
+                    print(init.initial_dir)
                     if init.root_dir then
                         print('⬇️  Root directory found: '..init.root_dir)
                     else
