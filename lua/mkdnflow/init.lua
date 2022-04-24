@@ -166,6 +166,7 @@ init.setup = function(user_config)
     init.this_os = vim.loop.os_uname().sysname
     -- Get first opened file/buffer path and directory
     init.initial_buf = vim.api.nvim_buf_get_name(0)
+    -- Determine initial_dir according to OS
     if init.this_os == 'Windows_NT' then
         init.initial_dir = init.initial_buf:match('(.*)\\.-')
     else
@@ -197,9 +198,7 @@ init.setup = function(user_config)
                         init.config.links_relative_to.target = init.config.links_relative_to.fallback
                     end
                 elseif init.this_os == 'Windows_NT' then
-                    --init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
-                    print(init.initial_buf)
-                    print(init.initial_dir)
+                    init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
                     if init.root_dir then
                         print('⬇️  Root directory found: '..init.root_dir)
                     else
