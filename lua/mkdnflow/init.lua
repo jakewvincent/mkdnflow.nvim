@@ -124,7 +124,7 @@ local get_root_dir_windows = function(dir, root_tell)
     -- each pass
     while search_is_on do
         -- Get the output of running ls -a in dir
-        local pfile = io.popen('dir /w "'..dir..'"')
+        local pfile = io.popen('dir /b "'..dir..'"')
         -- Check the list of files for the tell
         for filename in pfile:lines() do
             --local match = filename == root_tell
