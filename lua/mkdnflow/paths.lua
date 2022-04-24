@@ -79,7 +79,7 @@ local does_exist = function(path, type)
         -- Return the existence property of the path
         return(exists)
     else
-        print('⬇️ : '..this_os_err)
+        print('⬇️  '..this_os_err)
         -- Return nothing in the else case
         return(nil)
     end
@@ -235,7 +235,7 @@ local open = function(path)
         elseif this_os == "Darwin" then
             vim.api.nvim_command('silent !open '..path_..' &')
         else
-            print('⬇️ : '..this_os_err)
+            print('⬇️  '..this_os_err)
         end
     end
     -- If the file exists, handle it; otherwise, print a warning
@@ -245,7 +245,7 @@ local open = function(path)
         shell_open(path)
     elseif does_exist(path, "f") == false and
         does_exist(path, "d") == false then
-        print("⬇️ : "..path.." doesn't seem to exist!")
+        print("⬇️  "..path.." doesn't seem to exist!")
     else
         shell_open(path)
     end

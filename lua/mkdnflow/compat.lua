@@ -24,7 +24,7 @@ TODO: Remove this function in June 2022
 --]]
 M.goBack = function()
     require('mkdnflow.buffers').goBack()
-    print("⬇️ : Friendly warning - references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
+    print("⬇️  Friendly warning: references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
 --[[
@@ -35,7 +35,7 @@ TODO: Remove this function in June 2022
 --]]
 M.goForward = function()
     require('mkdnflow.buffers').goForward()
-    print("⬇️ : Friendly warning - references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
+    print("⬇️  Friendly warning: references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
 --[[
@@ -43,7 +43,7 @@ followPath()
 --]]
 M.followPath = function(path)
     require('mkdnflow.links').followLink(path)
-    print('⬇️ : Friendly warning - the use of followPath() will soon stop working. See :h mkdnflow-changes, commit c1cf25...')
+    print('⬇️  Friendly warning: the use of followPath() will soon stop working. See :h mkdnflow-changes, commit c1cf25...')
 end
 
 --[[
@@ -55,7 +55,7 @@ M.userConfigCheck = function(user_config)
     -- Inspect links_relative_to setting, if specified
     if user_config.links_relative_to then
         if type(user_config.links_relative_to) ~= 'table' then
-            print('⬇️ : Friendly warning - the links_relative_to key in the table passed to the setup function should now be associated with a table value. See :h mkdnflow-changes, commit 75c8ec...')
+            print('⬇️  Friendly warning: the links_relative_to key in the table passed to the setup function should now be associated with a table value. See :h mkdnflow-changes, commit 75c8ec...')
             if user_config.links_relative_to == 'current' then
                 local table = {
                     target = 'current',

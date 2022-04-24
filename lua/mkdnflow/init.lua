@@ -150,17 +150,17 @@ init.setup = function(user_config)
                 if init.this_os == 'Linux' or init.this_os == 'Darwin' then
                     init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
                     if init.root_dir then
-                        print('⬇️ : Root directory found: '..init.root_dir)
+                        print('⬇️  Root directory found: '..init.root_dir)
                     else
-                        print('⬇️ : No suitable root directory found!')
+                        print('⬇️  No suitable root directory found!')
                         init.config.links_relative_to.target = init.config.links_relative_to.fallback
                     end
                 else
-                    print('⬇️ : Cannot yet search for root directory on '..init.this_os..' machines.')
+                    print('⬇️  Cannot yet search for root directory on '..init.this_os..' machines.')
                     init.config.links_relative_to.target = init.config.links_relative_to.fallback
                 end
             else
-                print('⬇️ : No tell was provided for the root directory. See :h mkdnflow-configuration.')
+                print('⬇️  No tell was provided for the root directory. See :h mkdnflow-configuration.')
                 init.config.links_relative_to.target = init.config.links_relative_to.fallback
             end
         end
@@ -176,7 +176,7 @@ init.setup = function(user_config)
         if init.config.use_mappings_table == true and user_config.default_mappings ~= false then
             require('mkdnflow.maps')
             if user_config.default_mappings == true then
-                print("⬇️ : NOTE - Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
+                print("⬇️  NOTE: Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
             end
         end
         -- Record load status (i.e. loaded)
@@ -191,7 +191,7 @@ end
 -- Force start
 init.forceStart = function()
     if init.loaded == true then
-        print("⬇️ : Mkdnflow already running!")
+        print("⬇️  Mkdnflow is already running!")
     else
         -- Record load status (i.e. loaded)
         init.loaded = true

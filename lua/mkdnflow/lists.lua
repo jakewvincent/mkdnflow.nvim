@@ -42,7 +42,7 @@ M.toggleToDo = function()
             vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {' '})
         end
     else
-        print('⬇️ : Not a to-do list item!')
+        print('⬇️  Not a to-do list item!')
     end
 end
 

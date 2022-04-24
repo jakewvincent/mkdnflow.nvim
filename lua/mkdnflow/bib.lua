@@ -68,11 +68,11 @@ local find_bib_entry = function(citation)
             else
                 unfound = nil
                 bib_file:close()
-                print('⬇️ : No entry found for "'..citekey..'"!')
+                print('⬇️  No entry found for "'..citekey..'"!')
             end
         end
     else
-        print('⬇️ : Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.')
+        print('⬇️  Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.')
     end
 end
 
@@ -100,7 +100,7 @@ M.citationHandler = function(citation)
             local howpublished = bib_entry['howpublished']
             return howpublished
         else
-            print('⬇️ : Bib entry with citekey "'..citekey..'" had no relevant content!')
+            print('⬇️  Bib entry with citekey "'..citekey..'" had no relevant content!')
             return nil
         end
     end

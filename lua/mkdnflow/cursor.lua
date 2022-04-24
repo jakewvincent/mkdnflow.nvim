@@ -212,9 +212,9 @@ local go_to_heading = function(anchor_text, reverse)
             if row == starting_row + 1 then
                 unfound = nil
                 if anchor_text == nil then
-                    print("⬇️ : Couldn't find a heading to go to!")
+                    print("⬇️  Couldn't find a heading to go to!")
                 else
-                    print("⬇️ : Couldn't find a heading matching "..anchor_text.."!")
+                    print("⬇️  Couldn't find a heading matching "..anchor_text.."!")
                 end
             end
         else
@@ -224,14 +224,14 @@ local go_to_heading = function(anchor_text, reverse)
                     row = vim.api.nvim_buf_line_count(0)
                 else
                     unfound = nil
-                    print("⬇️ : There are no more headings after the beginning of the document!")
+                    print("⬇️  There are no more headings after the beginning of the document!")
                 end
             else
                 if anchor_link ~= nil or config.wrap_to_end == true then
                     row = 1
                 else
                     unfound = nil
-                    print("⬇️ : There are no more headings before the end of the document!")
+                    print("⬇️  There are no more headings before the end of the document!")
                 end
             end
         end
@@ -257,7 +257,7 @@ M.changeHeadingLevel = function(change)
         else
             -- Remove a hash, but only if there's more than one
             if not string.find(line[1], '^##') then
-                print('⬇️ : Can\'t increase this heading any more!')
+                print('⬇️  Can\'t increase this heading any more!')
             else
                 vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 1, {''})
             end
@@ -311,7 +311,7 @@ M.yankAsAnchorLink = function()
         -- Add to the unnamed register
         vim.cmd('let @"="'..anchor_link..'"')
     else
-        print("⬇️ : The current line is not a heading!")
+        print("⬇️  The current line is not a heading!")
     end
 end
 
