@@ -78,6 +78,20 @@ local does_exist = function(path, type)
         end
         -- Return the existence property of the path
         return(exists)
+    elseif this_os == 'Windows_NT' then
+        -- Add a backslash if we're searching for a directory
+        if type == 'd' then type = '\\' else type = '' end
+        -- Use the shell to determine if the path exists
+        local handle = io.popen('IF exist '..path..type..' ( echo true ) ELSE ( echo false )')
+        local exists = handle:read('*l')
+        io.close(handle)
+        if exists == 'false' then
+            exists = false
+        else
+            exists = true
+        end
+        -- Return the existence property of the path
+        return(exists)
     else
         print('⬇️  '..this_os_err)
         -- Return nothing in the else case
@@ -234,6 +248,8 @@ local open = function(path)
             vim.api.nvim_command('silent !xdg-open '..path_)
         elseif this_os == "Darwin" then
             vim.api.nvim_command('silent !open '..path_..' &')
+        elseif this_os == 'Windows_NT' then
+            vim.api.nvim_command('silent !cmd.exe /c "start '..path_..'"')
         else
             print('⬇️  '..this_os_err)
         end
