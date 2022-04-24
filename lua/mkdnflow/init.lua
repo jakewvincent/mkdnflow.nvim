@@ -157,8 +157,11 @@ end
 local init = {}
 -- Get first opened file/buffer path and directory
 init.initial_buf = vim.api.nvim_buf_get_name(0)
-print(init.initial_buf)
-init.initial_dir = init.initial_buf:match('(.*)/.-')
+if this_os == 'Windows_NT' then
+    init.initial_dir = init.initial_buf:match('(.*)\\.-')
+else
+    init.initial_dir = init.initial_buf:match('(.*)/.-')
+end
 -- Table to store merged configs
 init.config = {}
 -- Initialize a variable for load status
