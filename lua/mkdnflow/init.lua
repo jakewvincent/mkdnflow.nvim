@@ -157,6 +157,7 @@ end
 local init = {}
 -- Get first opened file/buffer path and directory
 init.initial_buf = vim.api.nvim_buf_get_name(0)
+print(init.initial_buf)
 init.initial_dir = init.initial_buf:match('(.*)/.-')
 -- Table to store merged configs
 init.config = {}
