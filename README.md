@@ -153,7 +153,7 @@ EOF
 
 ## ⚙️ Configuration
 
-Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the comments above each setting. **To use these defaults, simply pass an empty table to the setup function:** `require('mkdnflow').setup({})`. To change these settings, specify new values for any of them them in the setup function.
+Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the [section below the following block](#config-descriptions). **To use these defaults, simply pass an empty table to the setup function:** `require('mkdnflow').setup({})`. To change these settings, specify new values for any of them them in the setup function.
 
 ```lua
 -- ** DEFAULT SETTINGS; TO USE THESE, PASS AN EMPTY TABLE TO THE SETUP FUNCTION **
