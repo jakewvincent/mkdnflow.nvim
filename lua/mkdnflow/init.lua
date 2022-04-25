@@ -57,8 +57,10 @@ local merge_configs = function(defaults, user_config)
         if type(value) == 'table' then
             local subtable = {}
             for key_, _ in pairs(value) do
-                if user_config[key][key_] then
-                    subtable[key_] = user_config[key][key_]
+                if user_config[1] then 
+                    if user_config[key][key_] then
+                        subtable[key_] = user_config[key][key_]
+                    end
                 else
                     subtable[key_] = value[key_]
                 end
@@ -250,20 +252,8 @@ init.forceStart = function()
     if init.loaded == true then
         print("⬇️  Mkdnflow is already running!")
     else
-        -- Record load status (i.e. loaded)
-        init.loaded = true
-        -- Load functions
-        init.cursor = require('mkdnflow.cursor')
-        init.paths = require('mkdnflow.paths')
-        init.links = require('mkdnflow.links')
-        init.buffers = require('mkdnflow.buffers')
-        init.bib = require('mkdnflow.bib')
-        init.lists = require('mkdnflow.lists')
-        init.files = require('mkdnflow.compat')
-        -- Only load the mappings if the user hasn't said "no"
-        if init.config.default_mappings == true then
-            require('mkdnflow.maps')
-        end
+        print("⬇️  Starting Mkdnflow with defaults. Please call the setup function in your config or modify the 'filetypes' key in the setup table for this filetype.")
+        init.setup({})
     end
 end
 
