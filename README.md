@@ -12,8 +12,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### ⚡ Requirements
 
-* Linux or macOS (for full functionality)
-* Windows (for partial functionality; see [Caveats/warnings](#-caveats-warnings))
+* Linux, macOS, or Windows
 * Neovim >= 0.5.0
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
@@ -146,9 +145,7 @@ EOF
 ### ❗ Caveats/warnings
 
 * The plugin won't start *automatically* if the first-opened file is not one of the default or named extensions (see [Configuration](#%EF%B8%8F-configuration)), but you can manually start the plugin with the defined command `:Mkdnflow`.
-* On Windows, the plugin should successfully load, but the use of certain functions will result in a message in the command line: `Function unavailable for Windows`. The functionality currently unavailable for Windows includes:
-    * Opening local files and URLs outside of Neovim
-    * Following links within Neovim while `create_dirs` is enabled. If you are on Windows, you should set `create_dirs` to `false` and make sure that all directories you specify as part of a link already exist.
+* All functionality of the plugin should now work on all operating systems, including Windows! However, since I don't use Windows on my daily driver, there may be edge cases that cause trouble. Please file an issue if anything comes up.
 
 ## ⚙️ Configuration
 
@@ -270,7 +267,6 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [ ] Add/remove columns and rows
     * [ ] Horizontal and vertical navigation through tables (with `<Tab>` and `<CR>`?)
     * [ ] Make a way for the user to define specialized tables (e.g. time sheets)
-* [ ] Full compatibility with Windows
 * [ ] Easily rename file in link
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 * [ ] Improve citation functionality
@@ -279,6 +275,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Full compatibility with Windows
 * [X] "Undo" a link (replace link w/ the text part of the link)
 * [X] Easy *forward* navigation through buffers (with ~~`<S-BS>?`~~ `<Del>`)
 * [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
@@ -291,6 +288,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/24/22: Added Windows compatibility!
 * 04/23/22: Major reorganization of followPath() function which ships off some of its old functionality to the new links module and much of it to smaller, path-type-specific functions in the new paths module
 * 04/22/22: Added ability to identify the notebook/wiki's root directory by specifying a "tell" in the config (a file that can be used to identify the root)
 * 04/20/22: Added ability to replace a link with just its name (effectively undoing the link) -- mapped to `<M-CR>` by default (Alt-Enter)
