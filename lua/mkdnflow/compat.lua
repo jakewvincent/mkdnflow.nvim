@@ -52,10 +52,28 @@ since been migrated to another setting or another format. It returns an equiva-
 lent user config that is upgraded to the new format.
 --]]
 M.userConfigCheck = function(user_config)
+    -- Look for old prefix settings
+    if user_config.evaluate_prefix or user_config.new_file_prefix then
+        user_config.prefix = {
+            evaluate = user_config.evaluate_prefix,
+            string = user_config.new_file_prefix
+        }
+        print('⬇️  The prefix settings are now specified under the "prefix" key, which takes a table value. Please update your config. See :h mkdnflow-changes, commit 1a2195...')
+    end
+    -- Look for links_relative_to
+    if user_config.links_relative_to then
+        user_config.perspective = user_config.links_relative_to
+        print('⬇️  The links_relative_to key is now called "perspective". Please update your config. See :h mkdnflow-changes, commit e42290...')
+    end
+    -- Look for wrap preferences
+    if user_config.wrap_to_beginning or user_config.wrap_to_end then
+        user_config.wrap = true
+        print('⬇️  The wrap_to_beginning/end keys have been merged into a single "wrap" key. Please update your config. See :h mkdnflow-changes, commit 9068e1...')
+    end
     -- Inspect perspective setting, if specified
     if user_config.perspective then
         if type(user_config.perspective) ~= 'table' then
-            print('⬇️  Friendly warning: the perspective key in the table passed to the setup function should now be associated with a table value. See :h mkdnflow-changes, commit 75c8ec...')
+            print('⬇️  The perspective key (previously "links_relative_to") should now be associated with a table value. Please update your config. See :h mkdnflow-changes, commit 75c8ec...')
             if user_config.perspective == 'current' then
                 local table = {
                     target = 'current',
