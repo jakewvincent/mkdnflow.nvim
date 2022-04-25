@@ -24,55 +24,54 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ## ✨ Features
 
-### Link creation
-* Create links (to other markdown documents) from (a) word under cursor or (b) visual selection (mapped to `<CR>` by default)
-    * Automatically prefix filenames created in the above manner with the current date: `YYYY-MM-DD_<word>.md`. The prefix can be changed; see [Configuration](#%EF%B8%8F-configuration).
-    * 🆕 Create anchor links from a visual selection if the selection starts with `#` 
-    * 🆕 Yank an anchor link out of a heading on the current line (mapped to `ya` by default)
-    * 🆕 If what's under the cursor is identified as a URL, create a link from that URL
+### Create links
+* `<CR>` on word under cursor or visual selection to create a notebook-internal link
+    * Customizable filename prefix (default is the current date in `YYYY-MM-DD` format (see [Configuration](#%EF%B8%8F-configuration)).
+* 🆕 Create an anchor links if the visual selection starts with `#` 
+* 🆕 Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
+* 🆕 `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste)
 
 ### Jump to links
-* Jump to the next/previous link in the file, optionally wrapping to beginning/end of file (mapped to `<Tab>` and `<S-Tab>` by default, respectively)
-* 🆕 Jump to headings in the current file that match an anchor link. Headings must start with a hash, and the path part of the link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
-    * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
-    * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
+* `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
+    * Wrap the beginning/end of the file with a [config setting](#%EF%B8%8F-configuration)
 
-### Customize perspective
+### Customize perspective for link interpretation
 * Specify what perspective the plugin-should take when interpreting links to files. There are three options:
     1. Interpret links relative to the first-opened file (default behavior)
     2. Interpret links relative to the file open in the current buffer
     3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, you must set `links_relative_to.target` to `root` in your config and specify a "tell" for the root directory under `links_relative_to.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [Configuration](#%EF%B8%8F-configuration) for the default config and an example of how to configure the `links_relative_to` table.
 
-### Act on links
-* Follow links relative to the first-opened file or current file (as specified in your config) or, if the path is prefixed with `file:`, the path can be absolute (starting with `/`) or relative to your home directory (starting with `~/`) (mapped to `<CR>` by default)
-    * `<CR>`ing on a link to a text file will open it in the current window (i.e. `:e <filename>`)
-    * `<CR>`ing on a link to a file prefixed with `file:` (formerly `local:`), e.g. `[My Xournal notes](file:notes.xopp)`, will open that file with whatever the system's associated program is for that filetype (using `xdg-open` on Linux or `open` on macOS)
-    * `<CR>`ing on a link to an absolute path or a path in ~/, as long as that path is prefixed with `file:`, will open that file with the system's associated program for that filetype (see above)
-    * `<CR>`ing on a link to a web URL will open that link in your default browser
-* 🆕 Open files or websites associated with citations (using `<CR>`).
-    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in your config (see [Configuration](#%EF%B8%8F-configuration))
-    * `<CR>`ing on a citation (e.g. `@Chomsky1957`, with or without square brackets around it) will open a file or website, depending on what fields are provided in the bib file. It opens whichever of these bib fields it finds first, prioritizing the higher items: `file > url > doi > howpublished`
-* Create missing directories if a link goes to a file in a directory that doesn't exist
+### Follow links _and citations_
+* `<CR>` on various kinds of links to "follow" them:
+    * `.md` links open in the current window
+    * Absolute links or `.md` links relative to home open in the current window but are interpreted with absolute perspective (e.g. `[File](/home/user/file.md)`/`[File](C:\Users\user\file.md)` on Windows, or `[File](~/Documents/file.md)`)
+    * Links to a file prefixed with `file:` (e.g. `[My Xournal notes](file:notes.xopp)`) open with the system's default program for that filetype
+    * Link to URLs are opened in the default browser
+    * 🆕 Anchor links to headings in the current file will trigger a jump to that heading. Headings must start with a hash, and the path part of the link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
+        * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
+        * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
+* 🆕 `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
+    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#%EF%B8%8F-configuration)
+    * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
+
+### Create missing directories
+* If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#%EF%B8%8F-configuration)
 
 ### Backward and forward navigation
 * `<BS>` to go to previous file/buffer opened in the current window
 * 🆕 `<Del>` to go to subsequent file/buffer opened in the current window (i.e. one that you just `<BS>`ed away from)
 
-### Act on citations
-* 🆕 If a default .bib file is specified in your mkdnflow [configuration](#%EF%B8%8F-configuration), `<CR>`ing on a citation key (e.g. `@Chomsky1957`) will try to do one of the following (in the following order, stopping if it succeeds):
-    - Open a file specified under that citation key using your OS's default program for that filetype, if one is specified in your bib file
-    - Open a URL specified under that citation key in your default browser
-    - Open a DOI specified under that citation key in your default browser
-
 ### Keybindings
-* Enable/disable default keybindings (see [Configuration](#%EF%B8%8F-configuration))
-    - 🆕 Modify default keybindings individually in table passed to setup function (see [Configuration](#%EF%B8%8F-configuration))
+* Easy-to-remember [default keybindings](#-commands-and-default-mappings)
+* 🆕 [Customize keybindings](#%EF%B8%8F-configuration) individually or [disable them altogether](#%EF%B8%8F-configuration))
 
 ### Manipulate headings
 * 🆕 Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when convertedto HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
-### 🆕 Lists
+### To-do lists
 * Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling `* [ ] ...` will yield `* [-] ...`; toggling `* [-] ...` will yield `* [X] ...`; and toggling `* [X] ...` will yield `* [ ] ...`.
+
+<p align=center>**More coming soon! I use this plugin daily for work and regularly add new features inspired by real-world use cases. Please share ideas feature requests by [creating an issue](https://github.com/jakewvincent/mkdnflow.nvim/issues).**</p>
 
 ## 📦 Installation
 
@@ -154,66 +153,42 @@ Currently, the setup function uses the defaults shown below. See the description
 
 ```lua
 require('mkdnflow').setup({
-    -- Type: boolean. Create directories (recursively) if link contains a
-    --     missing directory.
-    -- 'false' prevents missing directories from being created
-    create_dirs = true,             
+    -- Boolean. Create directories (recursively) if link references a missing directory.
+    create_dirs = true, -- true causes missing directories to be created. Other values: false.
 
-    -- Type: table. The 'target' key specifies what the priority perspective s-
-    -- hould be. The default is whatever file is opened first. 'fallback' spec-
-    -- ifies a backup perspective if the target perspective cannot be determin-
-    -- ed. Other options: 'root'. 'root_tell' should be a string telling mkdnf-
-    -- low how to identify the root directory if 'target' or 'fallback' is set
-    -- to 'root'. The tell should be a file in the root directory, e.g. '.git',
-    -- 'index.md', or any arbitrary file that can reliably be used to identify
-    -- the root directory of your notebook/wiki.
+    -- Table. 'target' key specifies priority perspective. 'fallback' specifies a backup
+    -- perspective if the target perspective cannot be determined. 'root_tell' specifies
+    -- a file by which the root directory of the notebook/wiki can be identified (if 'target'
+    -- is specified as 'root').
     links_relative_to = {
-        target = 'first',
-        fallback = 'current',
-        root_tell = false
+        target = 'first',       -- 'first' means links open relative to first-opened file. Other values: 'current'; 'root'. 
+        fallback = 'current',   -- Backup value for target.
+        root_tell = false       -- false prevents root directory from being identified if 'target' is 'root'. Other values: any string.
     },    
 
-    -- Type: key-value pair(s). The plugin's features are enabled only when one
-    -- of these filetypes is opened; otherwise, the plugin does nothing. NOTE:
-    -- extensions are converted to lowercase, so any filetypes that convention-
-    -- ally use uppercase characters should be provided here in lowercase.
+    -- Table. Plugin's features enabled only when a file with one of these extensions is opened. Provide in lowercase. Any arbitrary extension can be supplied.
     filetypes = {md = true, rmd = true, markdown = true},
 
-    -- Type: boolean. When true, the createLinks() function tries to evaluate
-    --     the string provided as the value of new_file_prefix.
-    -- 'false' results in the value of new_file_prefix being used as a string,
-    --     i.e. it is not evaluated, and the prefix will be invariant.
-    evaluate_prefix = true,
+    -- Boolean. Tells plugin whether `new_file_prefix` should be evaluated as Lua code or interpreted as a fixed string when links are made.
+    evaluate_prefix = true, -- true means the plugin will evaluate new_file_prefix as Lua code. Other values: false.
 
-    -- Type: string. Defines the prefix that should be used to create new links.
-    --     This is evaluated at the time createLink() is run, which is to say
-    --     that it's run whenever <CR> is pressed (under the default mappings).
-    --     This makes for many interesting possibilities.
+    -- String. Should be Lua code that produces a string value if evaluate_prefix is true.
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
 
-    -- Type: boolean. When true and Mkdnflow is searching for the next/previous
-    --     link or heading in the file, it will wrap to the beginning of the
-    -- file (if it's reached the end) or wrap to the end of the file (if it's
-    -- reached the beginning during a backwards search).
-    wrap_to_beginning = false,
-    wrap_to_end = false,
+    -- Boolean. Tells plugin whether to jump to beginning/end of file when searching for the next/previous link or heading.
+    wrap_to_beginning = false,  -- false means search will stop at document boundaries. Other values: true.
+    wrap_to_end = false,        -- false means search will stop at document boundaries. Other values: true.
 
-    -- Type: string. This is the path where mkdnflow will look for a .bib file
-    --     when acting upon markdown citations.
+    -- String. Path where the plugin will look for a .bib file when acting upon markdown citations.
     default_bib_path = '',
 
-    -- Type: boolean. A value of 'false' will prevent any messages from being
-    -- printed to the area below the status line (except for important compa-
-    -- tibility warnings about breaking changes)
-    silent = false,
+    -- Boolean. Whether the plugin should display relevant messages or not. Warnings about breaking changes will always be displayed.
+    silent = false, -- false means relevant messages will be printed to the area below the status line. Other values: true.
 
-    -- Type: boolean. Use mapping table (see '❕Commands and default mappings').
-    -- 'false' disables mappings and prevents user from modifying mappings via
-    -- the 'mappings' table.
-    use_mappings_table = true,        
+    -- Boolean. Whether to use mapping table (see '❕Commands and default mappings').
+    use_mappings_table = true, -- true means the table will be used. Other values: false (disables mappings and prevents modification of mappings via table).
 
-    -- Type: table. Keys should be the names of commands (see :h Mkdnflow-comma-
-    -- nds for a list), and values should be strings indicating the key mapping.
+    -- Table. Keys should be the names of commands (see :h Mkdnflow-commands for a list). Values should be strings indicating the key mapping.
     mappings = {
         MkdnNextLink = '<Tab>',
         MkdnPrevLink = '<S-Tab>',
