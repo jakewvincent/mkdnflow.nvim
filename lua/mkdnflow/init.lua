@@ -35,46 +35,35 @@ local default_config = {
     silent = false,
     use_mappings_table = true,
     mappings = {
-        MkdnNextLink = '<Tab>',
-        MkdnPrevLink = '<S-Tab>',
-        MkdnNextHeading = '<leader>]',
-        MkdnPrevHeading = '<leader>[',
-        MkdnGoBack = '<BS>',
-        MkdnGoForward = '<Del>',
-        MkdnFollowLink = '<CR>',
-        MkdnYankAnchorLink = 'ya',
-        MkdnIncreaseHeading = '+',
-        MkdnDecreaseHeading = '-',
-        MkdnToggleToDo = '<C-Space>',
-        MkdnDestroyLink = '<M-CR>'
+        MkdnNextLink = {'n', '<Tab>'},
+        MkdnPrevLink = {'n', '<S-Tab>'},
+        MkdnNextHeading = {'n', '<leader>]'},
+        MkdnPrevHeading = {'n', '<leader>['},
+        MkdnGoBack = {'n', '<BS>'},
+        MkdnGoForward = {'n', '<Del>'},
+        MkdnFollowLink = {{'n', 'v'}, '<CR>'},
+        MkdnYankAnchorLink = {'n', 'ya'},
+        MkdnIncreaseHeading = {'n', '+'},
+        MkdnDecreaseHeading = {'n', '-'},
+        MkdnToggleToDo = {'n', '<C-Space>'},
+        MkdnDestroyLink = {'n', '<M-CR>'}
     }
 }
 
--- Private function to merge the user_config with the default config
-local merge_configs = function(defaults, user_config)
-    local config = {}
-    for key, value in pairs(defaults) do
-        if type(value) == 'table' then
-            local subtable = {}
-            for key_, _ in pairs(value) do
-                if user_config[1] then 
-                    if user_config[key][key_] then
-                        subtable[key_] = user_config[key][key_]
-                    end
-                else
-                    subtable[key_] = value[key_]
-                end
-            end
-            config[key] = subtable
-        else
-            if user_config[key] then
-                config[key] = user_config[key]
+-- Function to merge the user_config with the default config
+MergeConfigs = function(defaults, user_config)
+    for k, v in pairs(user_config) do
+        if type(v) == 'table' then
+            if type(defaults[k] or false) == 'table' then
+                MergeConfigs(defaults[k] or {}, user_config[k] or {})
             else
-                config[key] = defaults[key]
+                defaults[k] = v
             end
+        else
+            defaults[k] = v
         end
     end
-    return config
+    return(defaults)
 end
 
 -- Private function to detect the extension of a filename passed as a string
@@ -179,7 +168,7 @@ init.setup = function(user_config)
     local compat = require('mkdnflow.compat')
     user_config = compat.userConfigCheck(user_config)
     -- Overwrite defaults w/ user's config settings, if any
-    init.config = merge_configs(default_config, user_config)
+    init.config = MergeConfigs(default_config, user_config)
     -- Get silence preference
     local silent = init.config.silent
     -- Get the extension of the file being edited

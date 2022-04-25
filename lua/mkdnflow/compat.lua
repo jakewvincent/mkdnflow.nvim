@@ -71,6 +71,27 @@ M.userConfigCheck = function(user_config)
             end
         end
     end
+    -- Inspect mappings
+    if user_config.mappings then
+        local string = false
+        for _, value in pairs(user_config.mappings) do
+            if type(value) == 'string' then
+                string = true
+            end
+        end
+        if string then
+            print('⬇️  Friendly warning: in the mappings table, commands should now be associated with a table value instead of a string. See :h mkdnflow-changes, commit ...')
+            local compatible_mappings = {}
+            for key, value in pairs(user_config.mappings) do
+                if key == 'MkdnFollowLink' then
+                    compatible_mappings[key] = {{'n', 'v'}, value}
+                else
+                    compatible_mappings[key] = {'n', value}
+                end
+            end
+            user_config.mappings = compatible_mappings
+        end
+    end
     return(user_config)
 end
 
