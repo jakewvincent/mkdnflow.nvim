@@ -13,7 +13,9 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+local warn = function(message)
+    vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {})
+end
 local M = {}
 
 --[[
@@ -24,7 +26,7 @@ TODO: Remove this function in June 2022
 --]]
 M.goBack = function()
     require('mkdnflow.buffers').goBack()
-    print("⬇️  Friendly warning: references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
+    warn("⬇️  References to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
 --[[
@@ -35,7 +37,7 @@ TODO: Remove this function in June 2022
 --]]
 M.goForward = function()
     require('mkdnflow.buffers').goForward()
-    print("⬇️  Friendly warning: references to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
+    warn("⬇️  References to files.lua will soon stop working. See :h mkdnflow-changes, commit 511e8e...")
 end
 
 --[[
@@ -43,7 +45,7 @@ followPath()
 --]]
 M.followPath = function(path)
     require('mkdnflow.links').followLink(path)
-    print('⬇️  Friendly warning: the use of followPath() will soon stop working. See :h mkdnflow-changes, commit c1cf25...')
+    warn('⬇️  The use of followPath() will soon stop working. Please use followLink() instead. See :h mkdnflow-changes, commit c1cf25...')
 end
 
 --[[
@@ -58,22 +60,22 @@ M.userConfigCheck = function(user_config)
             evaluate = user_config.evaluate_prefix,
             string = user_config.new_file_prefix
         }
-        print('⬇️  The prefix settings are now specified under the "prefix" key, which takes a table value. Please update your config. See :h mkdnflow-changes, commit 1a2195...')
+        warn('⬇️  The prefix settings are now specified under the "prefix" key, which takes a table value. Please update your config. See :h mkdnflow-changes, commit 1a2195...')
     end
     -- Look for links_relative_to
     if user_config.links_relative_to then
         user_config.perspective = user_config.links_relative_to
-        print('⬇️  The links_relative_to key is now called "perspective". Please update your config. See :h mkdnflow-changes, commit e42290...')
+        warn('⬇️  The links_relative_to key is now called "perspective". Please update your config. See :h mkdnflow-changes, commit e42290...')
     end
     -- Look for wrap preferences
     if user_config.wrap_to_beginning or user_config.wrap_to_end then
         user_config.wrap = true
-        print('⬇️  The wrap_to_beginning/end keys have been merged into a single "wrap" key. Please update your config. See :h mkdnflow-changes, commit 9068e1...')
+        warn('⬇️  The wrap_to_beginning/end keys have been merged into a single "wrap" key. Please update your config. See :h mkdnflow-changes, commit 9068e1...')
     end
     -- Inspect perspective setting, if specified
     if user_config.perspective then
         if type(user_config.perspective) ~= 'table' then
-            print('⬇️  The perspective key (previously "links_relative_to") should now be associated with a table value. Please update your config. See :h mkdnflow-changes, commit 75c8ec...')
+            warn('⬇️  The perspective key (previously "links_relative_to") should now be associated with a table value. Please update your config. See :h mkdnflow-changes, commit 75c8ec...')
             if user_config.perspective == 'current' then
                 local table = {
                     target = 'current',
@@ -98,7 +100,7 @@ M.userConfigCheck = function(user_config)
             end
         end
         if string then
-            print('⬇️  Friendly warning: in the mappings table, commands should now be associated with a table value instead of a string. See :h mkdnflow-changes, commit ...')
+            warn('⬇️  In the mappings table, commands should now be associated with a table value instead of a string. See :h mkdnflow-changes, commit ...')
             local compatible_mappings = {}
             for key, value in pairs(user_config.mappings) do
                 if key == 'MkdnFollowLink' then
