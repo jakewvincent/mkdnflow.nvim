@@ -169,17 +169,18 @@ require('mkdnflow').setup({
     silent = false,
     use_mappings_table = true,
     mappings = {
-        MkdnNextLink = '<Tab>',
-        MkdnPrevLink = '<S-Tab>',
-        MkdnNextHeading = '<leader>]',
-        MkdnPrevHeading = '<leader>[',
-        MkdnGoBack = '<BS>',
-        MkdnGoForward = '<Del>',
-        MkdnFollowLink = '<CR>',
-        MkdnYankAnchorLink = 'ya',
-        MkdnIncreaseHeading = '+',
-        MkdnDecreaseHeading = '-',
-        MkdnToggleToDo = '<C-Space>'
+        MkdnNextLink = {'n', '<Tab>'},
+        MkdnPrevLink = {'<S-Tab>'},
+        MkdnNextHeading = {'n', '<leader>]'},
+        MkdnPrevHeading = {'n', '<leader>['},
+        MkdnGoBack = {'n', '<BS>'},
+        MkdnGoForward = {'n', '<Del>'},
+        MkdnFollowLink = {'n', '<CR>'},
+        MkdnFollowLink = {'v', '<CR>'},
+        MkdnYankAnchorLink = {'n', 'ya'},
+        MkdnIncreaseHeading = {'n', '+'},
+        MkdnDecreaseHeading = {'n', '-'},
+        MkdnToggleToDo = {'n', '<C-Space>'}
     }
 })
 ```
