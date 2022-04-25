@@ -70,9 +70,12 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * 🆕 Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when convertedto HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### To-do lists
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling `* [ ] ...` will yield `* [-] ...`; toggling `* [-] ...` will yield `* [X] ...`; and toggling `* [X] ...` will yield `* [ ] ...`.
+* 🆕 Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling will result in the following changes:
+    * `* [ ] ...` → `* [-] ...`
+    * `* [-] ...` → `* [X] ...`
+    * `* [X] ...` → `* [ ] ...`
 
-<p align=center><strong>More coming soon! I use this plugin daily for work and regularly add new features inspired by real-world use cases. Please share ideas feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
+<p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
 ## 📦 Installation
 
