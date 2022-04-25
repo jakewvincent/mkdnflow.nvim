@@ -14,6 +14,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+local silent = require('mkdnflow').config.silent
+
 -- Table for global functions and variables
 local M = {}
 
@@ -53,7 +55,7 @@ M.goBack = function()
         -- sth else if goback isn't possible)
         return(true)
     else
-        print('⬇️  Can\'t go back any further!')
+        if not silent then print('⬇️  Can\'t go back any further!') end
         -- Return a boolean if goBack fails
         return(false)
     end
@@ -83,7 +85,7 @@ M.goForward = function()
         return(true)
     else
         -- Print out an error if there's nothing in the historical buffer stack
-        print('⬇️  Can\'t go forward any further!')
+        if not silent then print('⬇️  Can\'t go forward any further!') end
         -- Return a boolean if goForward failed (for users who want <Del> to do
         -- sth else if goForward isn't possible)
         return(false)

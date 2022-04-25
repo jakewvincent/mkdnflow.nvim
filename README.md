@@ -196,13 +196,21 @@ require('mkdnflow').setup({
     -- reached the beginning during a backwards search).
     wrap_to_beginning = false,
     wrap_to_end = false,
+
     -- Type: string. This is the path where mkdnflow will look for a .bib file
     --     when acting upon markdown citations.
     default_bib_path = '',
+
+    -- Type: boolean. A value of 'false' will prevent any messages from being
+    -- printed to the area below the status line (except for important compa-
+    -- tibility warnings about breaking changes)
+    silent = false,
+
     -- Type: boolean. Use mapping table (see '❕Commands and default mappings').
     -- 'false' disables mappings and prevents user from modifying mappings via
     -- the 'mappings' table.
     use_mappings_table = true,        
+
     -- Type: table. Keys should be the names of commands (see :h Mkdnflow-comma-
     -- nds for a list), and values should be strings indicating the key mapping.
     mappings = {
@@ -288,6 +296,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/24/22: User can shut up messages by specifying 'false' in their config under the 'silent' key
 * 04/24/22: Added Windows compatibility!
 * 04/23/22: Major reorganization of followPath() function which ships off some of its old functionality to the new links module and much of it to smaller, path-type-specific functions in the new paths module
 * 04/22/22: Added ability to identify the notebook/wiki's root directory by specifying a "tell" in the config (a file that can be used to identify the root)

@@ -28,6 +28,7 @@ local links_relative_to = require('mkdnflow').config.links_relative_to.target
 local initial_dir = require('mkdnflow').initial_dir
 -- Get root_dir for notebook/wiki
 local root_dir = require('mkdnflow').root_dir
+local silent = require('mkdnflow')
 
 -- Load modules
 local buffers = require('mkdnflow.buffers')
@@ -80,7 +81,7 @@ local does_exist = function(path, type)
         -- Return the existence property of the path
         return(exists)
     else
-        print(this_os_err)
+        if not silent then print(this_os_err) end
         -- Return nothing in the else case
         return(nil)
     end
@@ -225,7 +226,7 @@ local handle_internal_file = function(path)
             vim.cmd(':e '..paste)
         end
     else
-        print(this_os_err)
+        if not silent then print(this_os_err) end
     end
 end
 
@@ -240,7 +241,7 @@ local open = function(path)
         elseif this_os == "Darwin" then
             vim.api.nvim_command('silent !open '..path_..' &')
         else
-            print(this_os_err)
+            if not silent then print(this_os_err) end
         end
     end
     -- If the file exists, handle it; otherwise, print a warning
@@ -250,7 +251,7 @@ local open = function(path)
         shell_open(path)
     elseif does_exist(path, "f") == false and
         does_exist(path, "d") == false then
-        print("⬇️  "..path.." doesn't seem to exist!")
+        if not silent then print("⬇️  "..path.." doesn't seem to exist!") end
     else
         shell_open(path)
     end
@@ -318,7 +319,7 @@ M.handlePath = function(path)
         if this_os == 'Linux' or this_os == 'Darwin' then
             handle_external_file(path)
         else
-            print(this_os_err)
+            if not silent then print(this_os_err) end
         end
     elseif path_type(path) == 'anchor' then
         cursor.toHeading(path)

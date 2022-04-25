@@ -14,7 +14,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--- File and link navigation functions
+-- This module: To-do list related functions
+local silent = require('mkdnflow').config.silent
 local M = {}
 
 --[[
@@ -42,7 +43,7 @@ M.toggleToDo = function()
             vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {' '})
         end
     else
-        print('⬇️  Not a to-do list item!')
+        if not silent then print('⬇️  Not a to-do list item!') end
     end
 end
 

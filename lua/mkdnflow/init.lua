@@ -32,6 +32,7 @@ local default_config = {
     wrap_to_beginning = false,
     wrap_to_end = false,
     default_bib_path = '',
+    silent = false,
     use_mappings_table = true,
     mappings = {
         MkdnNextLink = '<Tab>',
@@ -177,6 +178,8 @@ init.setup = function(user_config)
     user_config = compat.userConfigCheck(user_config)
     -- Overwrite defaults w/ user's config settings, if any
     init.config = merge_configs(default_config, user_config)
+    -- Get silence preference
+    local silent = init.config.silent
     -- Get the extension of the file being edited
     local ft = get_file_type(init.initial_buf)
     -- Load extension if the filetype has a match in config.filetypes
@@ -192,25 +195,25 @@ init.setup = function(user_config)
                 if init.this_os == 'Linux' or init.this_os == 'Darwin' then
                     init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
                     if init.root_dir then
-                        print('⬇️  Root directory found: '..init.root_dir)
+                        if not silent then print('⬇️  Root directory found: '..init.root_dir) end
                     else
-                        print('⬇️  No suitable root directory found!')
+                        if not silent then print('⬇️  No suitable root directory found!') end
                         init.config.links_relative_to.target = init.config.links_relative_to.fallback
                     end
                 elseif init.this_os == 'Windows_NT' then
                     init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
                     if init.root_dir then
-                        print('⬇️  Root directory found: '..init.root_dir)
+                        if not silent then print('⬇️  Root directory found: '..init.root_dir) end
                     else
-                        print('⬇️  No suitable root directory found!')
+                        if not silent then print('⬇️  No suitable root directory found!') end
                         init.config.links_relative_to.target = init.config.links_relative_to.fallback
                     end
                 else
-                    print('⬇️  Cannot yet search for root directory on '..init.this_os..' machines.')
+                    if not silent then print('⬇️  Cannot yet search for root directory on '..init.this_os..' machines.') end
                     init.config.links_relative_to.target = init.config.links_relative_to.fallback
                 end
             else
-                print('⬇️  No tell was provided for the root directory. See :h mkdnflow-configuration.')
+                if not silent then print('⬇️  No tell was provided for the root directory. See :h mkdnflow-configuration.') end
                 init.config.links_relative_to.target = init.config.links_relative_to.fallback
             end
         end

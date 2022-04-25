@@ -28,6 +28,7 @@ local links_relative_to = require('mkdnflow').config.links_relative_to.target
 local initial_dir = require('mkdnflow').initial_dir
 -- Get root_dir for notebook/wiki
 local root_dir = require('mkdnflow').root_dir
+local silent = require('mkdnflow').config.silent
 
 -- Load modules
 local buffers = require('mkdnflow.buffers')
@@ -229,7 +230,7 @@ local open = function(path)
         shell_open(path)
     elseif does_exist(path, "f") == false and
         does_exist(path, "d") == false then
-        print("⬇️  "..path.." doesn't seem to exist!")
+        if not silent then print("⬇️  "..path.." doesn't seem to exist!") end
     else
         shell_open(path)
     end

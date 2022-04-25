@@ -18,6 +18,7 @@
 
 -- Retrieve default bibliography path
 local bib_path = require('mkdnflow').config.default_bib_path
+local silent = require('mkdnflow').config.silent
 
 --[[
 find_bib_entry() takes a citation
@@ -68,11 +69,11 @@ local find_bib_entry = function(citation)
             else
                 unfound = nil
                 bib_file:close()
-                print('⬇️  No entry found for "'..citekey..'"!')
+                if not silent then print('⬇️  No entry found for "'..citekey..'"!') end
             end
         end
     else
-        print('⬇️  Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.')
+        if not silent then print('⬇️  Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.') end
     end
 end
 
@@ -100,7 +101,7 @@ M.citationHandler = function(citation)
             local howpublished = bib_entry['howpublished']
             return howpublished
         else
-            print('⬇️  Bib entry with citekey "'..citekey..'" had no relevant content!')
+            if not silent then print('⬇️  Bib entry with citekey "'..citekey..'" had no relevant content!') end
             return nil
         end
     end

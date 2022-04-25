@@ -261,6 +261,12 @@ default_bib_path
   Must be a string. Tells Mkdnflow where to find the .bib file to search for
   citation keys in.
 
+silent
+  Must be a boolean. Tells Mkdnflow to be quiet if you so desire. If set to tr-
+  ue, important compatibility messages related to upcoming breaking changes wi-
+  ll still be displayed, but you will not see messages that will potentially h-
+  elp troubleshoot unexpected behavior.
+
 use_mappings_table
   Must be a boolean. If `true` and nothing is specified for `mappings`, the def-
   ault mappings are used. If `true` and a table is passed under the `mappings`

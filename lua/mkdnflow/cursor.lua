@@ -17,6 +17,7 @@
 -- Modules
 local links = require('mkdnflow.links')
 local config = require('mkdnflow').config
+local silent = require('mkdnflow').config.silent
 
 --[[
 rev_get_line() retrieves line text and reverses it
@@ -212,9 +213,9 @@ local go_to_heading = function(anchor_text, reverse)
             if row == starting_row + 1 then
                 unfound = nil
                 if anchor_text == nil then
-                    print("⬇️  Couldn't find a heading to go to!")
+                    if not silent then print("⬇️  Couldn't find a heading to go to!") end
                 else
-                    print("⬇️  Couldn't find a heading matching "..anchor_text.."!")
+                    if not silent then print("⬇️  Couldn't find a heading matching "..anchor_text.."!") end
                 end
             end
         else
@@ -224,14 +225,14 @@ local go_to_heading = function(anchor_text, reverse)
                     row = vim.api.nvim_buf_line_count(0)
                 else
                     unfound = nil
-                    print("⬇️  There are no more headings after the beginning of the document!")
+                    if not silent then print("⬇️  There are no more headings after the beginning of the document!") end
                 end
             else
                 if anchor_link ~= nil or config.wrap_to_end == true then
                     row = 1
                 else
                     unfound = nil
-                    print("⬇️  There are no more headings before the end of the document!")
+                    if not silent then print("⬇️  There are no more headings before the end of the document!") end
                 end
             end
         end
@@ -257,7 +258,7 @@ M.changeHeadingLevel = function(change)
         else
             -- Remove a hash, but only if there's more than one
             if not string.find(line[1], '^##') then
-                print('⬇️  Can\'t increase this heading any more!')
+                if not silent then print('⬇️  Can\'t increase this heading any more!') end
             else
                 vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 1, {''})
             end
@@ -311,7 +312,7 @@ M.yankAsAnchorLink = function()
         -- Add to the unnamed register
         vim.cmd('let @"="'..anchor_link..'"')
     else
-        print("⬇️  The current line is not a heading!")
+        if not silent then print("⬇️  The current line is not a heading!") end
     end
 end
 
