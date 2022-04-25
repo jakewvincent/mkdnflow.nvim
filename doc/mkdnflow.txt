@@ -424,6 +424,24 @@ Full-featured journal navigation/maintenance: https://github.com/vimwiki/vimwiki
 ===============================================================================
 Recent breaking changes                                      *Mkdnflow-changes*
 
+commit 1a21955cf51c15fe7424c61db4c4c531249ddd11
+Author: Jake Vincent <jakewvincent@gmail.com>
+Date:   Mon Apr 25 11:10:48 2022 -0700
+
+prefix settings to table
+
+commit e422905de904a5c8259254029dd5025e45000357
+Author: Jake Vincent <jakewvincent@gmail.com>
+Date:   Mon Apr 25 10:58:02 2022 -0700
+
+links_relative_to -> perspective
+
+commit 9068e12b14568ad2dbb22ed8fda2458593d5570f
+Author: Jake Vincent <jakewvincent@gmail.com>
+Date:   Mon Apr 25 10:40:39 2022 -0700
+
+wrap_to_beginning/end -> wrap
+
 commit 4365100020949eaf5c465c4e4dbf656d10a1b65c
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Mon Apr 25 10:13:28 2022 -0700
