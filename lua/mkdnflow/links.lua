@@ -15,11 +15,10 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Modules and variables
-local config = require('mkdnflow').config
 -- Get the user's prefix string
-local new_file_prefix = config.new_file_prefix
+local new_file_prefix = require('mkdnflow').config.new_file_prefix
 -- Get the user's prefix evaluation preference
-local evaluate_prefix = config.evaluate_prefix
+local evaluate_prefix = require('mkdnflow').config.evaluate_prefix
 local this_os = require('mkdnflow').this_os
 
 -- Table for global functions

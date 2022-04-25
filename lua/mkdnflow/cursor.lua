@@ -16,7 +16,8 @@
 
 -- Modules
 local links = require('mkdnflow.links')
-local config = require('mkdnflow').config
+local wrap_to_beginning = require('mkdnflow').config.wrap_to_beginning
+local wrap_to_end = require('mkdnflow').config.wrap_to_end
 local silent = require('mkdnflow').config.silent
 
 --[[
@@ -133,7 +134,7 @@ local go_to = function(pattern, reverse)
                 -- If the line is nil, there is no next line and the loop should stop (unless wrapping is on)
                 if reverse then
                     -- If we're searching backwards and user wants the search to wrap, go to last line in file
-                    if config.wrap_to_end == true then
+                    if wrap_to_end == true then
                         if not already_wrapped then
                             row = vim.api.nvim_buf_line_count(0) + 1
                             already_wrapped = true
@@ -146,7 +147,7 @@ local go_to = function(pattern, reverse)
                     end
                 else
                     -- If we're searching forwards and user wants the search to wrap, go to first line in file
-                    if config.wrap_to_beginning == true then
+                    if wrap_to_beginning == true then
                         if not already_wrapped then
                             row = 0
                             already_wrapped = true
@@ -221,14 +222,14 @@ local go_to_heading = function(anchor_text, reverse)
         else
             -- If the line does not have contents, start searching from the beginning
             if reverse then
-                if anchor_link ~= nil or config.wrap_to_beginning == true then
+                if anchor_link ~= nil or wrap_to_beginning == true then
                     row = vim.api.nvim_buf_line_count(0)
                 else
                     unfound = nil
                     if not silent then print("⬇️  There are no more headings after the beginning of the document!") end
                 end
             else
-                if anchor_link ~= nil or config.wrap_to_end == true then
+                if anchor_link ~= nil or wrap_to_end == true then
                     row = 1
                 else
                     unfound = nil
