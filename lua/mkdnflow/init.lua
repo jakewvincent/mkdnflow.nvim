@@ -118,6 +118,7 @@ end
 
 -- Private function to identify root directory on a windows machine
 local get_root_dir_windows = function(dir, root_tell)
+    local drive = dir:match('^%u')
     -- List files in directory
     local search_is_on, root = true, nil
     -- Until the root directory is found, keep looking higher and higher
@@ -135,7 +136,7 @@ local get_root_dir_windows = function(dir, root_tell)
         end
         pfile:close()
         if search_is_on then
-            if dir == 'C:\\' then
+            if dir == drive..':\\' then
                 -- If we've reached the highest directory possible, call off
                 -- the search and return nothing
                 search_is_on = false
@@ -144,7 +145,7 @@ local get_root_dir_windows = function(dir, root_tell)
                 -- If there's still more to remove, remove it
                 dir = dir:match('(.*)\\')
                 -- If dir is an empty string, look for the tell in *root* root
-                if dir == 'C:' then dir = 'C:\\' end
+                if dir == drive..':' then dir = drive..':\\' end
             end
         else
             return(root)

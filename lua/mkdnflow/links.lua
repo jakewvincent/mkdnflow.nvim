@@ -29,7 +29,6 @@ getLinkPart() extracts part of a markdown link, i.e. the part in [] or ().
 Returns a string--the string in the square brackets
 --]]
 M.getLinkPart = function(part)
-    print('looking for a link...')
     -- Use 'path' as part if no argument provided
     part = part or 'path'
     -- Get current cursor position
