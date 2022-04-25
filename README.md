@@ -72,7 +72,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 ### To-do lists
 * Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling `* [ ] ...` will yield `* [-] ...`; toggling `* [-] ...` will yield `* [X] ...`; and toggling `* [X] ...` will yield `* [ ] ...`.
 
-<p align=center>**More coming soon! I use this plugin daily for work and regularly add new features inspired by real-world use cases. Please share ideas feature requests by [creating an issue](https://github.com/jakewvincent/mkdnflow.nvim/issues).**</p>
+<p align=center><strong>More coming soon! I use this plugin daily for work and regularly add new features inspired by real-world use cases. Please share ideas feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
 ## 📦 Installation
 
@@ -188,50 +188,61 @@ require('mkdnflow').setup({
 })
 ```
 
-### create_dirs
-**Boolean value**
-* `true` will cause directories referenced in a link to be (recursively) created if they do not exist
-* `false` will cause no action to be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
+### Config descriptions
+#### `create_dirs` (boolean value)
+* `true`: Directories referenced in a link will be (recursively) created if they do not exist
+* `false` No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
 
-### perspective
-**Table value**
-'target' key specifies priority perspective. 'fallback' specifies a backup perspective if the target perspective cannot be determined. 'root_tell' specifies a file by which the root directory of the notebook/wiki can be identified (if 'target' is specified as 'root').
-'first' means links open relative to first-opened file. Other values: 'current'; 'root'. Backup value for target. false prevents root directory from being identified if 'target'
-is 'root'. Other values: any string representing a file.
+#### `perspective` (table value)
+* `perspective.priority` (string value): Specifies the priority perspective to take when interpreting link paths
+    * `'first'`: Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)
+    * `'current'`: Links will be interpreted relative to the current file
+    * `'root'`: Links will be interpreted relative to the root directory of the current notebook/wiki (requires `perspective.root_tell` to be specified)
+* `perspective.fallback` (string value): Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)
+    * `'first'`: (see above)
+    * `'current'`: (see above)
+    * `'root'`: (see above)
+* `perspective.root_tell` (string or boolean value)
+    * `'<any file name>'`: Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook/wiki. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`.
 
-### filetypes
-**Table value**
-Plugin's features enabled only when a file with one of these extensions is opened. Provide in lowercase. Any arbitrary extension can be supplied.
+#### `filetypes` (table value)
+* `<any arbitrary filetype extension>` (boolean value)
+    * `true`: A matching extension will enable the plugin's functionality for a file with that extension
 
-### prefix
-**Table value**
-Tells plugin whether `prefix.string` should be evaluated as Lua code or interpreted as a fixed string when links are made.
-true means the plugin will evaluate `prefix.string` as Lua code. Other values: false.
+Note: This functionality references the file's extension. It does not rely on Neovim's filetype recognition. The extension must be provided in lower case because the plugin converts file names to lowercase. Any arbitrary extension can be supplied. Setting an extension to `false` is the same as not including it in the list.
 
-String. Should be Lua code that produces a string value if `prefix.evaluate` is true.
+#### `prefix` (table value)
+* `prefix.string` (string value)
+    * `[[string]]`: A fixed string to prefix to new markdown document names in a link or a string of Lua code to evaluate at the time of link creation and use the output of as a prefix to the file name
+* `prefix.evaluate` (boolean value)
+    * `true`: The plugin will attempt to have Lua evaluate the string and will retrieve its output to prefix to the file name in the link
+    * `false`: The plugin will use `prefix.string` as a fixed prefix
 
-### wrap
-**Boolean value**
-Tells plugin whether to jump to beginning/end of file when searching for the next/previous link or heading.
-false means search will stop at document boundaries. Other values: true.
+Note: If you don't want prefixes, set `evaluate = false` and `string = ''`
 
-### use_mappings_table
-**Boolean value**
-Whether to use mapping table (see '❕Commands and default mappings').
-true means the table will be used. Other values: false (disables mappings and prevents modification of mappings via table).
+#### `wrap` (boolean value)
+* `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
+* `false`: When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
 
-### mappings
-**Table value**
-Keys should be the names of commands (see :h Mkdnflow-commands for a list). Values should be strings indicating the key mapping.
+#### `use_mappings_table` (boolean value)
+* `true`: Mappings will be defined with the help of `mappings` (see below), including your custom mappings (if defined in your mkdnflow config)
+* `false`: Mappings will not be defined with the help of the `mappings` table, and in fact, **no default mappings will be activated at all**
 
-### default_bib_path
-**String value**
-Path where the plugin will look for a .bib file when acting upon markdown citations.
+Note: See [default mappings](#-commands-and-default-mappings)
 
-### silent
-**Boolean value**
-Whether the plugin should display relevant messages or not. Warnings about breaking changes will always be displayed.
-false means relevant messages will be printed to the area below the status line. Other values: true.
+#### `mappings` (table value)
+* `mappings.<name of command>` (table value)
+    * `mappings.<name of command>[1]` string or table value representing the mode (or list of modes) the mapping should apply in (`'n'`, `'v'`, etc.)
+    * `mappings.<name of command>[2]` string representing the keymap (e.g. `'<Space>'`)
+
+Note: `<name of command>` should be the name of a commands defined in `mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
+
+#### `default_bib_path` (string value)
+* `'path/to/.bib/file'`: Specifies a path where the plugin will look for a .bib file when citations are "followed"
+
+#### `silent` (boolean value)
+* `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
+* `false`: The plugin will display messages to the console (all messages from the plugin start with ⬇️ )
 
 ### 👍 Recommended vim settings
 
