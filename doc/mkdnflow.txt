@@ -234,34 +234,28 @@ filetypes
   is manually started by calling `:Mkdnflow`. Default filetypes: `md`, `rmd`,
   and `markdown`.
 
-evaluate_prefix
-  Must be a boolean. When `true`, the `createLinks()` function tries to
-  evaluate the string provided as the value of `new_file_prefix`. If `false`,
-  the value of `new_file_prefix` is prefixed to new files as a string. That
-  is, it is not evaluated. Default: `true`.
+prefix
+  Must be a table with two keys: `evaluate` and `string`. `prefix.evaluate` mus-
+  t be a boolean. When `true`, the `createLinks()` function tries to evaluate t-
+  he string provided as the value of `prefix.string`. If `false`, the value of
+  `prefix.string` is prefixed to new files as a string. That is, it is not eval-
+  uated. Default for `prefix.evaluate`: `true`.
 
-new_file_prefix
-  Must be a string. Defines the prefix that should be used to create new links,
-  either something static (if `evaluate_prefix` is `false`) or variable (if 
-  `evaluate_prefix` is `true`). This is evaluated at the time `createLink()` is
-  run, which is to say that it's run whenever <CR> is pressed (under the
-  default mappings, anyway). This makes for many interesting possibilities, but
-  should be used with caution. Default: `[[os.date('%Y-%m-%d_')]]`, which
-  returns a string representing the current date to be prepended to the name
-  of your file: `YYYY-mm-dd_`. This helps with the organization of the
-  directory in which you keep your markdown files.
+  `prefix.string` Must be a string. It defines the prefix that should be used to
+  create new links, either something static (if `evaluate_prefix` is `false`) or
+  variable (if `evaluate_prefix` is `true`). This is evaluated at the time
+  `createLink()` is run, which is to say that it's run whenever <CR> is pressed
+  (under the default mappings, anyway). This makes for many interesting possibi-
+  lities, but should be used with caution. Default: `[[os.date('%Y-%m-%d_')]]`,
+  which returns a string representing the current date to be prepended to the n-
+  ame of your file: `YYYY-mm-dd_`. This helps with the organization of the dire-
+  ctory in which you keep your markdown files.
 
-wrap_to_beginning
-  Must be a boolean. If true, when jumping to the next link or heading in a doc,
-  the search will proceed from the beginning of the document if there are no mo-
-  re links between the current cursor position and the end of the document. De-
-  fault: `false`
-
-wrap_to_end
-  Must be a boolean. If true, when jumping to the previous link or heading in a
-  doc, the search will proceed from the end of the document if there are no more
-  links between the current cursor position and the beginning of the document.
-  Default: `false`.
+wrap
+  Must be a boolean. If true, when jumping to the next or previous link or head-
+  ing in a doc, the search will proceed from the beginning or end of the docume-
+  nt (respectively) if there are no more links between the current cursor posit-
+  ion and the end of the document. Default: `false`
 
 default_bib_path
   Must be a string. Tells Mkdnflow where to find the .bib file to search for
@@ -299,21 +293,21 @@ A sample config showing the defaults:~
             evaluate = true,
             string = [[os.date('%Y-%m-%d_')]]
         },
-        wrap_to_beginning = false,
-        wrap_to_end = false,
+        wrap = false,
         default_bib_path = '',
         use_mappings_table = true,
         mappings = {
-            MkdnNextLink = '<Tab>',
-            MkdnPrevLink = '<S-Tab>',
-            MkdnNextHeading = '<leader>]',
-            MkdnPrevHeading = '<leader>[',
-            MkdnGoBack = '<BS>',
-            MkdnGoForward = '<Del>',
-            MkdnFollowLink = '<CR>',
-            MkdnYankAnchorLink = 'ya',
-            MkdnIncreaseHeading = '+',
-            MkdnDecreaseHeading = '-'
+            MkdnNextLink = {'n', '<Tab>'},
+            MkdnPrevLink = {'n', '<S-Tab>'},
+            MkdnNextHeading = {'n', '<leader>]'},
+            MkdnPrevHeading = {'n', '<leader>['},
+            MkdnGoBack = {'n', '<BS>'},
+            MkdnGoForward = {'n', '<Del>'},
+            MkdnFollowLink = {{'n', 'v'}, '<CR>'},
+            MkdnDestroyLink = {'n', '<M-CR>'},
+            MkdnYankAnchorLink = {'n', 'ya'},
+            MkdnIncreaseHeading = {'n', '+'},
+            MkdnDecreaseHeading = {'n', '-'}
         }
     })
 

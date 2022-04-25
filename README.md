@@ -162,8 +162,10 @@ require('mkdnflow').setup({
         root_tell = false
     },    
     filetypes = {md = true, rmd = true, markdown = true},
-    evaluate_prefix = true,
-    new_file_prefix = [[os.date('%Y-%m-%d_')]],
+    prefix = {
+        evaluate = true,
+        string = [[os.date('%Y-%m-%d_')]]
+    },
     wrap = false,
     default_bib_path = '',
     silent = false,
@@ -202,11 +204,11 @@ is 'root'. Other values: any string representing a file.
 Plugin's features enabled only when a file with one of these extensions is opened. Provide in lowercase. Any arbitrary extension can be supplied.
 
 ### prefix
-**Boolean value**
-Tells plugin whether `new_file_prefix` should be evaluated as Lua code or interpreted as a fixed string when links are made.
-true means the plugin will evaluate new_file_prefix as Lua code. Other values: false.
+**Table value**
+Tells plugin whether `prefix.string` should be evaluated as Lua code or interpreted as a fixed string when links are made.
+true means the plugin will evaluate `prefix.string` as Lua code. Other values: false.
 
-String. Should be Lua code that produces a string value if evaluate_prefix is true.
+String. Should be Lua code that produces a string value if `prefix.evaluate` is true.
 
 ### wrap
 **Boolean value**
