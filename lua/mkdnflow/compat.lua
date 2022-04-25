@@ -78,13 +78,13 @@ M.userConfigCheck = function(user_config)
             warn('⬇️  The perspective key (previously "links_relative_to") should now be associated with a table value. Please update your config. See :h mkdnflow-changes, commit 75c8ec...')
             if user_config.perspective == 'current' then
                 local table = {
-                    target = 'current',
+                    priority = 'current',
                     fallback = 'first'
                 }
                 user_config.perspective = table
             elseif user_config.perspective == 'first' then
                 local table = {
-                    target = 'first',
+                    priority = 'first',
                     fallback = 'current'
                 }
                 user_config.perspective = table

@@ -23,7 +23,7 @@ local this_os_err = '⬇️ Function unavailable for '..this_os..'. Please file 
 -- Get config setting for whether to make missing directories or not
 local create_dirs = require('mkdnflow').config.create_dirs
 -- Get config setting for where links should be relative to
-local perspective = require('mkdnflow').config.perspective.target
+local perspective = require('mkdnflow').config.perspective.priority
 -- Get directory of first-opened file
 local initial_dir = require('mkdnflow').initial_dir
 -- Get root_dir for notebook/wiki

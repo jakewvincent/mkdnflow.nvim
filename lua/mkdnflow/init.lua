@@ -18,7 +18,7 @@
 local default_config = {
     create_dirs = true,
     perspective = {
-        target = 'first',
+        priority = 'first',
         fallback = 'current',
         root_tell = false
     },
@@ -178,7 +178,7 @@ init.setup = function(user_config)
     if init.config.filetypes[ft] then
         -- Determine perspective
         local perspective = init.config.perspective
-        if perspective.target == 'root' then
+        if perspective.priority == 'root' then
             -- Retrieve the root 'tell'
             local root_tell = perspective.root_tell
             -- If one was provided, try to find the root directory for the
@@ -190,7 +190,7 @@ init.setup = function(user_config)
                         if not silent then print('⬇️  Root directory found: '..init.root_dir) end
                     else
                         if not silent then print('⬇️  No suitable root directory found!') end
-                        init.config.perspective.target = init.config.perspective.fallback
+                        init.config.perspective.priority = init.config.perspective.fallback
                     end
                 elseif init.this_os == 'Windows_NT' then
                     init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
@@ -198,15 +198,15 @@ init.setup = function(user_config)
                         if not silent then print('⬇️  Root directory found: '..init.root_dir) end
                     else
                         if not silent then print('⬇️  No suitable root directory found!') end
-                        init.config.perspective.target = init.config.perspective.fallback
+                        init.config.perspective.priority = init.config.perspective.fallback
                     end
                 else
                     if not silent then print('⬇️  Cannot yet search for root directory on '..init.this_os..' machines.') end
-                    init.config.perspective.target = init.config.perspective.fallback
+                    init.config.perspective.priority = init.config.perspective.fallback
                 end
             else
                 if not silent then print('⬇️  No tell was provided for the root directory. See :h mkdnflow-configuration.') end
-                init.config.perspective.target = init.config.perspective.fallback
+                init.config.perspective.priority = init.config.perspective.fallback
             end
         end
         -- Load functions
