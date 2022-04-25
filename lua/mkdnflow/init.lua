@@ -17,7 +17,7 @@
 -- Default config table (where defaults and user-provided config will be combined)
 local default_config = {
     create_dirs = true,
-    links_relative_to = {
+    perspective = {
         target = 'first',
         fallback = 'current',
         root_tell = false
@@ -29,8 +29,7 @@ local default_config = {
     },
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
     evaluate_prefix = true,
-    wrap_to_beginning = false,
-    wrap_to_end = false,
+    wrap = false,
     default_bib_path = '',
     silent = false,
     use_mappings_table = true,
