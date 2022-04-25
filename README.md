@@ -40,7 +40,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Specify what perspective the plugin-should take when interpreting links to files. There are three options:
     1. Interpret links relative to the first-opened file (default behavior)
     2. Interpret links relative to the file open in the current buffer
-    3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, you must set `perspective.target` to `root` in your config and specify a "tell" for the root directory under `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [Configuration](#%EF%B8%8F-configuration) for the default config and an example of how to configure the `perspective` table.
+    3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, you must set `perspective.priority` to `root` in your config and specify a "tell" for the root directory under `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [Configuration](#%EF%B8%8F-configuration) for the default config and an example of how to configure the `perspective` table.
 
 ### Follow links _and citations_
 * `<CR>` on various kinds of links to "follow" them:
@@ -160,7 +160,7 @@ Currently, the setup function uses the defaults shown below. See the description
 require('mkdnflow').setup({
     create_dirs = true,             
     perspective = {
-        target = 'first',
+        priority = 'first',
         fallback = 'current',
         root_tell = false
     },    
