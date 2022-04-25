@@ -153,6 +153,11 @@ Currently, the setup function uses the defaults shown below. See the description
 
 ```lua
 -- ** DEFAULT SETTINGS; TO USE THESE, PASS AN EMPTY TABLE TO THE SETUP FUNCTION **
+require('mkdnflow').setup({
+    create_dirs = true,             
+    links_relative_to = {
+        target = 'first',
+        fallback = 'current',
         root_tell = false
     },    
     filetypes = {md = true, rmd = true, markdown = true},
