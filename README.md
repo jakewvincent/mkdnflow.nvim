@@ -149,56 +149,20 @@ EOF
 
 ## ⚙️ Configuration
 
-Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the comments above each setting. **To use these defaults, simply call the setup function with an empty table as the argument:** `require('mkdnflow').setup({})`. To change these settings, specify new values for any of them them in the setup function.
+Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the comments above each setting. **To use these defaults, simply pass an empty table to the setup function:** `require('mkdnflow').setup({})`. To change these settings, specify new values for any of them them in the setup function.
 
 ```lua
-require('mkdnflow').setup({
-    -- Boolean. Create directories (recursively) if link references a missing
-    -- directory.
-    create_dirs = true, -- true causes missing directories to be created. Other values: false.
-
-    -- Table. 'target' key specifies priority perspective. 'fallback' specifies a backup perspective
-    -- if the target perspective cannot be determined. 'root_tell' specifies a file by which the ro-
-    -- ot directory of the notebook/wiki can be identified (if 'target' is specified as 'root').
-    links_relative_to = {
-        target = 'first',       -- 'first' means links open relative to first-opened file. Other va-
-                                -- lues: 'current'; 'root'
-        fallback = 'current',   -- Backup value for target.
-        root_tell = false       -- false prevents root directory from being identified if 'target'
-                                -- is 'root'. Other values: any string representing a file.
+-- ** DEFAULT SETTINGS; TO USE THESE, PASS AN EMPTY TABLE TO THE SETUP FUNCTION **
+        root_tell = false
     },    
-
-    -- Table. Plugin's features enabled only when a file with one of these extensions is opened. Pr-
-    -- ovide in lowercase. Any arbitrary extension can be supplied.
     filetypes = {md = true, rmd = true, markdown = true},
-
-    -- Boolean. Tells plugin whether `new_file_prefix` should be evaluated as Lua code or interpret-
-    -- ed as a fixed string when links are made.
-    evaluate_prefix = true, -- true means the plugin will evaluate new_file_prefix as Lua code. Oth-
-                            -- er values: false.
-
-    -- String. Should be Lua code that produces a string value if evaluate_prefix is true.
+    evaluate_prefix = true,
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
-
-    -- Boolean. Tells plugin whether to jump to beginning/end of file when searching for the next/p-
-    -- revious link or heading.
-    wrap_to_beginning = false,  -- false means search will stop at document boundaries. Other value-
-    wrap_to_end = false,        -- s: true.
-
-    -- String. Path where the plugin will look for a .bib file when acting upon markdown citations.
+    wrap_to_beginning = false,
+    wrap_to_end = false,
     default_bib_path = '',
-
-    -- Boolean. Whether the plugin should display relevant messages or not. Warnings about breaking
-    -- changes will always be displayed.
-    silent = false, -- false means relevant messages will be printed to the area below the status l-
-                    -- ine. Other values: true.
-
-    -- Boolean. Whether to use mapping table (see '❕Commands and default mappings').
-    use_mappings_table = true, -- true means the table will be used. Other values: false (disables
-                               -- mappings and prevents modification of mappings via table).
-
-    -- Table. Keys should be the names of commands (see :h Mkdnflow-commands for a list). Values sh-
-    -- ould be strings indicating the key mapping.
+    silent = false,
+    use_mappings_table = true,
     mappings = {
         MkdnNextLink = '<Tab>',
         MkdnPrevLink = '<S-Tab>',
@@ -214,6 +178,42 @@ require('mkdnflow').setup({
     }
 })
 ```
+
+### create_dirs
+Boolean. Create directories (recursively) if link references a missing directory.
+true causes missing directories to be created. Other values: false.
+
+### perspective
+Table. 'target' key specifies priority perspective. 'fallback' specifies a backup perspective if the target perspective cannot be determined. 'root_tell' specifies a file by which the root directory of the notebook/wiki can be identified (if 'target' is specified as 'root').
+'first' means links open relative to first-opened file. Other values: 'current'; 'root'. Backup value for target. false prevents root directory from being identified if 'target'
+is 'root'. Other values: any string representing a file.
+
+### filetypes
+Table. Plugin's features enabled only when a file with one of these extensions is opened. Provide in lowercase. Any arbitrary extension can be supplied.
+
+### prefix
+Boolean. Tells plugin whether `new_file_prefix` should be evaluated as Lua code or interpreted as a fixed string when links are made.
+true means the plugin will evaluate new_file_prefix as Lua code. Other values: false.
+
+String. Should be Lua code that produces a string value if evaluate_prefix is true.
+
+### wrap
+Boolean. Tells plugin whether to jump to beginning/end of file when searching for the next/previous link or heading.
+false means search will stop at document boundaries. Other values: true.
+
+### use_mappings_table
+Boolean. Whether to use mapping table (see '❕Commands and default mappings').
+true means the table will be used. Other values: false (disables mappings and prevents modification of mappings via table).
+
+### mappings
+Table. Keys should be the names of commands (see :h Mkdnflow-commands for a list). Values should be strings indicating the key mapping.
+
+### default_bib_path
+String. Path where the plugin will look for a .bib file when acting upon markdown citations.
+
+### silent
+Boolean. Whether the plugin should display relevant messages or not. Warnings about breaking changes will always be displayed.
+false means relevant messages will be printed to the area below the status line. Other values: true.
 
 ### 👍 Recommended vim settings
 
