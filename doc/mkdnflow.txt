@@ -418,7 +418,30 @@ Full-featured journal navigation/maintenance: https://github.com/vimwiki/vimwiki
 ===============================================================================
 Recent breaking changes                                      *Mkdnflow-changes*
 
-commit c1cf25f061e29be5ed7b9e5d44e5f0f427d46444 (HEAD -> dev)
+commit 4365100020949eaf5c465c4e4dbf656d10a1b65c
+Author: Jake Vincent <jakewvincent@gmail.com>
+Date:   Mon Apr 25 10:13:28 2022 -0700
+
+This commit contained a revision to the way mappings are provided for each com-
+mand so that the mode for the mapping can be specified (e.g. normal, visual, e-
+tc.). Previously the mapping was passed as the value in a table for a particul-
+ar command. The key in the mappings table should still be named exactly after a
+command, but a table should be passed to them, the first value of which is a s-
+ingle mode (e.g. 'n') or a table with multiple modes (e.g. {'n', 'v'}), and the
+second value should be a string representing the mapping. Example:
+
+>
+  {
+    mappings = {
+      MkdnToggleToDo = {'n', '<Space>'},
+      MkdnCreateLink = {{'n', 'v'}, '<leader>l'}
+    }
+  }
+
+A compatibility function in the `compat.lua` module will (for now) migrate any
+of the old config types to the new type each time the plugin is started.
+
+commit c1cf25f061e29be5ed7b9e5d44e5f0f427d46444
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Sat Apr 23 16:10:04 2022 -0700
 
