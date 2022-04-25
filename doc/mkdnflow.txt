@@ -217,7 +217,7 @@ create_dirs
   not created. Default: `true`.
 
 perspective
-  Must be a table with at least a value specified for the key `target`. If `fir-
+  Must be a table with at least a value specified for the key `priority`. If `fir-
   st`, link navigation proceeds relative to the directory of the first-opened f-
   ile. If `current`, link navigation proceeds relative to the currently visible
   file. If `root`, link navigation proceeds according to a root directory that
@@ -225,7 +225,7 @@ perspective
   `root_tell` in the `perspective` table. For cases when a root directory cannot
   be found, the plugin also recognizes a `fallback` key that can be either
   `first` or `current`, whichever behavior you'd like the plugin to default back
-  to. Default value for `target`: `first`.
+  to. Default value for `priority`: `first`.
 
 filetypes
   Must be a table of key-value pairs, where the key is the name of a filetype
@@ -284,7 +284,7 @@ A sample config showing the defaults:~
     require('mkdnflow').setup({
         create_dirs = true,
         perspective = {
-            target = 'first',
+            priority = 'first',
             fallback = 'current',
             root_tell = ''
         },
