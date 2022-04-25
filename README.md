@@ -153,42 +153,60 @@ Currently, the setup function uses the defaults shown below. See the description
 
 ```lua
 require('mkdnflow').setup({
-    -- Boolean. Create directories (recursively) if link references a missing directory.
-    create_dirs = true, -- true causes missing directories to be created. Other values: false.
+    -- Boolean. Create directories (recursively) if link references a missing
+    -- directory.
+    create_dirs = true, -- true causes missing directories to be created. Other
+                        --values: false.
 
-    -- Table. 'target' key specifies priority perspective. 'fallback' specifies a backup
-    -- perspective if the target perspective cannot be determined. 'root_tell' specifies
-    -- a file by which the root directory of the notebook/wiki can be identified (if 'target'
-    -- is specified as 'root').
+    -- Table. 'target' key specifies priority perspective. 'fallback' specifies
+    -- a backup perspective if the target perspective cannot be determined
+    -- 'root_tell' specifies a file by which the root directory of the notebook/
+    -- wiki can be identified (if 'target' is specified as 'root').
     links_relative_to = {
-        target = 'first',       -- 'first' means links open relative to first-opened file. Other values: 'current'; 'root'. 
+        target = 'first',       -- 'first' means links open relative to first-
+                                -- opened file. Other values: 'current'; 'root'
         fallback = 'current',   -- Backup value for target.
-        root_tell = false       -- false prevents root directory from being identified if 'target' is 'root'. Other values: any string.
+        root_tell = false       -- false prevents root directory from being ide-
+                                -- ntified if 'target' is 'root'. Other values:
+                                -- any string representing a file.
     },    
 
-    -- Table. Plugin's features enabled only when a file with one of these extensions is opened. Provide in lowercase. Any arbitrary extension can be supplied.
+    -- Table. Plugin's features enabled only when a file with one of these exte-
+    -- nsions is opened. Provide in lowercase. Any arbitrary extension can be
+    -- supplied.
     filetypes = {md = true, rmd = true, markdown = true},
 
-    -- Boolean. Tells plugin whether `new_file_prefix` should be evaluated as Lua code or interpreted as a fixed string when links are made.
-    evaluate_prefix = true, -- true means the plugin will evaluate new_file_prefix as Lua code. Other values: false.
+    -- Boolean. Tells plugin whether `new_file_prefix` should be evaluated as
+    -- Lua code or interpreted as a fixed string when links are made.
+    evaluate_prefix = true, -- true means the plugin will evaluate
+                            -- new_file_prefix as Lua code. Other values: false.
 
-    -- String. Should be Lua code that produces a string value if evaluate_prefix is true.
+    -- String. Should be Lua code that produces a string value if
+    -- evaluate_prefix is true.
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
 
-    -- Boolean. Tells plugin whether to jump to beginning/end of file when searching for the next/previous link or heading.
-    wrap_to_beginning = false,  -- false means search will stop at document boundaries. Other values: true.
-    wrap_to_end = false,        -- false means search will stop at document boundaries. Other values: true.
+    -- Boolean. Tells plugin whether to jump to beginning/end of file when
+    -- searching for the next/previous link or heading.
+    wrap_to_beginning = false,  -- false means search will stop at document bou-
+    wrap_to_end = false,        -- ndaries. Other values: true.
 
-    -- String. Path where the plugin will look for a .bib file when acting upon markdown citations.
+    -- String. Path where the plugin will look for a .bib file when acting upon
+    -- markdown citations.
     default_bib_path = '',
 
-    -- Boolean. Whether the plugin should display relevant messages or not. Warnings about breaking changes will always be displayed.
-    silent = false, -- false means relevant messages will be printed to the area below the status line. Other values: true.
+    -- Boolean. Whether the plugin should display relevant messages or not.
+    -- Warnings about breaking changes will always be displayed.
+    silent = false, -- false means relevant messages will be printed to the
+                    -- area below the status line. Other values: true.
 
-    -- Boolean. Whether to use mapping table (see '❕Commands and default mappings').
-    use_mappings_table = true, -- true means the table will be used. Other values: false (disables mappings and prevents modification of mappings via table).
+    -- Boolean. Whether to use mapping table (see '❕Commands and default
+    -- mappings').
+    use_mappings_table = true, -- true means the table will be used. Other valy-
+                               -- es: false (disables mappings and prevents mod-
+                               -- ification of mappings via table).
 
-    -- Table. Keys should be the names of commands (see :h Mkdnflow-commands for a list). Values should be strings indicating the key mapping.
+    -- Table. Keys should be the names of commands (see :h Mkdnflow-commands
+    -- for a list). Values should be strings indicating the key mapping.
     mappings = {
         MkdnNextLink = '<Tab>',
         MkdnPrevLink = '<S-Tab>',
