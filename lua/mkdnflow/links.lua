@@ -20,6 +20,7 @@ local config = require('mkdnflow').config
 local new_file_prefix = config.new_file_prefix
 -- Get the user's prefix evaluation preference
 local evaluate_prefix = config.evaluate_prefix
+local this_os = require('mkdnflow').this_os
 
 -- Table for global functions
 local M = {}
@@ -453,7 +454,12 @@ M.followLink = function(path)
     -- this function retrieves a path from the citation handler). If no path
     -- is provided as an arg, get the path under the cursor via getLinkPart().
     path = path or M.getLinkPart('path')
-    local handlePath = require('mkdnflow.paths').handlePath
+    local handlePath
+    if this_os == 'Windows_NT' then
+        handlePath = require('mkdnflow.paths_windows').handlePath
+    else
+        handlePath = require('mkdnflow.paths').handlePath
+    end
     if path then
         handlePath(path)
     else

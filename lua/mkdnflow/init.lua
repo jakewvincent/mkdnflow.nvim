@@ -216,7 +216,11 @@ init.setup = function(user_config)
         end
         -- Load functions
         init.cursor = require('mkdnflow.cursor')
-        init.paths = require('mkdnflow.paths')
+        if init.this_os == 'Windows_NT' then
+            init.paths = require('mkdnflow.paths_windows')
+        else
+            init.paths = require('mkdnflow.paths')
+        end
         init.links = require('mkdnflow.links')
         init.buffers = require('mkdnflow.buffers')
         init.bib = require('mkdnflow.bib')
