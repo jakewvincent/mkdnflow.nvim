@@ -67,7 +67,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * 🆕 [Customize keybindings](#%EF%B8%8F-configuration) individually or [disable them altogether](#%EF%B8%8F-configuration))
 
 ### Manipulate headings
-* 🆕 Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when convertedto HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
+* 🆕 Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### To-do lists
 * 🆕 Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling will result in the following changes:
