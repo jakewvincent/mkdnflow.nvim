@@ -23,7 +23,7 @@ local this_os_err = '⬇️ Function unavailable for '..this_os..'. Please file 
 -- Get config setting for whether to make missing directories or not
 local create_dirs = require('mkdnflow').config.create_dirs
 -- Get config setting for where links should be relative to
-local links_relative_to = require('mkdnflow').config.links_relative_to.target
+local perspective = require('mkdnflow').config.perspective.target
 -- Get directory of first-opened file
 local initial_dir = require('mkdnflow').initial_dir
 -- Get root_dir for notebook/wiki
@@ -135,7 +135,7 @@ local handle_internal_file = function(path)
     -- a directory is specified in the link that we need to check
     if create_dirs and dir then
         -- If so, check how the user wants links to be interpreted
-        if links_relative_to == 'root' then
+        if perspective == 'root' then
             -- Paste root directory and the directory in link
             local paste = root_dir..'\\'..dir
             -- See if the path exists
@@ -147,7 +147,7 @@ local handle_internal_file = function(path)
             -- Remember the buffer we're currently in and follow path
             buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
             vim.cmd(':e '..paste..'\\'..filename)
-        elseif links_relative_to == 'first' then
+        elseif perspective == 'first' then
             -- Paste together the directory of the first-opened file
             -- and the directory in the link path
             local paste = initial_dir..'\\'..dir
@@ -183,7 +183,7 @@ local handle_internal_file = function(path)
             vim.cmd(':e '..paste..'\\'..filename)
         end
         -- Otherwise, if links are interpreted rel to first-opened file
-    elseif links_relative_to == 'root' then
+    elseif perspective == 'root' then
         -- Get the path of the current file
         local cur_file = vim.api.nvim_buf_get_name(0)
         -- Paste together root directory path & path in link
@@ -192,7 +192,7 @@ local handle_internal_file = function(path)
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
         -- And follow the path!
         vim.cmd(':e '..paste)
-    elseif links_relative_to == 'current' then
+    elseif perspective == 'current' then
         -- Get the path of the current file
         local cur_file = vim.api.nvim_buf_get_name(0)
         -- Get the directory the current file is in
@@ -242,12 +242,12 @@ local handle_external_file = function(path)
     -- Check if path provided is absolute
     if string.match(real_path, '^%u:\\') then
         open(real_path)
-    elseif links_relative_to == 'root' then
+    elseif perspective == 'root' then
         -- Paste together root directory path and path in link
         local paste = root_dir..'\\'..real_path
         -- Pass to the open() function
         open(paste)
-    elseif links_relative_to == 'current' then
+    elseif perspective == 'current' then
         -- Get the path of the current file
         local cur_file = vim.api.nvim_buf_get_name(0)
         -- Get the directory the current file is in

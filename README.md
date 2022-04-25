@@ -24,9 +24,10 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ## ✨ Features
 
-### Create links
+### Create and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
     * Customizable filename prefix (default is the current date in `YYYY-MM-DD` format (see [Configuration](#%EF%B8%8F-configuration)).
+* 🆕 `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
 * 🆕 Create an anchor links if the visual selection starts with `#` 
 * 🆕 Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
 * 🆕 `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste)
@@ -39,7 +40,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Specify what perspective the plugin-should take when interpreting links to files. There are three options:
     1. Interpret links relative to the first-opened file (default behavior)
     2. Interpret links relative to the file open in the current buffer
-    3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, you must set `links_relative_to.target` to `root` in your config and specify a "tell" for the root directory under `links_relative_to.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [Configuration](#%EF%B8%8F-configuration) for the default config and an example of how to configure the `links_relative_to` table.
+    3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, you must set `perspective.target` to `root` in your config and specify a "tell" for the root directory under `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [Configuration](#%EF%B8%8F-configuration) for the default config and an example of how to configure the `perspective` table.
 
 ### Follow links _and citations_
 * `<CR>` on various kinds of links to "follow" them:
@@ -155,7 +156,7 @@ Currently, the setup function uses the defaults shown below. See the description
 -- ** DEFAULT SETTINGS; TO USE THESE, PASS AN EMPTY TABLE TO THE SETUP FUNCTION **
 require('mkdnflow').setup({
     create_dirs = true,             
-    links_relative_to = {
+    perspective = {
         target = 'first',
         fallback = 'current',
         root_tell = false
@@ -163,8 +164,7 @@ require('mkdnflow').setup({
     filetypes = {md = true, rmd = true, markdown = true},
     evaluate_prefix = true,
     new_file_prefix = [[os.date('%Y-%m-%d_')]],
-    wrap_to_beginning = false,
-    wrap_to_end = false,
+    wrap = false,
     default_bib_path = '',
     silent = false,
     use_mappings_table = true,
@@ -177,6 +177,7 @@ require('mkdnflow').setup({
         MkdnGoForward = {'n', '<Del>'},
         MkdnFollowLink = {'n', '<CR>'},
         MkdnFollowLink = {'v', '<CR>'},
+        MkdnDestroyLink = {'n', '<M-CR>'},
         MkdnYankAnchorLink = {'n', 'ya'},
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
@@ -186,39 +187,48 @@ require('mkdnflow').setup({
 ```
 
 ### create_dirs
-Boolean. Create directories (recursively) if link references a missing directory.
-true causes missing directories to be created. Other values: false.
+**Boolean value**
+* `true` will cause directories referenced in a link to be (recursively) created if they do not exist
+* `false` will cause no action to be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
 
 ### perspective
-Table. 'target' key specifies priority perspective. 'fallback' specifies a backup perspective if the target perspective cannot be determined. 'root_tell' specifies a file by which the root directory of the notebook/wiki can be identified (if 'target' is specified as 'root').
+**Table value**
+'target' key specifies priority perspective. 'fallback' specifies a backup perspective if the target perspective cannot be determined. 'root_tell' specifies a file by which the root directory of the notebook/wiki can be identified (if 'target' is specified as 'root').
 'first' means links open relative to first-opened file. Other values: 'current'; 'root'. Backup value for target. false prevents root directory from being identified if 'target'
 is 'root'. Other values: any string representing a file.
 
 ### filetypes
-Table. Plugin's features enabled only when a file with one of these extensions is opened. Provide in lowercase. Any arbitrary extension can be supplied.
+**Table value**
+Plugin's features enabled only when a file with one of these extensions is opened. Provide in lowercase. Any arbitrary extension can be supplied.
 
 ### prefix
-Boolean. Tells plugin whether `new_file_prefix` should be evaluated as Lua code or interpreted as a fixed string when links are made.
+**Boolean value**
+Tells plugin whether `new_file_prefix` should be evaluated as Lua code or interpreted as a fixed string when links are made.
 true means the plugin will evaluate new_file_prefix as Lua code. Other values: false.
 
 String. Should be Lua code that produces a string value if evaluate_prefix is true.
 
 ### wrap
-Boolean. Tells plugin whether to jump to beginning/end of file when searching for the next/previous link or heading.
+**Boolean value**
+Tells plugin whether to jump to beginning/end of file when searching for the next/previous link or heading.
 false means search will stop at document boundaries. Other values: true.
 
 ### use_mappings_table
-Boolean. Whether to use mapping table (see '❕Commands and default mappings').
+**Boolean value**
+Whether to use mapping table (see '❕Commands and default mappings').
 true means the table will be used. Other values: false (disables mappings and prevents modification of mappings via table).
 
 ### mappings
-Table. Keys should be the names of commands (see :h Mkdnflow-commands for a list). Values should be strings indicating the key mapping.
+**Table value**
+Keys should be the names of commands (see :h Mkdnflow-commands for a list). Values should be strings indicating the key mapping.
 
 ### default_bib_path
-String. Path where the plugin will look for a .bib file when acting upon markdown citations.
+**String value**
+Path where the plugin will look for a .bib file when acting upon markdown citations.
 
 ### silent
-Boolean. Whether the plugin should display relevant messages or not. Warnings about breaking changes will always be displayed.
+**Boolean value**
+Whether the plugin should display relevant messages or not. Warnings about breaking changes will always be displayed.
 false means relevant messages will be printed to the area below the status line. Other values: true.
 
 ### 👍 Recommended vim settings
@@ -248,6 +258,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<BS>`       | n    | `:MkdnGoBack<CR>`          | Open the historically last-active buffer in the current window |
 | `<Del>`      | n    | `:MkdnGoForward<CR>`       | Open the buffer that was historically navigated away from in the current window |
 | `<CR>`       | n    | `:MkdnFollowLink<CR>`      | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
+| `<M-CR>`     | n    | `:MkdnDestroyLink<CR>`     | Destoy the link under the cursor, replacing it with just the text from [...] |
 | `ya`         | n    | `:MkdnYankAnchorLink<CR>`  | Yank a formatted anchor link (if cursor is currently on a line with a heading) |
 | `+`          | n    | `:MkdnIncreaseHeading<CR>` | Increase heading importance (remove hashes) |
 | `-`          | n    | `:MkdnDecreaseHeading<CR>` | Decrease heading importance (add hashes) |
@@ -288,6 +299,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/25/22: Specify mode in mappings table
 * 04/24/22: User can shut up messages by specifying 'false' in their config under the 'silent' key
 * 04/24/22: Added Windows compatibility!
 * 04/23/22: Major reorganization of followPath() function which ships off some of its old functionality to the new links module and much of it to smaller, path-type-specific functions in the new paths module

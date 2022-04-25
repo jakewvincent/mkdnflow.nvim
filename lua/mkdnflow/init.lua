@@ -175,10 +175,10 @@ init.setup = function(user_config)
     -- Load extension if the filetype has a match in config.filetypes
     if init.config.filetypes[ft] then
         -- Determine perspective
-        local links_relative_to = init.config.links_relative_to
-        if links_relative_to.target == 'root' then
+        local perspective = init.config.perspective
+        if perspective.target == 'root' then
             -- Retrieve the root 'tell'
-            local root_tell = links_relative_to.root_tell
+            local root_tell = perspective.root_tell
             -- If one was provided, try to find the root directory for the
             -- notebook/wiki using the tell
             if root_tell then
@@ -188,7 +188,7 @@ init.setup = function(user_config)
                         if not silent then print('⬇️  Root directory found: '..init.root_dir) end
                     else
                         if not silent then print('⬇️  No suitable root directory found!') end
-                        init.config.links_relative_to.target = init.config.links_relative_to.fallback
+                        init.config.perspective.target = init.config.perspective.fallback
                     end
                 elseif init.this_os == 'Windows_NT' then
                     init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
@@ -196,15 +196,15 @@ init.setup = function(user_config)
                         if not silent then print('⬇️  Root directory found: '..init.root_dir) end
                     else
                         if not silent then print('⬇️  No suitable root directory found!') end
-                        init.config.links_relative_to.target = init.config.links_relative_to.fallback
+                        init.config.perspective.target = init.config.perspective.fallback
                     end
                 else
                     if not silent then print('⬇️  Cannot yet search for root directory on '..init.this_os..' machines.') end
-                    init.config.links_relative_to.target = init.config.links_relative_to.fallback
+                    init.config.perspective.target = init.config.perspective.fallback
                 end
             else
                 if not silent then print('⬇️  No tell was provided for the root directory. See :h mkdnflow-configuration.') end
-                init.config.links_relative_to.target = init.config.links_relative_to.fallback
+                init.config.perspective.target = init.config.perspective.fallback
             end
         end
         -- Load functions

@@ -216,10 +216,16 @@ create_dirs
   the link contains a missing directory. If `false`, missing directories are
   not created. Default: `true`.
 
-links_relative_to
-  Must be one of two strings. If `first`, link navigation proceeds relative to
-  the directory of the first-opened file. If `current`, link navigation
-  proceeds relative to the currently visible file. Default: `first`.
+perspective
+  Must be a table with at least a value specified for the key `target`. If `fir-
+  st`, link navigation proceeds relative to the directory of the first-opened f-
+  ile. If `current`, link navigation proceeds relative to the currently visible
+  file. If `root`, link navigation proceeds according to a root directory that
+  has been identified by a particular file that you specify under they key
+  `root_tell` in the `perspective` table. For cases when a root directory cannot
+  be found, the plugin also recognizes a `fallback` key that can be either
+  `first` or `current`, whichever behavior you'd like the plugin to default back
+  to. Default value for `target`: `first`.
 
 filetypes
   Must be a table of key-value pairs, where the key is the name of a filetype
@@ -283,10 +289,16 @@ A sample config showing the defaults:~
 >
     require('mkdnflow').setup({
         create_dirs = true,
-        links_relative_to = 'first', -- other option: current
+        perspective = {
+            target = 'first',
+            fallback = 'current',
+            root_tell = ''
+        },
         filetypes = {md = true, rmd = true, markdown = true},
-        new_file_prefix = [[os.date('%Y-%m-%d_')]],
-        evaluate_prefix = true,
+        prefix = {
+            evaluate = true,
+            string = [[os.date('%Y-%m-%d_')]]
+        },
         wrap_to_beginning = false,
         wrap_to_end = false,
         default_bib_path = '',
@@ -458,13 +470,12 @@ commit 75c8ecc5c81bd048b6cd452f30ebde54db258165
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Fri Apr 22 13:32:54 2022 -0700
 
-Starting in this commit, mkdnflow now expects the `links_relative_to` key in
-your config (or in the default config) to point to a table, rather than a stri-
-ng (see |Mkdnflow-configuration|). For now, if you have customized `links_rela-
-tive_to` and it currently points to a string (i.e. 'first' or 'current'), a
-compatibility function will read your config and (internally) convert it into
-the expected format before overwriting the default settings with any you specif-
-y.
+Starting in this commit, mkdnflow now expects the `perspective` key in your co-
+nfig (or in the default config) to point to a table, rather than a string
+(see |Mkdnflow-configuration|). For now, if you have customized `perspective`
+and it currently points to a string (i.e. 'first' or 'current'), a compatibilit-
+y function will read your config and (internally) convert it into the expected
+format before overwriting the default settings with any you specify.
 
 commit 511e8ed5a89a1d117ae4ff3e93cf3d1d14338a1c
 Author: Jake Vincent <jakewvincent@gmail.com>
