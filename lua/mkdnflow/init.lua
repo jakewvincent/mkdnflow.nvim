@@ -27,8 +27,10 @@ local default_config = {
         rmd = true,
         markdown = true
     },
-    new_file_prefix = [[os.date('%Y-%m-%d_')]],
-    evaluate_prefix = true,
+    prefix = {
+        evaluate = true,
+        string = [[os.date('%Y-%m-%d_')]]
+    },
     wrap = false,
     default_bib_path = '',
     silent = false,

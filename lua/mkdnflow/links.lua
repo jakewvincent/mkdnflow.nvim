@@ -16,9 +16,9 @@
 
 -- Modules and variables
 -- Get the user's prefix string
-local new_file_prefix = require('mkdnflow').config.new_file_prefix
+local new_file_prefix = require('mkdnflow').config.prefix.string
 -- Get the user's prefix evaluation preference
-local evaluate_prefix = require('mkdnflow').config.evaluate_prefix
+local evaluate_prefix = require('mkdnflow').config.prefix.evaluate
 local this_os = require('mkdnflow').this_os
 
 -- Table for global functions
