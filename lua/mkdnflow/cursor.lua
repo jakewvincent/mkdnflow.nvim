@@ -197,7 +197,7 @@ local go_to_heading = function(anchor_text, reverse)
                     unfound = false
                 else
                     -- Format current heading to see if it matches our search term
-                    heading_as_anchor = links.formatLink(line[1], 2)
+                    local heading_as_anchor = links.formatLink(line[1], 2)
                     if anchor_text == heading_as_anchor then
                         -- If it's a match, send the cursor there and stop the while loop
                         vim.api.nvim_win_set_cursor(0, {row, 0})
@@ -221,14 +221,14 @@ local go_to_heading = function(anchor_text, reverse)
         else
             -- If the line does not have contents, start searching from the beginning
             if reverse then
-                if anchor_link ~= nil or wrap == true then
+                if anchor_text ~= nil or wrap == true then
                     row = vim.api.nvim_buf_line_count(0)
                 else
                     unfound = nil
                     if not silent then print("⬇️  There are no more headings after the beginning of the document!") end
                 end
             else
-                if anchor_link ~= nil or wrap == true then
+                if anchor_text ~= nil or wrap == true then
                     row = 1
                 else
                     unfound = nil
