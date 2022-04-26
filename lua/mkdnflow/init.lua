@@ -47,6 +47,7 @@ local default_config = {
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
+        MkdnNewListItem = {'i', '<CR>'},
         MkdnDestroyLink = {'n', '<M-CR>'}
     }
 }
