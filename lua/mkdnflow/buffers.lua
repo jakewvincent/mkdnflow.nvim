@@ -55,7 +55,7 @@ M.goBack = function()
         -- sth else if goback isn't possible)
         return(true)
     else
-        if not silent then print('⬇️  Can\'t go back any further!') end
+        if not silent then vim.api.nvim_echo({{"⬇️  Can't go back any further!", 'WarningMsg'}}, true, {}) end
         -- Return a boolean if goBack fails
         return(false)
     end
@@ -85,7 +85,7 @@ M.goForward = function()
         return(true)
     else
         -- Print out an error if there's nothing in the historical buffer stack
-        if not silent then print('⬇️  Can\'t go forward any further!') end
+        if not silent then vim.api.nvim_echo({{'⬇️  Can\'t go forward any further!', 'WarningMsg'}}, true, {}) end
         -- Return a boolean if goForward failed (for users who want <Del> to do
         -- sth else if goForward isn't possible)
         return(false)

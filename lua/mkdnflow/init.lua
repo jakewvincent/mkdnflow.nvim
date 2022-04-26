@@ -187,25 +187,25 @@ init.setup = function(user_config)
                 if init.this_os == 'Linux' or init.this_os == 'Darwin' then
                     init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
                     if init.root_dir then
-                        if not silent then print('⬇️  Root directory found: '..init.root_dir) end
+                        if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
                     else
-                        if not silent then print('⬇️  No suitable root directory found!') end
+                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found!', 'WarningMsg'}}, true, {}) end
                         init.config.perspective.priority = init.config.perspective.fallback
                     end
                 elseif init.this_os == 'Windows_NT' then
                     init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
                     if init.root_dir then
-                        if not silent then print('⬇️  Root directory found: '..init.root_dir) end
+                        if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
                     else
-                        if not silent then print('⬇️  No suitable root directory found!') end
+                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found!', 'WarningMsg'}}, true, {}) end
                         init.config.perspective.priority = init.config.perspective.fallback
                     end
                 else
-                    if not silent then print('⬇️  Cannot yet search for root directory on '..init.this_os..' machines.') end
+                    if not silent then vim.api.nvim_echo({{'⬇️  Cannot yet search for root directory on '..init.this_os..' machines.', 'ErrorMsg'}}, true, {}) end
                     init.config.perspective.priority = init.config.perspective.fallback
                 end
             else
-                if not silent then print('⬇️  No tell was provided for the root directory. See :h mkdnflow-configuration.') end
+                if not silent then vim.api.nvim_echo({{'⬇️  No tell was provided for the root directory. See :h mkdnflow-configuration.', 'WarningMsg'}}, true, {}) end
                 init.config.perspective.priority = init.config.perspective.fallback
             end
         end
@@ -225,7 +225,7 @@ init.setup = function(user_config)
         if init.config.use_mappings_table == true and user_config.default_mappings ~= false then
             require('mkdnflow.maps')
             if user_config.default_mappings == true then
-                print("⬇️  NOTE: Mappings can now be specified in the setup function. See :h mkdnflow-mappings.")
+                vim.api.nvim_echo({{"⬇️  NOTE: Mappings can now be specified in the setup function. See :h mkdnflow-mappings.", 'WarningMsg'}}, true, {})
             end
         end
         -- Record load status (i.e. loaded)
@@ -240,9 +240,9 @@ end
 -- Force start
 init.forceStart = function()
     if init.loaded == true then
-        print("⬇️  Mkdnflow is already running!")
+        vim.api.nvim_echo({{"⬇️  Mkdnflow is already running!", 'ErrorMsg'}}, true, {})
     else
-        print("⬇️  Starting Mkdnflow with defaults. Please call the setup function in your config or modify the 'filetypes' key in the setup table for this filetype.")
+        vim.api.nvim_echo({{"⬇️  Starting Mkdnflow with defaults. Please call the setup function in your config or modify the 'filetypes' key in the setup table for this filetype.", 'WarningMsg'}}, true, {})
         init.setup({})
     end
 end

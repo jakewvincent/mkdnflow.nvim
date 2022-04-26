@@ -230,7 +230,7 @@ local open = function(path)
         shell_open(path)
     elseif does_exist(path, "f") == false and
         does_exist(path, "d") == false then
-        if not silent then print("⬇️  "..path.." doesn't seem to exist!") end
+        if not silent then vim.api.nvim_echo({{"⬇️  "..path.." doesn't seem to exist!", 'ErrorMsg'}}, true, {}) end
     else
         shell_open(path)
     end

@@ -213,9 +213,9 @@ local go_to_heading = function(anchor_text, reverse)
             if row == starting_row + 1 then
                 unfound = nil
                 if anchor_text == nil then
-                    if not silent then print("⬇️  Couldn't find a heading to go to!") end
+                    if not silent then vim.api.nvim_echo({{"⬇️  Couldn't find a heading to go to!", 'WarningMsg'}}, true, {}) end
                 else
-                    if not silent then print("⬇️  Couldn't find a heading matching "..anchor_text.."!") end
+                    if not silent then vim.api.nvim_echo({{"⬇️  Couldn't find a heading matching "..anchor_text.."!", 'WarningMsg'}}, true, {}) end
                 end
             end
         else
@@ -225,14 +225,14 @@ local go_to_heading = function(anchor_text, reverse)
                     row = vim.api.nvim_buf_line_count(0)
                 else
                     unfound = nil
-                    if not silent then print("⬇️  There are no more headings after the beginning of the document!") end
+                    if not silent then vim.api.nvim_echo({{"⬇️  There are no more headings after the beginning of the document!", 'WarningMsg'}}, true, {}) end
                 end
             else
                 if anchor_text ~= nil or wrap == true then
                     row = 1
                 else
                     unfound = nil
-                    if not silent then print("⬇️  There are no more headings before the end of the document!") end
+                    if not silent then vim.api.nvim_echo({{"⬇️  There are no more headings before the end of the document!", 'WarningMsg'}}, true, {}) end
                 end
             end
         end
@@ -258,7 +258,7 @@ M.changeHeadingLevel = function(change)
         else
             -- Remove a hash, but only if there's more than one
             if not string.find(line[1], '^##') then
-                if not silent then print('⬇️  Can\'t increase this heading any more!') end
+                if not silent then vim.api.nvim_echo({{"⬇️  Can't increase this heading any more!", 'WarningMsg'}}, true, {}) end
             else
                 vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 1, {''})
             end
@@ -312,7 +312,7 @@ M.yankAsAnchorLink = function()
         -- Add to the unnamed register
         vim.cmd('let @"="'..anchor_link..'"')
     else
-        if not silent then print("⬇️  The current line is not a heading!") end
+        if not silent then vim.api.nvim_echo({{'⬇️  The current line is not a heading!', 'WarningMsg'}}, true, {}) end
     end
 end
 

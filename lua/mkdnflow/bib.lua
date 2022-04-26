@@ -39,7 +39,7 @@ local find_bib_entry = function(citation)
                 if begin_entry then
                     local match = string.match(line, '{%s-'..citekey..'%s-,')
                     if match then
-                        --print("Found the entry for "..citation.."!") -- TEST
+                        --vim.api.nvim_echo({{"Found the entry for "..citation.."!"}}, true, {}) -- TEST
                         local bib_entry = {}
                         -- Save the citekey
                         bib_entry.citekey = citekey
@@ -69,11 +69,11 @@ local find_bib_entry = function(citation)
             else
                 unfound = nil
                 bib_file:close()
-                if not silent then print('⬇️  No entry found for "'..citekey..'"!') end
+                if not silent then vim.api.nvim_echo({{'⬇️  No entry found for "'..citekey..'"!', 'WarningMsg'}}, true, {}) end
             end
         end
     else
-        if not silent then print('⬇️  Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.') end
+        if not silent then vim.api.nvim_echo({{'⬇️  Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.', 'ErrorMsg'}}, true, {}) end
     end
 end
 
@@ -101,7 +101,7 @@ M.citationHandler = function(citation)
             local howpublished = bib_entry['howpublished']
             return howpublished
         else
-            if not silent then print('⬇️  Bib entry with citekey "'..citekey..'" had no relevant content!') end
+            if not silent then vim.api.nvim_echo({{'⬇️  Bib entry with citekey "'..citekey..'" had no relevant content!', 'WarningMsg'}}, true, {}) end
             return nil
         end
     end

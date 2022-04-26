@@ -81,7 +81,7 @@ local does_exist = function(path, type)
         -- Return the existence property of the path
         return(exists)
     else
-        if not silent then print(this_os_err) end
+        if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
         -- Return nothing in the else case
         return(nil)
     end
@@ -226,7 +226,7 @@ local handle_internal_file = function(path)
             vim.cmd(':e '..paste)
         end
     else
-        if not silent then print(this_os_err) end
+        if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
     end
 end
 
@@ -241,7 +241,7 @@ local open = function(path)
         elseif this_os == "Darwin" then
             vim.api.nvim_command('silent !open '..path_..' &')
         else
-            if not silent then print(this_os_err) end
+            if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
         end
     end
     -- If the file exists, handle it; otherwise, print a warning
@@ -251,7 +251,7 @@ local open = function(path)
         shell_open(path)
     elseif does_exist(path, "f") == false and
         does_exist(path, "d") == false then
-        if not silent then print("⬇️  "..path.." doesn't seem to exist!") end
+        if not silent then vim.api.nvim_echo({{"⬇️  "..path.." doesn't seem to exist!", 'ErrorMsg'}}, true, {}) end
     else
         shell_open(path)
     end
@@ -319,7 +319,7 @@ M.handlePath = function(path)
         if this_os == 'Linux' or this_os == 'Darwin' then
             handle_external_file(path)
         else
-            if not silent then print(this_os_err) end
+            if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
         end
     elseif path_type(path) == 'anchor' then
         cursor.toHeading(path)
