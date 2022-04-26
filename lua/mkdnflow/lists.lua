@@ -16,6 +16,25 @@
 
 -- This module: To-do list related functions
 local silent = require('mkdnflow').config.silent
+
+local update_numbering = function(row, starting_number)
+    local next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
+    local is_numbered = next_line[1]:match('^(%s*%d+%.%s*).-')
+    while is_numbered do
+        -- Replace the number on whichever line
+        --local item_number = is_numbered:match('^%s*(%d*)%.')
+        local item_number = starting_number + 1
+        local spacing = next_line[1]:match('^(%s*)%d')
+        local new_line = next_line[1]:gsub(spacing..'%d+', item_number)
+        vim.api.nvim_buf_set_lines(0, row + 1, row + 2, false, {new_line})
+        -- Then retrieve the next line
+        row = row + 1
+        next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
+        is_numbered = next_line[1]:match('^(%s*%d+%.%s*).-')
+        starting_number = item_number
+    end
+end
+
 local M = {}
 
 --[[
@@ -65,23 +84,41 @@ M.newListItem = function()
         local new_line = partial_match:gsub('%d+', item_number)
         vim.api.nvim_buf_set_lines(0, row, row, false, {new_line})
         vim.api.nvim_win_set_cursor(0, {row + 1, (#new_line)})
+        -- Update numbering
+        update_numbering(row, item_number)
     else
-        -- Then look for unordered list
-        match = line:match('^%s*[-*]%s*[^%s]')
-        partial_match = line:match('^(%s*[-*]%s*).-')
-        -- If there's no content on the line other than the bullet, remove the list item
+        -- Then look for a to-do item
+        match = line:match('^%s*[*-]%s+%[[ -X]%]%s+[^%s]+')
+        partial_match = line:match('^(%s*[-*]%s+%[.%]%s).-')
         if partial_match and not match then
             local row = vim.api.nvim_win_get_cursor(0)[1]
-            vim.api.nvim_buf_set_lines(0, row - 1, row, false, {''})
-            vim.api.nvim_win_set_cursor(0, {row, 0})
+            local subpartial_match = partial_match:match('^(%s*[-*]%s+)')
+            vim.api.nvim_buf_set_lines(0, row - 1, row, false, {subpartial_match})
+            vim.api.nvim_win_set_cursor(0, {row, #subpartial_match})
         elseif match then
-            --vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
             local row = vim.api.nvim_win_get_cursor(0)[1]
-            vim.api.nvim_buf_set_lines(0, row, row, false, {partial_match})
-            vim.api.nvim_win_set_cursor(0, {row + 1, (#partial_match)})
+            local subpartial_match = line:match('^(%s*[-*]%s+%[.%]%s).-')
+            subpartial_match = subpartial_match:gsub('%[.%]', '[ ]')
+            vim.api.nvim_buf_set_lines(0, row, row, false, {subpartial_match})
+            vim.api.nvim_win_set_cursor(0, {row + 1, (#subpartial_match)})
         else
-            print("Found nothing noteworthy!")
-            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
+            -- Then look for unordered list
+            match = line:match('^%s*[-*]%s*[^%s]')
+            partial_match = line:match('^(%s*[-*]%s*).-')
+            -- If there's no content on the line other than the bullet, remove the list item
+            if partial_match and not match then
+                local row = vim.api.nvim_win_get_cursor(0)[1]
+                vim.api.nvim_buf_set_lines(0, row - 1, row, false, {''})
+                vim.api.nvim_win_set_cursor(0, {row, 0})
+            elseif match then
+                --vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
+                local row = vim.api.nvim_win_get_cursor(0)[1]
+                vim.api.nvim_buf_set_lines(0, row, row, false, {partial_match})
+                vim.api.nvim_win_set_cursor(0, {row + 1, (#partial_match)})
+            else
+                print("Found nothing noteworthy!")
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
+            end
         end
     end
 end
