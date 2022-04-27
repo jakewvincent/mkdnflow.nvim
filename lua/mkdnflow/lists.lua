@@ -77,6 +77,8 @@ M.newListItem = function()
         local row = vim.api.nvim_win_get_cursor(0)[1]
         vim.api.nvim_buf_set_lines(0, row - 1, row, false, {''})
         vim.api.nvim_win_set_cursor(0, {row, 0})
+        -- Update numbering
+        update_numbering(row - 1, '0')
     elseif match then
         local row = vim.api.nvim_win_get_cursor(0)[1]
         local item_number = match:match('^%s*(%d*)%.')
