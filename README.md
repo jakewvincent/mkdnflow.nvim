@@ -233,9 +233,10 @@ Note: If you don't want prefixes, set `evaluate = false` and `string = ''`
 Note: See [default mappings](#-commands-and-default-mappings)
 
 #### `mappings` (table value)
-* `mappings.<name of command>` (table value)
-    * `mappings.<name of command>[1]` string or table value representing the mode (or list of modes) the mapping should apply in (`'n'`, `'v'`, etc.)
+* `mappings.<name of command>` (table value or `false`)
+    * `mappings.<name of command>[1]` string or table value representing the mode (or table of modes) the mapping should apply in (`'n'`, `'v'`, etc.)
     * `mappings.<name of command>[2]` string representing the keymap (e.g. `'<Space>'`)
+    * set `mappings.<name of command> = false` to disable default mapping without providing a custom mapping
 
 Note: `<name of command>` should be the name of a commands defined in `mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
 
@@ -314,6 +315,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/26/22: Set command name to `false` in `mappings` table to disable mapping
 * 04/25/22: Specify mode in mappings table
 * 04/24/22: User can shut up messages by specifying 'false' in their config under the 'silent' key
 * 04/24/22: Added Windows compatibility!
