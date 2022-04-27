@@ -276,7 +276,10 @@ use_mappings_table
 
 mappings
   Must be a table of key-value pairs, where the key is the name of the command
-  and the value is the key(s) to map the function to.
+  and the value `false` (to disable mapping for that command) or is another tab-
+  le with two entries, the first of which is either a string (e.g. `'n'`) or ta-
+  ble (e.g. `{'n', 'v'}`), and the second of which is the mapping (e.g.
+  `'<Space>'`)
 
 
 A sample config showing the defaults:~

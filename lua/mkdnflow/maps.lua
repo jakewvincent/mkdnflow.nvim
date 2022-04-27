@@ -18,11 +18,11 @@
 local mappings = require('mkdnflow').config.mappings
 
 for command, mapping in pairs(mappings) do
-    if type(mapping[1]) == 'table' then
+    if mapping and type(mapping[1]) == 'table' then
         for _, value in ipairs(mapping[1]) do
             vim.api.nvim_set_keymap(value, mapping[2], '<Cmd>:'..command..'<CR>', {noremap = true})
         end
-    else
+    elseif type(mapping) == 'table' then
         vim.api.nvim_set_keymap(mapping[1], mapping[2], '<Cmd>:'..command..'<CR>', {noremap = true})
     end
 end
