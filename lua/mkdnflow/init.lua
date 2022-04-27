@@ -166,17 +166,22 @@ init.setup = function(user_config)
     else
         init.initial_dir = init.initial_buf:match('(.*)/.-')
     end
-    -- Read compatibility module & pass user config through config checker
-    local compat = require('mkdnflow.compat')
-    user_config = compat.userConfigCheck(user_config)
-    -- Overwrite defaults w/ user's config settings, if any
-    init.config = MergeConfigs(default_config, user_config)
-    -- Get silence preference
-    local silent = init.config.silent
     -- Get the extension of the file being edited
     local ft = get_file_type(init.initial_buf)
+    -- Before fully loading config see if the plugin should be started
+    local load_on_ft = default_config.filetypes
+    if next(user_config) then
+        load_on_ft = MergeConfigs(load_on_ft, user_config.filetypes)
+    end
     -- Load extension if the filetype has a match in config.filetypes
-    if init.config.filetypes[ft] then
+    if load_on_ft[ft] then
+        -- Read compatibility module & pass user config through config checker
+        local compat = require('mkdnflow.compat')
+        user_config = compat.userConfigCheck(user_config)
+        -- Overwrite defaults w/ user's config settings, if any
+        init.config = MergeConfigs(default_config, user_config)
+        -- Get silence preference
+        local silent = init.config.silent
         -- Determine perspective
         local perspective = init.config.perspective
         if perspective.priority == 'root' then
