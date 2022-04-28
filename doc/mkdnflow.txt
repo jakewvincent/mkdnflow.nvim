@@ -326,23 +326,24 @@ wever, that this will eventually be replaced by the new key `use_mappings_tabl-
 e`.)
 
 <Tab> (normal mode)
-  Mapped to `:MkdnNextLink`. Moves the cursor to the beginning of the next
-  link (if there is a next link). If `wrap_to_beginning` is true and there
-  is no next link before the end of the file, will wrap to the beginnning of
-  the file.
+  Mapped to `:MkdnNextLink`. Moves the cursor to the beginning of the next link
+  (if there is a next link). If `wrap` is true and there is no next link before
+  the end of the file, will wrap to the beginnning of the file.
 
 <S-Tab> (normal mode)
   Mapped to `:MkdnPrevLink`. Moves the cursor to the beginning of the previous
-  link (if there is one). If `wrap_to_end` is true and there is no previous
-  link before the beginning of the file, will wrap to the end of the file.
+  link (if there is one). If `wrap` is true and there is no previous link befor-
+  e the beginning of the file, will wrap to the end of the file.
 
 <leader>] (normal mode)
   Mapped to `:MkdnNextHeading`. Moves the cursor to the next heading in the
-  file.
+  file. If `wrap` is `true` and there are no more headings between the cursor
+  position and the end of the document, this will cause the search to continue
+  from the beginning of the document.
 
 <leader>[ (normal mode)
   Mapped to `:MkdnPrevHeading`. Moves the cursor to the previous heding in the
-  file (if one exists).
+  file (if one exists). Similar logic re: wrapping applies as above.
 
 <BS> (normal mode)
   Mapped to `:MkdnGoBack`. Opens the last-active buffer in the current window.
@@ -431,19 +432,60 @@ commit 1a21955cf51c15fe7424c61db4c4c531249ddd11
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Mon Apr 25 11:10:48 2022 -0700
 
-prefix settings to table
+There were previously two settings related to file prefixes that were specified
+separately in an instructured way:
+
+>
+    require('mkdnflow').setup({
+        evaluate_prefix = true,
+        new_file_prefix = [[string]]
+    })
+
+After this commit, these settings must be set by passing a table to the new `pr-`
+`efix` key, as follows:
+
+>
+    require('mkdnflow').setup({
+        prefix = {
+            evaluate = true,
+            string = [[string]]
+        }
+    })
 
 commit e422905de904a5c8259254029dd5025e45000357
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Mon Apr 25 10:58:02 2022 -0700
 
-links_relative_to -> perspective
+Previously, the plugin's behavior around how links are interpreted was affected
+by the value of the `links_relative_to` key. This feature is now named `perspe-`
+`tive`, and you can now request that the plugin try to interpret links relative
+to the root of your wiki, where the root directory is flagged by what I've cal-
+led a "tell"--a specific file that resides in your root directory, such as one
+that would normally occur in a project's root (such as `.git`). However, the t-
+ell is arbitrary. You can set it as `index.md` if you have an index file in yo-
+ur root directory, or an empty file named `.wiki_root`. The new `perspective`
+key is specified as follows:
+
+>
+    require('mkdnflow').setup({
+        perspective = {
+            priority = 'root',
+            fallback = 'current',
+            root_tell = 'some-file-that-can-uniquely-id-your-notebook-root'
+        }
+    })
 
 commit 9068e12b14568ad2dbb22ed8fda2458593d5570f
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Mon Apr 25 10:40:39 2022 -0700
 
-wrap_to_beginning/end -> wrap
+The two previous settings `wrap_to_beginning` and `wrap_to_end` are now a sing-
+le settings `wrap` since in all likelihood anyone who wishes the cursor to jump
+to the beginning of the file when searching for links or headings also would w-
+ant the cursor to jump to the end of the document what searching for links or
+headings in reverse. You'll need to replace both of those settings (if you have
+them set to true) with `wrap`, which also takes a boolean. The default is still
+false.
 
 commit 4365100020949eaf5c465c4e4dbf656d10a1b65c
 Author: Jake Vincent <jakewvincent@gmail.com>
