@@ -310,7 +310,8 @@ A sample config showing the defaults:~
             MkdnDestroyLink = {'n', '<M-CR>'},
             MkdnYankAnchorLink = {'n', 'ya'},
             MkdnIncreaseHeading = {'n', '+'},
-            MkdnDecreaseHeading = {'n', '-'}
+            MkdnDecreaseHeading = {'n', '-'},
+            MkdnNewListItem = false
         }
     })
 
@@ -388,6 +389,10 @@ ya (normal mode)
   Mapped to `:MkdnToggleToDo`. If the cursor is on a line with a to-do item in
   a markdown list, the status of the to-do item will be cycled between the fol-
   lowing states, looping back to the beginning if needed: [ ] ~ [-] ~ [X].
+
+(no mapping)
+  `:MkdnNewListItem` does not have a default mapping, but would most naturally
+  be mapped to `<CR>`.
 
 ===============================================================================
 Recommended vim settings                    *Mkdnflow-recommended-vim-settings*
