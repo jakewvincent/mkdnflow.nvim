@@ -70,7 +70,19 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 ### Manipulate headings
 * 🆕 Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
-### To-do lists
+### Lists
+* 🆕 Smart(er) behavior when `<CR>`ing in lists
+    * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
+    * In unordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
+    * In ordered lists: Add another item on the next line (keeping numbering updated), unless the current item is empty, in which case it will be erased
+    * NOTE: The above list functions are currently disabled by default in case some find them too intrusive. Please test them and provide feedback! To enable the functionality, you'll need to remap `<CR>` in insert mode:
+    * ```
+    require('mkdnflow').setup({
+        mappings = {
+            MkdnNewListItem = {'i', '<CR>'}
+        }
+    })
+    ```
 * 🆕 Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling will result in the following changes:
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
@@ -186,7 +198,8 @@ require('mkdnflow').setup({
         MkdnYankAnchorLink = {'n', 'ya'},
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
-        MkdnToggleToDo = {'n', '<C-Space>'}
+        MkdnToggleToDo = {'n', '<C-Space>'},
+        MkdnNewListItem = false
     }
 })
 ```
@@ -280,7 +293,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `+`          | n    | `:MkdnIncreaseHeading<CR>` | Increase heading importance (remove hashes) |
 | `-`          | n    | `:MkdnDecreaseHeading<CR>` | Decrease heading importance (add hashes) |
 | `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`      | Toggle to-do list item's completion status |
-| --           | --   | `:MkdnCreateLink<CR>`      | Replace the word under the cursor with a link in which the word under the cursor is the name of the link |
+| --           | --   | `:MkdnNewListItem<CR>`     | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item |
+| --           | --   | `:MkdnCreateLink<CR>`      | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
 | --           | --   | `:Mkdnflow<CR>`            | Manually start Mkdnflow |
 
 ### Miscellaneous notes on remapping
@@ -289,7 +303,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 ## ☑️ To do
 * [ ] Lists
     * [ ] To-do list functions & mappings
-    * [ ] Smart `<CR>` when in lists, etc.
+    * [X] Smart `<CR>` when in lists, etc.
 * [ ] Fancy table creation & editing
     * [ ] Create a table of x columns and y rows
     * [ ] Add/remove columns and rows
@@ -316,6 +330,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/27/22: Add in some list item functionality (not mapped to anything by default yet)
 * 04/26/22: Set command name to `false` in `mappings` table to disable mapping
 * 04/25/22: Specify mode in mappings table
 * 04/24/22: User can shut up messages by specifying 'false' in their config under the 'silent' key
