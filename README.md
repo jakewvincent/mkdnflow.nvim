@@ -71,22 +71,23 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * 🆕 Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
+* 🆕 Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling will result in the following changes:
+    * `* [ ] ...` → `* [-] ...`
+    * `* [-] ...` → `* [X] ...`
+    * `* [X] ...` → `* [ ] ...`
 * 🆕 Smart(er) behavior when `<CR>`ing in lists
     * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
     * In unordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
     * In ordered lists: Add another item on the next line (keeping numbering updated), unless the current item is empty, in which case it will be erased
     * NOTE: The above list functions are currently disabled by default in case some find them too intrusive. Please test them and provide feedback! To enable the functionality, you'll need to remap `<CR>` in insert mode:
-    * ```
-    require('mkdnflow').setup({
-        mappings = {
-            MkdnNewListItem = {'i', '<CR>'}
-        }
-    })
-    ```
-* 🆕 Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling will result in the following changes:
-    * `* [ ] ...` → `* [-] ...`
-    * `* [-] ...` → `* [X] ...`
-    * `* [X] ...` → `* [ ] ...`
+
+```lua
+require('mkdnflow').setup({
+    mappings = {
+        MkdnNewListItem = {'i', '<CR>'}
+    }
+})
+```
 
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
