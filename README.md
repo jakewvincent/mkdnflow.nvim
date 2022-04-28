@@ -75,7 +75,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
-* 🆕 Smart(er) behavior when `<CR>`ing in lists
+* 🆕 Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
     * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
     * In unordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
     * In ordered lists: Add another item on the next line (keeping numbering updated), unless the current item is empty, in which case it will be erased
