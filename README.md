@@ -33,15 +33,16 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * 🆕 Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
 * 🆕 `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste)
 
-### Jump to links
+### Jump between links
 * `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
     * Wrap the beginning/end of the file with a [config setting](#%EF%B8%8F-configuration)
 
 ### Customize perspective for link interpretation
 * Specify what perspective the plugin-should take when interpreting links to files. There are three options:
-    1. Interpret links relative to the first-opened file (default behavior)
+    1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
     2. Interpret links relative to the file open in the current buffer
-    3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, you must set `perspective.priority` to `root` in your config and specify a "tell" for the root directory under `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [Configuration](#%EF%B8%8F-configuration) for the default config and an example of how to configure the `perspective` table.
+    3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
+* 🆕 Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`)
 
 ### Follow links _and citations_
 * `<CR>` on various kinds of links to "follow" them:
@@ -60,8 +61,8 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#%EF%B8%8F-configuration)
 
 ### Backward and forward navigation
-* `<BS>` to go to previous file/buffer opened in the current window
-* 🆕 `<Del>` to go to subsequent file/buffer opened in the current window (i.e. one that you just `<BS>`ed away from)
+* `<BS>` to go to previous file/buffer opened in the current window (like clicking the back button in a web browser)
+* 🆕 `<Del>` to go to subsequent file/buffer opened in the current window (like clicking the forward button in a web browser)
 
 ### Keybindings
 * Easy-to-remember [default keybindings](#-commands-and-default-mappings)
@@ -332,6 +333,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/28/22: Interpret links to markdown files correctly when specified with an absolute path (one starting with `/` or `~/`)
 * 04/28/22: Added ability to follow links to markdown files with an anchor and then jump to the appropriate heading (if one exists)
 * 04/27/22: Add in some list item functionality (not mapped to anything by default yet)
 * 04/26/22: Set command name to `false` in `mappings` table to disable mapping
