@@ -94,7 +94,11 @@ M.getLinkPart = function(part)
                         path_pattern
                     ), 2, -2
                 )
-                return(path)
+                local anchor = path:match('%.md(#.*)')
+                if anchor then
+                    path = path:match('(.*%.md)#')
+                end
+                return path, anchor
             end
         end
     else -- If one wasn't found, perform another search, this time for citations
@@ -448,11 +452,11 @@ end
 --[[
 followLink()
 --]]
-M.followLink = function(path)
+M.followLink = function(path, anchor)
     -- Path can be provided as an argument (this is currently only used when
     -- this function retrieves a path from the citation handler). If no path
     -- is provided as an arg, get the path under the cursor via getLinkPart().
-    path = path or M.getLinkPart('path')
+    path, anchor = path, anchor or M.getLinkPart('path')
     local handlePath
     if this_os == 'Windows_NT' then
         handlePath = require('mkdnflow.paths_windows').handlePath
@@ -460,7 +464,7 @@ M.followLink = function(path)
         handlePath = require('mkdnflow.paths').handlePath
     end
     if path then
-        handlePath(path)
+        handlePath(path, anchor)
     else
         M.createLink()
     end
