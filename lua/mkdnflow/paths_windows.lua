@@ -123,7 +123,7 @@ local escape_lua_chars = function(string)
     return(escaped)
 end
 
-local handle_internal_file = function(path)
+local handle_internal_file = function(path, anchor)
     -- Get the name of the file in the link path. Will return nil if the
     -- link doesn't contain any directories.
     local filename = string.match(path, '.*\\(.-)$')
@@ -147,6 +147,9 @@ local handle_internal_file = function(path)
             -- Remember the buffer we're currently in and follow path
             buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
             vim.cmd(':e '..paste..'\\'..filename)
+            if anchor then
+                cursor.toHeading(anchor)
+            end
         elseif perspective == 'first' then
             -- Paste together the directory of the first-opened file
             -- and the directory in the link path
@@ -162,6 +165,9 @@ local handle_internal_file = function(path)
             buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
             -- And follow the path!
             vim.cmd(':e '..paste..'\\'..filename)
+            if anchor then
+                cursor.toHeading(anchor)
+            end
         else -- Otherwise, they want it relative to the current file
             -- So, get the path of the current file
             local cur_file = vim.api.nvim_buf_get_name(0)
@@ -181,6 +187,9 @@ local handle_internal_file = function(path)
             buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
             -- And follow the path!
             vim.cmd(':e '..paste..'\\'..filename)
+            if anchor then
+                cursor.toHeading(anchor)
+            end
         end
         -- Otherwise, if links are interpreted rel to first-opened file
     elseif perspective == 'root' then
@@ -192,6 +201,9 @@ local handle_internal_file = function(path)
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
         -- And follow the path!
         vim.cmd(':e '..paste)
+        if anchor then
+            cursor.toHeading(anchor)
+        end
     elseif perspective == 'current' then
         -- Get the path of the current file
         local cur_file = vim.api.nvim_buf_get_name(0)
@@ -204,6 +216,9 @@ local handle_internal_file = function(path)
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
         -- And follow the path!
         vim.cmd(':e '..paste)
+        if anchor then
+            cursor.toHeading(anchor)
+        end
     else -- Otherwise, links are relative to the first-opened file
         -- Paste the dir of the first-opened file and path in the link
         local paste = initial_dir..'\\'..path
@@ -211,6 +226,9 @@ local handle_internal_file = function(path)
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
         -- And follow the path!
         vim.cmd(':e '..paste)
+        if anchor then
+            cursor.toHeading(anchor)
+        end
     end
 end
 
@@ -280,9 +298,9 @@ handlePath() does something with the path in the link under the cursor:
         rmined to be neither the filename for a text file nor a URL.
 Returns nothing
 --]]
-M.handlePath = function(path)
+M.handlePath = function(path, anchor)
     if path_type(path) == 'filename' then
-        handle_internal_file(path)
+        handle_internal_file(path, anchor)
     elseif path_type(path) == 'url' then
         local se_path = vim.fn.shellescape(path)
         open(se_path)

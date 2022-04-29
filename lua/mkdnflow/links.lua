@@ -456,7 +456,11 @@ M.followLink = function(path, anchor)
     -- Path can be provided as an argument (this is currently only used when
     -- this function retrieves a path from the citation handler). If no path
     -- is provided as an arg, get the path under the cursor via getLinkPart().
-    path, anchor = path, anchor or M.getLinkPart('path')
+    if path or anchor then
+        path, anchor = path, anchor
+    else
+        path, anchor = M.getLinkPart('path')
+    end
     local handlePath
     if this_os == 'Windows_NT' then
         handlePath = require('mkdnflow.paths_windows').handlePath
