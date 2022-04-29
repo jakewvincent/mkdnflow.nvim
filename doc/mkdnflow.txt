@@ -64,6 +64,11 @@ markdown files:
   Add a formatted anchor link to the unnamed register (clipboard) if the curre-
   nt line that the cursor is on is a heading.
 
+:MkdnYankFileAnchorLink
+  Add a formatted anchor link with the full file path before the anchor to the
+  unnamed register (clipboard) if the current line that the cursor is on is a
+  heading.
+
 :MkdnIncreaseHeading
   Increase heading importance (remove hashes).
 
@@ -309,6 +314,7 @@ A sample config showing the defaults:~
             MkdnFollowLink = {{'n', 'v'}, '<CR>'},
             MkdnDestroyLink = {'n', '<M-CR>'},
             MkdnYankAnchorLink = {'n', 'ya'},
+            MkdnYankFileAnchorLink = {'n', 'yfa'},
             MkdnIncreaseHeading = {'n', '+'},
             MkdnDecreaseHeading = {'n', '-'},
             MkdnNewListItem = false
@@ -372,6 +378,11 @@ ya (normal mode)
   Mapped to `:MkdnYankAnchorLink`. If the cursor is on the same line as a headi-
   ng, a formatted link to that heading is added to the unnamed register (clipbo-
   ard).
+
+yfa (normal mode)
+  Mapped to `:MkdnYankFileAnchorLink`. If the cursor is on the same line as a h-
+  eading, a formatted link to that heading *in that file* is added to the unnam-
+  ed register (clipboard).
 
 + (normal mode)
   Mapped to `:MkdnIncreaseHeading`. If the cursor is on a line with a heading 

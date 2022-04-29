@@ -196,6 +196,7 @@ require('mkdnflow').setup({
         MkdnFollowLink = {{'n', 'v'}, '<CR>'},
         MkdnDestroyLink = {'n', '<M-CR>'},
         MkdnYankAnchorLink = {'n', 'ya'},
+        MkdnYankFileAnchorLink = {'n', 'yfa'},
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
@@ -279,23 +280,24 @@ autocmd FileType markdown set autowriteall
 
 These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configuration). Commands with no mappings trigger functions that are called by the functions with mappings, but I've given them a command name so you can use them as independent functions if you'd like to.
 
-| Keymap       | Mode | Command                    | Description |
-|--------------| ---- | -------------------------- | ------------|
-| `<Tab>`      | n    | `:MkdnNextLink<CR>`        | Move cursor to the beginning of the next link (if there is a next link) |
-| `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`        | Move the cursor to the beginning of the previous link (if there is one) |
-| `<leader>]`  | n    | `:MkdnNextHeading<CR>`     | Move the cursor to the beginning of the next heading (if there is one) |
-| `<leader>[`  | n    | `:MkdnPrevHeading<CR>`     | Move the cursor to the beginning of the previous heading (if there is one) |
-| `<BS>`       | n    | `:MkdnGoBack<CR>`          | Open the historically last-active buffer in the current window |
-| `<Del>`      | n    | `:MkdnGoForward<CR>`       | Open the buffer that was historically navigated away from in the current window |
-| `<CR>`       | n, v | `:MkdnFollowLink<CR>`      | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
-| `<M-CR>`     | n    | `:MkdnDestroyLink<CR>`     | Destoy the link under the cursor, replacing it with just the text from [...] |
-| `ya`         | n    | `:MkdnYankAnchorLink<CR>`  | Yank a formatted anchor link (if cursor is currently on a line with a heading) |
-| `+`          | n    | `:MkdnIncreaseHeading<CR>` | Increase heading importance (remove hashes) |
-| `-`          | n    | `:MkdnDecreaseHeading<CR>` | Decrease heading importance (add hashes) |
-| `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`      | Toggle to-do list item's completion status |
-| --           | --   | `:MkdnNewListItem<CR>`     | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item |
-| --           | --   | `:MkdnCreateLink<CR>`      | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
-| --           | --   | `:Mkdnflow<CR>`            | Manually start Mkdnflow |
+| Keymap       | Mode | Command                       | Description |
+|--------------| ---- | ----------------------------- | ------------|
+| `<Tab>`      | n    | `:MkdnNextLink<CR>`           | Move cursor to the beginning of the next link (if there is a next link) |
+| `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`           | Move the cursor to the beginning of the previous link (if there is one) |
+| `<leader>]`  | n    | `:MkdnNextHeading<CR>`        | Move the cursor to the beginning of the next heading (if there is one) |
+| `<leader>[`  | n    | `:MkdnPrevHeading<CR>`        | Move the cursor to the beginning of the previous heading (if there is one) |
+| `<BS>`       | n    | `:MkdnGoBack<CR>`             | Open the historically last-active buffer in the current window |
+| `<Del>`      | n    | `:MkdnGoForward<CR>`          | Open the buffer that was historically navigated away from in the current window |
+| `<CR>`       | n, v | `:MkdnFollowLink<CR>`         | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
+| `<M-CR>`     | n    | `:MkdnDestroyLink<CR>`        | Destoy the link under the cursor, replacing it with just the text from [...] |
+| `ya`         | n    | `:MkdnYankAnchorLink<CR>`     | Yank a formatted anchor link (if cursor is currently on a line with a heading) |
+| `yfa`        | n    | `:MkdnYankFileAnchorLink<CR>` | Yank a formatted anchor link with the filename included before the anchor (if cursor is currently on a line with a heading) |
+| `+`          | n    | `:MkdnIncreaseHeading<CR>`    | Increase heading importance (remove hashes) |
+| `-`          | n    | `:MkdnDecreaseHeading<CR>`    | Decrease heading importance (add hashes) |
+| `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`         | Toggle to-do list item's completion status |
+| --           | --   | `:MkdnNewListItem<CR>`        | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item |
+| --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
+| --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
 ### Miscellaneous notes on remapping
 * The back-end function for `:MkdnGoBack`, `require('mkdnflow).buffers.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
@@ -330,6 +332,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/28/22: Added ability to follow links to markdown files with an anchor and then jump to the appropriate heading (if one exists)
 * 04/27/22: Add in some list item functionality (not mapped to anything by default yet)
 * 04/26/22: Set command name to `false` in `mappings` table to disable mapping
 * 04/25/22: Specify mode in mappings table
