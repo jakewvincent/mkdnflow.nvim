@@ -118,7 +118,6 @@ M.newListItem = function()
                 vim.api.nvim_buf_set_lines(0, row, row, false, {partial_match})
                 vim.api.nvim_win_set_cursor(0, {row + 1, (#partial_match)})
             else
-                print("Found nothing noteworthy!")
                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
             end
         end
