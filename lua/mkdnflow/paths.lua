@@ -143,7 +143,22 @@ local handle_internal_file = function(path, anchor)
         -- a directory is specified in the link that we need to check
         if create_dirs and dir then
             -- If so, check how the user wants links to be interpreted
-            if perspective == 'root' then
+            if string.match(path, '^~/') or string.match(path, '^/') then
+                local exists = does_exist(dir)
+                -- If the path starts with a tilde, replace it w/ $HOME
+                if string.match(path, '^~/') then
+                    path = string.gsub(path, '^~/', '$HOME/')
+                end
+                if not exists then
+                    local se_paste = escape_chars(path)
+                    os.execute('mkdir -p '..se_paste)
+                end
+                buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
+                vim.cmd(':e '..dir..'/'..filename)
+                if anchor then
+                    cursor.toHeading(anchor)
+                end
+            elseif perspective == 'root' then
                 -- Paste root directory and the directory in link
                 local paste = root_dir..'/'..dir
                 -- See if the path exists
@@ -203,6 +218,16 @@ local handle_internal_file = function(path, anchor)
                 if anchor then
                     cursor.toHeading(anchor)
                 end
+            end
+        elseif string.match(path, '^~/') or string.match(path, '^/') then
+            -- If the path starts with a tilde, replace it w/ $HOME
+            if string.match(path, '^~/') then
+                path = string.gsub(path, '^~/', '$HOME/')
+            end
+            buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
+            vim.cmd(':e '..dir..'/'..filename)
+            if anchor then
+                cursor.toHeading(anchor)
             end
         -- Otherwise, if links are interpreted rel to first-opened file
         elseif perspective == 'root' then
