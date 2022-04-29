@@ -34,6 +34,7 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! MkdnCreateLink lua require('mkdnflow').links.createLink()", true)
     vim.api.nvim_exec("command! MkdnDestroyLink lua require('mkdnflow').links.destroyLink()", true)
     vim.api.nvim_exec("command! MkdnYankAnchorLink lua require('mkdnflow').cursor.yankAsAnchorLink()", true)
+    vim.api.nvim_exec("command! MkdnYankFileAnchorLink lua require('mkdnflow').cursor.yankAsAnchorLink(true)", true)
     vim.api.nvim_exec("command! MkdnGoBack lua require('mkdnflow').buffers.goBack()", true)
     vim.api.nvim_exec("command! MkdnGoForward lua require('mkdnflow').buffers.goForward()", true)
     vim.api.nvim_exec("command! MkdnFlow lua print('Please use :Mkdnflow instead (lowercase f).')", true)

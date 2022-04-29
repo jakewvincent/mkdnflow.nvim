@@ -299,7 +299,8 @@ yankAsAnchorLink() takes the current line, converts it into an anchor link int-
 ernally, an adds the link to the register, effectively yanking the heading as
 an anchor link. Assumes current line is a heading.
 --]]
-M.yankAsAnchorLink = function()
+M.yankAsAnchorLink = function(full_path)
+    full_path = full_path or false
     -- Get the row number and the line contents
     local row = vim.api.nvim_win_get_cursor(0)[1]
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
@@ -309,8 +310,17 @@ M.yankAsAnchorLink = function()
         -- Format the line as an anchor link
         local anchor_link = links.formatLink(line[1])
         anchor_link = string.gsub(anchor_link[1], '"', '\\"')
-        -- Add to the unnamed register
-        vim.cmd('let @"="'..anchor_link..'"')
+        if full_path then
+            -- Get the full buffer name and insert it before the hash
+            local buffer = vim.api.nvim_buf_get_name(0)
+            local left = anchor_link:match('(%b[]%()#')
+            local right = anchor_link:match('%b[]%((#.*)$')
+            anchor_link = left..buffer..right
+            vim.cmd('let @"="'..anchor_link..'"')
+        else
+            -- Add to the unnamed register
+            vim.cmd('let @"="'..anchor_link..'"')
+        end
     else
         if not silent then vim.api.nvim_echo({{'⬇️  The current line is not a heading!', 'WarningMsg'}}, true, {}) end
     end

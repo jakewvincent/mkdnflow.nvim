@@ -44,6 +44,7 @@ local default_config = {
         MkdnGoForward = {'n', '<Del>'},
         MkdnFollowLink = {{'n', 'v'}, '<CR>'},
         MkdnYankAnchorLink = {'n', 'ya'},
+        MkdnYankFileAnchorLink = {'n', 'yfa'},
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
