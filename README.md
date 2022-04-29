@@ -303,7 +303,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
 ### Miscellaneous notes on remapping
-* The back-end function for `:MkdnGoBack`, `require('mkdnflow).buffers.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
+* The back-end function for `:MkdnGoBack`, `require('mkdnflow').buffers.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
 
 ## ☑️ To do
 * [ ] Lists
@@ -341,7 +341,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 04/27/22: Add in some list item functionality (not mapped to anything by default yet)
 * 04/26/22: Set command name to `false` in `mappings` table to disable mapping
 * 04/25/22: Specify mode in mappings table
-* 04/24/22: User can shut up messages by specifying 'false' in their config under the 'silent' key
+* 04/24/22: User can shut up messages by specifying 'true' in their config under the 'silent' key
 * 04/24/22: Added Windows compatibility!
 * 04/23/22: Major reorganization of followPath() function which ships off some of its old functionality to the new links module and much of it to smaller, path-type-specific functions in the new paths module
 * 04/22/22: Added ability to identify the notebook/wiki's root directory by specifying a "tell" in the config (a file that can be used to identify the root)
