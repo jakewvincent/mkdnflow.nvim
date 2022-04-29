@@ -28,21 +28,22 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 ### Create and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
     * Customizable filename prefix (default is the current date in `YYYY-MM-DD` format (see [Configuration](#%EF%B8%8F-configuration)).
-* 🆕 `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
-* 🆕 Create an anchor link if the visual selection starts with `#` 
-* 🆕 Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
-* 🆕 `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste)
+* `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
+* Create an anchor link if the visual selection starts with `#` 
+* Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
+* `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste in the current buffer)
+    * 🆕 `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
 
 ### Jump between links
 * `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
-    * Wrap the beginning/end of the file with a [config setting](#%EF%B8%8F-configuration)
+    * "Wrap" to the beginning/end of the file with a [config setting](#%EF%B8%8F-configuration)
 
 ### Customize perspective for link interpretation
 * Specify what perspective the plugin-should take when interpreting links to files. There are three options:
     1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
     2. Interpret links relative to the file open in the current buffer
     3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
-* 🆕 Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`)
+* 🆕 Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
 
 ### Follow links _and citations_
 * `<CR>` on various kinds of links to "follow" them:
@@ -50,10 +51,10 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * Absolute links or `.md` links relative to home open in the current window but are interpreted with absolute perspective (e.g. `[File](/home/user/file.md)`/`[File](C:\Users\user\file.md)` on Windows, or `[File](~/Documents/file.md)`)
     * Links to a file prefixed with `file:` (e.g. `[My Xournal notes](file:notes.xopp)`) open with the system's default program for that filetype
     * Link to URLs are opened in the default browser
-    * 🆕 Anchor links to headings in the current file will trigger a jump to that heading. Headings must start with a hash, and the path part of the link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
+    * Anchor links to headings in the current file will trigger a jump to that heading. Headings must start with a hash, and the path part of the link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
         * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
         * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
-* 🆕 `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
+* `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
     * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#%EF%B8%8F-configuration)
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
 
@@ -61,15 +62,15 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#%EF%B8%8F-configuration)
 
 ### Backward and forward navigation
-* `<BS>` to go to previous file/buffer opened in the current window (like clicking the back button in a web browser)
-* 🆕 `<Del>` to go to subsequent file/buffer opened in the current window (like clicking the forward button in a web browser)
+* `<BS>` to go **backward** (to the previous file/buffer opened in the current window, like clicking the back button in a web browser)
+* `<Del>` to go **forward** (to the subsequent file/buffer opened in the current window, like clicking the forward button in a web browser)
 
 ### Keybindings
 * Easy-to-remember [default keybindings](#-commands-and-default-mappings)
 * 🆕 [Customize keybindings](#%EF%B8%8F-configuration) individually or [disable them altogether](#%EF%B8%8F-configuration))
 
 ### Manipulate headings
-* 🆕 Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
+* Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
 * 🆕 Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling will result in the following changes:
@@ -307,7 +308,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 ## ☑️ To do
 * [ ] Lists
     * [ ] To-do list functions & mappings
-    * [X] Smart `<CR>` when in lists, etc.
+        * [ ] Modify status of parent to-do when changing a child to-do (infer based on tab settings)
 * [ ] Fancy table creation & editing
     * [ ] Create a table of x columns and y rows
     * [ ] Add/remove columns and rows
@@ -316,19 +317,20 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Easily rename file in link
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 * [ ] Improve citation functionality
-    - [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
+    * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
+* [ ] Headings
+    * [ ] Easy folding & unfolding
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Smart `<CR>` when in lists, etc.
 * [X] Full compatibility with Windows
 * [X] "Undo" a link (replace link w/ the text part of the link)
 * [X] Easy *forward* navigation through buffers (with ~~`<S-BS>?`~~ `<Del>`)
 * [X] Allow reference to absolute paths (interpret relatively [following config] if not prepended w/ `~` or `/`)
 * [X] Allow parentheses in link names ([issue #8](https://github.com/jakewvincent/mkdnflow.nvim/issues/8))
 * [X] Add a config option to wrap to the beginning of the document when navigating between links (11/08/21)
-* [X] Function to increase/decrease the level of headings
-* [X] Jump to in-file locations by `<CR>`ing on links to headings
 
 </p></details>
 
