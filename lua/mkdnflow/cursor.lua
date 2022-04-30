@@ -131,32 +131,21 @@ local go_to = function(pattern, reverse)
                 end
             else
                 -- If the line is nil, there is no next line and the loop should stop (unless wrapping is on)
-                if reverse then
-                    -- If we're searching backwards and user wants the search to wrap, go to last line in file
-                    if wrap == true then
-                        if not already_wrapped then
+                -- If we're searching backwards and user wants the search to wrap, go to last line in file
+                if wrap == true then
+                    if not already_wrapped then
+                        if reverse then
                             row = vim.api.nvim_buf_line_count(0) + 1
-                            already_wrapped = true
                         else
-                            unfound = nil
-                        end
-                    -- Otherwise, search is done
-                    else
-                        unfound = nil
-                    end
-                else
-                    -- If we're searching forwards and user wants the search to wrap, go to first line in file
-                    if wrap == true then
-                        if not already_wrapped then
                             row = 0
-                            already_wrapped = true
-                        else
-                            unfound = nil
                         end
-                    -- Otherwise, search is done
+                        already_wrapped = true
                     else
                         unfound = nil
                     end
+                -- Otherwise, search is done
+                else
+                    unfound = nil
                 end
             end
         end
