@@ -199,7 +199,9 @@ local go_to_heading = function(anchor_text, reverse)
                     -- Format current heading to see if it matches our search term
                     local heading_as_anchor = links.formatLink(line[1], 2)
                     if anchor_text == heading_as_anchor then
-                        -- If it's a match, send the cursor there and stop the while loop
+                        -- Set a mark
+                        vim.api.nvim_buf_set_mark(0, '`', position[1], position[2], {})
+                        -- Send the cursor to the row w/ the matching heading
                         vim.api.nvim_win_set_cursor(0, {row, 0})
                         unfound = false
                     end
@@ -284,6 +286,7 @@ link pattern.
 --]]
 M.toPrevLink = function(pattern)
     pattern = pattern or '%b)(%b]['
+    -- Leave
     go_to(pattern, true)
 end
 
@@ -291,6 +294,8 @@ end
 toHeading() finds a particular heading in the file
 --]]
 M.toHeading = function(anchor_text, reverse)
+    -- Set mark before leaving
+    -- Leave
     go_to_heading(anchor_text, reverse)
 end
 
