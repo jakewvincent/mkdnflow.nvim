@@ -93,7 +93,7 @@ escape_chars() escapes the set of characters in 'chars' with the mappings in
 --]]
 local escape_chars = function(string)
     -- Which characters to match
-    local chars = "[ '&()$]"
+    local chars = "[ '&()$#]"
     -- Set up table of replacements
     local replacements = {
         [" "] = "\\ ",
