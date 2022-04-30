@@ -131,13 +131,12 @@ local escape_lua_chars = function(string)
 end
 
 local handle_internal_file = function(path, anchor)
-    local internal_open = function(path, anchor)
+    local internal_open = function(path_, anchor_)
         -- See if a directory is part of the path
-        local dir = string.match(path, '(.*)/.-$')
+        local dir = string.match(path_, '(.*)/.-$')
         -- If there's a match and user wants dirs created, check if any dirs
         -- need to be created and act accordingly
         if dir and create_dirs then
-            local filename = string.match(path, '.*/(.-)$')
             local dir_exists = does_exist(dir)
             if not dir_exists then
                 local path_to_file = escape_chars(dir)
@@ -146,27 +145,18 @@ local handle_internal_file = function(path, anchor)
             end
         end
         -- If the path starts with a tilde, replace it w/ $HOME
-        if string.match(path, '^~/') then
-            path = string.gsub(path, '^~/', '$HOME/')
+        if string.match(path_, '^~/') then
+            path_ = string.gsub(path_, '^~/', '$HOME/')
         end
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
-        vim.cmd(':e '..path)
-        if anchor then
-            cursor.toHeading(anchor)
+        vim.cmd(':e '..path_)
+        if anchor_ then
+            cursor.toHeading(anchor_)
         end
     end
 
     if this_os == 'Linux' or this_os == 'Darwin' then
-        -- Get the name of the file in the link path. Will return nil if the
-        -- link doesn't contain any directories.
-        local filename = string.match(path, '.*/(.-)$')
-        -- Get the name of the directory path to the file in the link path. Will
-        -- return nil if the link doesn't contain any directories.
-        local dir = string.match(path, '(.*)/.-$')
-        -- If so, go to the path specified in the output
-        -- Check if the user wants directories to be created and if
-        -- a directory is specified in the link that we need to check
-        -- If so, check how the user wants links to be interpreted
+        -- Decide what to pass to internal_open function
         if string.match(path, '^~/') or string.match(path, '^/') then
             internal_open(path, anchor)
         elseif perspective == 'root' then
