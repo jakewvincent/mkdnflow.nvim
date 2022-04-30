@@ -16,6 +16,8 @@
 
 -- This module: To-do list related functions
 local silent = require('mkdnflow').config.silent
+local to_do_symbols = require('mkdnflow').config.to_do.symbols
+local to_do_in_progress = require('mkdnflow').config.to_do.in_progress
 
 local update_numbering = function(row, starting_number)
     local next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
@@ -35,6 +37,26 @@ local update_numbering = function(row, starting_number)
     end
 end
 
+--[[
+escape_lua_chars() escapes the set of characters in 'chars' with the mappings
+provided in 'replacements'. For Lua escapes.
+--]]
+local escape_lua_chars = function(string)
+    -- Which characters to match
+    local chars = "[-.'\"a]"
+    -- Set up table of replacements
+    local replacements = {
+        ["-"] = "%-",
+        ["."] = "%.",
+        ["'"] = "\'",
+        ['"'] = '\"'
+    }
+    -- Do the replacement
+    local escaped = string.gsub(string, chars, replacements)
+    -- Return the new string
+    return(escaped)
+end
+
 local M = {}
 
 --[[
@@ -47,22 +69,34 @@ M.toggleToDo = function()
     local position = vim.api.nvim_win_get_cursor(0)
     local row = position[1]
     -- See if pattern is matched
-    local pattern = '^%s*[*-]%s+%[([ -X])%]%s+'
-    local todo = string.match(line, pattern, nil)
+    local todo
+    for _, v in ipairs(to_do_symbols) do
+        local pattern = "^%s*[*-]%s+%["..v.."%]%s+"
+        local match = string.match(line, pattern, nil)
+        if match then todo = v end
+    end
+    local get_index = function(symbol)
+        for i, v in ipairs(to_do_symbols) do
+            if symbol == v then
+                return i
+            end
+        end
+    end
     -- If it is, do the replacement with the next completion status
     if todo then
-        if todo == ' ' then
-            local com, fin = string.find(line, '%['..' '..'%]')
-            vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {'-'})
-        elseif todo == '-' then
-            local com, fin = string.find(line, '%['..'%-'..'%]')
-            vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {'X'})
-        elseif todo == 'X' then
-            local com, fin = string.find(line, '%['..'X'..'%]')
-            vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {' '})
+        local index = get_index(todo)
+        local next_index
+        if index == #to_do_symbols then
+            next_index = 1
+        else
+            next_index = index + 1
         end
+        local new_symbol = to_do_symbols[next_index]
+        local com, fin = string.find(line, '%['..escape_lua_chars(todo)..'%]')
+        vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {new_symbol})
     else
-        if not silent then vim.api.nvim_echo({{'⬇️  Not a to-do list item!', 'WarningMsg'}}, true, {}) end
+        local message = '⬇️  Not a to-do list item!'
+        if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
     end
 end
 
