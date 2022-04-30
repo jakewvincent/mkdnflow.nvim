@@ -222,20 +222,21 @@ local go_to_heading = function(anchor_text, reverse)
             end
         else
             -- If the line does not have contents, start searching from the beginning
-            if reverse then
-                if anchor_text ~= nil or wrap == true then
+            if anchor_text ~= nil or wrap == true then
+                if reverse then
                     row = vim.api.nvim_buf_line_count(0)
                 else
-                    unfound = nil
-                    if not silent then vim.api.nvim_echo({{"⬇️  There are no more headings after the beginning of the document!", 'WarningMsg'}}, true, {}) end
+                    row = 1
                 end
             else
-                if anchor_text ~= nil or wrap == true then
-                    row = 1
+                unfound = nil
+                local place, preposition
+                if reverse then
+                    place = 'beginning'; preposition = 'after'
                 else
-                    unfound = nil
-                    if not silent then vim.api.nvim_echo({{"⬇️  There are no more headings before the end of the document!", 'WarningMsg'}}, true, {}) end
+                    place = 'end'; preposition = 'before'
                 end
+                if not silent then vim.api.nvim_echo({{"⬇️  There are no more headings "..preposition.." the "..place.." of the document!", 'WarningMsg'}}, true, {}) end
             end
         end
     end
