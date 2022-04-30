@@ -35,6 +35,10 @@ local default_config = {
     default_bib_path = '',
     silent = false,
     use_mappings_table = true,
+    to_do = {
+        symbols = {' ', '-', 'X'},
+        in_progress = '-'
+    },
     mappings = {
         MkdnNextLink = {'n', '<Tab>'},
         MkdnPrevLink = {'n', '<S-Tab>'},
