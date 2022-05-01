@@ -110,9 +110,13 @@ M.getLinkPart = function(part)
                         path_pattern
                     ), 2, -2
                 )
-                local anchor = path:match('%.md(#.*)')
-                if anchor then
-                    path = path:match('(.*%.md)#')
+                local anchor
+                if link_style == 'wiki' then
+                    anchor = path:match('.*(#.*)')
+                    if anchor then path = path:match('(.*)#') end
+                else
+                    anchor = path:match('%.md(#.*)')
+                    if anchor then path = path:match('(.*%.md)#') end
                 end
                 return path, anchor
             end
@@ -322,7 +326,7 @@ M.formatLink = function(text, part)
         local path_text = string.gsub(text, " ", "-")
         local replacement
         if link_style == 'wiki' then
-            replacement = {'[['..prefix..string.lower(path_text)..'.md|'..text..']]'}
+            replacement = {'[['..prefix..string.lower(path_text)..'|'..text..']]'}
         else
             replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..'.md)'}
         end
@@ -387,7 +391,7 @@ M.createLink = function()
             local replacement
             if link_style == 'wiki' then
                 replacement = {
-                    '[['..prefix..string.lower(cursor_word)..'.md|'..cursor_word..']]'
+                    '[['..prefix..string.lower(cursor_word)..'|'..cursor_word..']]'
                 }
             else
                 replacement = {
