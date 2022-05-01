@@ -54,6 +54,30 @@ since been migrated to another setting or another format. It returns an equiva-
 lent user config that is upgraded to the new format.
 --]]
 M.userConfigCheck = function(user_config)
+    -- Check if to-do symbols are being customized but no values were provided
+    -- for not_started, in_progress, and complete
+    if user_config.to_do then
+        if user_config.to_do.symbols and not (
+            user_config.to_do.not_started or
+            user_config.to_do.in_progress or
+            user_config.to_do.complete
+        ) then
+            if #user_config.to_do.symbols == 3 then
+                user_config.to_do.not_started = user_config.to_do.symbols[1]
+                user_config.to_do.in_progress = user_config.to_do.symbols[2]
+                user_config.to_do.complete = user_config.to_do.symbols[3]
+            elseif #user_config.to_do.symbols > 3 then
+                local max = #user_config.to_do.symbols
+                user_config.to_do.not_started = user_config.to_do.symbols[1]
+                user_config.to_do.in_progress = user_config.to_do.symbols[2]
+                user_config.to_do.complete = user_config.to_do.symbols[max]
+            elseif #user_config.to_do.symbols == 2 then
+                user_config.to_do.not_started = user_config.to_do.symbols[1]
+                user_config.to_do.in_progress = user_config.to_do.symbols[1]
+                user_config.to_do.complete = user_config.to_do.symbols[2]
+            end
+        end
+    end
     -- Look for old prefix settings
     if user_config.evaluate_prefix or user_config.new_file_prefix then
         user_config.prefix = {
