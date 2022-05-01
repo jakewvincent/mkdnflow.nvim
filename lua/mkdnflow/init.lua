@@ -187,9 +187,6 @@ init.setup = function(user_config)
         user_config = compat.userConfigCheck(user_config)
         -- Overwrite defaults w/ user's config settings, if any
         init.config = MergeConfigs(default_config, user_config)
-        for k, v in pairs(init.config.to_do) do
-            print(k, v)
-        end
         -- Get silence preference
         local silent = init.config.silent
         -- Determine perspective
