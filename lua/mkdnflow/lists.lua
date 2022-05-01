@@ -162,23 +162,23 @@ update_parent_to_do = function(line, row, symbol)
             -- If it's a parent (= less indented), update it appropriately
             if parent then
                 -- Update parent to in-progress
-                if has_to_do == to_do_not_started then
+                if has_to_do == escape_lua_chars(to_do_not_started) then
                     if symbol == to_do_in_progress then
                         M.toggleToDo(start + 1, to_do_in_progress)
-                    elseif symbol == to_do_complete then
+                    elseif symbol == escape_lua_chars(to_do_complete) then
                         if siblings_complete(is_indented, row - 1) then
                             M.toggleToDo(start + 1, to_do_complete)
                         else
                             M.toggleToDo(start + 1, to_do_in_progress)
                         end
                     end
-                elseif has_to_do == to_do_in_progress then
+                elseif has_to_do == escape_lua_chars(to_do_in_progress) then
                     if symbol == to_do_complete then
                         if siblings_complete(is_indented, row - 1) then
                             M.toggleToDo(start + 1, to_do_complete)
                         end
                     end
-                elseif has_to_do == to_do_complete then
+                elseif has_to_do == escape_lua_chars(to_do_complete) then
                     if symbol == to_do_not_started or symbol == to_do_in_progress then
                         M.toggleToDo(start + 1, to_do_in_progress)
                     end
