@@ -188,6 +188,13 @@ require('mkdnflow').setup({
     wrap = false,
     default_bib_path = '',
     silent = false,
+    link_style = 'markdown',
+    to_do = {
+        symbols = {' ', '-', 'X'},
+        not_started = ' ',
+        in_progress = '-',
+        complete = 'X'
+    },
     use_mappings_table = true,
     mappings = {
         MkdnNextLink = {'n', '<Tab>'},
