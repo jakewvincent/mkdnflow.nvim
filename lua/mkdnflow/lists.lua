@@ -39,13 +39,35 @@ local update_numbering = function(row, starting_number)
     end
 end
 
+--[[
+escape_lua_chars() escapes the set of characters in 'chars' with the mappings
+provided in 'replacements'. For Lua escapes.
+--]]
+local escape_lua_chars = function(string)
+    -- Which characters to match
+    local chars = "[-.'\"a]"
+    -- Set up table of replacements
+    local replacements = {
+        ["-"] = "%-",
+        ["."] = "%.",
+        ["'"] = "\'",
+        ['"'] = '\"'
+    }
+    -- Do the replacement
+    local escaped = string.gsub(string, chars, replacements)
+    -- Return the new string
+    return(escaped)
+end
+
 local get_status = function(line)
     local todo
     for _, v in ipairs(to_do_symbols) do
+        v = escape_lua_chars(v)
         local pattern = "^%s*[*-]%s+%["..v.."%]%s+"
         local match = string.match(line, pattern, nil)
         if match then todo = v end
     end
+    --print(todo)
     return(todo)
 end
 
@@ -182,26 +204,6 @@ update_parent_to_do = function(line, row, symbol)
 end
 
 --[[
-escape_lua_chars() escapes the set of characters in 'chars' with the mappings
-provided in 'replacements'. For Lua escapes.
---]]
-local escape_lua_chars = function(string)
-    -- Which characters to match
-    local chars = "[-.'\"a]"
-    -- Set up table of replacements
-    local replacements = {
-        ["-"] = "%-",
-        ["."] = "%.",
-        ["'"] = "\'",
-        ['"'] = '\"'
-    }
-    -- Do the replacement
-    local escaped = string.gsub(string, chars, replacements)
-    -- Return the new string
-    return(escaped)
-end
-
---[[
 toggleToDo() retrieves a line when called, checks if it has a to-do item with
 [ ], [-], or [X], and changes the completion status to the next in line.
 --]]
@@ -214,7 +216,7 @@ M.toggleToDo = function(row, status)
     local todo = get_status(line)
     local get_index = function(symbol)
         for i, v in ipairs(to_do_symbols) do
-            if symbol == v then
+            if symbol == escape_lua_chars(v) then
                 return i
             end
         end
@@ -234,13 +236,13 @@ M.toggleToDo = function(row, status)
             end
             new_symbol = to_do_symbols[next_index]
         end
-        local com, fin = string.find(line, '%['..escape_lua_chars(todo)..'%]')
+        print("Here's what I'm looking for: "..todo)
+        local com, fin = string.find(line, '%['..todo..'%]')
         vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {new_symbol})
         -- Update parent to-dos (if any)
         update_parent_to_do(line, row, new_symbol)
     else
         local message = '⬇️  Not a to-do list item!'
-        print('Trying to change: '..line)
         if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
     end
 end
