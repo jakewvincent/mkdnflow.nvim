@@ -126,8 +126,9 @@ end
 local M = {}
 
 M.toggleToDo = function() end
+local update_parent_to_do = function() end
 
-local update_parent_to_do = function(line, row, symbol)
+update_parent_to_do = function(line, row, symbol)
     -- See if there's any whitespace before the bullet
     local is_indented = line:match('(%s+)[-*]')
     -- If the current to-do is indented, it may have a parent to-do
@@ -166,6 +167,10 @@ local update_parent_to_do = function(line, row, symbol)
                             --print("Siblings reported as complete: "..tostring(siblings_complete(is_indented, row - 1)))
                             M.toggleToDo(start + 1, to_do_complete)
                         end
+                    end
+                elseif has_to_do == to_do_complete then
+                    if symbol == to_do_not_started or symbol == to_do_in_progress then
+                        M.toggleToDo(start + 1, to_do_in_progress)
                     end
                 end
             else
