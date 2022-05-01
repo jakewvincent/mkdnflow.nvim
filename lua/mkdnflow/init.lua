@@ -34,7 +34,6 @@ local default_config = {
     wrap = false,
     default_bib_path = '',
     silent = false,
-    use_mappings_table = true,
     link_style = 'markdown',
     to_do = {
         symbols = {' ', '-', 'X'},
@@ -42,6 +41,7 @@ local default_config = {
         in_progress = '-',
         complete = 'X'
     },
+    use_mappings_table = true,
     mappings = {
         MkdnNextLink = {'n', '<Tab>'},
         MkdnPrevLink = {'n', '<S-Tab>'},
