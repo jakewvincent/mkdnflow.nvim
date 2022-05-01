@@ -20,6 +20,7 @@ local new_file_prefix = require('mkdnflow').config.prefix.string
 -- Get the user's prefix evaluation preference
 local evaluate_prefix = require('mkdnflow').config.prefix.evaluate
 local this_os = require('mkdnflow').this_os
+local link_style = require('mkdnflow').config.link_style
 
 -- Table for global functions
 local M = {}
@@ -37,7 +38,12 @@ M.getLinkPart = function(part)
     local col = position[2]
     -- Get the indices of the links in the line
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
-    local link_pattern = '%b[](%b())' -- What links look like
+    local link_pattern
+    if link_style == 'wiki' then
+        link_pattern = '%[(%[.*%])%]' -- What links look like
+    else
+        link_pattern = '%b[](%b())' -- What links look like
+    end
     local bib_pattern = '[^%a%d]-(@[%a%d_%.%-\']+)[%s%p%c]?' -- Bib. citation pattern
     local indices = {} -- Table for match indices
     local last_fin = 1 -- Last end index
@@ -75,7 +81,12 @@ M.getLinkPart = function(part)
         -- and return it
         if part == 'name' then
             if link_type == 'address' then
-                local name_pattern = '(%b[])%b()'
+                local name_pattern
+                if link_style == 'wiki' then
+                    name_pattern = '%[%[(|.*%])%]'
+                else
+                    name_pattern = '(%b[])%b()'
+                end
                 local name = string.sub(
                     string.match(
                         string.sub(line[1], indices['com'], indices['fin']),
@@ -87,7 +98,12 @@ M.getLinkPart = function(part)
             end
         elseif part == 'path' then
             if link_type == 'address' then
-                local path_pattern = '%b[](%b())'
+                local path_pattern
+                if link_style == 'wiki' then
+                    path_pattern = '%[(%[.-[|%]]).*%]+'
+                else
+                    path_pattern = '%b[](%b())'
+                end
                 local path = string.sub(
                     string.match(
                         string.sub(line[1], indices['com'], indices['fin']),
@@ -278,7 +294,12 @@ M.formatLink = function(text, part)
         path_text = string.gsub(path_text, ' ', '-')
         path_text = string.gsub(path_text, '%-%-', '-')
         path_text = '#'..string.lower(path_text)
-        local replacement = {'['..name..']'..'('..path_text..')'}
+        local replacement
+        if link_style == 'wiki' then
+            replacement = {'[['..path_text..'|'..name..']]'}
+        else
+            replacement = {'['..name..']'..'('..path_text..')'}
+        end
         if part == nil then
             return(replacement)
         elseif part == 1 then
@@ -299,7 +320,12 @@ M.formatLink = function(text, part)
         end
         -- Set up the replacement
         local path_text = string.gsub(text, " ", "-")
-        local replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..'.md)'}
+        local replacement
+        if link_style == 'wiki' then
+            replacement = {'[['..prefix..string.lower(path_text)..'.md|'..text..']]'}
+        else
+            replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..'.md)'}
+        end
         if part == nil then
             return(replacement)
         elseif part == 1 then
@@ -339,9 +365,16 @@ M.createLink = function()
         local url_start, url_end = M.hasUrl(line, 'positions', col)
         if url_start and url_end then
             -- Prepare the replacement
-            local replacement = {
-                '[]'..'('..line:sub(url_start, url_end - 1)..')'
-            }
+            local replacement
+            if link_style == 'wiki' then
+                replacement = {
+                    '[['..line:sub(url_start, url_end - 1)..'|]]'
+                }
+            else
+                replacement = {
+                    '[]'..'('..line:sub(url_start, url_end - 1)..')'
+                }
+            end
             -- Replace
             vim.api.nvim_buf_set_text(0, row - 1, url_start - 1, row - 1, url_end - 1, replacement)
             -- Move the cursor to the name part of the link and change mode
@@ -351,9 +384,16 @@ M.createLink = function()
             -- Get the word under the cursor
             local cursor_word = vim.fn.expand('<cword>')
             -- Make a markdown link out of the date and cursor
-            local replacement = {
-                '['..cursor_word..']'..'('..prefix..string.lower(cursor_word)..'.md)'
-            }
+            local replacement
+            if link_style == 'wiki' then
+                replacement = {
+                    '[['..prefix..string.lower(cursor_word)..'.md|'..cursor_word..']]'
+                }
+            else
+                replacement = {
+                    '['..cursor_word..']'..'('..prefix..string.lower(cursor_word)..'.md)'
+                }
+            end
             -- Find the (first) position of the matched word in the line
             local left, right = string.find(line, cursor_word, nil, true)
             -- Make sure it's not a duplicate of the word under the cursor, and if it

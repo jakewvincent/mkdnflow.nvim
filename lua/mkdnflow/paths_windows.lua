@@ -29,6 +29,7 @@ local initial_dir = require('mkdnflow').initial_dir
 -- Get root_dir for notebook/wiki
 local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow').config.silent
+local link_style = require('mkdnflow').config.link_style
 
 -- Load modules
 local buffers = require('mkdnflow.buffers')

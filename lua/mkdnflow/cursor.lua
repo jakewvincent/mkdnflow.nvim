@@ -14,10 +14,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--- Modules
+-- Modules and config options
 local links = require('mkdnflow.links')
 local wrap = require('mkdnflow').config.wrap
 local silent = require('mkdnflow').config.silent
+local link_style = require('mkdnflow').config.link_style
 
 --[[
 rev_get_line() retrieves line text and reverses it
@@ -268,8 +269,12 @@ argument. If no pattern is passed in, it looks for the default markdown link
 pattern.
 --]]
 M.toNextLink = function(pattern)
-    -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)
-    pattern = pattern or '%b[]%b()'
+    if link_style == 'wiki' then
+        pattern = pattern or '%[%[.*%]%]'
+    else
+        -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)
+        pattern = pattern or '%b[]%b()'
+    end
     go_to(pattern)
 end
 
@@ -279,7 +284,11 @@ as an argument. If no pattern is passed in, it looks for the default markdown
 link pattern.
 --]]
 M.toPrevLink = function(pattern)
-    pattern = pattern or '%b)(%b]['
+    if link_style == 'wiki' then
+        pattern = pattern or '%]%].*%[%['
+    else
+        pattern = pattern or '%b)(%b]['
+    end
     -- Leave
     go_to(pattern, true)
 end
