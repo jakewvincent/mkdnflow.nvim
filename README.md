@@ -25,6 +25,9 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ## ✨ Features
 
+### Two link styles
+* Use either markdown or wiki-link link styles by setting a [config option](#%EF%B8%8F-configuration).
+
 ### Create and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
     * Customizable filename prefix (default is the current date in `YYYY-MM-DD` format (see [Configuration](#%EF%B8%8F-configuration)).
@@ -73,11 +76,15 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
-* 🆕 Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Toggling will result in the following changes:
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. 🆕 To-do symbols [can now be customized](#%EF%B8%8F-configuration).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
-* 🆕 Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
+* 🆕 Automatically update any parent to-dos when child to-dos are toggled.
+    * When all child to-dos have been marked complete, the parent is marked complete
+    * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
+    * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
+* Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
     * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
     * In unordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
     * In ordered lists: Add another item on the next line (keeping numbering updated), unless the current item is empty, in which case it will be erased
@@ -174,13 +181,13 @@ Currently, the setup function uses the defaults shown below. See the description
 ```lua
 -- ** DEFAULT SETTINGS; TO USE THESE, PASS AN EMPTY TABLE TO THE SETUP FUNCTION **
 require('mkdnflow').setup({
+    filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,             
     perspective = {
         priority = 'first',
         fallback = 'current',
         root_tell = false
     },    
-    filetypes = {md = true, rmd = true, markdown = true},
     prefix = {
         evaluate = true,
         string = [[os.date('%Y-%m-%d_')]]
@@ -188,13 +195,6 @@ require('mkdnflow').setup({
     wrap = false,
     default_bib_path = '',
     silent = false,
-    link_style = 'markdown',
-    to_do = {
-        symbols = {' ', '-', 'X'},
-        not_started = ' ',
-        in_progress = '-',
-        complete = 'X'
-    },
     use_mappings_table = true,
     mappings = {
         MkdnNextLink = {'n', '<Tab>'},
@@ -211,34 +211,41 @@ require('mkdnflow').setup({
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
         MkdnNewListItem = false
+    },
+    link_style = 'markdown',
+    to_do = {
+        symbols = {' ', '-', 'X'},
+        not_started = ' ',
+        in_progress = '-',
+        complete = 'X'
     }
 })
 ```
 
 ### Config descriptions
-#### `create_dirs` (boolean value)
-* `true`: Directories referenced in a link will be (recursively) created if they do not exist
-* `false` No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
-
-#### `perspective` (table value)
-* `perspective.priority` (string value): Specifies the priority perspective to take when interpreting link paths
-    * `'first'`: Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)
-    * `'current'`: Links will be interpreted relative to the current file
-    * `'root'`: Links will be interpreted relative to the root directory of the current notebook/wiki (requires `perspective.root_tell` to be specified)
-* `perspective.fallback` (string value): Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)
-    * `'first'`: (see above)
-    * `'current'`: (see above)
-    * `'root'`: (see above)
-* `perspective.root_tell` (string or boolean value)
-    * `'<any file name>'`: Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook/wiki. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`.
-
-#### `filetypes` (table value)
+#### `filetypes` (dictionary table)
 * `<any arbitrary filetype extension>` (boolean value)
     * `true`: A matching extension will enable the plugin's functionality for a file with that extension
 
 Note: This functionality references the file's extension. It does not rely on Neovim's filetype recognition. The extension must be provided in lower case because the plugin converts file names to lowercase. Any arbitrary extension can be supplied. Setting an extension to `false` is the same as not including it in the list.
 
-#### `prefix` (table value)
+#### `create_dirs` (boolean)
+* `true`: Directories referenced in a link will be (recursively) created if they do not exist
+* `false` No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
+
+#### `perspective` (dictionary table)
+* `perspective.priority` (string): Specifies the priority perspective to take when interpreting link paths
+    * `'first'`: Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)
+    * `'current'`: Links will be interpreted relative to the current file
+    * `'root'`: Links will be interpreted relative to the root directory of the current notebook/wiki (requires `perspective.root_tell` to be specified)
+* `perspective.fallback` (string): Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)
+    * `'first'`: (see above)
+    * `'current'`: (see above)
+    * `'root'`: (see above)
+* `perspective.root_tell` (string or boolean)
+    * `'<any file name>'`: Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook/wiki. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`.
+
+#### `prefix` (dictionary table)
 * `prefix.string` (string value)
     * `[[string]]`: A fixed string to prefix to new markdown document names in a link or a string of Lua code to evaluate at the time of link creation and use the output of as a prefix to the file name
 * `prefix.evaluate` (boolean value)
@@ -247,30 +254,41 @@ Note: This functionality references the file's extension. It does not rely on Ne
 
 Note: If you don't want prefixes, set `evaluate = false` and `string = ''`
 
-#### `wrap` (boolean value)
+#### `wrap` (boolean)
 * `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
 * `false`: When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
 
-#### `use_mappings_table` (boolean value)
+#### `default_bib_path` (string)
+* `'path/to/.bib/file'`: Specifies a path where the plugin will look for a .bib file when citations are "followed"
+
+#### `silent` (boolean)
+* `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
+* `false`: The plugin will display messages to the console (all messages from the plugin start with ⬇️ )
+
+#### `use_mappings_table` (boolean)
 * `true`: Mappings will be defined with the help of `mappings` (see below), including your custom mappings (if defined in your mkdnflow config)
 * `false`: Mappings will not be defined with the help of the `mappings` table, and in fact, **no default mappings will be activated at all**
 
 Note: See [default mappings](#-commands-and-default-mappings)
 
-#### `mappings` (table value)
-* `mappings.<name of command>` (table value or `false`)
-    * `mappings.<name of command>[1]` string or table value representing the mode (or table of modes) the mapping should apply in (`'n'`, `'v'`, etc.)
+#### `mappings` (dictionary table)
+* `mappings.<name of command>` (array table or `false`)
+    * `mappings.<name of command>[1]` string or array table representing the mode (or array of modes) that the mapping should apply in (`'n'`, `'v'`, etc.)
     * `mappings.<name of command>[2]` string representing the keymap (e.g. `'<Space>'`)
     * set `mappings.<name of command> = false` to disable default mapping without providing a custom mapping
 
 Note: `<name of command>` should be the name of a commands defined in `mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
 
-#### `default_bib_path` (string value)
-* `'path/to/.bib/file'`: Specifies a path where the plugin will look for a .bib file when citations are "followed"
+#### `link_style` (string)
+* `'markdown'`: Links will be expected in the standard markdown format: `[<title>](<source>)`
+* `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`. Following wiki-link conventions, `.md` sources within the notebook/wiki will not be expected to have the `.md` extension explicitly written in the link.
 
-#### `silent` (boolean value)
-* `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
-* `false`: The plugin will display messages to the console (all messages from the plugin start with ⬇️ )
+#### `to_do` (dictionary table)
+* `to_do.symbols` (array table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
+* The following entries can be used to stipulate which symbols shall be used when updating a parent to-do's status when a child to-do's status is changed. These are **not required**: if `to_do.symbols` is customized but these options are not provided, the plugin will attempt to infer what the meanings of the symbols in your list are by their order. For example, if you set `to_do.symbols` as `{' ', '⧖', '✓'}`, `' '` will be assiged to `to_do.not_started`, '⧖' will be assigned to `to_do.in_progress`, etc. If more than three symbols are specified, the first will be used as `not_started`, the second will be used as `in_progress`, and the last will be used as `complete`. If two symbols are provided (e.g. `' ', '✓'`), the first will be used as both `not_started` and `in_progress`, and the second will be used as `complete`.
+* `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do
+* `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do
+* `to_do.complete` (string):  Stipulates which symbol represents a complete to-do
 
 ### 👍 Recommended vim settings
 
@@ -343,6 +361,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/30/22: Customize link style (markdown/wiki; addresses [issue #10](https://github.com/jakewvincent/mkdnflow.nvim/issues/10))
+* 04/30/22: Added functionality to update parent to-dos when child to-do status is changed; customize to-do symbols
 * 04/28/22: Interpret links to markdown files correctly when specified with an absolute path (one starting with `/` or `~/`)
 * 04/28/22: Added ability to follow links to markdown files with an anchor and then jump to the appropriate heading (if one exists)
 * 04/27/22: Add in some list item functionality (not mapped to anything by default yet)
@@ -360,11 +380,11 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 04/11/22: Added ability to change heading level
 * 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings
 * 04/03/22: Added ability to jump to headings if a link is an anchor link
-* 03/06/22: Added ability to search .bib files and act on relevant information in bib entries when the cursor is in a citation and `<CR>` is pressed
 
 <details>
 <summary>Older changes</summary><p>
 
+* 03/06/22: Added ability to search .bib files and act on relevant information in bib entries when the cursor is in a citation and `<CR>` is pressed
 * 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
 * 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
 * 11/10/21: Merged [@pbogut's PR](https://github.com/jakewvincent/mkdnflow.nvim/pull/7), which modifies `require('mkdnflow').buffers.goBack()` to return a boolean (`true` if `goBack()` succeeds; `false` if `goBack()` isn't possible). For the default mappings, this causes no change in behavior, but users who wish `<BS>` to perform another function in the case that `goBack()` fails can now use `goBack()` in the antecedent of a conditional. @pbogut's mapping, for reference:
@@ -394,3 +414,4 @@ end
         * [auto-pandoc.nvim](https://github.com/jghauser/auto-pandoc.nvim) ("[...] allows you to easily convert your markdown files using pandoc.")
 * [Awesome Neovim's list of markdown plugins](https://github.com/rockerBOO/awesome-neovim#markdown) (a big list of plugins for Neovim)
 * [Vimwiki](https://github.com/vimwiki/vimwiki) (Full-featured journal navigation/maintenance)
+* [Neorg](https://github.com/nvim-neorg/neorg) (A revised [Org-mode](https://en.wikipedia.org/wiki/Org-mode) for Neovim)
