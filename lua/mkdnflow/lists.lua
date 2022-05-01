@@ -67,7 +67,6 @@ local get_status = function(line)
         local match = string.match(line, pattern, nil)
         if match then todo = v end
     end
-    --print(todo)
     return(todo)
 end
 
@@ -79,23 +78,18 @@ local siblings_complete = function(indentation, row)
     while not done_looking and start >= 0 do
         local prev_line = vim.api.nvim_buf_get_lines(0, start, start + 1, false)
         local has_status = get_status(prev_line[1])
-        --print("Line '"..prev_line[1].."' has status: "..has_status)
         if has_status then
             local sib_indentation = prev_line[1]:match('(%s*)[-*]')
             if #sib_indentation == #indentation then
-                --print("Line '"..prev_line[1].."' is a sibling. Adding it to the list of siblings.")
                 table.insert(sib_statuses, has_status)
                 start = start - 1
             -- If more nested, keep looking above for to-dos w/ same indentation
             elseif #sib_indentation > #indentation then
-                --print("Line '"..next_line[1].."' is not a sibling, but I'm resuming the search above it.")
                 start = start - 1
             else
-                --print("Line '"..prev_line[1].."' is a parent. Stopping looking.")
                 done_looking = true
             end
         else
-            --print("Now finished looking for siblings before the line")
             done_looking = true
         end
     end
@@ -106,22 +100,17 @@ local siblings_complete = function(indentation, row)
         local next_line = vim.api.nvim_buf_get_lines(0, start, start + 1, false)
         local has_status = get_status(next_line[1])
         if has_status then
-            --print("Line '"..next_line[1].."' has status: "..has_status)
             local sib_indentation = next_line[1]:match('(%s*)[-*]')
             if #sib_indentation == #indentation then
-                --print("Line '"..next_line[1].."' is a sibling. Adding it to the list of siblings.")
                 table.insert(sib_statuses, has_status)
                 start = start + 1
             -- If nested, keep looking below for to-dos w/ same indentation
             elseif #sib_indentation > #indentation then
-                --print("Line '"..next_line[1].."' is not a sibling, but I'm resuming the search below it.")
                 start = start + 1
             else
-                --print("Line '"..next_line[1].."' is not a sibling, and I'm stopping")
                 done_looking = true
             end
         else
-            --print("Line '"..next_line[1].."' is not a to-do. Stopping.")
             done_looking = true
         end
     end
@@ -186,7 +175,6 @@ update_parent_to_do = function(line, row, symbol)
                 elseif has_to_do == to_do_in_progress then
                     if symbol == to_do_complete then
                         if siblings_complete(is_indented, row - 1) then
-                            --print("Siblings reported as complete: "..tostring(siblings_complete(is_indented, row - 1)))
                             M.toggleToDo(start + 1, to_do_complete)
                         end
                     end
@@ -236,7 +224,6 @@ M.toggleToDo = function(row, status)
             end
             new_symbol = to_do_symbols[next_index]
         end
-        print("Here's what I'm looking for: "..todo)
         local com, fin = string.find(line, '%['..todo..'%]')
         vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {new_symbol})
         -- Update parent to-dos (if any)
