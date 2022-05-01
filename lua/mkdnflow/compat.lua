@@ -100,7 +100,7 @@ M.userConfigCheck = function(user_config)
             end
         end
         if string then
-            warn('⬇️  In the mappings table, commands should now be associated with a table value instead of a string. See :h mkdnflow-changes, commit ...')
+            warn('⬇️  In the mappings table, commands should now be associated with a table value instead of a string. See :h mkdnflow-changes, commit 436510...')
             local compatible_mappings = {}
             for key, value in pairs(user_config.mappings) do
                 if key == 'MkdnFollowLink' then
