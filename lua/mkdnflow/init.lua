@@ -35,6 +35,7 @@ local default_config = {
     default_bib_path = '',
     silent = false,
     use_mappings_table = true,
+    links = 'markdown',
     to_do = {
         symbols = {' ', '-', 'X'},
         not_started = ' ',
