@@ -286,9 +286,9 @@ Note: `<name of command>` should be the name of a commands defined in `mkdnflow.
 #### `to_do` (dictionary table)
 * `to_do.symbols` (array table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
 * The following entries can be used to stipulate which symbols shall be used when updating a parent to-do's status when a child to-do's status is changed. These are **not required**: if `to_do.symbols` is customized but these options are not provided, the plugin will attempt to infer what the meanings of the symbols in your list are by their order. For example, if you set `to_do.symbols` as `{' ', '⧖', '✓'}`, `' '` will be assiged to `to_do.not_started`, '⧖' will be assigned to `to_do.in_progress`, etc. If more than three symbols are specified, the first will be used as `not_started`, the second will be used as `in_progress`, and the last will be used as `complete`. If two symbols are provided (e.g. `' ', '✓'`), the first will be used as both `not_started` and `in_progress`, and the second will be used as `complete`.
-* `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do
-* `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do
-* `to_do.complete` (string):  Stipulates which symbol represents a complete to-do
+    * `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do
+    * `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do
+    * `to_do.complete` (string):  Stipulates which symbol represents a complete to-do
 
 ### 👍 Recommended vim settings
 
