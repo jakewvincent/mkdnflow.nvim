@@ -26,11 +26,11 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 ## ✨ Features
 
 ### Two link styles
-* Use either markdown or wiki-link link styles by setting a [config option](#%EF%B8%8F-configuration).
+* Use either markdown or wiki-link link styles by setting a [config option](#link_style-string).
 
 ### Create and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
-    * Customizable filename prefix (default is the current date in `YYYY-MM-DD` format (see [Configuration](#%EF%B8%8F-configuration)).
+    * Customizable filename prefix (default is the current date in `YYYY-MM-DD` format (see [Configuration](#prefix-dictionary-table)).
 * `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
 * Create an anchor link if the visual selection starts with `#` 
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
@@ -39,7 +39,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### Jump between links
 * `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
-    * "Wrap" to the beginning/end of the file with a [config setting](#%EF%B8%8F-configuration)
+    * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
 
 ### Customize perspective for link interpretation
 * Specify what perspective the plugin-should take when interpreting links to files. There are three options:
@@ -58,11 +58,11 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
         * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
         * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
 * `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
-    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#%EF%B8%8F-configuration)
+    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_bib_path-string)
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
 
 ### Create missing directories
-* If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#%EF%B8%8F-configuration)
+* If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#create_dirs-boolean)
 
 ### Backward and forward navigation
 * `<BS>` to go **backward** (to the previous file/buffer opened in the current window, like clicking the back button in a web browser)
@@ -70,13 +70,13 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### Keybindings
 * Easy-to-remember [default keybindings](#-commands-and-default-mappings)
-* 🆕 [Customize keybindings](#%EF%B8%8F-configuration) individually or [disable them altogether](#%EF%B8%8F-configuration))
+* 🆕 [Customize keybindings](#mappings-dictionary-table) individually or [disable them altogether](#use_mappings_table-boolean))
 
 ### Manipulate headings
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. 🆕 To-do symbols [can now be customized](#%EF%B8%8F-configuration).
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. 🆕 To-do symbols [can now be customized](#to_do-dictionary-table).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
