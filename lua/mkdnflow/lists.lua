@@ -17,7 +17,9 @@
 -- This module: To-do list related functions
 local silent = require('mkdnflow').config.silent
 local to_do_symbols = require('mkdnflow').config.to_do.symbols
+local to_do_not_started = require('mkdnflow').config.to_do.not_started
 local to_do_in_progress = require('mkdnflow').config.to_do.in_progress
+local to_do_complete = require('mkdnflow').config.to_do.complete
 
 local update_numbering = function(row, starting_number)
     local next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
@@ -34,6 +36,143 @@ local update_numbering = function(row, starting_number)
         next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
         is_numbered = next_line[1]:match('^(%s*%d+%.%s*).-')
         starting_number = item_number
+    end
+end
+
+local get_status = function(line)
+    local todo
+    for _, v in ipairs(to_do_symbols) do
+        local pattern = "^%s*[*-]%s+%["..v.."%]%s+"
+        local match = string.match(line, pattern, nil)
+        if match then todo = v end
+    end
+    return(todo)
+end
+
+local siblings_complete = function(indentation, row)
+    -- Find the siblings of this to-do
+    local start = row - 1
+    local done_looking = nil
+    local sib_statuses = {}
+    while not done_looking and start >= 0 do
+        local prev_line = vim.api.nvim_buf_get_lines(0, start, start + 1, false)
+        local has_status = get_status(prev_line[1])
+        --print("Line '"..prev_line[1].."' has status: "..has_status)
+        if has_status then
+            local sib_indentation = prev_line[1]:match('(%s*)[-*]')
+            if #sib_indentation == #indentation then
+                --print("Line '"..prev_line[1].."' is a sibling. Adding it to the list of siblings.")
+                table.insert(sib_statuses, has_status)
+                start = start - 1
+            -- If more nested, keep looking above for to-dos w/ same indentation
+            elseif #sib_indentation > #indentation then
+                --print("Line '"..next_line[1].."' is not a sibling, but I'm resuming the search above it.")
+                start = start - 1
+            else
+                --print("Line '"..prev_line[1].."' is a parent. Stopping looking.")
+                done_looking = true
+            end
+        else
+            --print("Now finished looking for siblings before the line")
+            done_looking = true
+        end
+    end
+    -- Now look below the current line
+    done_looking = false
+    start = row + 1
+    while not done_looking do
+        local next_line = vim.api.nvim_buf_get_lines(0, start, start + 1, false)
+        local has_status = get_status(next_line[1])
+        if has_status then
+            --print("Line '"..next_line[1].."' has status: "..has_status)
+            local sib_indentation = next_line[1]:match('(%s*)[-*]')
+            if #sib_indentation == #indentation then
+                --print("Line '"..next_line[1].."' is a sibling. Adding it to the list of siblings.")
+                table.insert(sib_statuses, has_status)
+                start = start + 1
+            -- If nested, keep looking below for to-dos w/ same indentation
+            elseif #sib_indentation > #indentation then
+                --print("Line '"..next_line[1].."' is not a sibling, but I'm resuming the search below it.")
+                start = start + 1
+            else
+                --print("Line '"..next_line[1].."' is not a sibling, and I'm stopping")
+                done_looking = true
+            end
+        else
+            --print("Line '"..next_line[1].."' is not a to-do. Stopping.")
+            done_looking = true
+        end
+    end
+    if #sib_statuses == 0 then
+        return(true)
+    else
+        local all_done = true
+        local i = 1
+        done_looking = false
+        while not done_looking do
+            if sib_statuses[i] ~= to_do_complete then
+                done_looking = true
+                all_done = false
+            elseif i == #sib_statuses then
+                done_looking = true
+            else
+                i = i + 1
+            end
+        end
+        return(all_done)
+    end
+end
+
+local M = {}
+
+M.toggleToDo = function() end
+
+local update_parent_to_do = function(line, row, symbol)
+    -- See if there's any whitespace before the bullet
+    local is_indented = line:match('(%s+)[-*]')
+    -- If the current to-do is indented, it may have a parent to-do
+    if is_indented then
+        local start = row - 2
+        local parent = nil
+        -- While a parent hasn't been found and start is at least the first line, keep
+        -- looking for a parent
+        while not parent and start >= 0 do
+            local prev_line = vim.api.nvim_buf_get_lines(0, start, start + 1, false)
+            -- See if it's a to-do, and if so, what its indentation is
+            -- If there's a to-do on the prev line, see if it's less indented
+            local has_to_do = get_status(prev_line[1])
+            if has_to_do then
+                local indentation = prev_line[1]:match('(%s*)[-*]')
+                parent = #indentation < #is_indented
+            else
+                parent = nil
+            end
+            -- If it's a parent (= less indented), update it appropriately
+            if parent then
+                -- Update parent to in-progress
+                if has_to_do == to_do_not_started then
+                    if symbol == to_do_in_progress then
+                        M.toggleToDo(start + 1, to_do_in_progress)
+                    elseif symbol == to_do_complete then
+                        if siblings_complete(is_indented, row - 1) then
+                            M.toggleToDo(start + 1, to_do_complete)
+                        else
+                            M.toggleToDo(start + 1, to_do_in_progress)
+                        end
+                    end
+                elseif has_to_do == to_do_in_progress then
+                    if symbol == to_do_complete then
+                        if siblings_complete(is_indented, row - 1) then
+                            --print("Siblings reported as complete: "..tostring(siblings_complete(is_indented, row - 1)))
+                            M.toggleToDo(start + 1, to_do_complete)
+                        end
+                    end
+                end
+            else
+                -- On the next pass, look at the line above the current one
+                start = start - 1
+            end
+        end
     end
 end
 
@@ -57,24 +196,17 @@ local escape_lua_chars = function(string)
     return(escaped)
 end
 
-local M = {}
-
 --[[
 toggleToDo() retrieves a line when called, checks if it has a to-do item with
 [ ], [-], or [X], and changes the completion status to the next in line.
 --]]
-M.toggleToDo = function()
-    -- Get the line the cursor is on
-    local line = vim.api.nvim_get_current_line()
+M.toggleToDo = function(row, status)
+    -- Get the line the cursor is on or of the row that was provided
     local position = vim.api.nvim_win_get_cursor(0)
-    local row = position[1]
+    row = row or position[1]
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     -- See if pattern is matched
-    local todo
-    for _, v in ipairs(to_do_symbols) do
-        local pattern = "^%s*[*-]%s+%["..v.."%]%s+"
-        local match = string.match(line, pattern, nil)
-        if match then todo = v end
-    end
+    local todo = get_status(line)
     local get_index = function(symbol)
         for i, v in ipairs(to_do_symbols) do
             if symbol == v then
@@ -84,18 +216,26 @@ M.toggleToDo = function()
     end
     -- If it is, do the replacement with the next completion status
     if todo then
-        local index = get_index(todo)
-        local next_index
-        if index == #to_do_symbols then
-            next_index = 1
+        local new_symbol
+        if status then
+            new_symbol = status
         else
-            next_index = index + 1
+            local index = get_index(todo)
+            local next_index
+            if index == #to_do_symbols then
+                next_index = 1
+            else
+                next_index = index + 1
+            end
+            new_symbol = to_do_symbols[next_index]
         end
-        local new_symbol = to_do_symbols[next_index]
         local com, fin = string.find(line, '%['..escape_lua_chars(todo)..'%]')
         vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {new_symbol})
+        -- Update parent to-dos (if any)
+        update_parent_to_do(line, row, new_symbol)
     else
         local message = '⬇️  Not a to-do list item!'
+        print('Trying to change: '..line)
         if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
     end
 end
