@@ -238,6 +238,11 @@ Returns nothing
 --]]
 M.handlePath = function(path, anchor)
     if path_type(path) == 'filename' then
+        if link_style == 'wiki' then
+            if not path:match('%.md$') then
+                path = path..'.md'
+            end
+        end
         handle_internal_file(path, anchor)
     elseif path_type(path) == 'url' then
         local se_path = vim.fn.shellescape(path)
