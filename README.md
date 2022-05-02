@@ -84,6 +84,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * When all child to-dos have been marked complete, the parent is marked complete
     * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
     * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
+    * When a parent to-do is marked complete or in-progress and all child to-dos have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
 * Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
     * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
     * In unordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
@@ -327,8 +328,11 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
-### Miscellaneous notes on remapping
+### Miscellaneous notes (+ troubleshooting) on remapping
 * The back-end function for `:MkdnGoBack`, `require('mkdnflow').buffers.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
+* If you are attempting to map `<CR>` to `MkdnNewListItem` in insert mode but can't get it to work, try inspecting your current insert mode mappings and seeing if anything is overriding your mapping. Possible candidates are completion plugins and auto-pair plugins.
+    * If using [nvim-cmp](https://github.com/hrsh7th/nvim-cmp), consider using using the mapping with a fallback, as shown here: [*cmp-mapping*](https://github.com/hrsh7th/nvim-cmp/blob/bba6fb67fdafc0af7c5454058dfbabc2182741f4/doc/cmp.txt#L238)
+    * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (nvim-autopairs, allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
 * [ ] Lists
