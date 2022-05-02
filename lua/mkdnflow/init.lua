@@ -203,7 +203,8 @@ init.setup = function(user_config)
                     if init.root_dir then
                         if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
                     else
-                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found!', 'WarningMsg'}}, true, {}) end
+                        local fallback = init.config.perspective.fallback
+                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found! Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
                         init.config.perspective.priority = init.config.perspective.fallback
                     end
                 elseif init.this_os == 'Windows_NT' then
@@ -211,7 +212,8 @@ init.setup = function(user_config)
                     if init.root_dir then
                         if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
                     else
-                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found!', 'WarningMsg'}}, true, {}) end
+                        local fallback = init.config.perspective.fallback
+                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found! Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
                         init.config.perspective.priority = init.config.perspective.fallback
                     end
                 else
