@@ -335,9 +335,6 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (nvim-autopairs, allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
-* [ ] Lists
-    * [ ] To-do list functions & mappings
-        * [ ] Modify status of parent to-do when changing a child to-do (infer based on tab settings)
 * [ ] Fancy table creation & editing
     * [ ] Create a table of x columns and y rows
     * [ ] Add/remove columns and rows
@@ -353,7 +350,10 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 <details>
 <summary>Completed to-dos</summary><p>
 
-* [X] Smart `<CR>` when in lists, etc.
+* [X] Lists
+    * [X] To-do list functions & mappings
+        * [X] Modify status of parent to-do when changing a child to-do (infer based on tab settings)
+    * [X] Smart `<CR>` when in lists, etc.
 * [X] Full compatibility with Windows
 * [X] "Undo" a link (replace link w/ the text part of the link)
 * [X] Easy *forward* navigation through buffers (with ~~`<S-BS>?`~~ `<Del>`)
