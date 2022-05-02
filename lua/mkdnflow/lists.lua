@@ -29,7 +29,7 @@ local update_numbering = function(row, starting_number)
         --local item_number = is_numbered:match('^%s*(%d*)%.')
         local item_number = starting_number + 1
         local spacing = next_line[1]:match('^(%s*)%d')
-        local new_line = next_line[1]:gsub(spacing..'%d+', item_number)
+        local new_line = next_line[1]:gsub('^%s*%d+', spacing..item_number)
         vim.api.nvim_buf_set_lines(0, row + 1, row + 2, false, {new_line})
         -- Then retrieve the next line
         row = row + 1
@@ -70,7 +70,7 @@ local get_status = function(line)
     return(todo)
 end
 
-local siblings_complete = function(indentation, row)
+local same_siblings = function(indentation, row, status)
     -- Find the siblings of this to-do
     local start = row - 1
     local done_looking = nil
@@ -121,7 +121,7 @@ local siblings_complete = function(indentation, row)
         local i = 1
         done_looking = false
         while not done_looking do
-            if sib_statuses[i] ~= to_do_complete then
+            if escape_lua_chars(sib_statuses[i]) ~= status then
                 done_looking = true
                 all_done = false
             elseif i == #sib_statuses then
@@ -166,21 +166,39 @@ update_parent_to_do = function(line, row, symbol)
                     if symbol == to_do_in_progress then
                         M.toggleToDo(start + 1, to_do_in_progress)
                     elseif symbol == escape_lua_chars(to_do_complete) then
-                        if siblings_complete(is_indented, row - 1) then
+                        if same_siblings(is_indented, row - 1, symbol) then
                             M.toggleToDo(start + 1, to_do_complete)
                         else
                             M.toggleToDo(start + 1, to_do_in_progress)
                         end
+                    elseif symbol == escape_lua_chars(to_do_not_started) then
+                        if same_siblings(is_indented, row - 1, symbol) then
+                            M.toggleToDo(start + 1, to_do_not_started)
+                        end
                     end
                 elseif has_to_do == escape_lua_chars(to_do_in_progress) then
                     if symbol == to_do_complete then
-                        if siblings_complete(is_indented, row - 1) then
+                        if same_siblings(is_indented, row - 1, symbol) then
                             M.toggleToDo(start + 1, to_do_complete)
+                        end
+                    elseif symbol == to_do_not_started then
+                        if same_siblings(is_indented, row - 1, symbol) then
+                            M.toggleToDo(start + 1, to_do_not_started)
                         end
                     end
                 elseif has_to_do == escape_lua_chars(to_do_complete) then
-                    if symbol == to_do_not_started or symbol == to_do_in_progress then
-                        M.toggleToDo(start + 1, to_do_in_progress)
+                    if symbol == to_do_complete then
+                        if same_siblings(is_indented, row - 1, symbol) then
+                            M.toggleToDo(start + 1, to_do_not_started)
+                        else
+                            M.toggleToDo(start + 1, to_do_in_progress)
+                        end
+                    elseif symbol == to_do_not_started then
+                        if same_siblings(is_indented, row - 1, symbol) then
+                            M.toggleToDo(start + 1, to_do_not_started)
+                        else
+                            M.toggleToDo(start + 1, to_do_in_progress)
+                        end
                     end
                 end
             else
