@@ -44,19 +44,20 @@ local default_config = {
     },
     use_mappings_table = true,
     mappings = {
-        MkdnNextLink = {'n', '<Tab>'},
-        MkdnPrevLink = {'n', '<S-Tab>'},
-        MkdnNextHeading = {'n', '<leader>]'},
-        MkdnPrevHeading = {'n', '<leader>['},
         MkdnGoBack = {'n', '<BS>'},
         MkdnGoForward = {'n', '<Del>'},
+        MkdnMoveRenameSource = {'n', '<F2'},
+        MkdnNextLink = {'n', '<Tab>'},
+        MkdnPrevLink = {'n', '<S-Tab>'},
         MkdnFollowLink = {{'n', 'v'}, '<CR>'},
+        MkdnDestroyLink = {'n', '<M-CR>'},
         MkdnYankAnchorLink = {'n', 'ya'},
         MkdnYankFileAnchorLink = {'n', 'yfa'},
+        MkdnNextHeading = {'n', '<leader>]'},
+        MkdnPrevHeading = {'n', '<leader>['},
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
-        MkdnDestroyLink = {'n', '<M-CR>'},
         MkdnNewListItem = false
     }
 }
