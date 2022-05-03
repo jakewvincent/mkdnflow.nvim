@@ -188,11 +188,11 @@ update_parent_to_do = function(line, row, symbol)
                     end
                 elseif has_to_do == escape_lua_chars(to_do_complete) then
                     if symbol == to_do_complete then
-                        if same_siblings(is_indented, row - 1, symbol) then
-                            M.toggleToDo(start + 1, to_do_not_started)
-                        else
+                        if not same_siblings(is_indented, row - 1, symbol) then
                             M.toggleToDo(start + 1, to_do_in_progress)
                         end
+                    elseif symbol == to_do_in_progress then
+                        M.toggleToDo(start + 1, to_do_in_progress)
                     elseif symbol == to_do_not_started then
                         if same_siblings(is_indented, row - 1, symbol) then
                             M.toggleToDo(start + 1, to_do_not_started)
