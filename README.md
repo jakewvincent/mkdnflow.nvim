@@ -25,7 +25,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ## ✨ Features
 
-![](assets/demo/demo.mp4)
+https://user-images.githubusercontent.com/45184202/166570215-3f8e7827-c8aa-4436-afbd-631b3620837f.mp4
 
 ### Two link styles
 * Use either markdown or wiki-link link styles by setting a [config option](#link_style-string).
