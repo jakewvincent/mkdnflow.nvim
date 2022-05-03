@@ -61,12 +61,14 @@ local escape_lua_chars = function(string)
 end
 
 local get_status = function(line)
-    local todo
-    for _, v in ipairs(to_do_symbols) do
-        v = escape_lua_chars(v)
-        local pattern = "^%s*[*-]%s+%["..v.."%]%s+"
-        local match = string.match(line, pattern, nil)
-        if match then todo = v end
+    local todo = nil
+    if line then
+        for _, v in ipairs(to_do_symbols) do
+            v = escape_lua_chars(v)
+            local pattern = "^%s*[*-]%s+%["..v.."%]%s+"
+            local match = string.match(line, pattern, nil)
+            if match then todo = v end
+        end
     end
     return(todo)
 end
