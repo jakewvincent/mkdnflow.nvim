@@ -26,7 +26,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 ## ✨ Features
 
 <p align=center>
-<a href="https://user-images.githubusercontent.com/45184202/166573700-62cdec3b-a13f-4f9e-9d72-ab2650205042.mp4"><img src="assets/demo/demo.mp4.png"></a>
+<a href="https://user-images.githubusercontent.com/45184202/166573700-62cdec3b-a13f-4f9e-9d72-ab2650205042.mp4"><img src="assets/demo/demo.mp4.png" width="75%"></a>
 </p>
 
 ### Two link styles
