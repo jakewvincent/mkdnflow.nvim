@@ -37,6 +37,7 @@ local default_config = {
     link_style = 'markdown',
     to_do = {
         symbols = {' ', '-', 'X'},
+        update_parents = true,
         not_started = ' ',
         in_progress = '-',
         complete = 'X'

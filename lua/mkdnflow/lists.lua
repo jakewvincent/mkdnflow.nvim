@@ -17,6 +17,7 @@
 -- This module: To-do list related functions
 local silent = require('mkdnflow').config.silent
 local to_do_symbols = require('mkdnflow').config.to_do.symbols
+local to_do_update_parents = require('mkdnflow').config.to_do.update_parents
 local to_do_not_started = require('mkdnflow').config.to_do.not_started
 local to_do_in_progress = require('mkdnflow').config.to_do.in_progress
 local to_do_complete = require('mkdnflow').config.to_do.complete
@@ -245,7 +246,7 @@ M.toggleToDo = function(row, status)
         local com, fin = string.find(line, '%['..todo..'%]')
         vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {new_symbol})
         -- Update parent to-dos (if any)
-        update_parent_to_do(line, row, new_symbol)
+        if to_do_update_parents then update_parent_to_do(line, row, new_symbol) end
     else
         local message = '⬇️  Not a to-do list item!'
         if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
