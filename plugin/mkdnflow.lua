@@ -31,7 +31,7 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! MkdnPrevHeading lua require('mkdnflow').cursor.toHeading(nil, true)", true)
     vim.api.nvim_exec("command! MkdnFollowLink lua require('mkdnflow').links.followLink()", true)
     vim.api.nvim_exec("command! MkdnFollowPath lua require('mkdnflow').paths.followPath()", true)
-    vim.api.nvim_exec("command! MkdnMoveRenameSource lua require('mkdnflow').paths.moveRenameSource()", true)
+    vim.api.nvim_exec("command! MkdnMoveSource lua require('mkdnflow').paths.moveSource()", true)
     vim.api.nvim_exec("command! MkdnCreateLink lua require('mkdnflow').links.createLink()", true)
     vim.api.nvim_exec("command! MkdnDestroyLink lua require('mkdnflow').links.destroyLink()", true)
     vim.api.nvim_exec("command! MkdnYankAnchorLink lua require('mkdnflow').cursor.yankAsAnchorLink()", true)
