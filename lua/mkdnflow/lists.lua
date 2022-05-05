@@ -292,7 +292,6 @@ M.newListItem = function()
     else
         -- Then look for a to-do item
         match = line:match('^%s*[*-]%s+%[.%]%s+[^%s]+')
-        print(match)
         partial_match = line:match('^(%s*[-*]%s+%[.%]%s).-')
         if partial_match and not match then
             local row = vim.api.nvim_win_get_cursor(0)[1]
