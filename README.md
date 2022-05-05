@@ -87,7 +87,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. 🆕 To-do symbols [can now be customized](#to_do-dictionary-table).
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. 🆕 To-do symbols [can now be customized](#to_do-dictionary-table), but certain functions will not work for utf-8 to-do symbols.
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
@@ -298,6 +298,7 @@ Note: `<name of command>` should be the name of a commands defined in `mkdnflow.
 
 #### `to_do` (dictionary table)
 * `to_do.symbols` (array table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
+    * NOTE: Lua support for UTF-8 characters is limited, so some functionality will be limited if you supply UTF-8 characters as to-do symbols until I implement a workaround.
 * `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
     * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
     * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
