@@ -16,6 +16,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 * Linux, macOS, or Windows
 * Neovim >= 0.5.0
+* (Optional: If you wish to use custom UTF-8 symbols as your to-do symbols, you'll need the luarocks module `luautf8`. Luarocks dependencies can be installed via [Packer](#initlua).)
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
 
@@ -120,6 +121,19 @@ require('mkdnflow').setup({
 
 ```lua
 use({'jakewvincent/mkdnflow.nvim',
+     config = function()
+        require('mkdnflow').setup({
+            -- Config goes here; leave blank for defaults
+        })
+     end
+})
+```
+
+#### If you wish to use custom UTF-8 to-do symbols, add the luautf8 luarock dependency
+
+```lua
+use({'jakewvincent/mkdnflow.nvim',
+     rocks = 'luautf8',
      config = function()
         require('mkdnflow').setup({
             -- Config goes here; leave blank for defaults
