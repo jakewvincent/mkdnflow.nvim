@@ -210,7 +210,7 @@ require('mkdnflow').setup({
     use_mappings_table = true,
     mappings = {
         MkdnNextLink = {'n', '<Tab>'},
-        MkdnPrevLink = {'<S-Tab>'},
+        MkdnPrevLink = {'n', '<S-Tab>'},
         MkdnNextHeading = {'n', '<leader>]'},
         MkdnPrevHeading = {'n', '<leader>['},
         MkdnGoBack = {'n', '<BS>'},
