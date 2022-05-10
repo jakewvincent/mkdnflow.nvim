@@ -260,26 +260,38 @@ M.newListItem = function()
     local line = vim.api.nvim_get_current_line()
     -- See if there's a list item on it
     -- Look for an ordered list item first
+    -- Any whitespace, a digit+period, whitespace, non-whitespace character
     local match = line:match('^%s*%d+%.%s*[^%s]')
+    -- All the stuff before the non-whitespace character
     local partial_match = line:match('^(%s*%d+%.%s*).-')
+    -- If this is an ordered list item with no contents, remove the item
     if partial_match and not match then
         local row = vim.api.nvim_win_get_cursor(0)[1]
         vim.api.nvim_buf_set_lines(0, row - 1, row, false, {''})
         vim.api.nvim_win_set_cursor(0, {row, 0})
         -- Update numbering
         update_numbering(row - 1, '0')
+    -- If it's an ordered list item *with* contents, make a new list item
     elseif match then
-        local row = vim.api.nvim_win_get_cursor(0)[1]
+        local position = vim.api.nvim_win_get_cursor(0)
+        local row, col = position[1], position[2]
         local item_number = match:match('^%s*(%d*)%.')
         item_number = item_number + 1
-        local new_line = partial_match:gsub('%d+', item_number)
-        vim.api.nvim_buf_set_lines(0, row, row, false, {new_line})
-        vim.api.nvim_win_set_cursor(0, {row + 1, (#new_line)})
+        local next_number = partial_match:gsub('%d+', item_number)
+        local next_line = next_number
+        -- If the cursor is not at the end of the line, append the stuff follo-
+        -- wing the cursor to the new line
+        if col ~= #line then
+            next_line = next_number..line:sub(col + 1, #line)
+            vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, #line, {''})
+        end
+        vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
+        vim.api.nvim_win_set_cursor(0, {row + 1, (#next_number)})
         -- Update numbering
         update_numbering(row, item_number)
     else
         -- Then look for a to-do item
-        match = line:match('^%s*[*-]%s+%[[ -X]%]%s+[^%s]+')
+        match = line:match('^%s*[*-]%s+%[.%]%s+[^%s]+')
         partial_match = line:match('^(%s*[-*]%s+%[.%]%s).-')
         if partial_match and not match then
             local row = vim.api.nvim_win_get_cursor(0)[1]
@@ -287,10 +299,16 @@ M.newListItem = function()
             vim.api.nvim_buf_set_lines(0, row - 1, row, false, {subpartial_match})
             vim.api.nvim_win_set_cursor(0, {row, #subpartial_match})
         elseif match then
-            local row = vim.api.nvim_win_get_cursor(0)[1]
+            local position = vim.api.nvim_win_get_cursor(0)
+            local row, col = position[1], position[2]
             local subpartial_match = line:match('^(%s*[-*]%s+%[.%]%s).-')
             subpartial_match = subpartial_match:gsub('%[.%]', '[ ]')
-            vim.api.nvim_buf_set_lines(0, row, row, false, {subpartial_match})
+            local next_line = subpartial_match
+            if col ~= #line then
+                next_line = subpartial_match..line:sub(col + 1, #line)
+                vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, #line, {''})
+            end
+            vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
             vim.api.nvim_win_set_cursor(0, {row + 1, (#subpartial_match)})
         else
             -- Then look for unordered list
@@ -303,8 +321,14 @@ M.newListItem = function()
                 vim.api.nvim_win_set_cursor(0, {row, 0})
             elseif match then
                 --vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
-                local row = vim.api.nvim_win_get_cursor(0)[1]
-                vim.api.nvim_buf_set_lines(0, row, row, false, {partial_match})
+                local position = vim.api.nvim_win_get_cursor(0)
+                local row, col = position[1], position[2]
+                local next_line = partial_match
+                if col ~= #line then
+                    next_line = partial_match..line:sub(col + 1, #line)
+                    vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, #line, {''})
+                end
+                vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
                 vim.api.nvim_win_set_cursor(0, {row + 1, (#partial_match)})
             else
                 -- If the above criteria are not met, just do a normal CR

@@ -64,6 +64,13 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
     * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_bib_path-string)
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
+    * 🔥 Hot tip: make reaching your contacts via work messaging apps (e.g. Slack) easier by keeping a bib file that associates your contacts' messaging handles with the URL for your direct message thread with that contact. For instance, if you [point the plugin to a bib file](#default_bib_path-string) with the following entry, `<CR>`ing on `@dschrute` in a markdown document would take you to the associated Slack thread.
+
+```bib
+@misc{dschrute,
+    url={https://dundermifflin.slack.com/archives/P07BFJD82}
+}
+```
 
 ### Create missing directories
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#create_dirs-boolean)
@@ -80,7 +87,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. 🆕 To-do symbols [can now be customized](#to_do-dictionary-table).
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. 🆕 To-do symbols [can now be customized](#to_do-dictionary-table), but certain functions will not work for utf-8 to-do symbols.
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
@@ -203,7 +210,7 @@ require('mkdnflow').setup({
     use_mappings_table = true,
     mappings = {
         MkdnNextLink = {'n', '<Tab>'},
-        MkdnPrevLink = {'<S-Tab>'},
+        MkdnPrevLink = {'n', '<S-Tab>'},
         MkdnNextHeading = {'n', '<leader>]'},
         MkdnPrevHeading = {'n', '<leader>['},
         MkdnGoBack = {'n', '<BS>'},
@@ -291,6 +298,7 @@ Note: `<name of command>` should be the name of a commands defined in `mkdnflow.
 
 #### `to_do` (dictionary table)
 * `to_do.symbols` (array table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
+    * NOTE: Lua support for UTF-8 characters is limited, so some functionality will be limited if you supply UTF-8 characters as to-do symbols until I implement a workaround.
 * `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
     * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
     * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
@@ -352,6 +360,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 * [ ] Improve citation functionality
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
+    * [ ] Add ability to identify/use any given .bib file in notebook/wiki's root directory (if `perspective` is set to `root`)
 * [ ] Headings
     * [ ] Easy folding & unfolding
 
