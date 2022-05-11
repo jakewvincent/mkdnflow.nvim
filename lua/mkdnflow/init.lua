@@ -187,7 +187,9 @@ init.setup = function(user_config)
     -- Before fully loading config see if the plugin should be started
     local load_on_ft = default_config.filetypes
     if next(user_config) then
-        load_on_ft = MergeConfigs(load_on_ft, user_config.filetypes)
+        if user_config.filetypes then
+            load_on_ft = MergeConfigs(load_on_ft, user_config.filetypes)
+        end
         init.user_config = user_config
     end
     -- Load extension if the filetype has a match in config.filetypes
