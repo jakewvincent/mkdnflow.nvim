@@ -15,12 +15,19 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- This module: To-do list related functions
+local utils = require('mkdnflow').utils
 local silent = require('mkdnflow').config.silent
 local to_do_symbols = require('mkdnflow').config.to_do.symbols
 local to_do_update_parents = require('mkdnflow').config.to_do.update_parents
 local to_do_not_started = require('mkdnflow').config.to_do.not_started
 local to_do_in_progress = require('mkdnflow').config.to_do.in_progress
 local to_do_complete = require('mkdnflow').config.to_do.complete
+local utf8
+if utils.moduleAvailable('lua-utf8') then
+    utf8 = require('lua-utf8')
+else
+    utf8 = string
+end
 
 local update_numbering = function(row, starting_number)
     local next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
@@ -291,18 +298,18 @@ M.newListItem = function()
         update_numbering(row, item_number)
     else
         -- Then look for a to-do item
-        match = line:match('^%s*[*-]%s+%[.%]%s+[^%s]+')
-        partial_match = line:match('^(%s*[-*]%s+%[.%]%s).-')
+        match = utf8.match(line, '^%s*[*-]%s+%[['..table.concat(to_do_symbols)..']%]%s+[^%s]+')
+        partial_match = utf8.match(line, '^(%s*[-*]%s+%[['..table.concat(to_do_symbols)..']%]%s).-')
         if partial_match and not match then
             local row = vim.api.nvim_win_get_cursor(0)[1]
-            local subpartial_match = partial_match:match('^(%s*[-*]%s+)')
+            local subpartial_match = utf8.match(partial_match, '^(%s*[-*]%s+)')
             vim.api.nvim_buf_set_lines(0, row - 1, row, false, {subpartial_match})
             vim.api.nvim_win_set_cursor(0, {row, #subpartial_match})
         elseif match then
             local position = vim.api.nvim_win_get_cursor(0)
             local row, col = position[1], position[2]
-            local subpartial_match = line:match('^(%s*[-*]%s+%[.%]%s).-')
-            subpartial_match = subpartial_match:gsub('%[.%]', '[ ]')
+            local subpartial_match = utf8.match(line, '^(%s*[-*]%s+%[.%]%s).-')
+            subpartial_match = utf8.gsub(subpartial_match, '%[.%]', '[ ]')
             local next_line = subpartial_match
             if col ~= #line then
                 next_line = subpartial_match..line:sub(col + 1, #line)

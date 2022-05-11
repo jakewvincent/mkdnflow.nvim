@@ -78,6 +78,16 @@ M.userConfigCheck = function(user_config)
             end
         end
     end
+    -- Look for link style
+    if user_config.link_style then
+        user_config.links.style = user_config.link_style
+    end
+    -- Look for implicit extension and remove periods
+    if user_config.links then
+        if user_config.links.implicit_extension then
+            user_config.links.implicit_extension = string.gsub(user_config.links.implicit_extension, '%.', '')
+        end
+    end
     -- Look for old prefix settings
     if user_config.evaluate_prefix or user_config.new_file_prefix then
         user_config.prefix = {

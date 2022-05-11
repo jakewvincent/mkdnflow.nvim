@@ -34,7 +34,11 @@ local default_config = {
     wrap = false,
     default_bib_path = '',
     silent = false,
-    link_style = 'markdown',
+    --link_style = 'markdown',
+    links = {
+        style = 'markdown',
+        implicit_extension = nil
+    },
     to_do = {
         symbols = {' ', '-', 'X'},
         update_parents = true,
@@ -159,6 +163,8 @@ end
 
 -- Initialize "init" table
 local init = {}
+-- Table to store user config
+init.user_config = {}
 -- Table to store merged configs
 init.config = {}
 -- Initialize a variable for load status
@@ -181,7 +187,10 @@ init.setup = function(user_config)
     -- Before fully loading config see if the plugin should be started
     local load_on_ft = default_config.filetypes
     if next(user_config) then
-        load_on_ft = MergeConfigs(load_on_ft, user_config.filetypes)
+        if user_config.filetypes then
+            load_on_ft = MergeConfigs(load_on_ft, user_config.filetypes)
+        end
+        init.user_config = user_config
     end
     -- Load extension if the filetype has a match in config.filetypes
     if load_on_ft[ft] then
@@ -228,6 +237,7 @@ init.setup = function(user_config)
             end
         end
         -- Load functions
+        init.utils = require('mkdnflow.utils')
         init.cursor = require('mkdnflow.cursor')
         if init.this_os == 'Windows_NT' then
             init.paths = require('mkdnflow.paths_windows')
@@ -260,8 +270,8 @@ init.forceStart = function()
     if init.loaded == true then
         vim.api.nvim_echo({{"⬇️  Mkdnflow is already running!", 'ErrorMsg'}}, true, {})
     else
-        vim.api.nvim_echo({{"⬇️  Starting Mkdnflow with defaults. Please call the setup function in your config or modify the 'filetypes' key in the setup table for this filetype.", 'WarningMsg'}}, true, {})
-        init.setup({})
+        vim.api.nvim_echo({{"⬇️  Starting Mkdnflow.", 'WarningMsg'}}, true, {})
+        init.setup(init.user_config)
     end
 end
 
