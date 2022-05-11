@@ -31,7 +31,10 @@ end
 
 local update_numbering = function(row, starting_number)
     local next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
-    local is_numbered = next_line[1]:match('^(%s*%d+%.%s*).-')
+    local is_numbered
+    if next_line[1] then
+        is_numbered = next_line[1]:match('^(%s*%d+%.%s*).-')
+    end
     while is_numbered do
         -- Replace the number on whichever line
         --local item_number = is_numbered:match('^%s*(%d*)%.')
