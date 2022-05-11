@@ -30,6 +30,7 @@ local initial_dir = require('mkdnflow').initial_dir
 local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow')
 local implicit_extension = require('mkdnflow').config.links.implicit_extension
+local link_transform = require('mkdnflow').config.links.transform
 
 -- Load modules
 local buffers = require('mkdnflow.buffers')
