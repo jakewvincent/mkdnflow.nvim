@@ -301,6 +301,14 @@ A sample config showing the defaults:~
             evaluate = true,
             string = [[os.date('%Y-%m-%d_')]]
         },
+        links = {
+            style = 'markdown', -- 'markdown' | 'wiki'
+            implicit_extension = nil,
+            transform = false -- false |
+                              -- a lua function to transform the link content
+                              -- in the latter case links are created and followed
+                              -- after applying the function but written without the transformation
+        },
         wrap = false,
         default_bib_path = '',
         use_mappings_table = true,

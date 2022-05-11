@@ -37,7 +37,8 @@ local default_config = {
     --link_style = 'markdown',
     links = {
         style = 'markdown',
-        implicit_extension = nil
+        implicit_extension = nil,
+        transform = false
     },
     to_do = {
         symbols = {' ', '-', 'X'},
