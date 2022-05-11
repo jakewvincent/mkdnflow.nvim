@@ -29,7 +29,6 @@ local initial_dir = require('mkdnflow').initial_dir
 -- Get root_dir for notebook/wiki
 local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow').config.silent
-local link_style = require('mkdnflow').config.links.style
 local implicit_extension = require('mkdnflow').config.links.implicit_extension
 
 -- Load modules
@@ -37,6 +36,7 @@ local buffers = require('mkdnflow.buffers')
 local bib = require('mkdnflow.bib')
 local cursor = require('mkdnflow.cursor')
 local links = require('mkdnflow.links')
+local paths = require('mkdnflow.paths')
 
 --[[
 path_type() determines what kind of path is in a url
@@ -238,6 +238,7 @@ handlePath() does something with the path in the link under the cursor:
 Returns nothing
 --]]
 M.handlePath = function(path, anchor)
+    path = paths.transformPath(path)
     if path_type(path) == 'filename' then
         if not path:match('%.md$') then
             if implicit_extension then
