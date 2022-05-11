@@ -83,17 +83,17 @@ M.getLinkPart = function(part)
         if part == 'name' then
             if link_type == 'address' then
                 local name_pattern
+                local link = string.sub(line[1], indices['com'], indices['fin'])
                 if link_style == 'wiki' then
-                    name_pattern = '%[%[(|.*%])%]'
+                    if link:match('|') then
+                        name_pattern = '%[%[.*(|.*%])%]'
+                    else
+                        name_pattern = '%[(.*)%]'
+                    end
                 else
                     name_pattern = '(%b[])%b()'
                 end
-                local name = string.sub(
-                    string.match(
-                        string.sub(line[1], indices['com'], indices['fin']),
-                        name_pattern
-                    ), 2, -2
-                )
+                local name = string.sub(string.match(link, name_pattern), 2, -2)
                 -- Return the name and the indices of the link
                 return name, indices['com'], indices['fin'], row
             end
