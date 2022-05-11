@@ -18,7 +18,7 @@
 local links = require('mkdnflow.links')
 local wrap = require('mkdnflow').config.wrap
 local silent = require('mkdnflow').config.silent
-local link_style = require('mkdnflow').config.link_style
+local link_style = require('mkdnflow').config.links.style
 
 --[[
 rev_get_line() retrieves line text and reverses it
