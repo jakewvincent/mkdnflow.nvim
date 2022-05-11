@@ -20,7 +20,8 @@ local new_file_prefix = require('mkdnflow').config.prefix.string
 -- Get the user's prefix evaluation preference
 local evaluate_prefix = require('mkdnflow').config.prefix.evaluate
 local this_os = require('mkdnflow').this_os
-local link_style = require('mkdnflow').config.link_style
+local link_style = require('mkdnflow').config.links.style
+local implicit_extension = require('mkdnflow').config.links.implicit_extension
 
 -- Table for global functions
 local M = {}
@@ -326,9 +327,17 @@ M.formatLink = function(text, part)
         local path_text = string.gsub(text, " ", "-")
         local replacement
         if link_style == 'wiki' then
-            replacement = {'[['..prefix..string.lower(path_text)..'|'..text..']]'}
+            if implicit_extension then
+                replacement = {'[['..prefix..string.lower(path_text)..'|'..text..']]'}
+            else
+                replacement = {'[['..prefix..string.lower(path_text)..'.md|'..text..']]'}
+            end
         else
-            replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..'.md)'}
+            if implicit_extension then
+                replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..')'}
+            else
+                replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..'.md)'}
+            end
         end
         if part == nil then
             return(replacement)
@@ -388,16 +397,7 @@ M.createLink = function()
             -- Get the word under the cursor
             local cursor_word = vim.fn.expand('<cword>')
             -- Make a markdown link out of the date and cursor
-            local replacement
-            if link_style == 'wiki' then
-                replacement = {
-                    '[['..prefix..string.lower(cursor_word)..'|'..cursor_word..']]'
-                }
-            else
-                replacement = {
-                    '['..cursor_word..']'..'('..prefix..string.lower(cursor_word)..'.md)'
-                }
-            end
+            local replacement = M.formatLink(cursor_word)
             -- Find the (first) position of the matched word in the line
             local left, right = string.find(line, cursor_word, nil, true)
             -- Make sure it's not a duplicate of the word under the cursor, and if it

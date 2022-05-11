@@ -34,7 +34,11 @@ local default_config = {
     wrap = false,
     default_bib_path = '',
     silent = false,
-    link_style = 'markdown',
+    --link_style = 'markdown',
+    links = {
+        style = 'markdown',
+        implicit_extension = nil
+    },
     to_do = {
         symbols = {' ', '-', 'X'},
         update_parents = true,
