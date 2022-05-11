@@ -238,7 +238,10 @@ require('mkdnflow').setup({
         MkdnToggleToDo = {'n', '<C-Space>'},
         MkdnNewListItem = false
     },
-    link_style = 'markdown',
+    links = {
+        style = 'markdown',
+        implicit_extension = nil
+    },
     to_do = {
         symbols = {' ', '-', 'X'},
         update_parents = true,
@@ -306,9 +309,12 @@ Note: See [default mappings](#-commands-and-default-mappings)
 
 Note: `<name of command>` should be the name of a commands defined in `mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
 
-#### `link_style` (string)
-* `'markdown'`: Links will be expected in the standard markdown format: `[<title>](<source>)`
-* `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`. Following wiki-link conventions, `.md` sources within the notebook/wiki will not be expected to have the `.md` extension explicitly written in the link.
+#### `links` (dictionary table)
+* `links.style` (string)
+    * `'markdown'`: Links will be expected in the standard markdown format: `[<title>](<source>)`
+    * `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
+* `links.implicit_extension` (string)
+    * `<any extension>`: a string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) that new links should be created without an explicit extension
 
 #### `to_do` (dictionary table)
 * `to_do.symbols` (array table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
