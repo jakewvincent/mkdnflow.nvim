@@ -46,12 +46,13 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
     * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
 
-### Customize perspective for link interpretation
+### Customizable link interpretation
 * Specify what perspective the plugin-should take when interpreting links to files. There are three options:
     1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
     2. Interpret links relative to the file open in the current buffer
     3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
-* 🆕 Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
+    * 🆕 Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
+* 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-table).
 
 ### Follow links _and citations_
 * `<CR>` on various kinds of links to "follow" them:
@@ -240,7 +241,8 @@ require('mkdnflow').setup({
     },
     links = {
         style = 'markdown',
-        implicit_extension = nil
+        implicit_extension = nil,
+        transform_implicit = false
     },
     to_do = {
         symbols = {' ', '-', 'X'},
@@ -315,6 +317,17 @@ Note: `<name of command>` should be the name of a commands defined in `mkdnflow.
     * `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
 * `links.implicit_extension` (string)
     * `<any extension>`: a string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) that new links should be created without an explicit extension
+* `links.transform_implicit` (function or `false`): A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For instance, link paths that match a date pattern can be opened in a `journals` subdirectory of your wiki, and all others can be opened in a `pages` subdirectory, using the following function:
+
+```lua
+function(input)
+    if input:match('%d%d%d%d%-%d%d%-%d%d') then
+        return('journals/'..input)
+    else
+        return('pages/'..input)
+    end
+end
+```
 
 #### `to_do` (dictionary table)
 * `to_do.symbols` (array table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
@@ -402,6 +415,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 05/11/22: Customize link interpretation with a customizable interpretation function (thanks @jmbuhr!)
 * 04/30/22: Customize link style (markdown/wiki; addresses [issue #10](https://github.com/jakewvincent/mkdnflow.nvim/issues/10))
 * 04/30/22: Added functionality to update parent to-dos when child to-do status is changed; customize to-do symbols
 * 04/28/22: Interpret links to markdown files correctly when specified with an absolute path (one starting with `/` or `~/`)
