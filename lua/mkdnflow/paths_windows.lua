@@ -36,7 +36,6 @@ local buffers = require('mkdnflow.buffers')
 local bib = require('mkdnflow.bib')
 local cursor = require('mkdnflow.cursor')
 local links = require('mkdnflow.links')
-local paths = require('mkdnflow.paths')
 
 --[[
 path_type() determines what kind of path is in a url
@@ -227,6 +226,18 @@ end
 local M = {}
 
 --[[
+transformPath() takes a string and transforms it with a user-defined function if
+it was set. Otherwise returns the string / path unchanged.
+--]]
+M.transformPath = function (path)
+  if type(link_transform) ~= 'function' or not link_transform then
+    return path
+  else
+    return link_transform(path)
+  end
+end
+
+--[[
 handlePath() does something with the path in the link under the cursor:
      1. Creates the file specified in the path, if the path is determined to
         be a filename,
@@ -238,7 +249,7 @@ handlePath() does something with the path in the link under the cursor:
 Returns nothing
 --]]
 M.handlePath = function(path, anchor)
-    path = paths.transformPath(path)
+    path = M.transformPath(path)
     if path_type(path) == 'filename' then
         if not path:match('%.md$') then
             if implicit_extension then
