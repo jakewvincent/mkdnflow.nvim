@@ -291,26 +291,19 @@ Returns a string:
      2. '[anchor link](#anchor-link)' if the text starts with a hash (#)
 --]]
 M.formatLink = function(text, part)
+    local replacement, path_text
     -- If the text starts with a hash, format the link as an anchor link
     if string.sub(text, 0, 1) == '#' then
         local name = string.gsub(text, '^#* *', '')
-        local path_text = string.gsub(text, '[^%a%s%d%-_]', '')
+        path_text = string.gsub(text, '[^%a%s%d%-_]', '')
         path_text = string.gsub(path_text, '^ ', '')
         path_text = string.gsub(path_text, ' ', '-')
         path_text = string.gsub(path_text, '%-%-', '-')
         path_text = '#'..string.lower(path_text)
-        local replacement
         if link_style == 'wiki' then
             replacement = {'[['..path_text..'|'..name..']]'}
         else
             replacement = {'['..name..']'..'('..path_text..')'}
-        end
-        if part == nil then
-            return(replacement)
-        elseif part == 1 then
-            return(text)
-        elseif part == 2 then
-            return(path_text)
         end
     else
         -- Make a variable for the prefix to use
@@ -324,28 +317,22 @@ M.formatLink = function(text, part)
             prefix = new_file_prefix
         end
         -- Set up the replacement
-        local path_text = string.gsub(text, " ", "-")
-        local replacement
+        path_text = string.gsub(text, " ", "-")
+        if not implicit_extension then
+            path_text = path_text..'.md'
+        end
         if link_style == 'wiki' then
-            if implicit_extension then
-                replacement = {'[['..prefix..string.lower(path_text)..'|'..text..']]'}
-            else
-                replacement = {'[['..prefix..string.lower(path_text)..'.md|'..text..']]'}
-            end
+            replacement = {'[['..prefix..string.lower(path_text)..'|'..text..']]'}
         else
-            if implicit_extension then
-                replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..')'}
-            else
-                replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..'.md)'}
-            end
+            replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..')'}
         end
-        if part == nil then
-            return(replacement)
-        elseif part == 1 then
-            return(text)
-        elseif part == 2 then
-            return(path_text)
-        end
+    end
+    if part == nil then
+        return(replacement)
+    elseif part == 1 then
+        return(text)
+    elseif part == 2 then
+        return(path_text)
     end
 end
 
