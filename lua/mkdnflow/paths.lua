@@ -33,6 +33,7 @@ local implicit_extension = require('mkdnflow').config.links.implicit_extension
 local link_transform = require('mkdnflow').config.links.transform_implicit
 
 -- Load modules
+local utils = require('mkdnflow').utils
 local buffers = require('mkdnflow.buffers')
 local bib = require('mkdnflow.bib')
 local cursor = require('mkdnflow.cursor')
@@ -89,49 +90,6 @@ local does_exist = function(path, type)
     end
 end
 
---[[
-escape_chars() escapes the set of characters in 'chars' with the mappings in
-'replacements'. For shell escapes.
---]]
-local escape_chars = function(string)
-    -- Which characters to match
-    local chars = "[ '&()$#]"
-    -- Set up table of replacements
-    local replacements = {
-        [" "] = "\\ ",
-        ["'"] = "\\'",
-        ["&"] = "\\&",
-        ["("] = "\\(",
-        [")"] = "\\)",
-        ["$"] = "\\$",
-        ["#"] = "\\#",
-    }
-    -- Do the replacement
-    local escaped = string.gsub(string, chars, replacements)
-    -- Return the new string
-    return(escaped)
-end
-
---[[
-escape_lua_chars() escapes the set of characters in 'chars' with the mappings
-provided in 'replacements'. For Lua escapes.
---]]
-local escape_lua_chars = function(string)
-    -- Which characters to match
-    local chars = "[-.'\"a]"
-    -- Set up table of replacements
-    local replacements = {
-        ["-"] = "%-",
-        ["."] = "%.",
-        ["'"] = "\'",
-        ['"'] = '\"'
-    }
-    -- Do the replacement
-    local escaped = string.gsub(string, chars, replacements)
-    -- Return the new string
-    return(escaped)
-end
-
 local handle_internal_file = function(path, anchor)
     local internal_open = function(path_, anchor_)
         -- See if a directory is part of the path
@@ -141,7 +99,7 @@ local handle_internal_file = function(path, anchor)
         if dir and create_dirs then
             local dir_exists = does_exist(dir)
             if not dir_exists then
-                local path_to_file = escape_chars(dir)
+                local path_to_file = utils.escapeChars(dir)
                 print(path_to_file)
                 os.execute('mkdir -p '..path_to_file)
             end
@@ -220,7 +178,7 @@ local handle_external_file = function(path)
     local real_path = string.match(path, '^file:(.*)')
     -- Check if path provided is absolute or relative to $HOME
     if string.match(real_path, '^~/') or string.match(real_path, '^/') then
-        local se_paste = escape_chars(real_path)
+        local se_paste = utils.escapeChars(real_path)
         -- If the path starts with a tilde, replace it w/ $HOME
         if string.match(real_path, '^~/') then
             se_paste = string.gsub(se_paste, '^~/', '$HOME/')
@@ -231,7 +189,7 @@ local handle_external_file = function(path)
         -- Paste together root directory path and path in link
         local paste = root_dir..'/'..real_path
         -- Escape special characters
-        local se_paste = escape_chars(paste)
+        local se_paste = utils.escapeChars(paste)
         -- Pass to the open() function
         open(se_paste)
     elseif perspective == 'current' then
@@ -241,14 +199,14 @@ local handle_external_file = function(path)
         local cur_file_dir = string.match(cur_file, '(.*)/.-$')
         -- Paste together the directory of the current file and the
         -- directory path provided in the link, and escape for shell
-        local se_paste = escape_chars(cur_file_dir..'/'..real_path)
+        local se_paste = utils.escapeChars(cur_file_dir..'/'..real_path)
         -- Pass to the open() function
         open(se_paste)
     else
         -- Otherwise, links are relative to the first-opened file, so
         -- paste together the directory of the first-opened file and the
         -- path in the link and escape for the shell
-        local se_paste = escape_chars(initial_dir..'/'..real_path)
+        local se_paste = utils.escapeChars(initial_dir..'/'..real_path)
         -- Pass to the open() function
         open(se_paste)
     end
@@ -305,7 +263,7 @@ M.handlePath = function(path, anchor)
         cursor.toHeading(path)
     elseif path_type(path) == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
-        local field = bib.citationHandler(escape_lua_chars(path))
+        local field = bib.citationHandler(utils.luaEscape(path))
         -- Use this function to do sth with the information returned (if any)
         if field then M.handlePath(field) end
     end

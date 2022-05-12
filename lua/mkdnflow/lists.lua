@@ -50,31 +50,11 @@ local update_numbering = function(row, starting_number)
     end
 end
 
---[[
-escape_lua_chars() escapes the set of characters in 'chars' with the mappings
-provided in 'replacements'. For Lua escapes.
---]]
-local escape_lua_chars = function(string)
-    -- Which characters to match
-    local chars = "[-.'\"a]"
-    -- Set up table of replacements
-    local replacements = {
-        ["-"] = "%-",
-        ["."] = "%.",
-        ["'"] = "\'",
-        ['"'] = '\"'
-    }
-    -- Do the replacement
-    local escaped = string.gsub(string, chars, replacements)
-    -- Return the new string
-    return(escaped)
-end
-
 local get_status = function(line)
     local todo = nil
     if line then
         for _, v in ipairs(to_do_symbols) do
-            v = escape_lua_chars(v)
+            v = utils.luaEscape(v)
             local pattern = "^%s*[*-]%s+%["..v.."%]%s+"
             local match = string.match(line, pattern, nil)
             if match then todo = v end
@@ -134,7 +114,7 @@ local same_siblings = function(indentation, row, status)
         local i = 1
         done_looking = false
         while not done_looking do
-            if escape_lua_chars(sib_statuses[i]) ~= status then
+            if utils.luaEscape(sib_statuses[i]) ~= status then
                 done_looking = true
                 all_done = false
             elseif i == #sib_statuses then
@@ -175,21 +155,21 @@ update_parent_to_do = function(line, row, symbol)
             -- If it's a parent (= less indented), update it appropriately
             if parent then
                 -- Update parent to in-progress
-                if has_to_do == escape_lua_chars(to_do_not_started) then
+                if has_to_do == utils.luaEscape(to_do_not_started) then
                     if symbol == to_do_in_progress then
                         M.toggleToDo(start + 1, to_do_in_progress)
-                    elseif symbol == escape_lua_chars(to_do_complete) then
+                    elseif symbol == utils.luaEscape(to_do_complete) then
                         if same_siblings(is_indented, row - 1, symbol) then
                             M.toggleToDo(start + 1, to_do_complete)
                         else
                             M.toggleToDo(start + 1, to_do_in_progress)
                         end
-                    elseif symbol == escape_lua_chars(to_do_not_started) then
+                    elseif symbol == utils.luaEscape(to_do_not_started) then
                         if same_siblings(is_indented, row - 1, symbol) then
                             M.toggleToDo(start + 1, to_do_not_started)
                         end
                     end
-                elseif has_to_do == escape_lua_chars(to_do_in_progress) then
+                elseif has_to_do == utils.luaEscape(to_do_in_progress) then
                     if symbol == to_do_complete then
                         if same_siblings(is_indented, row - 1, symbol) then
                             M.toggleToDo(start + 1, to_do_complete)
@@ -199,7 +179,7 @@ update_parent_to_do = function(line, row, symbol)
                             M.toggleToDo(start + 1, to_do_not_started)
                         end
                     end
-                elseif has_to_do == escape_lua_chars(to_do_complete) then
+                elseif has_to_do == utils.luaEscape(to_do_complete) then
                     if symbol == to_do_complete then
                         if not same_siblings(is_indented, row - 1, symbol) then
                             M.toggleToDo(start + 1, to_do_in_progress)
@@ -235,7 +215,7 @@ M.toggleToDo = function(row, status)
     local todo = get_status(line)
     local get_index = function(symbol)
         for i, v in ipairs(to_do_symbols) do
-            if symbol == escape_lua_chars(v) then
+            if symbol == utils.luaEscape(v) then
                 return i
             end
         end

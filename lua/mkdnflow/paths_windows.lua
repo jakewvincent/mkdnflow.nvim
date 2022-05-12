@@ -32,6 +32,7 @@ local silent = require('mkdnflow').config.silent
 local implicit_extension = require('mkdnflow').config.links.implicit_extension
 
 -- Load modules
+local utils = require('mkdnflow').utils
 local buffers = require('mkdnflow.buffers')
 local bib = require('mkdnflow.bib')
 local cursor = require('mkdnflow.cursor')
@@ -79,49 +80,6 @@ local does_exist = function(path, type)
     end
     -- Return the existence property of the path
     return(exists)
-end
-
---[[
-escape_chars() escapes the set of characters in 'chars' with the mappings in
-'replacements'. For shell escapes.
---]]
-local escape_chars = function(string)
-    -- Which characters to match
-    local chars = "[ '&()$]"
-    -- Set up table of replacements
-    local replacements = {
-        [" "] = "\\ ",
-        ["'"] = "\\'",
-        ["&"] = "\\&",
-        ["("] = "\\(",
-        [")"] = "\\)",
-        ["$"] = "\\$",
-        ["#"] = "\\#",
-    }
-    -- Do the replacement
-    local escaped = string.gsub(string, chars, replacements)
-    -- Return the new string
-    return(escaped)
-end
-
---[[
-escape_lua_chars() escapes the set of characters in 'chars' with the mappings
-provided in 'replacements'. For Lua escapes.
---]]
-local escape_lua_chars = function(string)
-    -- Which characters to match
-    local chars = "[-.'\"a]"
-    -- Set up table of replacements
-    local replacements = {
-        ["-"] = "%-",
-        ["."] = "%.",
-        ["'"] = "\'",
-        ['"'] = '\"'
-    }
-    -- Do the replacement
-    local escaped = string.gsub(string, chars, replacements)
-    -- Return the new string
-    return(escaped)
 end
 
 local handle_internal_file = function(path, anchor)
@@ -268,7 +226,7 @@ M.handlePath = function(path, anchor)
         cursor.toHeading(path)
     elseif path_type(path) == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
-        local field = bib.citationHandler(escape_lua_chars(path))
+        local field = bib.citationHandler(utils.luaEscape(path))
         -- Use this function to do sth with the information returned (if any)
         if field then M.handlePath(field) end
     end
