@@ -269,13 +269,15 @@ init.setup = function(user_config)
             table.insert(extension_patterns, '*.'..key)
         end
         -- Define an autocommand to enable to plugin when the right buffer type is entered
-        init.autocmd_id = vim.api.nvim_create_autocmd(
-            {'BufEnter'},
-            {
-                pattern = extension_patterns,
-                command = "Mkdnflow silent"
-            }
-        )
+        if vim.fn.api_info().version.minor >= 7 then
+            init.autocmd_id = vim.api.nvim_create_autocmd(
+                {'BufEnter'},
+                {
+                    pattern = extension_patterns,
+                    command = "Mkdnflow silent"
+                }
+            )
+        end
     end
 
 end
@@ -289,9 +291,11 @@ init.forceStart = function(silent)
         if silent ~= 'silent' then
             vim.api.nvim_echo({{"⬇️  Starting Mkdnflow.", 'WarningMsg'}}, true, {})
         end
-        init.setup(init.user_config)
-        -- Delete the autocommand
-        vim.api.nvim_del_autocmd(init.autocmd_id)
+        if vim.fn.api_info().version.minor >= 7 then
+            init.setup(init.user_config)
+            -- Delete the autocommand
+            vim.api.nvim_del_autocmd(init.autocmd_id)
+        end
     end
 end
 
