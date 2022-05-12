@@ -35,7 +35,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### Create and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
-    * Customizable filename prefix (default is the current date in `YYYY-MM-DD` format (see [Configuration](#prefix-dictionary-table)).
+    * 🆕 Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-table) config key for customization instructions.
 * `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
 * Create an anchor link if the visual selection starts with `#` 
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
@@ -215,10 +215,6 @@ require('mkdnflow').setup({
         fallback = 'current',
         root_tell = false
     },    
-    prefix = {
-        evaluate = true,
-        string = [[os.date('%Y-%m-%d_')]]
-    },
     wrap = false,
     default_bib_path = '',
     silent = false,
@@ -242,7 +238,13 @@ require('mkdnflow').setup({
     links = {
         style = 'markdown',
         implicit_extension = nil,
-        transform_implicit = false
+        transform_implicit = false,
+        transform_explicit = function(text)
+            text = text:gsub(" ", "-")
+            text = text:lower()
+            text = os.date('%Y-%m-%d_')..text
+            return(text)
+        end
     },
     to_do = {
         symbols = {' ', '-', 'X'},
@@ -277,15 +279,6 @@ Note: This functionality references the file's extension. It does not rely on Ne
 * `perspective.root_tell` (string or boolean)
     * `'<any file name>'`: Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook/wiki. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`.
 
-#### `prefix` (dictionary table)
-* `prefix.string` (string value)
-    * `[[string]]`: A fixed string to prefix to new markdown document names in a link or a string of Lua code to evaluate at the time of link creation and use the output of as a prefix to the file name
-* `prefix.evaluate` (boolean value)
-    * `true`: The plugin will attempt to have Lua evaluate the string and will retrieve its output to prefix to the file name in the link
-    * `false`: The plugin will use `prefix.string` as a fixed prefix
-
-Note: If you don't want prefixes, set `evaluate = false` and `string = ''`
-
 #### `wrap` (boolean)
 * `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
 * `false`: When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
@@ -317,6 +310,14 @@ Note: `<name of command>` should be the name of a commands defined in `mkdnflow.
     * `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
 * `links.implicit_extension` (string)
     * `<any extension>`: a string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) that new links should be created without an explicit extension
+* `links.transform_explicit` (function or `false`): A function that transforms the text to be inserted as the source/path of a link when a link is created. Anchor links are not currently customizable. If you want all link paths to be explicitly prefixed with the year, for instance, and for the path to be converted to uppercase, you could provide the following function under this key. (FYI: The previous functionality specified under the `prefix` key has been migrated here to provide greater flexibility.)
+
+```lua
+function(input)
+    return(string.upper(os.date('%Y-')..input))
+end
+```
+
 * `links.transform_implicit` (function or `false`): A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For instance, link paths that match a date pattern can be opened in a `journals` subdirectory of your wiki, and all others can be opened in a `pages` subdirectory, using the following function:
 
 ```lua
@@ -415,6 +416,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 05/11/22: Customize path text when links are created with a customizable transformation function
 * 05/11/22: Customize link interpretation with a customizable interpretation function (thanks @jmbuhr!)
 * 04/30/22: Customize link style (markdown/wiki; addresses [issue #10](https://github.com/jakewvincent/mkdnflow.nvim/issues/10))
 * 04/30/22: Added functionality to update parent to-dos when child to-do status is changed; customize to-do symbols
