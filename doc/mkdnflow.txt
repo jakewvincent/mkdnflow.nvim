@@ -304,7 +304,7 @@ A sample config showing the defaults:~
         links = {
             style = 'markdown', -- 'markdown' | 'wiki'
             implicit_extension = nil,
-            transform = false -- false |
+            transform_implicit = false -- false |
                               -- a lua function to transform the link content
                               -- in the latter case links are created and followed
                               -- after applying the function but written without the transformation
