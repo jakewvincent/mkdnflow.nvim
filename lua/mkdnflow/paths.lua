@@ -30,7 +30,7 @@ local initial_dir = require('mkdnflow').initial_dir
 local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow')
 local implicit_extension = require('mkdnflow').config.links.implicit_extension
-local link_transform = require('mkdnflow').config.links.transform
+local link_transform = require('mkdnflow').config.links.transform_implicit
 
 -- Load modules
 local buffers = require('mkdnflow.buffers')
@@ -262,7 +262,7 @@ transformPath() takes a string and transforms it with a user-defined function if
 it was set. Otherwise returns the string / path unchanged.
 --]]
 M.transformPath = function (path)
-  if not link_transform then
+  if type(link_transform) ~= 'function' or not link_transform then
     return path
   else
     return link_transform(path)
