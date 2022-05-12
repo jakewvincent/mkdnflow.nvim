@@ -15,7 +15,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 ### ⚡ Requirements
 
 * Linux, macOS, or Windows
-* Neovim >= 0.5.0
+* Neovim >= 0.7.0 for all functionality (most will work with Neovim >= 0.5.0)
 * (Optional: If you wish to use custom UTF-8 symbols as your to-do symbols, you'll need the luarocks module `luautf8`. Luarocks dependencies can be installed via [Packer](#initlua).)
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
