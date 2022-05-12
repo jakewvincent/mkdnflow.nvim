@@ -27,17 +27,19 @@ local default_config = {
         rmd = true,
         markdown = true
     },
-    prefix = {
-        evaluate = true,
-        string = [[os.date('%Y-%m-%d_')]]
-    },
     wrap = false,
     default_bib_path = '',
     silent = false,
     links = {
         style = 'markdown',
         implicit_extension = nil,
-        transform_implicit = false
+        transform_implicit = false,
+        transform_explicit = function(text)
+            text = text:gsub(" ", "-")
+            text = text:lower()
+            text = os.date('%Y-%m-%d_')..text
+            return(text)
+        end
     },
     to_do = {
         symbols = {' ', '-', 'X'},

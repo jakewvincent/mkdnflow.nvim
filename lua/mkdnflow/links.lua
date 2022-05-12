@@ -15,13 +15,18 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Modules and variables
--- Get the user's prefix string
-local new_file_prefix = require('mkdnflow').config.prefix.string
--- Get the user's prefix evaluation preference
-local evaluate_prefix = require('mkdnflow').config.prefix.evaluate
+local new_file_prefix
+local evaluate_prefix
+if require('mkdnflow').config.prefix then
+    -- Get the user's prefix string
+    new_file_prefix = require('mkdnflow').config.prefix.string
+    -- Get the user's prefix evaluation preference
+    evaluate_prefix = require('mkdnflow').config.prefix.evaluate
+end
 local this_os = require('mkdnflow').this_os
 local link_style = require('mkdnflow').config.links.style
 local implicit_extension = require('mkdnflow').config.links.implicit_extension
+local transform_path = require('mkdnflow').config.links.transform_explicit
 
 -- Table for global functions
 local M = {}
@@ -284,6 +289,28 @@ M.hasUrl = function(string, to_return, col)
     end
 end
 
+M.transformPath = function(text)
+    if new_file_prefix then
+        local prefix
+        -- If user wants the prefix evaluated, do it now
+        if evaluate_prefix then
+            prefix = loadstring("return "..new_file_prefix)()
+        -- Otherwise, use the string provided by the user as the prefix
+        else
+            prefix = new_file_prefix
+        end
+        -- Set up the replacement
+        text = string.gsub(text, " ", "-")
+        -- Add prefix and make lowercase
+        text = prefix..string.lower(text)
+        return(text)
+    elseif type(transform_path) ~= 'function' or not transform_path then
+        return(text)
+    else
+        return(transform_path(text))
+    end
+end
+
 --[[
 formatLink() creates a formatted link from whatever text is passed to it
 Returns a string:
@@ -301,23 +328,10 @@ M.formatLink = function(text, part)
         path_text = string.gsub(path_text, '%-%-', '-')
         path_text = '#'..string.lower(path_text)
     else
-        -- Make a variable for the prefix to use
-        local prefix = nil
-        -- If the user wants the prefix evaluated, eval when this function is
-        -- run (i.e., right here)
-        if evaluate_prefix then
-            prefix = loadstring("return "..new_file_prefix)()
-            -- Otherwise, use the string provided by the user for the prefix
-        else
-            prefix = new_file_prefix
-        end
-        -- Set up the replacement
-        path_text = string.gsub(text, " ", "-")
+        path_text = M.transformPath(text)
         if not implicit_extension then
             path_text = path_text..'.md'
         end
-        -- Add prefix and make lowercase
-        path_text = prefix..string.lower(path_text)
     end
     -- Format the replacement depending on the user's link style preference
     if link_style == 'wiki' then
