@@ -434,13 +434,13 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 04/19/22: Toggle to-do list item's completion status
 * 04/18/22: If URL is under cursor, make a link from the whole URL (addresses [issue #18](https://github.com/jakewvincent/mkdnflow.nvim/issues/18))
 * 04/16/22: Added forward navigation (~undoing 'back')
-* 04/11/22: Added ability to change heading level
-* 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings
-* 04/03/22: Added ability to jump to headings if a link is an anchor link
 
 <details>
 <summary>Older changes</summary><p>
 
+* 04/11/22: Added ability to change heading level
+* 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings
+* 04/03/22: Added ability to jump to headings if a link is an anchor link
 * 03/06/22: Added ability to search .bib files and act on relevant information in bib entries when the cursor is in a citation and `<CR>` is pressed
 * 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
 * 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`
