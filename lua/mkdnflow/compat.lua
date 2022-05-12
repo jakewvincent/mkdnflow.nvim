@@ -13,6 +13,8 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+local utils = require('mkdnflow').utils
 local warn = function(message)
     vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {})
 end
@@ -75,6 +77,17 @@ M.userConfigCheck = function(user_config)
                 user_config.to_do.not_started = user_config.to_do.symbols[1]
                 user_config.to_do.in_progress = user_config.to_do.symbols[1]
                 user_config.to_do.complete = user_config.to_do.symbols[2]
+            end
+        end
+        if user_config.to_do.symbols then
+            local max = 2
+            for _, symbol in ipairs(user_config.to_do.symbols) do
+                if string.len(string.byte(symbol)) > 2 then
+                    max = 3
+                end
+            end
+            if max > 2 and not utils.moduleAvailable('lua-utf8') then
+                warn('⬇️  One of your to-do symbols is a utf8 symbol, but the lua-utf8 dependency could not be found. To-do functionality may not work as expected.')
             end
         end
     end
