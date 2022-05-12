@@ -294,17 +294,12 @@ M.formatLink = function(text, part)
     local replacement, path_text
     -- If the text starts with a hash, format the link as an anchor link
     if string.sub(text, 0, 1) == '#' then
-        local name = string.gsub(text, '^#* *', '')
         path_text = string.gsub(text, '[^%a%s%d%-_]', '')
+        text = string.gsub(text, '^#* *', '')
         path_text = string.gsub(path_text, '^ ', '')
         path_text = string.gsub(path_text, ' ', '-')
         path_text = string.gsub(path_text, '%-%-', '-')
         path_text = '#'..string.lower(path_text)
-        if link_style == 'wiki' then
-            replacement = {'[['..path_text..'|'..name..']]'}
-        else
-            replacement = {'['..name..']'..'('..path_text..')'}
-        end
     else
         -- Make a variable for the prefix to use
         local prefix = nil
@@ -321,12 +316,16 @@ M.formatLink = function(text, part)
         if not implicit_extension then
             path_text = path_text..'.md'
         end
-        if link_style == 'wiki' then
-            replacement = {'[['..prefix..string.lower(path_text)..'|'..text..']]'}
-        else
-            replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..')'}
-        end
+        -- Add prefix and make lowercase
+        path_text = prefix..string.lower(path_text)
     end
+    -- Format the replacement depending on the user's link style preference
+    if link_style == 'wiki' then
+        replacement = {'[['..path_text..'|'..text..']]'}
+    else
+        replacement = {'['..text..']'..'('..path_text..')'}
+    end
+    -- Return the requested part
     if part == nil then
         return(replacement)
     elseif part == 1 then
