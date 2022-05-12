@@ -273,7 +273,7 @@ init.setup = function(user_config)
             {'BufEnter'},
             {
                 pattern = extension_patterns,
-                command = "Mkdnflow"
+                command = "Mkdnflow silent"
             }
         )
     end
@@ -281,11 +281,14 @@ init.setup = function(user_config)
 end
 
 -- Force start
-init.forceStart = function()
+init.forceStart = function(silent)
+    silent = silent or false
     if init.loaded == true then
         vim.api.nvim_echo({{"⬇️  Mkdnflow is already running!", 'ErrorMsg'}}, true, {})
     else
-        vim.api.nvim_echo({{"⬇️  Starting Mkdnflow.", 'WarningMsg'}}, true, {})
+        if silent ~= 'silent' then
+            vim.api.nvim_echo({{"⬇️  Starting Mkdnflow.", 'WarningMsg'}}, true, {})
+        end
         init.setup(init.user_config)
         -- Delete the autocommand
         vim.api.nvim_del_autocmd(init.autocmd_id)
