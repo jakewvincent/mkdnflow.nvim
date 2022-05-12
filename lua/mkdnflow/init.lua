@@ -196,6 +196,7 @@ init.setup = function(user_config)
     end
     -- Load extension if the filetype has a match in config.filetypes
     if load_on_ft[ft] then
+        init.utils = require('mkdnflow.utils')
         -- Read compatibility module & pass user config through config checker
         local compat = require('mkdnflow.compat')
         user_config = compat.userConfigCheck(user_config)
@@ -239,7 +240,6 @@ init.setup = function(user_config)
             end
         end
         -- Load functions
-        init.utils = require('mkdnflow.utils')
         init.cursor = require('mkdnflow.cursor')
         if init.this_os == 'Windows_NT' then
             init.paths = require('mkdnflow.paths_windows')
