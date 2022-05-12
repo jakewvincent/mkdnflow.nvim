@@ -263,6 +263,19 @@ init.setup = function(user_config)
     else
         -- Record load status (i.e. not loaded)
         init.loaded = false
+        -- Make table of extension patterns to try to match
+        local extension_patterns = {}
+        for key, _ in pairs(load_on_ft) do
+            table.insert(extension_patterns, '*.'..key)
+        end
+        -- Define an autocommand to enable to plugin when the right buffer type is entered
+        init.autocmd_id = vim.api.nvim_create_autocmd(
+            {'BufEnter'},
+            {
+                pattern = extension_patterns,
+                command = "Mkdnflow"
+            }
+        )
     end
 
 end
@@ -274,6 +287,8 @@ init.forceStart = function()
     else
         vim.api.nvim_echo({{"⬇️  Starting Mkdnflow.", 'WarningMsg'}}, true, {})
         init.setup(init.user_config)
+        -- Delete the autocommand
+        vim.api.nvim_del_autocmd(init.autocmd_id)
     end
 end
 
