@@ -79,8 +79,9 @@ local get_status = function(line)
     if line then
         for _, v in ipairs(to_do_symbols) do
             v = utils.luaEscape(v)
-            local pattern = "^%s*[*-]%s+%["..v.."%]%s+"
-            local match = string.match(line, pattern, nil)
+            local ul = "^%s*[*-]%s+%["..v.."%]%s+"
+            local ol = "^%s*%d+%.%s+%["..v.."%]%s+"
+            local match = line:match(ul, nil) or line:match(ol, nil)
             if match then todo = v end
         end
     end
