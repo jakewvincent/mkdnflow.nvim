@@ -97,7 +97,6 @@ local find_bib_entry = function(citation)
                 else
                     bib_file:close()
                     current_bib_file = current_bib_file + 1
-                    print(bib_paths[current_bib_file])
                     bib_file = io.open(bib_paths[current_bib_file], 'r')
                 end
             end
