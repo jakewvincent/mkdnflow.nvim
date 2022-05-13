@@ -21,10 +21,16 @@ local bib_path = require('mkdnflow').config.bib.default_path
 local find_in_root = require('mkdnflow').config.bib.find_in_root
 local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow').config.silent
+local this_os = require('mkdnflow').this_os
 -- Get a list of bib files in the root directory
 local bib_paths = {}
 if find_in_root and root_dir then
-    local pfile = io.popen('ls -a "'..root_dir..'"')
+    local pfile
+    if this_os:match('Windows') then
+        pfile = io.popen('dir /b "'..root_dir..'"')
+    else
+        pfile = io.popen('ls -a "'..root_dir..'"')
+    end
     -- Check the list of files for any bib files
     for filename in pfile:lines() do
         local match = filename:match('%.bib$')
@@ -32,6 +38,7 @@ if find_in_root and root_dir then
             table.insert(bib_paths, root_dir..'/'..filename)
         end
     end
+    pfile:close()
     -- Add the default bib path too
     table.insert(bib_paths, bib_path)
 end
