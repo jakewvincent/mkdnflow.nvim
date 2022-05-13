@@ -64,7 +64,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
         * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
         * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
 * `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
-    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_bib_path-string)
+    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_path-string)—or if `perspective.priority` is `root`, simply place your bib files to be searched in your notebook/wiki's root directory.
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
     * 🔥 Hot tip: make reaching your contacts via work messaging apps (e.g. Slack) easier by keeping a bib file that associates your contacts' messaging handles with the URL for your direct message thread with that contact. For instance, if you [point the plugin to a bib file](#default_bib_path-string) with the following entry, `<CR>`ing on `@dschrute` in a markdown document would take you to the associated Slack thread.
 
@@ -216,7 +216,10 @@ require('mkdnflow').setup({
         root_tell = false
     },    
     wrap = false,
-    default_bib_path = '',
+    bib = {
+        default_path = nil,
+        find_in_root = true
+    },
     silent = false,
     use_mappings_table = true,
     mappings = {
@@ -283,8 +286,11 @@ Note: This functionality references the file's extension. It does not rely on Ne
 * `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
 * `false`: When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
 
-#### `default_bib_path` (string)
-* `'path/to/.bib/file'`: Specifies a path where the plugin will look for a .bib file when citations are "followed"
+#### `bib` (dictionary table)
+* `bib.default_path` (string or `nil`): Specifies a path to a default .bib file to look for citation keys in
+* `bib.find_in_root` (boolean)
+    * `true`: When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook/wiki's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.
+    * `false`: The notebook/wiki's root directory will not be searched for bib files.
 
 #### `silent` (boolean)
 * `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
@@ -394,13 +400,13 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 * [ ] Improve citation functionality
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
-    * [ ] Add ability to identify/use any given .bib file in notebook/wiki's root directory (if `perspective` is set to `root`)
 * [ ] Headings
     * [ ] Easy folding & unfolding
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Add ability to identify/use any given .bib file in notebook/wiki's root directory (if `perspective` is set to `root`)
 * [X] Lists
     * [X] To-do list functions & mappings
         * [X] Modify status of parent to-do when changing a child to-do (infer based on tab settings)
@@ -416,6 +422,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 05/12/22: Add functionality to search for bib files in the project's root directory
 * 05/11/22: Customize path text when links are created with a customizable transformation function
 * 05/11/22: Customize link interpretation with a customizable interpretation function (thanks @jmbuhr!)
 * 04/30/22: Customize link style (markdown/wiki; addresses [issue #10](https://github.com/jakewvincent/mkdnflow.nvim/issues/10))
