@@ -154,6 +154,7 @@ end
 
 local M = {}
 
+-- Initialize the names for these two functions
 M.toggleToDo = function() end
 local update_parent_to_do = function() end
 
