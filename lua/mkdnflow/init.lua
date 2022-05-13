@@ -29,7 +29,7 @@ local default_config = {
     },
     wrap = false,
     bib = {
-        default_path = '',
+        default_path = nil,
         find_in_root = true
     },
     silent = false,
