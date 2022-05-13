@@ -100,8 +100,8 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * When a parent to-do is marked complete or in-progress and all child to-dos have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
 * Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
     * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
-    * In unordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
     * In ordered lists: Add another item on the next line (keeping numbering updated), unless the current item is empty, in which case it will be erased
+    * In unordered and ordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
     * NOTE: The above list functions are currently disabled by default in case some find them too intrusive. Please test them and provide feedback! To enable the functionality, you'll need to remap `<CR>` in insert mode:
 
 ```lua
@@ -373,7 +373,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `yfa`        | n    | `:MkdnYankFileAnchorLink<CR>` | Yank a formatted anchor link with the filename included before the anchor (if cursor is currently on a line with a heading) |
 | `+`          | n    | `:MkdnIncreaseHeading<CR>`    | Increase heading importance (remove hashes) |
 | `-`          | n    | `:MkdnDecreaseHeading<CR>`    | Decrease heading importance (add hashes) |
-| `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`         | Toggle to-do list item's completion status |
+| `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`         | Toggle to-do list item's completion status or convert a list item into a to-do list item |
 | --           | --   | `:MkdnNewListItem<CR>`        | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item |
 | --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
