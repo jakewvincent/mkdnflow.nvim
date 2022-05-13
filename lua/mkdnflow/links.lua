@@ -40,8 +40,7 @@ M.getLinkPart = function(part)
     part = part or 'path'
     -- Get current cursor position
     local position = vim.api.nvim_win_get_cursor(0)
-    local row = position[1]
-    local col = position[2]
+    local row, col = position[1], position[2]
     -- Get the indices of the links in the line
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
     local link_pattern
