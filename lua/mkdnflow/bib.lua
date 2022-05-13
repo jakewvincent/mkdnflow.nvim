@@ -17,8 +17,24 @@
 -- Bibliography functions
 
 -- Retrieve default bibliography path
-local bib_path = require('mkdnflow').config.default_bib_path
+local bib_path = require('mkdnflow').config.bib.default_path
+local find_in_root = require('mkdnflow').config.bib.find_in_root
+local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow').config.silent
+-- Get a list of bib files in the root directory
+local bib_paths = {}
+if find_in_root and root_dir then
+    local pfile = io.popen('ls -a "'..root_dir..'"')
+    -- Check the list of files for any bib files
+    for filename in pfile:lines() do
+        local match = filename:match('%.bib$')
+        if match then
+            table.insert(bib_paths, root_dir..'/'..filename)
+        end
+    end
+    -- Add the default bib path too
+    table.insert(bib_paths, bib_path)
+end
 
 --[[
 find_bib_entry() takes a citation
@@ -28,7 +44,14 @@ local find_bib_entry = function(citation)
     -- Remove @
     local citekey = string.sub(citation, 2, -1)
     -- Open bibliography file
-    local bib_file = io.open(bib_path, 'r')
+    local bib_file
+    local current_bib_file = 0
+    if find_in_root and root_dir then
+        bib_file = io.open(bib_paths[1], 'r')
+        current_bib_file = 1
+    else
+        if bib_path then bib_file = io.open(bib_path, 'r') end
+    end
     -- If the file exists, search it line-by-line for the citekey
     if bib_file then
         local unfound = true
@@ -67,13 +90,25 @@ local find_bib_entry = function(citation)
                     end
                 end
             else
-                unfound = nil
-                bib_file:close()
-                if not silent then vim.api.nvim_echo({{'⬇️  No entry found for "'..citekey..'"!', 'WarningMsg'}}, true, {}) end
+                if current_bib_file == #bib_paths then
+                    unfound = nil
+                    bib_file:close()
+                    if not silent then vim.api.nvim_echo({{'⬇️  No entry found for "'..citekey..'"!', 'WarningMsg'}}, true, {}) end
+                else
+                    bib_file:close()
+                    current_bib_file = current_bib_file + 1
+                    print(bib_paths[current_bib_file])
+                    bib_file = io.open(bib_paths[current_bib_file], 'r')
+                end
             end
         end
     else
-        if not silent then vim.api.nvim_echo({{'⬇️  Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.', 'ErrorMsg'}}, true, {}) end
+        if bib_path == nil then
+            bib_path = '<nil>'
+        else
+            bib_path = '"'..bib_path..'"'
+        end
+        if not silent then vim.api.nvim_echo({{'⬇️  Could not find a bib file. The default bib path is currently '..bib_path..'. Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.', 'ErrorMsg'}}, true, {}) end
     end
 end
 
