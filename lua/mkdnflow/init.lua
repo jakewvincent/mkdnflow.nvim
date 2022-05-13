@@ -28,7 +28,10 @@ local default_config = {
         markdown = true
     },
     wrap = false,
-    default_bib_path = '',
+    bib = {
+        default_bib_path = '',
+        find_in_root = true
+    },
     silent = false,
     links = {
         style = 'markdown',
