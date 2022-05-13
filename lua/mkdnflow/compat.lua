@@ -98,7 +98,7 @@ M.userConfigCheck = function(user_config)
         else
             user_config.bib.default_path = user_config.default_bib_path
         end
-        warn('⬇️  The default_bib_path key has now been migrated into the bib key under the default_path option. Please update your config. See :h mkdnflow-changes, commit ...')
+        warn('⬇️  The default_bib_path key has now been migrated into the bib key under the default_path option. Please update your config. See :h mkdnflow-changes, commit e9f7815...')
     end
     -- Look for link style
     if user_config.link_style then
