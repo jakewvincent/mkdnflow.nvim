@@ -91,11 +91,11 @@ local does_exist = function(path, type)
 end
 
 local handle_internal_file = function(path, anchor)
+    -- Local function to open the provided path
     local internal_open = function(path_, anchor_)
         -- See if a directory is part of the path
         local dir = string.match(path_, '(.*)/.-$')
-        -- If there's a match and user wants dirs created, check if any dirs
-        -- need to be created and act accordingly
+        -- If there's a dir & user wants dirs created, do so if necessary
         if dir and create_dirs then
             local dir_exists = does_exist(dir)
             if not dir_exists then
@@ -108,6 +108,7 @@ local handle_internal_file = function(path, anchor)
         if string.match(path_, '^~/') then
             path_ = string.gsub(path_, '^~/', '$HOME/')
         end
+        -- Push the current buffer name onto the main buffer stack
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
         vim.cmd(':e '..path_)
         if anchor_ then
@@ -118,29 +119,25 @@ local handle_internal_file = function(path, anchor)
     if this_os == 'Linux' or this_os == 'Darwin' then
         -- Decide what to pass to internal_open function
         if string.match(path, '^~/') or string.match(path, '^/') then
-            internal_open(path, anchor)
+            path = path
         elseif perspective == 'root' then
             -- Paste root directory and the directory in link
             path = root_dir..'/'..path
             -- See if the path exists
-            internal_open(path, anchor)
         elseif perspective == 'first' then
-            -- Paste together the directory of the first-opened file
-            -- and the directory in the link path
+            -- Paste together the dir of first-opened file & dir in link path
             path = initial_dir..'/'..path
-            internal_open(path, anchor)
         else -- Otherwise, they want it relative to the current file
-            -- So, get the path of the current file
+            -- Path of current file
             local cur_file = vim.api.nvim_buf_get_name(0)
-            -- Get the directory the current file is in
+            -- Directory current file is in
             local cur_file_dir = string.match(cur_file, '(.*)/.-$')
-            -- Paste together the directory of the current file and the
-            -- directory path provided in the link
+            -- Paste together dir of current file & dir path provided in link
             if cur_file_dir then
                 path = cur_file_dir..'/'..path
             end
-            internal_open(path, anchor)
         end
+        internal_open(path, anchor)
     else
         if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
     end
