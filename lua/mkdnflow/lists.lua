@@ -294,19 +294,30 @@ M.newListItem = function()
         local position = vim.api.nvim_win_get_cursor(0)
         local row, col = position[1], position[2]
         local item_number = match:match('^%s*(%d*)%.')
-        item_number = item_number + 1
-        local next_number = partial_match:gsub('%d+', item_number)
-        local next_line = next_number
-        -- If the cursor is not at the end of the line, append the stuff follo-
-        -- wing the cursor to the new line
-        if col ~= #line then
-            next_line = next_number..line:sub(col + 1, #line)
-            vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, #line, {''})
+        -- If the line is an empty ordered to-do, remove the to-do
+        if not line:match('^%s*%d+%.%s+%[.%]%s+[^%s]') then
+            vim.api.nvim_buf_set_lines(0, row - 1, row, false, {partial_match})
+            vim.api.nvim_win_set_cursor(0, {row, #partial_match})
+        else
+            item_number = item_number + 1
+            local next_number = partial_match:gsub('%d+', item_number)
+            local next_line = next_number
+            -- If the cursor is not at the end of the line, append the stuff follo-
+            -- wing the cursor to the new line
+            if col ~= #line then
+                next_line = next_number..line:sub(col + 1, #line)
+                vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, #line, {''})
+            end
+            -- If it's a to-do item, make the next line a to-do item
+            if get_status(line) then
+                next_line = next_line..'[ ] '
+                next_number = next_number..'[ ] '
+            end
+            vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
+            vim.api.nvim_win_set_cursor(0, {row + 1, (#next_number)})
+            -- Update numbering
+            update_numbering(row, item_number)
         end
-        vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
-        vim.api.nvim_win_set_cursor(0, {row + 1, (#next_number)})
-        -- Update numbering
-        update_numbering(row, item_number)
     else
         -- Then look for a to-do item
         match = utf8.match(line, '^%s*[*-]%s+%[['..table.concat(to_do_symbols)..']%]%s+[^%s]+')
