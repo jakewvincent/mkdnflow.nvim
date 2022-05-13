@@ -310,8 +310,8 @@ M.newListItem = function()
             end
             -- If it's a to-do item, make the next line a to-do item
             if get_status(line) then
-                next_line = next_line..'[ ] '
-                next_number = next_number..'[ ] '
+                next_line = next_line..'['..to_do_not_started..'] '
+                next_number = next_number..'['..to_do_not_started..'] '
             end
             vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
             vim.api.nvim_win_set_cursor(0, {row + 1, (#next_number)})
@@ -331,7 +331,7 @@ M.newListItem = function()
             local position = vim.api.nvim_win_get_cursor(0)
             local row, col = position[1], position[2]
             local subpartial_match = utf8.match(line, '^(%s*[-*]%s+%[.%]%s).-')
-            subpartial_match = utf8.gsub(subpartial_match, '%[.%]', '[ ]')
+            subpartial_match = utf8.gsub(subpartial_match, '%[.%]', '['..to_do_not_started..']')
             local next_line = subpartial_match
             if col ~= #line then
                 next_line = subpartial_match..line:sub(col + 1, #line)
