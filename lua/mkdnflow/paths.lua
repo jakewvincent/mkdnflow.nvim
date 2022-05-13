@@ -173,22 +173,17 @@ end
 local handle_external_file = function(path)
     -- Get what's after the file: tag
     local real_path = string.match(path, '^file:(.*)')
+    local escaped_path
     -- Check if path provided is absolute or relative to $HOME
     if string.match(real_path, '^~/') or string.match(real_path, '^/') then
-        local se_paste = utils.escapeChars(real_path)
+        escaped_path = utils.escapeChars(real_path)
         -- If the path starts with a tilde, replace it w/ $HOME
         if string.match(real_path, '^~/') then
-            se_paste = string.gsub(se_paste, '^~/', '$HOME/')
+            escaped_path = string.gsub(escaped_path, '^~/', '$HOME/')
         end
-        -- Pass to the open() function
-        open(se_paste)
     elseif perspective == 'root' then
-        -- Paste together root directory path and path in link
-        local paste = root_dir..'/'..real_path
-        -- Escape special characters
-        local se_paste = utils.escapeChars(paste)
-        -- Pass to the open() function
-        open(se_paste)
+        -- Paste together root directory path and path in link and escape
+        escaped_path = utils.escapeChars(root_dir..'/'..real_path)
     elseif perspective == 'current' then
         -- Get the path of the current file
         local cur_file = vim.api.nvim_buf_get_name(0)
@@ -196,17 +191,15 @@ local handle_external_file = function(path)
         local cur_file_dir = string.match(cur_file, '(.*)/.-$')
         -- Paste together the directory of the current file and the
         -- directory path provided in the link, and escape for shell
-        local se_paste = utils.escapeChars(cur_file_dir..'/'..real_path)
-        -- Pass to the open() function
-        open(se_paste)
+        escaped_path = utils.escapeChars(cur_file_dir..'/'..real_path)
     else
         -- Otherwise, links are relative to the first-opened file, so
         -- paste together the directory of the first-opened file and the
         -- path in the link and escape for the shell
-        local se_paste = utils.escapeChars(initial_dir..'/'..real_path)
-        -- Pass to the open() function
-        open(se_paste)
+        escaped_path = utils.escapeChars(initial_dir..'/'..real_path)
     end
+    -- Pass to the open() function
+    open(escaped_path)
 end
 
 local M = {}
@@ -216,11 +209,11 @@ local M = {}
 transformPath() takes a string and transforms it with a user-defined function if
 it was set. Otherwise returns the string / path unchanged.
 --]]
-M.transformPath = function (path)
+M.transformPath = function(path)
   if type(link_transform) ~= 'function' or not link_transform then
-    return path
+    return(path)
   else
-    return link_transform(path)
+    return(link_transform(path))
   end
 end
 
@@ -238,6 +231,7 @@ Returns nothing
 M.handlePath = function(path, anchor)
     anchor = anchor or false
     path = M.transformPath(path)
+    -- Handle according to path type
     if path_type(path) == 'filename' then
         if not path:match('%.md$') then
             if implicit_extension then
@@ -257,6 +251,7 @@ M.handlePath = function(path, anchor)
             if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
         end
     elseif path_type(path) == 'anchor' then
+        -- Send cursor to matching heading
         cursor.toHeading(path)
     elseif path_type(path) == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
