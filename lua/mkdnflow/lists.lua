@@ -29,6 +29,30 @@ else
     utf8 = string
 end
 
+local list_type = function(line)
+    local list_patterns = {
+        ol = {'^%s*%d+%.', '%.'},
+        ul = {'^%s*[-*]%s+', '[*-]'}
+    }
+    local to_do_patterns = {
+        oltd = '^%s*%d+%.%s+%[.%]',
+        ultd = '^%s*[-*]%s+%[.%]'
+    }
+    local result = {}
+    for type, patterns in pairs(list_patterns) do
+        if line:match(patterns[1]) then
+            result[1] = type
+            result[2] = line:find(patterns[2])
+            for tdtype, tdpattern in pairs(to_do_patterns) do
+                if line:match(tdpattern) then
+                    result = tdtype
+                end
+            end
+        end
+    end
+    return(result)
+end
+
 local update_numbering = function(row, starting_number)
     local next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
     local is_numbered
@@ -239,6 +263,9 @@ M.toggleToDo = function(row, status)
         vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {new_symbol})
         -- Update parent to-dos (if any)
         if to_do_update_parents then update_parent_to_do(line, row, new_symbol) end
+    elseif list_type(line)[1] == 'ul' or list_type(line)[1] == 'ol' then
+        local list = list_type(line)
+        vim.api.nvim_buf_set_text(0, row - 1, list[2], row - 1, list[2], {' [ ]'})
     else
         local message = '⬇️  Not a to-do list item!'
         if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
