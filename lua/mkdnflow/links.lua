@@ -116,7 +116,7 @@ M.getLinkPart = function(part)
                     ), 2, -2
                 )
                 local anchor
-                local path_type = require('mkdnflow').paths.pathType(path)
+                local path_type = require('mkdnflow.paths').pathType(path)
                 if link_style == 'wiki' and path_type == 'filename' then
                     anchor = path:match('.*(#.*)')
                     if anchor then path = path:match('(.*)#') end
