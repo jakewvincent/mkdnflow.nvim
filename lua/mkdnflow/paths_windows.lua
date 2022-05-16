@@ -38,27 +38,6 @@ local bib = require('mkdnflow.bib')
 local cursor = require('mkdnflow.cursor')
 local links = require('mkdnflow.links')
 
---[[
-path_type() determines what kind of path is in a url
-Returns a string:
-     1. 'file' if the path has the 'file:' prefix,
-     2. 'url' is the result of hasUrl(path) is true
-     3. 'filename' if (1) and (2) aren't true
---]]
-local path_type = function(path)
-    if string.find(path, '^file:') then
-        return('file')
-    elseif links.hasUrl(path) then
-        return('url')
-    elseif string.find(path, '^@') then
-        return('citation')
-    elseif string.find(path, '^#') then
-        return('anchor')
-    else
-        return('filename')
-    end
-end
-
 
 --[[
 does_exist() determines whether the path specified as the argument exists
@@ -184,6 +163,27 @@ end
 local M = {}
 
 --[[
+pathType() determines what kind of path is in a url
+Returns a string:
+     1. 'file' if the path has the 'file:' prefix,
+     2. 'url' is the result of hasUrl(path) is true
+     3. 'filename' if (1) and (2) aren't true
+--]]
+M.pathType = function(path)
+    if string.find(path, '^file:') then
+        return('file')
+    elseif links.hasUrl(path) then
+        return('url')
+    elseif string.find(path, '^@') then
+        return('citation')
+    elseif string.find(path, '^#') then
+        return('anchor')
+    else
+        return('filename')
+    end
+end
+
+--[[
 transformPath() takes a string and transforms it with a user-defined function if
 it was set. Otherwise returns the string / path unchanged.
 --]]
@@ -208,7 +208,7 @@ Returns nothing
 --]]
 M.handlePath = function(path, anchor)
     path = M.transformPath(path)
-    if path_type(path) == 'filename' then
+    if M.pathType(path) == 'filename' then
         if not path:match('%.md$') then
             if implicit_extension then
                 path = path..'.'..implicit_extension
@@ -217,14 +217,14 @@ M.handlePath = function(path, anchor)
             end
         end
         handle_internal_file(path, anchor)
-    elseif path_type(path) == 'url' then
+    elseif M.pathType(path) == 'url' then
         local se_path = vim.fn.shellescape(path)
         open(se_path)
-    elseif path_type(path) == 'file' then
+    elseif M.pathType(path) == 'file' then
         handle_external_file(path)
-    elseif path_type(path) == 'anchor' then
+    elseif M.pathType(path) == 'anchor' then
         cursor.toHeading(path)
-    elseif path_type(path) == 'citation' then
+    elseif M.pathType(path) == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
         local field = bib.citationHandler(utils.luaEscape(path))
         -- Use this function to do sth with the information returned (if any)
