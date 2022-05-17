@@ -261,8 +261,8 @@ M.toggleToDo = function(row, status)
             end
             new_symbol = to_do_symbols[next_index]
         end
-        local com, fin = string.find(line, '%['..todo..'%]')
-        vim.api.nvim_buf_set_text(0, row - 1, com, row - 1, fin - 1, {new_symbol})
+        local first, last = string.find(line, '%['..todo..'%]')
+        vim.api.nvim_buf_set_text(0, row - 1, first, row - 1, last - 1, {new_symbol})
         -- Update parent to-dos (if any)
         if to_do_update_parents then update_parent_to_do(line, row, new_symbol) end
     elseif list_type(line)[1] == 'ul' or list_type(line)[1] == 'ol' then

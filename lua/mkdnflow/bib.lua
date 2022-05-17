@@ -61,8 +61,8 @@ local find_bib_entry = function(citation)
     end
     -- If the file exists, search it line-by-line for the citekey
     if bib_file then
-        local unfound = true
-        while unfound do
+        local continue = true
+        while continue do
             local line = bib_file:read('*l')
             if line then
                 local begin_entry = string.find(line, '^@')
@@ -90,7 +90,7 @@ local find_bib_entry = function(citation)
                                 bib_entry[string.lower(field)] = entry
                             end
                         end
-                        unfound = false
+                        continue = false
                         bib_file:close()
                         -- Return the whole entry for that citekey
                         return citekey, bib_entry
@@ -98,7 +98,7 @@ local find_bib_entry = function(citation)
                 end
             else
                 if current_bib_file == #bib_paths then
-                    unfound = nil
+                    continue = nil
                     bib_file:close()
                     if not silent then vim.api.nvim_echo({{'⬇️  No entry found for "'..citekey..'"!', 'WarningMsg'}}, true, {}) end
                 else
