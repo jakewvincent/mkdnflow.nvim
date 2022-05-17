@@ -33,7 +33,7 @@ end
 
 M.luaEscape = function(string)
     -- Which characters to match
-    local chars = "[-.'\"a]"
+    local chars = "[-.'\"]"
     -- Set up table of replacements
     local replacements = {
         ["-"] = "%-",
