@@ -65,16 +65,14 @@ local find_bib_entry = function(citation)
         while continue do
             local line = bib_file:read('*l')
             if line then
-                local begin_entry = string.find(line, '^@')
-                if begin_entry then
-                    local match = string.match(line, '{%s-'..citekey..'%s-,')
-                    if match then
+                if line:find('^@') then
+                    if line:match('{%s-'..citekey..'%s-,') then
                         --vim.api.nvim_echo({{"Found the entry for "..citation.."!"}}, true, {}) -- TEST
                         local bib_entry = {}
                         -- Save the citekey
                         bib_entry.citekey = citekey
                         -- Extract the type
-                        bib_entry.type = string.sub(string.match(line, '^@.+{'), 2, -2)
+                        bib_entry.type = string.sub(line:match('^@.+{'), 2, -2)
                         -- Go through and save the relevant information in the entry
                         local brace_counter = 1
                         while brace_counter > 0 do
@@ -84,7 +82,7 @@ local find_bib_entry = function(citation)
                             local _, close_braces = line:gsub('}', '')
                             brace_counter = brace_counter + open_braces - close_braces
                             -- Get the first unbroken string of word characters in the line
-                            local field = string.match(line, '%a+')
+                            local field = line:match('%a+')
                             if field then
                                 local entry = string.sub(string.match(line, '{.*}'), 2, -2)
                                 bib_entry[string.lower(field)] = entry
