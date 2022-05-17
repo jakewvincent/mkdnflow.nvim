@@ -242,8 +242,8 @@ M.handlePath = function(path, anchor)
         end
         handle_internal_file(path, anchor)
     elseif M.pathType(path) == 'url' then
-        local se_path = vim.fn.shellescape(path)
-        open(se_path)
+        path = vim.fn.escape(path, '%')
+        open(path)
     elseif M.pathType(path) == 'file' then
         if this_os == 'Linux' or this_os == 'Darwin' then
             handle_external_file(path)
