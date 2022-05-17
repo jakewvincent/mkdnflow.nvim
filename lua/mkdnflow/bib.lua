@@ -53,7 +53,7 @@ local find_bib_entry = function(citation)
     -- Open bibliography file
     local bib_file
     local current_bib_file = 0
-    if find_in_root and root_dir then
+    if find_in_root and root_dir and bib_file then
         bib_file = io.open(bib_paths[1], 'r')
         current_bib_file = 1
     else
