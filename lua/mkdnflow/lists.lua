@@ -296,7 +296,7 @@ M.newListItem = function()
         local row, col = position[1], position[2]
         local item_number = match:match('^%s*(%d*)%.')
         -- If the line is an empty ordered to-do, remove the to-do
-        if not line:match('^%s*%d+%.%s+%[.%]%s+[^%s]') then
+        if line:match('^%s*%d+%.%s+%[.%]%s+$') then
             vim.api.nvim_buf_set_lines(0, row - 1, row, false, {partial_match})
             vim.api.nvim_win_set_cursor(0, {row, #partial_match})
         else
