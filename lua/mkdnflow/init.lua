@@ -38,7 +38,7 @@ local default_config = {
         implicit_extension = nil,
         transform_implicit = false,
         transform_explicit = function(text)
-            text = text:gsub(" ", "-")
+            text = text:gsub("[ /]", "-")
             text = text:lower()
             text = os.date('%Y-%m-%d_')..text
             return(text)
