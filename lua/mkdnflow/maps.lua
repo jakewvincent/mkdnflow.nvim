@@ -15,14 +15,37 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Mkdnflow mappings
-local mappings = require('mkdnflow').config.mappings
-
-for command, mapping in pairs(mappings) do
-    if mapping and type(mapping[1]) == 'table' then
-        for _, value in ipairs(mapping[1]) do
-            vim.api.nvim_set_keymap(value, mapping[2], '<Cmd>:'..command..'<CR>', {noremap = true})
-        end
-    elseif type(mapping) == 'table' then
-        vim.api.nvim_set_keymap(mapping[1], mapping[2], '<Cmd>:'..command..'<CR>', {noremap = true})
-    end
+local load_on_ft = require("mkdnflow").config.filetypes
+local extension_patterns = {}
+for key, _ in pairs(load_on_ft) do
+  table.insert(extension_patterns, "*." .. key)
 end
+
+vim.api.nvim_create_augroup("MkdnflowMappings", { clear = true })
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
+  pattern = extension_patterns,
+  callback = function()
+    local mappings = require("mkdnflow").config.mappings
+    for command, mapping in pairs(mappings) do
+      if mapping and type(mapping[1]) == "table" then
+        for _, value in ipairs(mapping[1]) do
+          vim.api.nvim_buf_set_keymap(
+            0,
+            value,
+            mapping[2],
+            "<Cmd>:" .. command .. "<CR>",
+            { noremap = true }
+          )
+        end
+      elseif type(mapping) == "table" then
+        vim.api.nvim_buf_set_keymap(
+          0,
+          mapping[1],
+          mapping[2],
+          "<Cmd>:" .. command .. "<CR>",
+          { noremap = true }
+        )
+      end
+    end
+  end,
+})
