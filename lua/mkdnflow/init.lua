@@ -177,8 +177,8 @@ init.loaded = nil
 
 -- Run setup
 init.setup = function(user_config)
-    -- Get OS for use in a couple of functions
-    init.this_os = vim.loop.os_uname().sysname
+    init.this_os = vim.loop.os_uname().sysname -- Get OS
+    init.nvim_version = vim.fn.api_info().version.minor
     -- Get first opened file/buffer path and directory
     init.initial_buf = vim.api.nvim_buf_get_name(0)
     -- Determine initial_dir according to OS
@@ -272,7 +272,7 @@ init.setup = function(user_config)
             table.insert(extension_patterns, '*.'..key)
         end
         -- Define an autocommand to enable to plugin when the right buffer type is entered
-        if vim.fn.api_info().version.minor >= 7 then
+        if init.nvim_version >= 7 then
             init.autocmd_id = vim.api.nvim_create_autocmd(
                 {'BufEnter'},
                 {
