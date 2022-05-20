@@ -82,7 +82,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * `<Del>` to go **forward** (to the subsequent file/buffer opened in the current window, like clicking the forward button in a web browser)
 
 ### Keybindings
-* Easy-to-remember [default keybindings](#-commands-and-default-mappings)
+* Easy-to-remember [default keybindings](#-commands-and-default-mappings) that activate only in markdown files
 * 🆕 [Customize keybindings](#mappings-dictionary-table) individually or [disable them altogether](#use_mappings_table-boolean))
 
 ### Manipulate headings
@@ -287,7 +287,7 @@ Note: This functionality references the file's extension. It does not rely on Ne
 * `false`: When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
 
 #### `bib` (dictionary table)
-* `bib.default_path` (string or `nil`): Specifies a path to a default .bib file to look for citation keys in
+* `bib.default_path` (string or `nil`): Specifies a path to a default .bib file to look for citation keys in (need not be in root directory of notebook)
 * `bib.find_in_root` (boolean)
     * `true`: When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook/wiki's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.
     * `false`: The notebook/wiki's root directory will not be searched for bib files.
