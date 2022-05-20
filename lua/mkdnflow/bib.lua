@@ -53,11 +53,9 @@ local find_bib_entry = function(citation)
     -- Open bibliography file
     local bib_file
     local current_bib_file = 0
-    if find_in_root and root_dir and bib_file then
+    if find_in_root and root_dir and bib_paths[1] then
         bib_file = io.open(bib_paths[1], 'r')
         current_bib_file = 1
-    else
-        if bib_path then bib_file = io.open(bib_path, 'r') end
     end
     -- If the file exists, search it line-by-line for the citekey
     if bib_file then
@@ -113,6 +111,7 @@ local find_bib_entry = function(citation)
             bib_path = '"'..bib_path..'"'
         end
         if not silent then vim.api.nvim_echo({{'⬇️  Could not find a bib file. The default bib path is currently '..bib_path..'. Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.', 'ErrorMsg'}}, true, {}) end
+        -- TODO: Make this section a little smarter. Change message depending on both bib_path and find_in_root.
     end
 end
 
