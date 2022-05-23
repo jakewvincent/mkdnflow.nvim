@@ -69,7 +69,12 @@ local update_numbering = function(row, starting_number)
         -- Then retrieve the next line
         row = row + 1
         next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
-        is_numbered = next_line[1]:match('^(%s*%d+%.%s*).-')
+        -- If there is a next line, see if it's numbered
+        if next_line[1] then
+            is_numbered = next_line[1]:match('^(%s*%d+%.%s*).-')
+        else
+            is_numbered = nil
+        end
         starting_number = item_number
     end
 end
