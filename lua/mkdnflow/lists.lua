@@ -55,10 +55,8 @@ end
 
 local update_numbering = function(row, starting_number)
     local next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
-    local is_numbered
-    if next_line[1] then
-        is_numbered = next_line[1]:match('^(%s*%d+%.%s*).-')
-    end
+    -- Get number on next line if there is one; else use nil
+    local is_numbered = next_line[1] and next_line[1]:match('^(%s*%d+%.%s*).-') or nil
     while is_numbered do
         -- Replace the number on whichever line
         --local item_number = is_numbered:match('^%s*(%d*)%.')
@@ -70,11 +68,7 @@ local update_numbering = function(row, starting_number)
         row = row + 1
         next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
         -- If there is a next line, see if it's numbered
-        if next_line[1] then
-            is_numbered = next_line[1]:match('^(%s*%d+%.%s*).-')
-        else
-            is_numbered = nil
-        end
+        is_numbered = next_line[1] and next_line[1]:match('^(%s*%d+%.%s*).-') or nil
         starting_number = item_number
     end
 end
