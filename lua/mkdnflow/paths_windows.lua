@@ -79,6 +79,7 @@ local handle_internal_file = function(path, anchor)
             cursor.toHeading(anchor_)
         end
     end
+    path = path:gsub('/', '\\')
     -- Decide what to pass to above local function
     if path:match('^%u:\\') then
         internal_open(path, anchor)
