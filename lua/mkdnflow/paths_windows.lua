@@ -79,6 +79,7 @@ local handle_internal_file = function(path, anchor)
             cursor.toHeading(anchor_)
         end
     end
+    -- Replace forward slashes with escaped backslashes, if any
     path = path:gsub('/', '\\')
     -- Decide what to pass to above local function
     if path:match('^%u:\\') then
