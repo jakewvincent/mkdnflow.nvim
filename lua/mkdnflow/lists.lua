@@ -159,7 +159,7 @@ local update_parent_to_do = function() end
 
 update_parent_to_do = function(line, row, symbol)
     -- See if there's any whitespace before the bullet
-    local is_indented = line:match('(%s+)[-*]')
+    local is_indented = line:match('^(%s+)[-*]')
     -- If the current to-do is indented, it may have a parent to-do
     if is_indented then
         local start = row - 2
@@ -172,7 +172,7 @@ update_parent_to_do = function(line, row, symbol)
             -- If there's a to-do on the prev line, see if it's less indented
             local has_to_do = get_status(prev_line[1])
             if has_to_do then
-                local indentation = prev_line[1]:match('(%s*)[-*]')
+                local indentation = prev_line[1]:match('^(%s*)[-*]')
                 parent = #indentation < #is_indented
             else
                 parent = nil
