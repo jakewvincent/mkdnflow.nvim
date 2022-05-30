@@ -93,44 +93,8 @@ local get_file_type = function(string)
     return(ext ~= nil and string.lower(ext) or '')
 end
 
--- Private function to identify root directory on a unix machine
-local get_root_dir_unix = function(dir, root_tell)
-    -- List files in directory
-    local search_is_on, root = true, nil
-    -- Until the root directory is found, keep looking higher and higher
-    -- each pass
-    while search_is_on do
-        -- Get the output of running ls -a in dir
-        local pfile = io.popen('ls -a "'..dir..'"')
-        -- Check the list of files for the tell
-        for filename in pfile:lines() do
-            local match = filename == root_tell
-            if match then
-                root = dir
-                search_is_on = false
-            end
-        end
-        pfile:close()
-        if search_is_on then
-            if dir == '/' or dir == '~/' then
-                -- If we've reached the highest directory possible, call off
-                -- the search and return nothing
-                search_is_on = false
-                return(nil)
-            else
-                -- If there's still more to remove, remove it
-                dir = dir:match('(.*)/')
-                -- If dir is an empty string, look for the tell in *root* root
-                if dir == '' then dir = '/' end
-            end
-        else
-            return(root)
-        end
-    end
-end
-
--- Private function to identify root directory on a windows machine
-local get_root_dir_windows = function(dir, root_tell)
+-- Private function to identify root directory on a unix or Windows machine
+local get_root_dir = function(dir, root_tell, os)
     local drive = dir:match('^%u')
     -- List files in directory
     local search_is_on, root = true, nil
@@ -138,7 +102,12 @@ local get_root_dir_windows = function(dir, root_tell)
     -- each pass
     while search_is_on do
         -- Get the output of running ls -a in dir
-        local pfile = io.popen('dir /b "'..dir..'"')
+        local pfile
+        if os:match('Windows') then
+            pfile = io.popen('dir /b "'..dir..'"')
+        else
+            pfile = io.popen('ls -a "'..dir..'"')
+        end
         -- Check the list of files for the tell
         for filename in pfile:lines() do
             local match = filename == root_tell
@@ -149,16 +118,30 @@ local get_root_dir_windows = function(dir, root_tell)
         end
         pfile:close()
         if search_is_on then
-            if dir == drive..':\\' then
-                -- If we've reached the highest directory possible, call off
-                -- the search and return nothing
-                search_is_on = false
-                return(nil)
+            if os:match('Windows') then
+                if dir == drive..':\\' then
+                    -- If we've reached the highest directory possible, call off
+                    -- the search and return nothing
+                    search_is_on = false
+                    return(nil)
+                else
+                    -- If there's still more to remove, remove it
+                    dir = dir:match('(.*)\\')
+                    -- If dir is an empty string, look for the tell in *root* root
+                    if dir == drive..':' then dir = drive..':\\' end
+                end
             else
-                -- If there's still more to remove, remove it
-                dir = dir:match('(.*)\\')
-                -- If dir is an empty string, look for the tell in *root* root
-                if dir == drive..':' then dir = drive..':\\' end
+                if dir == '/' or dir == '~/' then
+                    -- If we've reached the highest directory possible, call off
+                    -- the search and return nothing
+                    search_is_on = false
+                    return(nil)
+                else
+                    -- If there's still more to remove, remove it
+                    dir = dir:match('(.*)/')
+                    -- If dir is an empty string, look for the tell in *root* root
+                    if dir == '' then dir = '/' end
+                end
             end
         else
             return(root)
@@ -215,26 +198,12 @@ init.setup = function(user_config)
             -- If one was provided, try to find the root directory for the
             -- notebook/wiki using the tell
             if root_tell then
-                if init.this_os == 'Linux' or init.this_os == 'Darwin' then
-                    init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
-                    if init.root_dir then
-                        if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
-                    else
-                        local fallback = init.config.perspective.fallback
-                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found! Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
-                        init.config.perspective.priority = init.config.perspective.fallback
-                    end
-                elseif init.this_os == 'Windows_NT' then
-                    init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
-                    if init.root_dir then
-                        if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
-                    else
-                        local fallback = init.config.perspective.fallback
-                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found! Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
-                        init.config.perspective.priority = init.config.perspective.fallback
-                    end
+                init.root_dir = get_root_dir(init.initial_dir, root_tell, init.this_os)
+                if init.root_dir then
+                    if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
                 else
-                    if not silent then vim.api.nvim_echo({{'⬇️  Cannot yet search for root directory on '..init.this_os..' machines.', 'ErrorMsg'}}, true, {}) end
+                    local fallback = init.config.perspective.fallback
+                    if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found! Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
                     init.config.perspective.priority = init.config.perspective.fallback
                 end
             else
