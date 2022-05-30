@@ -93,8 +93,11 @@ local get_file_type = function(string)
     return(ext ~= nil and string.lower(ext) or '')
 end
 
--- Private function to identify root directory on a unix or Windows machine
-local get_root_dir = function(dir, root_tell, os)
+-- Initialize "init" table
+local init = {}
+
+-- Public function to identify root directory on a unix or Windows machine
+init.getRootDir = function(dir, root_tell, os)
     local drive = dir:match('^%u')
     -- List files in directory
     local search_is_on, root = true, nil
@@ -149,8 +152,6 @@ local get_root_dir = function(dir, root_tell, os)
     end
 end
 
--- Initialize "init" table
-local init = {}
 -- Table to store user config
 init.user_config = {}
 -- Table to store merged configs
@@ -198,7 +199,7 @@ init.setup = function(user_config)
             -- If one was provided, try to find the root directory for the
             -- notebook/wiki using the tell
             if root_tell then
-                init.root_dir = get_root_dir(init.initial_dir, root_tell, init.this_os)
+                init.root_dir = init.getRootDir(init.initial_dir, root_tell, init.this_os)
                 if init.root_dir then
                     if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
                 else
