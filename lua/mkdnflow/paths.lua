@@ -233,7 +233,7 @@ M.handlePath = function(path, anchor)
     path = M.transformPath(path)
     -- Handle according to path type
     if M.pathType(path) == 'filename' then
-        if not path:match('%.md$') then
+        if not path:match('%..+$') then
             if implicit_extension then
                 path = path..'.'..implicit_extension
             else
