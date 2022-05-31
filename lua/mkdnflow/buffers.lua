@@ -82,6 +82,8 @@ M.goForward = function()
         vim.api.nvim_command("buffer "..hist_bufnr)
         -- Pop historical buffer stack
         M.pop(M.hist)
+        -- Update the root directory if needed
+        require('mkdnflow').paths.updateRoot()
         -- Return a boolean if goForward succeeded (for users who want <Del> to
         -- do sth else if goForward isn't possible)
         return(true)
