@@ -40,7 +40,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Create an anchor link if the visual selection starts with `#` 
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
 * `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste in the current buffer)
-    * 🆕 `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
+    * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
 
 ### Jump between links
 * `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
@@ -83,17 +83,17 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### Keybindings
 * Easy-to-remember [default keybindings](#-commands-and-default-mappings) that activate only in markdown files
-* 🆕 [Customize keybindings](#mappings-dictionary-table) individually or [disable them altogether](#use_mappings_table-boolean))
+* [Customize keybindings](#mappings-dictionary-table) individually or [disable them altogether](#use_mappings_table-boolean))
 
 ### Manipulate headings
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. 🆕 To-do symbols [can now be customized](#to_do-dictionary-table), but certain functions will not work for utf-8 to-do symbols.
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-table) (make sure to use the [luautf8 luarock dependency](#if-you-wish-to-use-custom-utf-8-to-do-symbols-add-the-luautf8-luarock-dependency) if you want to use utf8 to-do symbols).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
-* 🆕 Automatically update any parent to-dos when child to-dos are toggled.
+* Automatically update any parent to-dos when child to-dos are toggled.
     * When all child to-dos have been marked complete, the parent is marked complete
     * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
     * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
