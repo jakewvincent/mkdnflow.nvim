@@ -51,6 +51,8 @@ M.goBack = function()
         vim.api.nvim_command("buffer "..prev_buf)
         -- Pop the buffer we just navigated to off the top of the stack
         M.pop(M.main)
+        -- Update the root directory if needed
+        require('mkdnflow').paths.updateRoot()
         -- return a boolean if goback succeeded (for users who want <bs> to do
         -- sth else if goback isn't possible)
         return(true)

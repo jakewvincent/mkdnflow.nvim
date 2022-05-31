@@ -23,12 +23,11 @@ local this_os_err = '⬇️ Function unavailable for '..this_os..'. Please file 
 -- Get config setting for whether to make missing directories or not
 local create_dirs = require('mkdnflow').config.create_dirs
 -- Get config setting for where links should be relative to
-local perspective = require('mkdnflow').config.perspective.priority
+local perspective = require('mkdnflow').config.perspective
 -- Get directory of first-opened file
 local initial_dir = require('mkdnflow').initial_dir
--- Get root_dir for notebook/wiki
 local root_dir = require('mkdnflow').root_dir
-local silent = require('mkdnflow')
+local silent = require('mkdnflow').config.silent
 local implicit_extension = require('mkdnflow').config.links.implicit_extension
 local link_transform = require('mkdnflow').config.links.transform_implicit
 
@@ -39,7 +38,6 @@ local bib = require('mkdnflow.bib')
 local cursor = require('mkdnflow.cursor')
 local links = require('mkdnflow.links')
 
-
 --[[
 does_exist() determines whether the path specified as the argument exists
 NOTE: Assumes that the initially opened file is in an existing directory!
@@ -47,45 +45,57 @@ NOTE: Assumes that the initially opened file is in an existing directory!
 local does_exist = function(path, type)
     -- If type is not specified, use "d" (directory) by default
     type = type or "d"
-    if this_os == "Linux" or this_os == "Darwin" then
+    local handle
+    if this_os:match('Windows') then
+        if type == 'd' then type = '\\' else type = '' end
+        handle = io.popen('IF exist "'..path..type..'" ( echo true ) ELSE ( echo false )')
+    else
         -- Use the shell to determine if the path exists
-        local handle = io.popen(
+        handle = io.popen(
             'if [ -'..type..' "'..path..'" ]; then echo true; else echo false; fi'
         )
-        local exists = handle:read('*l')
-        io.close(handle)
-        -- Get the contents of the first (only) line & store as a boolean
-        if exists == 'false' then
-            exists = false
-        else
-            exists = true
-        end
-        -- Return the existence property of the path
-        return(exists)
-    else
-        if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
-        -- Return nothing in the else case
-        return(nil)
     end
+    local exists = handle:read('*l')
+    io.close(handle)
+    -- Get the contents of the first (only) line & store as a boolean
+    if exists == 'false' then
+        exists = false
+    else
+        exists = true
+    end
+    -- Return the existence property of the path
+    return(exists)
 end
+
+local M = {}
 
 local handle_internal_file = function(path, anchor)
     -- Local function to open the provided path
     local internal_open = function(path_, anchor_)
         -- See if a directory is part of the path
-        local dir = string.match(path_, '(.*)/.-$')
+        local dir
+        if this_os:match('Windows') then
+            dir = string.match(path_, '(.*)\\.-$')
+        else
+            dir = string.match(path_, '(.*)/.-$')
+        end
         -- If there's a dir & user wants dirs created, do so if necessary
         if dir and create_dirs then
             local dir_exists = does_exist(dir)
             if not dir_exists then
-                local path_to_file = utils.escapeChars(dir)
-                print(path_to_file)
-                os.execute('mkdir -p '..path_to_file)
+                if this_is:match('Windows') then
+                    os.execute('mkdir "'..dir..'"')
+                else
+                    local path_to_file = utils.escapeChars(dir)
+                    os.execute('mkdir -p '..path_to_file)
+                end
             end
         end
         -- If the path starts with a tilde, replace it w/ $HOME
-        if string.match(path_, '^~/') then
-            path_ = string.gsub(path_, '^~/', '$HOME/')
+        if this_os == 'Linux' or this_os == 'Darwin' then
+            if string.match(path_, '^~/') then
+                path_ = string.gsub(path_, '^~/', '$HOME/')
+            end
         end
         -- Push the current buffer name onto the main buffer stack
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
@@ -95,31 +105,49 @@ local handle_internal_file = function(path, anchor)
         end
     end
 
-    if this_os == 'Linux' or this_os == 'Darwin' then
-        -- Decide what to pass to internal_open function
-        if string.match(path, '^~/') or string.match(path, '^/') then
-            path = path
-        elseif perspective == 'root' then
-            -- Paste root directory and the directory in link
+    if this_os:match('Windows') then
+        path = path:gsub('/', '\\')
+    end
+
+    -- Decide what to pass to internal_open function
+    if path:match('^~/') or path:match('^/') or path:match('^%u:\\') then
+        path = path
+    elseif perspective.priority == 'root' and root_dir then
+        -- Paste root directory and the directory in link
+        if this_os:match('Windows') then
+            path = root_dir..'\\'..path
+        else
             path = root_dir..'/'..path
-            -- See if the path exists
-        elseif perspective == 'first' then
-            -- Paste together the dir of first-opened file & dir in link path
+        end
+        -- See if the path exists
+    elseif perspective.priority == 'first' or (perspective.priority == 'root' and perspective.fallback == 'first') then
+        -- Paste together the dir of first-opened file & dir in link path
+        if this_os:match('Windows') then
+            path = initial_dir..'\\'..path
+        else
             path = initial_dir..'/'..path
-        else -- Otherwise, they want it relative to the current file
-            -- Path of current file
-            local cur_file = vim.api.nvim_buf_get_name(0)
-            -- Directory current file is in
-            local cur_file_dir = string.match(cur_file, '(.*)/.-$')
-            -- Paste together dir of current file & dir path provided in link
-            if cur_file_dir then
+        end
+    else -- Otherwise, they want it relative to the current file
+        -- Path of current file
+        local cur_file = vim.api.nvim_buf_get_name(0)
+        -- Directory current file is in
+        local cur_file_dir
+        if this_os:match('Windows') then
+            cur_file_dir = string.match(cur_file, '(.*)\\.-$')
+        else
+            cur_file_dir = string.match(cur_file, '(.*)/.-$')
+        end
+        -- Paste together dir of current file & dir path provided in link
+        if cur_file_dir then
+            if this_os:match('Windows') then
+                path = cur_file_dir..'\\'..path
+            else
                 path = cur_file_dir..'/'..path
             end
         end
-        internal_open(path, anchor)
-    else
-        if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
     end
+    internal_open(path, anchor)
+    M.updateRoot()
 end
 
 --[[
@@ -132,11 +160,13 @@ local open = function(path)
             vim.api.nvim_command('silent !xdg-open '..path_)
         elseif this_os == "Darwin" then
             vim.api.nvim_command('silent !open '..path_..' &')
+        elseif this_os:match('Windows') then
+            os.execute('cmd.exe /c "start "" "'..path_..'"')
         else
             if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
         end
     end
-    -- If the file exists, handle it; otherwise, print a warning
+    -- If the file exists, handle it; otherwise,  a warning
     -- Don't want to use the shell-escaped version; it will throw a
     -- false alert if there are escape chars
     if links.hasUrl(path) then
@@ -154,34 +184,73 @@ local handle_external_file = function(path)
     local real_path = string.match(path, '^file:(.*)')
     local escaped_path
     -- Check if path provided is absolute or relative to $HOME
-    if string.match(real_path, '^~/') or string.match(real_path, '^/') then
-        escaped_path = utils.escapeChars(real_path)
-        -- If the path starts with a tilde, replace it w/ $HOME
-        if string.match(real_path, '^~/') then
-            escaped_path = string.gsub(escaped_path, '^~/', '$HOME/')
+    if real_path:match('^~/') or real_path:match('^/') or real_path:match('^%:\\') then
+        if this_os:match('Windows') then
+            open(real_path)
+        else
+            escaped_path = utils.escapeChars(real_path)
+            -- If the path starts with a tilde, replace it w/ $HOME
+            if string.match(real_path, '^~/') then
+                escaped_path = string.gsub(escaped_path, '^~/', '$HOME/')
+            end
         end
-    elseif perspective == 'root' then
+    elseif perspective.priority == 'root' and root_dir then
         -- Paste together root directory path and path in link and escape
-        escaped_path = utils.escapeChars(root_dir..'/'..real_path)
-    elseif perspective == 'current' then
-        -- Get the path of the current file
-        local cur_file = vim.api.nvim_buf_get_name(0)
-        -- Get the directory the current file is in
-        local cur_file_dir = string.match(cur_file, '(.*)/.-$')
-        -- Paste together the directory of the current file and the
-        -- directory path provided in the link, and escape for shell
-        escaped_path = utils.escapeChars(cur_file_dir..'/'..real_path)
-    else
+        if this_os:match('Windows') then
+            escaped_path = root_dir..'\\'..real_path
+        else
+            escaped_path = utils.escapeChars(root_dir..'/'..real_path)
+        end
+    elseif perspective.priority == 'first' or (perspective.priority == 'root' and perspective.fallback == 'first') then
         -- Otherwise, links are relative to the first-opened file, so
         -- paste together the directory of the first-opened file and the
         -- path in the link and escape for the shell
-        escaped_path = utils.escapeChars(initial_dir..'/'..real_path)
+        if this_os:match('Windows') then
+            escaped_path = initial_dir..'\\'..real_path
+        else
+            escaped_path = utils.escapeChars(initial_dir..'/'..real_path)
+        end
+    else
+        -- Get the path of the current file
+        local cur_file = vim.api.nvim_buf_get_name(0)
+        -- Get the directory the current file is in and paste together the
+        -- directory of the current file and the directory path provided in the
+        -- link, and escape for shell
+        local cur_file_dir
+        if this_os:match('Windows') then
+            cur_file_dir = string.match(cur_file, '(.*)\\.-$')
+            escaped_path = cur_file_dir..'\\'..real_path
+        else
+            cur_file_dir = string.match(cur_file, '(.*)/.-$')
+            escaped_path = utils.escapeChars(cur_file_dir..'/'..real_path)
+        end
     end
     -- Pass to the open() function
     open(escaped_path)
 end
 
-local M = {}
+M.updateRoot = function()
+    -- See if the new file is in a different root directory
+    if perspective.priority == 'root' then
+        local cur_file = vim.api.nvim_buf_get_name(0)
+        if not root_dir or not cur_file:match(root_dir) then
+            local dir
+            -- Get the new root dir, if there is one
+            if this_os:match('Windows') then
+                dir = cur_file:match('(.*)\\.-')
+            else
+                dir = cur_file:match('(.*)/.-')
+            end
+            root_dir = require('mkdnflow').getRootDir(dir, perspective.root_tell, this_os)
+            if root_dir then
+                if not silent then vim.api.nvim_echo({{'⬇️  Switched roots: '..root_dir}}, true, {}) end
+            else
+                local fallback = perspective.fallback
+                if not silent then vim.api.nvim_echo({{'⬇️  Left root and found no alternative. Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
+            end
+        end
+    end
+end
 
 --[[
 pathType() determines what kind of path is in a url
@@ -245,11 +314,7 @@ M.handlePath = function(path, anchor)
         path = vim.fn.escape(path, '%')
         open(path)
     elseif M.pathType(path) == 'file' then
-        if this_os == 'Linux' or this_os == 'Darwin' then
-            handle_external_file(path)
-        else
-            if not silent then vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {}) end
-        end
+        handle_external_file(path)
     elseif M.pathType(path) == 'anchor' then
         -- Send cursor to matching heading
         cursor.toHeading(path)

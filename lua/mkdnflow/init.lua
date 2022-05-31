@@ -93,8 +93,10 @@ local get_file_type = function(string)
     return(ext ~= nil and string.lower(ext) or '')
 end
 
--- Initialize "init" table
-local init = {}
+local init = {} -- Init functions & variables
+init.user_config = {} -- For user config
+init.config = {} -- For merged configs
+init.loaded = nil -- For load status
 
 -- Public function to identify root directory on a unix or Windows machine
 init.getRootDir = function(dir, root_tell, os)
@@ -152,13 +154,6 @@ init.getRootDir = function(dir, root_tell, os)
     end
 end
 
--- Table to store user config
-init.user_config = {}
--- Table to store merged configs
-init.config = {}
--- Initialize a variable for load status
-init.loaded = nil
-
 -- Run setup
 init.setup = function(user_config)
     init.this_os = vim.loop.os_uname().sysname -- Get OS
@@ -213,12 +208,8 @@ init.setup = function(user_config)
             end
         end
         -- Load functions
+        init.paths = require('mkdnflow.paths')
         init.cursor = require('mkdnflow.cursor')
-        if init.this_os == 'Windows_NT' then
-            init.paths = require('mkdnflow.paths_windows')
-        else
-            init.paths = require('mkdnflow.paths')
-        end
         init.links = require('mkdnflow.links')
         init.buffers = require('mkdnflow.buffers')
         init.bib = require('mkdnflow.bib')
