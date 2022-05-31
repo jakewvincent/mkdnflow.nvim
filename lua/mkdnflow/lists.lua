@@ -317,7 +317,7 @@ M.newListItem = function()
     -- If the line has an item, do some stuff
     if type then
         local has_contents = utf8.match(line, patterns[type].content)
-        local row, col = table.unpack(vim.api.nvim_win_get_cursor(0))
+        local row, col = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_win_get_cursor(0)[2]
         local indentation = utf8.match(line, patterns[type].indentation)
         if has_contents then
             local next_line = indentation
