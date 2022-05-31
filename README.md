@@ -47,11 +47,11 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
 
 ### Customizable link interpretation
-* Specify what perspective the plugin-should take when interpreting links to files. There are three options:
+* Specify what perspective the plugin-should take when interpreting links to files. There are [three options](#perspective-dictionary-table):
     1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
     2. Interpret links relative to the file open in the current buffer
-    3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
-    * 🆕 Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
+    3. Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
+    * Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
 * 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-table).
 
 ### Follow links _and citations_
@@ -99,10 +99,11 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
     * When a parent to-do is marked complete or in-progress and all child to-dos have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
 * Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
+    * NOTE: The following functionality is disabled by default in case some find it intrusive. To enable the functionality, remap `<CR>` in insert mode (see the following code block).
     * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
     * In ordered lists: Add another item on the next line (keeping numbering updated), unless the current item is empty, in which case it will be erased
     * In unordered and ordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
-    * NOTE: The above list functions are currently disabled by default in case some find them too intrusive. Please test them and provide feedback! To enable the functionality, you'll need to remap `<CR>` in insert mode:
+    * 🆕 Automatically indent a new list item when the current one ends in a colon
 
 ```lua
 require('mkdnflow').setup({
@@ -422,9 +423,15 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 05/30/22: Implement root directory switching to allow for easier switching between wikis
+* 05/30/22: Indent new list item when current one ends in a colon
 * 05/12/22: Add functionality to search for bib files in the project's root directory
 * 05/11/22: Customize path text when links are created with a customizable transformation function
 * 05/11/22: Customize link interpretation with a customizable interpretation function (thanks @jmbuhr!)
+
+<details>
+<summary>Older changes</summary><p>
+
 * 04/30/22: Customize link style (markdown/wiki; addresses [issue #10](https://github.com/jakewvincent/mkdnflow.nvim/issues/10))
 * 04/30/22: Added functionality to update parent to-dos when child to-do status is changed; customize to-do symbols
 * 04/28/22: Interpret links to markdown files correctly when specified with an absolute path (one starting with `/` or `~/`)
@@ -441,10 +448,6 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 04/19/22: Toggle to-do list item's completion status
 * 04/18/22: If URL is under cursor, make a link from the whole URL (addresses [issue #18](https://github.com/jakewvincent/mkdnflow.nvim/issues/18))
 * 04/16/22: Added forward navigation (~undoing 'back')
-
-<details>
-<summary>Older changes</summary><p>
-
 * 04/11/22: Added ability to change heading level
 * 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings
 * 04/03/22: Added ability to jump to headings if a link is an anchor link
