@@ -20,7 +20,8 @@ local default_config = {
     perspective = {
         priority = 'first',
         fallback = 'current',
-        root_tell = false
+        root_tell = false,
+        update = true
     },
     filetypes = {
         md = true,
