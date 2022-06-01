@@ -197,8 +197,8 @@ init.setup = function(user_config)
             if root_tell then
                 init.root_dir = init.getRootDir(init.initial_dir, root_tell, init.this_os)
                 -- Get notebook name
-                local name = init.root_dir:match('.*/(.*)') or init.root_dir
                 if init.root_dir then
+                    local name = init.root_dir:match('.*/(.*)') or init.root_dir
                     if not silent then vim.api.nvim_echo({{'⬇️  Notebook: '..name}}, true, {}) end
                 else
                     local fallback = init.config.perspective.fallback
