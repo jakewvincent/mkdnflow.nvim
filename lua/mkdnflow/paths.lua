@@ -246,10 +246,10 @@ M.updateRoot = function()
             root_dir = require('mkdnflow').getRootDir(dir, perspective.root_tell, this_os)
             if root_dir then
                 local name = root_dir:match('.*/(.*)') or root_dir
-                if not silent then vim.api.nvim_echo({{'⬇️  Notebook root is '..name}}, true, {}) end
+                if not silent then vim.api.nvim_echo({{'⬇️  Notebook: '..name}}, true, {}) end
             else
                 local fallback = perspective.fallback
-                if not silent then vim.api.nvim_echo({{'⬇️  Left notebook root and found no alternative. Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
+                if not silent then vim.api.nvim_echo({{'⬇️  No notebook found. Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
             end
         end
     end

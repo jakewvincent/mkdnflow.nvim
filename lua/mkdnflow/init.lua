@@ -196,15 +196,17 @@ init.setup = function(user_config)
             -- notebook/wiki using the tell
             if root_tell then
                 init.root_dir = init.getRootDir(init.initial_dir, root_tell, init.this_os)
+                -- Get notebook name
+                local name = init.root_dir:match('.*/(.*)') or init.root_dir
                 if init.root_dir then
-                    if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
+                    if not silent then vim.api.nvim_echo({{'⬇️  Notebook: '..name}}, true, {}) end
                 else
                     local fallback = init.config.perspective.fallback
-                    if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found! Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
+                    if not silent then vim.api.nvim_echo({{'⬇️  No notebook found. Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
                     init.config.perspective.priority = init.config.perspective.fallback
                 end
             else
-                if not silent then vim.api.nvim_echo({{'⬇️  No tell was provided for the root directory. See :h mkdnflow-configuration.', 'WarningMsg'}}, true, {}) end
+                if not silent then vim.api.nvim_echo({{'⬇️  No tell was provided for the notebook\'s root directory. See :h mkdnflow-configuration.', 'WarningMsg'}}, true, {}) end
                 init.config.perspective.priority = init.config.perspective.fallback
             end
         end
