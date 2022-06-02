@@ -369,7 +369,6 @@ M.newListItem = function()
         local has_contents = utf8.match(line, patterns[type].content)
         local row, col = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_win_get_cursor(0)[2]
         local indentation = utf8.match(line, patterns[type].indentation)
-        vim.pretty_print(get_siblings(row, indentation, type))
         if has_contents then
             local next_line = indentation
             local next_number
