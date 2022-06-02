@@ -22,15 +22,18 @@ local to_do_update_parents = require('mkdnflow').config.to_do.update_parents
 local to_do_not_started = require('mkdnflow').config.to_do.not_started
 local to_do_in_progress = require('mkdnflow').config.to_do.in_progress
 local to_do_complete = require('mkdnflow').config.to_do.complete
-local vim_indent = {
-    vim.api.nvim_buf_get_option(0, 'shiftwidth'),
-    vim.api.nvim_buf_get_option(0, 'expandtab')
-}
+local vim_indent
 local utf8
 if utils.moduleAvailable('lua-utf8') then
     utf8 = require('lua-utf8')
 else
     utf8 = string
+end
+if vim.api.nvim_buf_get_option(0, 'expandtab') == true then
+    print('Here we are...')
+    vim_indent = string.rep(' ', vim.api.nvim_buf_get_option(0, 'shiftwidth'))
+else
+    vim_indent = '\t'
 end
 
 local patterns = {
@@ -324,11 +327,7 @@ M.newListItem = function()
             local next_number
             -- If the current line ends in a colon, indent the next line
             if line:sub(#line, #line) == ':' then
-                if vim_indent[2] then
-                    next_line = next_line .. '\t'
-                else
-                    next_line = next_line .. utf8.rep(' ', vim_indent[1])
-                end
+                next_line = next_line .. vim_indent
                 if type == 'ol' or type == 'oltd' then
                     next_number = 1
                     next_line = next_line .. next_number
@@ -362,11 +361,17 @@ M.newListItem = function()
                 update_numbering(row, next_number, indentation)
             end
         else
-            -- Make a new line with the demotion
-            local demotion = utf8.match(line, patterns[type].demotion)
-            vim.api.nvim_buf_set_lines(0, row - 1, row, false, {demotion})
-            vim.api.nvim_win_set_cursor(0, {row, #demotion})
-            update_numbering(row - 1, '0', indentation)
+            if line:match('^'..vim_indent) then
+                local replacement = line:gsub('^' .. vim_indent, '')
+                print(replacement)
+                vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, #line, {replacement})
+            else
+                -- Make a new line with the demotion
+                local demotion = utf8.match(line, patterns[type].demotion)
+                vim.api.nvim_buf_set_lines(0, row - 1, row, false, {demotion})
+                vim.api.nvim_win_set_cursor(0, {row, #demotion})
+                update_numbering(row - 1, '0', indentation)
+            end
         end
     else
         -- If not a list item, just do the normal version of whatever the mapping for MkdnNewListItem is
