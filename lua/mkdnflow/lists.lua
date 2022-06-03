@@ -37,7 +37,7 @@ end
 
 local patterns = {
     ultd = {
-        type = 'ultd',
+        li_type = 'ultd',
         main = '^%s*[*-]%s+%[.%]%s+',
         indentation = '^(%s*)[*-]%s+%[.%]',
         marker = '^%s*([*-]%s+)%[.%]%s+',
@@ -45,7 +45,7 @@ local patterns = {
         demotion = '^%s*[*-]%s+'
     },
     oltd = {
-        type = 'oltd',
+        li_type = 'oltd',
         main = '^%s*%d+%.%s+%[.%]%s+',
         indentation = '^(%s*)%d+%.%s+',
         marker = '^%s*%d+(%.%s+)%[.%]%s+',
@@ -54,7 +54,7 @@ local patterns = {
         demotion = '^%s*%d+%.%s+'
     },
     ul = {
-        type = 'ul',
+        li_type = 'ul',
         main = '^%s*[-*]%s+',
         indentation = '^(%s*)[-*]%s+',
         marker = '^%s*([-*]%s+)',
@@ -62,7 +62,7 @@ local patterns = {
         demotion = '^%s*'
     },
     ol = {
-        type = 'ol',
+        li_type = 'ol',
         main = '^%s*%d+%.%s+',
         indentation = '^(%s*)%d+%.',
         marker = '^%s*%d+(%.%s+)',
@@ -75,13 +75,13 @@ local patterns = {
 local has_list_type = function(line)
     local match
     local i = 1
-    local types = {'ultd', 'oltd', 'ul', 'ol'}
+    local li_types = {'ultd', 'oltd', 'ul', 'ol'}
     local result
     while not match and i <= 4 do
-        local type = types[i]
-        match = utf8.match(line, patterns[type].main)
+        local li_type = li_types[i]
+        match = utf8.match(line, patterns[li_type].main)
         if match then
-            result = type
+            result = li_type
         else
             i = i + 1
         end
@@ -89,54 +89,72 @@ local has_list_type = function(line)
     return(result)
 end
 
-local get_siblings = function(row, indentation, type)
+local get_siblings = function(row, indentation, li_type, up)
+    up = up or true
     local orig_row = row
-    local siblings = {row}
+    local number = patterns[li_type].number and vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]:match(patterns[li_type].number)
+    local siblings = {}
+    local info = {}
+    if number then info = {number} end
+    siblings = {row}
     -- Look up till we find a parent or non-list-item
     local done = false
-    local up = true
     local list_pos = 1
-    local inc = -1
+    local inc = up and -1 or 1
     while not done do
         local adj_line = (up and vim.api.nvim_buf_get_lines(0, row - 2, row - 1, false)[1]) or vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
         if adj_line then
-            local adj_type = has_list_type(adj_line)
-            if adj_type then
-                local adj_indentation = utf8.match(adj_line, patterns[adj_type].indentation) or nil
-                if adj_type == type and adj_indentation == indentation then
-                    -- Add row
+            local adj_li_type = has_list_type(adj_line)
+            if adj_li_type then
+                local adj_indentation = utf8.match(adj_line, patterns[adj_li_type].indentation) or nil
+                if adj_li_type == li_type and adj_indentation == indentation then -- Add row
+                    if number then
+                        table.insert(info, up and list_pos or #info + 1, adj_line:match(patterns[li_type].number))
+                    end
                     table.insert(siblings, up and list_pos or #siblings + 1, row+inc)
                     row = row + inc
-                elseif #adj_indentation > #indentation then
-                    -- List item is a child; keep looking
+                elseif #adj_indentation > #indentation then -- List item is a child; keep looking
                     row = row + inc
                 else
-                    if up then
-                        -- Look downwards on the next iteration
+                    if up then -- Look downwards on the next iteration
                         up, row, inc = false, orig_row, 1
-                    else
-                        -- Row is not a list item or indentation is lesser than original row
+                    else -- Row is not a list item or indentation is lesser than original row
                         done = true
                     end
                 end
             else
-                if up then
-                    -- Look downwards on the next iteration
+                if up then -- Look downwards on the next iteration
                     up, row, inc = false, orig_row, 1
-                else
-                    -- Row is not a list item
+                else -- Row is not a list item
                     done = true
                 end
             end
-        else
-            -- Found no adjacent line
+        else -- Found no adjacent line
             done = true
         end
     end
-    return(siblings)
+    return siblings, info
 end
 
-local update_numbering = function(row, starting_number, indentation)
+local update_numbering = function(row, indentation, li_type, up)
+    local siblings, numbers = get_siblings(row, indentation, li_type, up)
+    local n
+    for i, v in ipairs(numbers) do
+        if not n then
+            n = tonumber(v) + 1
+        else
+            if tonumber(v) ~= n then
+                -- Replace with the correct number on that line
+                local line = vim.api.nvim_buf_get_lines(0, siblings[i] - 1, siblings[i], false)[1]
+                local replacement = line:gsub('^' .. indentation .. '%d+%.', indentation .. n .. ".")
+                vim.api.nvim_buf_set_lines(0, siblings[i] - 1, siblings[i], false, {replacement})
+            end
+            n = n + 1
+        end
+    end
+end
+
+local update_numbering_old = function(row, starting_number, indentation)
     indentation = indentation or ''
     local next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
     -- Get number on next line if there is one; else use nil
@@ -363,32 +381,33 @@ M.newListItem = function()
     -- Get the line
     local line = vim.api.nvim_get_current_line()
     -- Get the list type
-    local type = has_list_type(line)
+    local li_type = has_list_type(line)
     -- If the line has an item, do some stuff
-    if type then
-        local has_contents = utf8.match(line, patterns[type].content)
+    if li_type then
+        local has_contents = utf8.match(line, patterns[li_type].content)
         local row, col = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_win_get_cursor(0)[2]
-        local indentation = utf8.match(line, patterns[type].indentation)
+        local indentation = utf8.match(line, patterns[li_type].indentation)
+        --vim.pretty_print(get_siblings(row, indentation, type))
         if has_contents then
             local next_line = indentation
             local next_number
             -- If the current line ends in a colon, indent the next line
             if line:sub(#line, #line) == ':' then
                 next_line = next_line .. vim_indent
-                if type == 'ol' or type == 'oltd' then
+                if li_type == 'ol' or li_type == 'oltd' then
                     next_number = 1
                     next_line = next_line .. next_number
                 end
             else
-                if type == 'ol' or type == 'oltd' then
-                    next_number = utf8.match(line, patterns[type].number) + 1
+                if li_type == 'ol' or li_type == 'oltd' then
+                    next_number = utf8.match(line, patterns[li_type].number) + 1
                     next_line = next_line .. next_number
                 end
             end
             -- Add the marker
-            next_line = next_line .. utf8.match(line, patterns[type].marker)
+            next_line = next_line .. utf8.match(line, patterns[li_type].marker)
             -- Make to-do items not started
-            if type == 'oltd' or type == 'ultd' then
+            if li_type == 'oltd' or li_type == 'ultd' then
                 next_line = next_line .. '[' .. to_do_not_started .. '] '
             end
             -- The current length is where we want the cursor to go
@@ -404,23 +423,22 @@ M.newListItem = function()
             vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
             vim.api.nvim_win_set_cursor(0, {row + 1, (next_col)})
             -- Update the numbering
-            if type == 'ol' or type == 'oltd' then
-                update_numbering(row, next_number, indentation)
+            if li_type == 'ol' or li_type == 'oltd' then
+                update_numbering(row, indentation, li_type, false)
             end
         else
             -- If the line is indented, demote by removing the indentation
             if line:match('^'..vim_indent) then
                 local replacement = line:gsub('^' .. vim_indent, '')
-                print(replacement)
                 vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, #line, {replacement})
-                update_numbering(row, -1, indentation)
+                update_numbering(row, indentation, li_type, false)
             -- Otherwise, demote using the canonical demotion
             else
                 -- Make a new line with the demotion
-                local demotion = utf8.match(line, patterns[type].demotion)
+                local demotion = utf8.match(line, patterns[li_type].demotion)
                 vim.api.nvim_buf_set_lines(0, row - 1, row, false, {demotion})
                 vim.api.nvim_win_set_cursor(0, {row, #demotion})
-                update_numbering(row - 1, '0', indentation)
+                update_numbering(row - 1, indentation, li_type, false)
             end
         end
     else
