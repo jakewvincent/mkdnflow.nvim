@@ -104,6 +104,8 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * In ordered lists: Add another item on the next line (keeping numbering updated), unless the current item is empty, in which case it will be erased
     * In unordered and ordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
     * 🆕 Automatically indent a new list item when the current one ends in a colon
+    * 🆕 Demote empty indented list items by reducing the indentation by one level
+* 🆕 Manually update numbering with `MkdnUpdateNumbering` or `MkdnUpdateNumbering 0` if, e.g., you want to start numbering at 0
 
 ```lua
 require('mkdnflow').setup({
@@ -237,7 +239,8 @@ require('mkdnflow').setup({
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
-        MkdnNewListItem = false
+        MkdnNewListItem = false,
+        MkdnUpdateNumbering = {'n', '<leader>nn'}
     },
     links = {
         style = 'markdown',
@@ -381,6 +384,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `+`          | n    | `:MkdnIncreaseHeading<CR>`    | Increase heading importance (remove hashes) |
 | `-`          | n    | `:MkdnDecreaseHeading<CR>`    | Decrease heading importance (add hashes) |
 | `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`         | Toggle to-do list item's completion status or convert a list item into a to-do list item |
+| `<leader>nn` | n    | `:MkdnUpdateNumbering<CR>`    | Update numbering for all siblings of the list item of the current line |
 | --           | --   | `:MkdnNewListItem<CR>`        | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item |
 | --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
@@ -423,6 +427,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/03/22: Add command and mapping for updating numbering
 * 05/30/22: Implement root directory switching to allow for easier switching between wikis
 * 05/30/22: Indent new list item when current one ends in a colon
 * 05/12/22: Add functionality to search for bib files in the project's root directory
