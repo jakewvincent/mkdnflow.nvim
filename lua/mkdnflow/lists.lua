@@ -154,29 +154,6 @@ local update_numbering = function(row, indentation, li_type, up)
     end
 end
 
-local update_numbering_old = function(row, starting_number, indentation)
-    indentation = indentation or ''
-    local next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
-    -- Get number on next line if there is one; else use nil
-    local is_numbered = next_line[1] and next_line[1]:match('^(%s*%d+%.%s+).-') or nil
-    while is_numbered do
-        if utf8.match(next_line[1], patterns['ol'].indentation) == indentation then
-            -- Replace the number on whichever line
-            --local item_number = is_numbered:match('^%s*(%d*)%.')
-            local item_number = starting_number + 1
-            local spacing = next_line[1]:match('^(%s*)%d')
-            local new_line = next_line[1]:gsub('^%s*%d+', spacing .. item_number)
-            vim.api.nvim_buf_set_lines(0, row + 1, row + 2, false, {new_line})
-            starting_number = item_number
-        end
-        -- Then retrieve the next line
-        row = row + 1
-        next_line = vim.api.nvim_buf_get_lines(0, row + 1, row + 2, false)
-        -- If there is a next line, see if it's numbered
-        is_numbered = next_line[1] and next_line[1]:match('^(%s*%d+%.%s+).-') or nil
-    end
-end
-
 local get_status = function(line)
     local todo = nil
     if line then
