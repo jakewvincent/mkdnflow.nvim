@@ -68,7 +68,8 @@ local default_config = {
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
-        MkdnNewListItem = false
+        MkdnNewListItem = false,
+        MkdnUpdateNumbering = {'n', '<leader>nn'}
     }
 }
 
