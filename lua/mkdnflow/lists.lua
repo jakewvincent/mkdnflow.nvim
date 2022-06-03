@@ -77,16 +77,18 @@ local has_list_type = function(line)
     local i = 1
     local li_types = {'ultd', 'oltd', 'ul', 'ol'}
     local result
+    local indentation
     while not match and i <= 4 do
         local li_type = li_types[i]
         match = utf8.match(line, patterns[li_type].main)
         if match then
             result = li_type
+            indentation = line:match(patterns[li_type].indentation)
         else
             i = i + 1
         end
     end
-    return(result)
+    return result, indentation
 end
 
 local get_siblings = function(row, indentation, li_type, up)
@@ -136,9 +138,9 @@ local get_siblings = function(row, indentation, li_type, up)
     return siblings, info
 end
 
-local update_numbering = function(row, indentation, li_type, up)
+local update_numbering = function(row, indentation, li_type, up, start)
     local siblings, numbers = get_siblings(row, indentation, li_type, up)
-    local n
+    local n = start
     for i, v in ipairs(numbers) do
         if not n then
             n = tonumber(v) + 1
@@ -407,8 +409,12 @@ M.newListItem = function()
             -- If the line is indented, demote by removing the indentation
             if line:match('^'..vim_indent) then
                 local replacement = line:gsub('^' .. vim_indent, '')
+                local new_indentation = replacement:match(patterns[li_type].indentation)
                 vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, #line, {replacement})
-                update_numbering(row, indentation, li_type, false)
+                -- Update w/ the new indentation
+                update_numbering(row, new_indentation, li_type)
+                -- Update any adopted children
+                update_numbering(row + 1, new_indentation..vim_indent, li_type, false, 1)
             -- Otherwise, demote using the canonical demotion
             else
                 -- Make a new line with the demotion
@@ -422,6 +428,14 @@ M.newListItem = function()
         -- If not a list item, just do the normal version of whatever the mapping for MkdnNewListItem is
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
     end
+end
+
+M.updateNumbering = function(start)
+    start = start or 1
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+    local li_type, indentation = has_list_type(line)
+    update_numbering(row, indentation, li_type, true, start)
 end
 
 return M
