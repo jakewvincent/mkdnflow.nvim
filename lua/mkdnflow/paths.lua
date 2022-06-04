@@ -318,6 +318,9 @@ M.transformPath = function(path)
   end
 end
 
+local rename_file = function()
+end
+
 --[[
 handlePath() does something with the path in the link under the cursor:
      1. Creates the file specified in the path, if the path is determined to
@@ -356,6 +359,101 @@ M.handlePath = function(path, anchor)
         -- Use this function to do sth with the information returned (if any)
         if field then M.handlePath(field) end
     end
+end
+
+M.moveSource = function()
+    local derive_path = function(source, type)
+        local derived_path
+        if type == 'file' then
+            source = source:gsub('^file:', '')
+        end
+        if string.match(source, '^~/') then
+            derived_path = string.gsub(source, '^~/', '$HOME/')
+        elseif string.match(source, '^/') then
+            derived_path = source
+        elseif perspective == 'root' then
+            -- Paste root directory and the directory in link
+            derived_path = root_dir..'/'..source
+        elseif perspective == 'first' then
+            -- Paste together the directory of the first-opened file
+            -- and the directory in the link source
+            derived_path = initial_dir..'/'..source
+        else -- Otherwise, they want it relative to the current file
+            -- So, get the source of the current file
+            local cur_file = vim.api.nvim_buf_get_name(0)
+            -- Get the directory the current file is in
+            local cur_file_dir = string.match(cur_file, '(.*)/.-$')
+            -- Paste together the directory of the current file and the
+            -- directory source provided in the link
+            if cur_file_dir then
+                derived_path = cur_file_dir..'/'..source
+            end
+        end
+        return derived_path
+    end
+    -- Retrieve source from link
+    local source, anchor, path_com, path_fin, path_row = links.getLinkPart('path')
+    -- Determine type of source
+    local source_type = path_type(source)
+    -- If it's a file, determine the full path of the source using perspective
+    local derived_path = derive_path(source, source_type)
+    -- Ask user to edit name in console (only display what's in the link)
+    local input_opts = {
+        prompt = 'Move to: ',
+        default = source,
+        completion = 'file'
+    }
+    -- Determine what to do based on user input
+    vim.ui.input(input_opts, function(location)
+        local source = derive_path(source, source_type)
+        local goal = derive_path(location, path_type(location))
+        local source_exists = does_exist(source, 'f')
+        local goal_exists = does_exist(goal, 'f')
+        local dir = string.match(location, '(.*)/.-$')
+        -- Change the link content
+        --vim.api.nvim_buf_set_text(0, path_row - 1, path_com - 1, path_row - 1, path_fin, {location})
+        -- If the goal location already exists, abort
+        if goal_exists then
+            vim.api.nvim_echo({{'⬇️ '..location..' already exists! Aborting.', 'WarningMsg'}}, true, {})
+        -- If the source location exists, proceed
+        elseif source_exists then
+            -- If there's a directory in the goal location,
+            if dir then
+                local to_dir_exists = does_exist(dir, 'd')
+                if not to_dir_exists then
+                    if create_dirs then
+                        local path_to_file = escape_chars(dir)
+                        --os.execute('mkdir -p '..path_to_file)
+                    else
+                        vim.api.nvim_echo({{'⬇️ '..'The goal directory doesn\'t exist. Set create_dirs to true for automatic directory creation.'}})
+                    end
+                else
+                    --os.execute('mv '..derived_path..' '..location)
+                    -- Clear the prompt
+                    vim.api.nvim_command("normal! :")
+                    -- Print something
+                    vim.api.nvim_echo({{'⬇️ Success!'}}, true, {})
+                end
+            else
+                -- Move
+                --os.execute('mv '..derived_path..' '..location)
+                -- Clear the prompt
+                vim.api.nvim_command("normal! :")
+                -- Print something
+                vim.api.nvim_echo({{'⬇️ Success!'}}, true, {})
+            end
+        -- Otherwise, the file we're trying to move must not exist
+        else
+            -- Clear the prompt
+            vim.api.nvim_command("normal! :")
+            -- Send a warning
+            vim.api.nvim_echo({{'⬇️ '..derived_path..' doesn\'t seem to exist! Aborting.', 'WarningMsg'}}, true, {})
+        end
+    end)
+    -- (a) directories added to path? Move file
+    -- (b) file renamed? Rename file
+    -- (a) and (b)? Rename file, then move it
+    -- Update the link text
 end
 
 -- Return all the functions added to the table M!
