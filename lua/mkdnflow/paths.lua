@@ -83,7 +83,7 @@ local handle_internal_file = function(path, anchor)
         if dir and create_dirs then
             local dir_exists = does_exist(dir)
             if not dir_exists then
-                if this_is:match('Windows') then
+                if this_os:match('Windows') then
                     os.execute('mkdir "'..dir..'"')
                 else
                     local path_to_file = utils.escapeChars(dir)
