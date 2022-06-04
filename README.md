@@ -216,7 +216,8 @@ require('mkdnflow').setup({
     perspective = {
         priority = 'first',
         fallback = 'current',
-        root_tell = false
+        root_tell = false,
+        nvim_wd_heel = true
     },    
     wrap = false,
     bib = {
@@ -280,6 +281,7 @@ Note: This functionality references the file's extension. It does not rely on Ne
     * `'first'`: Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)
     * `'current'`: Links will be interpreted relative to the current file
     * `'root'`: Links will be interpreted relative to the root directory of the current notebook/wiki (requires `perspective.root_tell` to be specified)
+    * `'nvim_wd_heel`: Changes in perspective will be reflected in the nvim working directory. This helps ensure (at least) that path completions (if using a completion plugin with support for paths) will be accurate and usable.
 * `perspective.fallback` (string): Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)
     * `'first'`: (see above)
     * `'current'`: (see above)
