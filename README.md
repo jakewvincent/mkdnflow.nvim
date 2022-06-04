@@ -201,7 +201,6 @@ EOF
 
 ### ❗ Caveats/warnings
 
-* The plugin won't start *automatically* if the first-opened file is not one of the default or named extensions (see [Configuration](#%EF%B8%8F-configuration)), but you can manually start the plugin with the defined command `:Mkdnflow`.
 * All functionality of the plugin should now work on all operating systems, including Windows! However, since I don't use Windows on my daily driver, there may be edge cases that cause trouble. Please file an issue if anything comes up.
 
 ## ⚙️ Configuration
@@ -240,6 +239,7 @@ require('mkdnflow').setup({
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
         MkdnNewListItem = false,
+        ['MkdnNewListItem simple'] = false,
         MkdnUpdateNumbering = {'n', '<leader>nn'}
     },
     links = {
@@ -386,6 +386,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`         | Toggle to-do list item's completion status or convert a list item into a to-do list item |
 | `<leader>nn` | n    | `:MkdnUpdateNumbering<CR>`    | Update numbering for all siblings of the list item of the current line |
 | --           | --   | `:MkdnNewListItem<CR>`        | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item |
+| --           | --   | `:MkdnNewListItem simple<CR>` | Like above, but the cursor stays on the current line (new list items added below) |
 | --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
@@ -427,6 +428,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/04/22: Simple version of MkdnNewListItem added
 * 06/03/22: Add command and mapping for updating numbering
 * 05/30/22: Implement root directory switching to allow for easier switching between wikis
 * 05/30/22: Indent new list item when current one ends in a colon
