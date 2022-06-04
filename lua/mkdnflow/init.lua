@@ -69,7 +69,7 @@ local default_config = {
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
         MkdnNewListItem = false,
-        ['MkdnNewListItem simple'] = false,
+        MkdnExtendList = false,
         MkdnUpdateNumbering = {'n', '<leader>nn'}
     }
 }
