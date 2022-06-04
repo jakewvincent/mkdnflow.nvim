@@ -56,7 +56,7 @@ local default_config = {
     mappings = {
         MkdnGoBack = {'n', '<BS>'},
         MkdnGoForward = {'n', '<Del>'},
-        MkdnMoveRenameSource = {'n', '<F2'},
+        MkdnMoveRenameSource = {'n', '<F2>'},
         MkdnNextLink = {'n', '<Tab>'},
         MkdnPrevLink = {'n', '<S-Tab>'},
         MkdnFollowLink = {{'n', 'v'}, '<CR>'},
@@ -69,6 +69,7 @@ local default_config = {
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
         MkdnNewListItem = false,
+        ['MkdnNewListItem simple'] = false,
         MkdnUpdateNumbering = {'n', '<leader>nn'}
     }
 }
