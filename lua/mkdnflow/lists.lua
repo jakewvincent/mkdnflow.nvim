@@ -356,14 +356,15 @@ M.toggleToDo = function(row, status)
     end
 end
 
-M.newListItem = function()
+M.newListItem = function(fanciness)
+    fanciness = fanciness or 'fancy'
     -- Get the line
     local line = vim.api.nvim_get_current_line()
     -- Get the list type
     local li_type = has_list_type(line)
     -- If the line has an item, do some stuff
     if li_type then
-        local has_contents = utf8.match(line, patterns[li_type].content)
+        local has_contents = fanciness == 'simple' or utf8.match(line, patterns[li_type].content)
         local row, col = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_win_get_cursor(0)[2]
         local indentation = utf8.match(line, patterns[li_type].indentation)
         --vim.pretty_print(get_siblings(row, indentation, type))
@@ -392,7 +393,7 @@ M.newListItem = function()
             -- The current length is where we want the cursor to go
             local next_col = #next_line
             -- Add material from the current line if the cursor isn't @ end of line
-            if col ~= #line then
+            if fanciness == 'fancy' and col ~= #line then
                 -- Get the material following the cursor for the next line
                 next_line = next_line .. line:sub(col + 1, #line)
                 -- Rid the current line of the material following the cursor
@@ -400,7 +401,9 @@ M.newListItem = function()
             end
             -- Set the next line and move the cursor
             vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
-            vim.api.nvim_win_set_cursor(0, {row + 1, (next_col)})
+            if fanciness == 'fancy' then
+                vim.api.nvim_win_set_cursor(0, {row + 1, (next_col)})
+            end
             -- Update the numbering
             if li_type == 'ol' or li_type == 'oltd' then
                 update_numbering(row, indentation, li_type, false)
