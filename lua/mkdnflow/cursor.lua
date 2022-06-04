@@ -18,7 +18,7 @@
 local links = require('mkdnflow.links')
 local wrap = require('mkdnflow').config.wrap
 local silent = require('mkdnflow').config.silent
-local link_style = require('mkdnflow').config.link_style
+local link_style = require('mkdnflow').config.links.style
 
 --[[
 rev_get_line() retrieves line text and reverses it
@@ -70,8 +70,8 @@ local go_to = function(pattern, reverse)
         left, right = string.find(line[1], pattern)
     end
     -- As long as a match hasn't been found, keep looking as long as possible!
-    local unfound = true
-    while unfound do
+    local continue = true
+    while continue do
         -- See if there's a match on the current line.
         if left and right then
             if reverse then
@@ -79,7 +79,7 @@ local go_to = function(pattern, reverse)
                 if rev_col + 1 < right_ then
                     -- If it is, send the cursor to the start of the match
                     vim.api.nvim_win_set_cursor(0, {row, left - 1})
-                    unfound = false
+                    continue = false
                 -- If it isn't, search after the end of the previous match.
                 else
                     -- These values will be used on the next iteration of the loop.
@@ -92,7 +92,7 @@ local go_to = function(pattern, reverse)
                 if col + 1 < left then
                     -- If it is, send the cursor to the start of the match
                     vim.api.nvim_win_set_cursor(0, {row, left - 1})
-                    unfound = false
+                    continue = false
                 -- If it isn't, search after the end of the previous match.
                 else
                     -- These values will be used on the next iteration of the loop.
@@ -142,11 +142,11 @@ local go_to = function(pattern, reverse)
                         end
                         already_wrapped = true
                     else
-                        unfound = nil
+                        continue = nil
                     end
                 -- Otherwise, search is done
                 else
-                    unfound = nil
+                    continue = nil
                 end
             end
         end
@@ -162,14 +162,14 @@ local go_to_heading = function(anchor_text, reverse)
     -- so we'll start looking from here onwards and then circle back to the beginning
     local position = vim.api.nvim_win_get_cursor(0)
     local starting_row = position[1]
-    local unfound = true
+    local continue = true
     local row
     if reverse then
         row = starting_row - 1
     else
         row = starting_row + 1
     end
-    while unfound do
+    while continue do
         local line
         if reverse then
             line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
@@ -184,7 +184,7 @@ local go_to_heading = function(anchor_text, reverse)
                 if anchor_text == nil then
                     -- Send the cursor to the heading
                     vim.api.nvim_win_set_cursor(0, {row, 0})
-                    unfound = false
+                    continue = false
                 else
                     -- Format current heading to see if it matches our search term
                     local heading_as_anchor = links.formatLink(line[1], 2)
@@ -193,7 +193,7 @@ local go_to_heading = function(anchor_text, reverse)
                         vim.api.nvim_buf_set_mark(0, '`', position[1], position[2], {})
                         -- Send the cursor to the row w/ the matching heading
                         vim.api.nvim_win_set_cursor(0, {row, 0})
-                        unfound = false
+                        continue = false
                     end
                 end
             end
@@ -203,7 +203,7 @@ local go_to_heading = function(anchor_text, reverse)
                 row = row + 1
             end
             if row == starting_row + 1 then
-                unfound = nil
+                continue = nil
                 if anchor_text == nil then
                     local message = "⬇️  Couldn't find a heading to go to!"
                     if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
@@ -221,7 +221,7 @@ local go_to_heading = function(anchor_text, reverse)
                     row = 1
                 end
             else
-                unfound = nil
+                continue = nil
                 local place, preposition
                 if reverse then
                     place = 'beginning'; preposition = 'after'

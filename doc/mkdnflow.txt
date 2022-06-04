@@ -239,22 +239,14 @@ filetypes
   is manually started by calling `:Mkdnflow`. Default filetypes: `md`, `rmd`,
   and `markdown`.
 
-prefix
-  Must be a table with two keys: `evaluate` and `string`. `prefix.evaluate` mus-
-  t be a boolean. When `true`, the `createLinks()` function tries to evaluate t-
-  he string provided as the value of `prefix.string`. If `false`, the value of
-  `prefix.string` is prefixed to new files as a string. That is, it is not eval-
-  uated. Default for `prefix.evaluate`: `true`.
-
-  `prefix.string` Must be a string. It defines the prefix that should be used to
-  create new links, either something static (if `evaluate_prefix` is `false`) or
-  variable (if `evaluate_prefix` is `true`). This is evaluated at the time
-  `createLink()` is run, which is to say that it's run whenever <CR> is pressed
-  (under the default mappings, anyway). This makes for many interesting possibi-
-  lities, but should be used with caution. Default: `[[os.date('%Y-%m-%d_')]]`,
-  which returns a string representing the current date to be prepended to the n-
-  ame of your file: `YYYY-mm-dd_`. This helps with the organization of the dire-
-  ctory in which you keep your markdown files.
+links
+  Must be a table of key-value pairs. Four keys can be defined: `style`, which
+  can be either 'markdown' or 'wiki'; `implicit_extension`, which defines a file
+  extension to interpret notebook/wiki-internal links with (when an explicit ex-
+  tension is not added to the path in the link); transform_implicit, which can
+  be used to define a function that defines interpretation transformations for
+  links; and transform_explicit, which affects how link paths appear when new
+  links are created.
 
 wrap
   Must be a boolean. If true, when jumping to the next or previous link or head-
@@ -262,9 +254,12 @@ wrap
   nt (respectively) if there are no more links between the current cursor posit-
   ion and the end of the document. Default: `false`
 
-default_bib_path
-  Must be a string. Tells Mkdnflow where to find the .bib file to search for
-  citation keys in.
+bib
+  Must be a table. Values can be specified for `default_path`, which should be
+  the location of a .bib file, if used, and `find_in_root`, which should be a
+  boolean. If `true`--and `perspective.priority` is set to `root`--then Mkdnf-
+  low will search the project's root directory for bib files to look for cita-
+  tion keys in.
 
 silent
   Must be a boolean. Tells Mkdnflow to be quiet if you so desire. If set to tr-
@@ -301,8 +296,22 @@ A sample config showing the defaults:~
             evaluate = true,
             string = [[os.date('%Y-%m-%d_')]]
         },
+        links = {
+            style = 'markdown',
+            implicit_extension = nil,
+            transform_implicit = false,
+            transform_explicit = function(text)
+                text = text:gsub(" ", "-")
+                text = text:lower()
+                text = os.date('%Y-%m-%d_')..text
+                return(text)
+            end
+        },
+        bib = {
+            default_path = nil,
+            find_in_root = true
+        },
         wrap = false,
-        default_bib_path = '',
         use_mappings_table = true,
         mappings = {
             MkdnNextLink = {'n', '<Tab>'},
@@ -443,6 +452,64 @@ Full-featured journal navigation/maintenance: https://github.com/vimwiki/vimwiki
 
 ===============================================================================
 Recent breaking changes                                      *Mkdnflow-changes*
+
+commit e9f78158a68cdb6740cf2442541cdfeada68bd6c
+Author: Jake Vincent <jakewvincent@gmail.com>
+Date:   Thu May 12 21:16:26 2022 -0700
+
+Previously, just one bib file could be specified via the `default_bib_path` key.
+Now any number of bib files can be searched, as long as they are in the project-
+'s top-level directory and as long as `perspective.priority` is set to `root`.
+This is enabled by default, but the setting can be turned off in the following
+way. Also note in the sample config below that default_bib_path has now been mi-
+grated to the `default_path` key under the table called `bib`:
+
+>
+    require('mkdnflow').setup({
+        bib = {
+            default_path = nil,
+            find_in_root = true
+        }
+    })
+
+commit f0544407f179972f577838d3eec998577f82022e
+Author: Jake Vincent <jakewvincent@gmail.com>
+Date:   Wed May 11 19:44:06 2022 -0700
+
+Previously, a customizable prefix could be specified in your config. The default
+settings were as follows:
+
+>
+    require('mkdnflow').setup({
+        prefix = {
+            evaluate = true,
+            string = [[os.date('%Y-%m-%d_')]]
+        }
+    })
+
+This functionality has now been relocated into a much more flexible transformat-
+ion function, which will not only allow you to add any prefix or suffix that you
+wish, but also transform the text of the path of a link in any way you like. The
+default behavior is still the same. To use your own transformation, you would s-
+pecify it under the `transform_explicit` key in the new links `table`. To add a
+prefix that is just the month, for instance, and to maintain the default behavi-
+or of transforming spaces to dashes and converting upper-case characters to low-
+er case characters, you would specify the following in your config. If you want
+to maintain the default behavior completely, you should remove the `prefix` key
+from your config (if it is there) and avoid providing a value for `transform_e`-
+`xplicit` so that the default value for it is used.
+
+>
+    require('mkdnflow').setup({
+        links = {
+            transform_explicit = function(text)
+                text = text:gsub(' ', '-')
+                text = text:lower()
+                text = os.date('%m_')..text
+                return(text)
+            end
+        }
+    })
 
 commit 1a21955cf51c15fe7424c61db4c4c531249ddd11
 Author: Jake Vincent <jakewvincent@gmail.com>

@@ -15,13 +15,18 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Modules and variables
--- Get the user's prefix string
-local new_file_prefix = require('mkdnflow').config.prefix.string
--- Get the user's prefix evaluation preference
-local evaluate_prefix = require('mkdnflow').config.prefix.evaluate
+local new_file_prefix
+local evaluate_prefix
+if require('mkdnflow').config.prefix then
+    -- Get the user's prefix string
+    new_file_prefix = require('mkdnflow').config.prefix.string
+    -- Get the user's prefix evaluation preference
+    evaluate_prefix = require('mkdnflow').config.prefix.evaluate
+end
 local this_os = require('mkdnflow').this_os
 local link_style = require('mkdnflow').config.links.style
 local implicit_extension = require('mkdnflow').config.links.implicit_extension
+local transform_path = require('mkdnflow').config.links.transform_explicit
 
 -- Table for global functions
 local M = {}
@@ -35,8 +40,7 @@ M.getLinkPart = function(part)
     part = part or 'path'
     -- Get current cursor position
     local position = vim.api.nvim_win_get_cursor(0)
-    local row = position[1]
-    local col = position[2]
+    local row, col = position[1], position[2]
     -- Get the indices of the links in the line
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
     local link_pattern
@@ -47,43 +51,43 @@ M.getLinkPart = function(part)
     end
     local bib_pattern = '[^%a%d]-(@[%a%d_%.%-\']+)[%s%p%c]?' -- Bib. citation pattern
     local indices = {} -- Table for match indices
-    local last_fin = 1 -- Last end index
+    local prev_last = 1 -- Last end index
     local link_type = nil
-    local unfound = true
+    local continue = true
     -- TODO: Move the check overlap bit, which is repeated twice, to a function
     -- definition here, then call the function twice
-    while unfound do
+    while continue do
         -- Get the indices of any match on the current line
-        local com, fin = string.find(line[1], link_pattern, last_fin)
-        -- Check if there's a match that begins after the fin from the previous
+        local first, last = string.find(line[1], link_pattern, prev_last)
+        -- Check if there's a match that begins after the last from the previous
         -- iteration of the loop
-        if com and fin then
+        if first and last then
             -- If there is, check if the match overlaps with the cursor position
-            if com - 1 <= col and fin - 1 >= col then
+            if first - 1 <= col and last - 1 >= col then
                 -- If it does overlap, save the indices of the match
-                indices = {com = com, fin = fin}
+                indices = {first = first, last = last}
                 -- End the loop
-                unfound = false
+                continue = false
                 -- Note link type
                 link_type = 'address'
             else
                 -- If it doesn't overlap, save the end index of the match so
                 -- we can look for a match following it on the next loop.
-                last_fin = fin
+                prev_last = last
             end
         else
-            unfound = nil
+            continue = nil
         end
     end
 
     -- Check if a link was found under the cursor
-    if unfound == false then
+    if continue == false then
         -- If one was found and it's an address, get correct part of the match
         -- and return it
         if part == 'name' then
             if link_type == 'address' then
                 local name_pattern
-                local link = string.sub(line[1], indices['com'], indices['fin'])
+                local link = string.sub(line[1], indices['first'], indices['last'])
                 if link_style == 'wiki' then
                     if link:match('|') then
                         name_pattern = '%[%[.*(|.*%])%]'
@@ -95,7 +99,7 @@ M.getLinkPart = function(part)
                 end
                 local name = string.sub(string.match(link, name_pattern), 2, -2)
                 -- Return the name and the indices of the link
-                return name, indices['com'], indices['fin'], row
+                return name, indices['first'], indices['last'], row
             end
         elseif part == 'path' then
             if link_type == 'address' then
@@ -107,51 +111,51 @@ M.getLinkPart = function(part)
                 end
                 local path = string.sub(
                     string.match(
-                        string.sub(line[1], indices['com'], indices['fin']),
+                        string.sub(line[1], indices['first'], indices['last']),
                         path_pattern
                     ), 2, -2
                 )
                 local anchor
-                if link_style == 'wiki' then
-                    anchor = path:match('.*(#.*)')
-                    if anchor then path = path:match('(.*)#') end
-                else
-                    anchor = path:match('%.md(#.*)')
-                    if anchor then path = path:match('(.*%.md)#') end
+                local path_type = require('mkdnflow.paths').pathType(path)
+                if path_type == 'filename' then
+                    anchor = path:match('%.md(#.+)') or path:match('.+(#.+)')
+                    if anchor then
+                        path = path:match('(.+%.md)#') or path:match('(.+)#')
+                    end
                 end
                 return path, anchor
             end
         end
     else -- If one wasn't found, perform another search, this time for citations
-        unfound = true
-        last_fin = 1
-        while unfound do
-            local com, fin = string.find(line[1], bib_pattern, last_fin)
+        continue = true
+        prev_last = 1
+        while continue do
+            local first, last = string.find(line[1], bib_pattern, prev_last)
             -- If there was a match, see if the cursor is inside it
-            if com and fin then
+            if first and last then
                 -- If there is, check if the match overlaps with the cursor
                 -- position
-                if com - 1 <= col and fin - 1 >= col then
+                if first - 1 <= col and last - 1 >= col then
                     -- If it does overlap, save the indices of the match
-                    indices = {com = com, fin = fin}
+                    indices = {first = first, last = last}
                     -- End the loop
-                    unfound = false
+                    continue = false
                     -- Note link type
                     link_type = 'citation'
                 else
                     -- If it doesn't overlap, save the end index of the match so
                     -- we can look for a match following it on the next loop.
-                    last_fin = fin
+                    prev_last = last
                 end
             else
-                unfound = nil
+                continue = nil
             end
         end
-        if unfound == false then
+        if continue == false then
             if link_type == 'citation' then
                 local citation = string.match(
                     string.sub(
-                        line[1], indices['com'], indices['fin']
+                        line[1], indices['first'], indices['last']
                     ), bib_pattern
                 )
                 return(citation)
@@ -239,7 +243,7 @@ M.hasUrl = function(string, to_return, col)
         return math.max(a + 0, b + 0, c + 0, d + 0)
     end
     -- For each group in the match, do some stuff
-    local com, fin
+    local first, last
     for pos_start, url, prot, subd, tld, colon, port, slash, path, pos_end in
         string:gmatch('()(([%w_.~!*:@&+$/?%%#-]-)(%w[-.%w]*%.)(%w+)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))()')
     do
@@ -252,7 +256,7 @@ M.hasUrl = function(string, to_return, col)
             found_url = true
             if col then
                 if col >= pos_start - 1 and col < pos_end - 1 then
-                    com, fin = pos_start, pos_end
+                    first, last = pos_start, pos_end
                 end
             end
         end
@@ -268,7 +272,7 @@ M.hasUrl = function(string, to_return, col)
             found_url = true
             if col then
                 if col >= pos_start - 1 and col < pos_end - 1 then
-                    com, fin = pos_start, pos_end
+                    first, last = pos_start, pos_end
                 end
             end
         end
@@ -279,8 +283,30 @@ M.hasUrl = function(string, to_return, col)
         return(found_url)
     elseif to_return == 'positions' then
         if found_url then
-            return com, fin
+            return first, last
         end
+    end
+end
+
+M.transformPath = function(text)
+    if new_file_prefix then
+        local prefix
+        -- If user wants the prefix evaluated, do it now
+        if evaluate_prefix then
+            prefix = loadstring("return "..new_file_prefix)()
+        -- Otherwise, use the string provided by the user as the prefix
+        else
+            prefix = new_file_prefix
+        end
+        -- Set up the replacement
+        text = string.gsub(text, " ", "-")
+        -- Add prefix and make lowercase
+        text = prefix..string.lower(text)
+        return(text)
+    elseif type(transform_path) ~= 'function' or not transform_path then
+        return(text)
+    else
+        return(transform_path(text))
     end
 end
 
@@ -291,61 +317,34 @@ Returns a string:
      2. '[anchor link](#anchor-link)' if the text starts with a hash (#)
 --]]
 M.formatLink = function(text, part)
+    local replacement, path_text
     -- If the text starts with a hash, format the link as an anchor link
     if string.sub(text, 0, 1) == '#' then
-        local name = string.gsub(text, '^#* *', '')
-        local path_text = string.gsub(text, '[^%a%s%d%-_]', '')
+        path_text = string.gsub(text, '[^%a%s%d%-_]', '')
+        text = string.gsub(text, '^#* *', '')
         path_text = string.gsub(path_text, '^ ', '')
         path_text = string.gsub(path_text, ' ', '-')
         path_text = string.gsub(path_text, '%-%-', '-')
         path_text = '#'..string.lower(path_text)
-        local replacement
-        if link_style == 'wiki' then
-            replacement = {'[['..path_text..'|'..name..']]'}
-        else
-            replacement = {'['..name..']'..'('..path_text..')'}
-        end
-        if part == nil then
-            return(replacement)
-        elseif part == 1 then
-            return(text)
-        elseif part == 2 then
-            return(path_text)
-        end
     else
-        -- Make a variable for the prefix to use
-        local prefix = nil
-        -- If the user wants the prefix evaluated, eval when this function is
-        -- run (i.e., right here)
-        if evaluate_prefix then
-            prefix = loadstring("return "..new_file_prefix)()
-            -- Otherwise, use the string provided by the user for the prefix
-        else
-            prefix = new_file_prefix
+        path_text = M.transformPath(text)
+        if not implicit_extension then
+            path_text = path_text..'.md'
         end
-        -- Set up the replacement
-        local path_text = string.gsub(text, " ", "-")
-        local replacement
-        if link_style == 'wiki' then
-            if implicit_extension then
-                replacement = {'[['..prefix..string.lower(path_text)..'|'..text..']]'}
-            else
-                replacement = {'[['..prefix..string.lower(path_text)..'.md|'..text..']]'}
-            end
-        else
-            if implicit_extension then
-                replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..')'}
-            else
-                replacement = {'['..text..']'..'('..prefix..string.lower(path_text)..'.md)'}
-            end
-        end
-        if part == nil then
-            return(replacement)
-        elseif part == 1 then
-            return(text)
-        elseif part == 2 then
-            return(path_text)
-        end
+    end
+    -- Format the replacement depending on the user's link style preference
+    if link_style == 'wiki' then
+        replacement = {'[['..path_text..'|'..text..']]'}
+    else
+        replacement = {'['..text..']'..'('..path_text..')'}
+    end
+    -- Return the requested part
+    if part == nil then
+        return(replacement)
+    elseif part == 1 then
+        return(text)
+    elseif part == 2 then
+        return(path_text)
     end
 end
 
@@ -414,14 +413,14 @@ M.createLink = function()
     -- If current mode is 'visual', make link from selection
     elseif mode == 'v' then
         -- Get the start of the visual selection (the end is the cursor position)
-        local com = vim.fn.getpos('v')
+        local first = vim.fn.getpos('v')
         -- If the start of the visual selection is after the cursor position,
         -- use the cursor position as start and the visual position as finish
         local start = {}
         local finish = {}
-        if com[3] > col then
+        if first[3] > col then
             start = {row - 1, col}
-            finish = {com[2] - 1, com[3] - 1 + com[4]}
+            finish = {first[2] - 1, first[3] - 1 + first[4]}
             local region =
                 vim.region(
                     0,
@@ -446,10 +445,10 @@ M.createLink = function()
             local replacement = M.formatLink(text)
             -- Replace the visual selection w/ the formatted link replacement
             vim.api.nvim_buf_set_text(
-                0, row - 1, col, com[2] - 1, com[3], replacement
+                0, row - 1, col, first[2] - 1, first[3], replacement
             )
         else
-            start = {com[2] - 1, com[3] - 1 + com[4]}
+            start = {first[2] - 1, first[3] - 1 + first[4]}
             finish = {row - 1, col}
             local region =
                 vim.region(
@@ -475,7 +474,7 @@ M.createLink = function()
             local replacement = M.formatLink(text)
             -- Replace the visual selection w/ the formatted link replacement
             vim.api.nvim_buf_set_text(
-                0, com[2] - 1, com[3] - 1, row - 1, col + 1, replacement
+                0, first[2] - 1, first[3] - 1, row - 1, col + 1, replacement
             )
         end
 
@@ -488,9 +487,9 @@ the name part of the link.
 --]]
 M.destroyLink = function()
     -- Get link name, indices, and row the cursor is currently on
-    local link_name, com, fin, row = M.getLinkPart('name')
+    local link_name, first, last, row = M.getLinkPart('name')
     -- Replace the link with just the name
-    vim.api.nvim_buf_set_text(0, row - 1, com - 1, row - 1, fin, {link_name})
+    vim.api.nvim_buf_set_text(0, row - 1, first - 1, row - 1, last, {link_name})
 end
 
 --[[

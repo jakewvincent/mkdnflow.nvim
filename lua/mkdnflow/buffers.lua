@@ -15,6 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local silent = require('mkdnflow').config.silent
+local perspective = require('mkdnflow').config.perspective
 
 -- Table for global functions and variables
 local M = {}
@@ -51,6 +52,8 @@ M.goBack = function()
         vim.api.nvim_command("buffer "..prev_buf)
         -- Pop the buffer we just navigated to off the top of the stack
         M.pop(M.main)
+        -- Update the root and/or directory if needed
+        require('mkdnflow').paths.updateDirs()
         -- return a boolean if goback succeeded (for users who want <bs> to do
         -- sth else if goback isn't possible)
         return(true)
@@ -80,6 +83,8 @@ M.goForward = function()
         vim.api.nvim_command("buffer "..hist_bufnr)
         -- Pop historical buffer stack
         M.pop(M.hist)
+        -- Update the root and/or working directory if needed
+        require('mkdnflow').paths.updateDirs()
         -- Return a boolean if goForward succeeded (for users who want <Del> to
         -- do sth else if goForward isn't possible)
         return(true)

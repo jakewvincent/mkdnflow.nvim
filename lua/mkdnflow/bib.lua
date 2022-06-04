@@ -17,8 +17,31 @@
 -- Bibliography functions
 
 -- Retrieve default bibliography path
-local bib_path = require('mkdnflow').config.default_bib_path
+local bib_path = require('mkdnflow').config.bib.default_path
+local find_in_root = require('mkdnflow').config.bib.find_in_root
+local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow').config.silent
+local this_os = require('mkdnflow').this_os
+-- Get a list of bib files in the root directory
+local bib_paths = {}
+if find_in_root and root_dir then
+    local pfile
+    if this_os:match('Windows') then
+        pfile = io.popen('dir /b "'..root_dir..'"')
+    else
+        pfile = io.popen('ls -a "'..root_dir..'"')
+    end
+    -- Check the list of files for any bib files
+    for filename in pfile:lines() do
+        local match = filename:match('%.bib$')
+        if match then
+            table.insert(bib_paths, root_dir..'/'..filename)
+        end
+    end
+    pfile:close()
+    -- Add the default bib path too
+    table.insert(bib_paths, bib_path)
+end
 
 --[[
 find_bib_entry() takes a citation
@@ -28,23 +51,26 @@ local find_bib_entry = function(citation)
     -- Remove @
     local citekey = string.sub(citation, 2, -1)
     -- Open bibliography file
-    local bib_file = io.open(bib_path, 'r')
+    local bib_file
+    local current_bib_file = 0
+    if find_in_root and root_dir and bib_paths[1] then
+        bib_file = io.open(bib_paths[1], 'r')
+        current_bib_file = 1
+    end
     -- If the file exists, search it line-by-line for the citekey
     if bib_file then
-        local unfound = true
-        while unfound do
+        local continue = true
+        while continue do
             local line = bib_file:read('*l')
             if line then
-                local begin_entry = string.find(line, '^@')
-                if begin_entry then
-                    local match = string.match(line, '{%s-'..citekey..'%s-,')
-                    if match then
+                if line:find('^@') then
+                    if line:match('{%s-'..citekey..'%s-,') then
                         --vim.api.nvim_echo({{"Found the entry for "..citation.."!"}}, true, {}) -- TEST
                         local bib_entry = {}
                         -- Save the citekey
                         bib_entry.citekey = citekey
                         -- Extract the type
-                        bib_entry.type = string.sub(string.match(line, '^@.+{'), 2, -2)
+                        bib_entry.type = string.sub(line:match('^@.+{'), 2, -2)
                         -- Go through and save the relevant information in the entry
                         local brace_counter = 1
                         while brace_counter > 0 do
@@ -54,26 +80,38 @@ local find_bib_entry = function(citation)
                             local _, close_braces = line:gsub('}', '')
                             brace_counter = brace_counter + open_braces - close_braces
                             -- Get the first unbroken string of word characters in the line
-                            local field = string.match(line, '%a+')
+                            local field = line:match('%a+')
                             if field then
                                 local entry = string.sub(string.match(line, '{.*}'), 2, -2)
                                 bib_entry[string.lower(field)] = entry
                             end
                         end
-                        unfound = false
+                        continue = false
                         bib_file:close()
                         -- Return the whole entry for that citekey
                         return citekey, bib_entry
                     end
                 end
             else
-                unfound = nil
-                bib_file:close()
-                if not silent then vim.api.nvim_echo({{'⬇️  No entry found for "'..citekey..'"!', 'WarningMsg'}}, true, {}) end
+                if current_bib_file == #bib_paths then
+                    continue = nil
+                    bib_file:close()
+                    if not silent then vim.api.nvim_echo({{'⬇️  No entry found for "'..citekey..'"!', 'WarningMsg'}}, true, {}) end
+                else
+                    bib_file:close()
+                    current_bib_file = current_bib_file + 1
+                    bib_file = io.open(bib_paths[current_bib_file], 'r')
+                end
             end
         end
     else
-        if not silent then vim.api.nvim_echo({{'⬇️  Could not find a bib file. The default bib path is currently "'..bib_path..'". Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.', 'ErrorMsg'}}, true, {}) end
+        if bib_path == nil then
+            bib_path = '<nil>'
+        else
+            bib_path = '"'..bib_path..'"'
+        end
+        if not silent then vim.api.nvim_echo({{'⬇️  Could not find a bib file. The default bib path is currently '..bib_path..'. Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.', 'ErrorMsg'}}, true, {}) end
+        -- TODO: Make this section a little smarter. Change message depending on both bib_path and find_in_root.
     end
 end
 

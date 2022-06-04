@@ -13,6 +13,8 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+local utils = require('mkdnflow').utils
 local warn = function(message)
     vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {})
 end
@@ -77,6 +79,26 @@ M.userConfigCheck = function(user_config)
                 user_config.to_do.complete = user_config.to_do.symbols[2]
             end
         end
+        if user_config.to_do.symbols then
+            local max = 2
+            for _, symbol in ipairs(user_config.to_do.symbols) do
+                if string.len(string.byte(symbol)) > 2 then
+                    max = 3
+                end
+            end
+            if max > 2 and not utils.moduleAvailable('lua-utf8') then
+                warn('⬇️  One of your to-do symbols is a utf8 symbol, but the lua-utf8 dependency could not be found. To-do functionality may not work as expected.')
+            end
+        end
+    end
+    -- Look for default bib path
+    if user_config.default_bib_path then
+        if user_config.default_bib_path == '' then
+            user_config.bib.default_path = nil
+        else
+            user_config.bib.default_path = user_config.default_bib_path
+        end
+        warn('⬇️  The default_bib_path key has now been migrated into the bib key under the default_path option. Please update your config. See :h mkdnflow-changes, commit e9f7815...')
     end
     -- Look for link style
     if user_config.link_style then
@@ -88,13 +110,22 @@ M.userConfigCheck = function(user_config)
             user_config.links.implicit_extension = string.gsub(user_config.links.implicit_extension, '%.', '')
         end
     end
-    -- Look for old prefix settings
+    -- Look for oldest prefix settings
     if user_config.evaluate_prefix or user_config.new_file_prefix then
         user_config.prefix = {
             evaluate = user_config.evaluate_prefix,
             string = user_config.new_file_prefix
         }
-        warn('⬇️  The prefix settings are now specified under the "prefix" key, which takes a table value. Please update your config. See :h mkdnflow-changes, commit 1a2195...')
+    end
+    -- Look for old prefix settings
+    if user_config.prefix then
+        if user_config.prefix.evaluate == nil then
+            user_config.prefix.evaluate = true
+        end
+        if user_config.prefix.string == nil then
+            user_config.prefix.string = [[os.date('%Y-%m-%d_')]]
+        end
+        warn('⬇️  The prefix key has now been migrated into the links key under the transform_explicit option. Please update your config. See :h mkdnflow-changes, commit f054440...')
     end
     -- Look for links_relative_to
     if user_config.links_relative_to then

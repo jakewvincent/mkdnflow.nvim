@@ -20,24 +20,31 @@ local default_config = {
     perspective = {
         priority = 'first',
         fallback = 'current',
-        root_tell = false
+        root_tell = false,
+        update = true,
+        vimwd_heel = true
     },
     filetypes = {
         md = true,
         rmd = true,
         markdown = true
     },
-    prefix = {
-        evaluate = true,
-        string = [[os.date('%Y-%m-%d_')]]
-    },
     wrap = false,
-    default_bib_path = '',
+    bib = {
+        default_path = nil,
+        find_in_root = true
+    },
     silent = false,
-    --link_style = 'markdown',
     links = {
         style = 'markdown',
-        implicit_extension = nil
+        implicit_extension = nil,
+        transform_implicit = false,
+        transform_explicit = function(text)
+            text = text:gsub("[ /]", "-")
+            text = text:lower()
+            text = os.date('%Y-%m-%d_')..text
+            return(text)
+        end
     },
     to_do = {
         symbols = {' ', '-', 'X'},
@@ -62,7 +69,9 @@ local default_config = {
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
-        MkdnNewListItem = false
+        MkdnNewListItem = false,
+        MkdnExtendList = false,
+        MkdnUpdateNumbering = {'n', '<leader>nn'}
     }
 }
 
@@ -88,44 +97,13 @@ local get_file_type = function(string)
     return(ext ~= nil and string.lower(ext) or '')
 end
 
--- Private function to identify root directory on a unix machine
-local get_root_dir_unix = function(dir, root_tell)
-    -- List files in directory
-    local search_is_on, root = true, nil
-    -- Until the root directory is found, keep looking higher and higher
-    -- each pass
-    while search_is_on do
-        -- Get the output of running ls -a in dir
-        local pfile = io.popen('ls -a "'..dir..'"')
-        -- Check the list of files for the tell
-        for filename in pfile:lines() do
-            local match = filename == root_tell
-            if match then
-                root = dir
-                search_is_on = false
-            end
-        end
-        pfile:close()
-        if search_is_on then
-            if dir == '/' or dir == '~/' then
-                -- If we've reached the highest directory possible, call off
-                -- the search and return nothing
-                search_is_on = false
-                return(nil)
-            else
-                -- If there's still more to remove, remove it
-                dir = dir:match('(.*)/')
-                -- If dir is an empty string, look for the tell in *root* root
-                if dir == '' then dir = '/' end
-            end
-        else
-            return(root)
-        end
-    end
-end
+local init = {} -- Init functions & variables
+init.user_config = {} -- For user config
+init.config = {} -- For merged configs
+init.loaded = nil -- For load status
 
--- Private function to identify root directory on a windows machine
-local get_root_dir_windows = function(dir, root_tell)
+-- Public function to identify root directory on a unix or Windows machine
+init.getRootDir = function(dir, root_tell, os)
     local drive = dir:match('^%u')
     -- List files in directory
     local search_is_on, root = true, nil
@@ -133,7 +111,12 @@ local get_root_dir_windows = function(dir, root_tell)
     -- each pass
     while search_is_on do
         -- Get the output of running ls -a in dir
-        local pfile = io.popen('dir /b "'..dir..'"')
+        local pfile
+        if os:match('Windows') then
+            pfile = io.popen('dir /b "'..dir..'"')
+        else
+            pfile = io.popen('ls -a "'..dir..'"')
+        end
         -- Check the list of files for the tell
         for filename in pfile:lines() do
             local match = filename == root_tell
@@ -144,16 +127,30 @@ local get_root_dir_windows = function(dir, root_tell)
         end
         pfile:close()
         if search_is_on then
-            if dir == drive..':\\' then
-                -- If we've reached the highest directory possible, call off
-                -- the search and return nothing
-                search_is_on = false
-                return(nil)
+            if os:match('Windows') then
+                if dir == drive..':\\' then
+                    -- If we've reached the highest directory possible, call off
+                    -- the search and return nothing
+                    search_is_on = false
+                    return(nil)
+                else
+                    -- If there's still more to remove, remove it
+                    dir = dir:match('(.*)\\')
+                    -- If dir is an empty string, look for the tell in *root* root
+                    if dir == drive..':' then dir = drive..':\\' end
+                end
             else
-                -- If there's still more to remove, remove it
-                dir = dir:match('(.*)\\')
-                -- If dir is an empty string, look for the tell in *root* root
-                if dir == drive..':' then dir = drive..':\\' end
+                if dir == '/' or dir == '~/' then
+                    -- If we've reached the highest directory possible, call off
+                    -- the search and return nothing
+                    search_is_on = false
+                    return(nil)
+                else
+                    -- If there's still more to remove, remove it
+                    dir = dir:match('(.*)/')
+                    -- If dir is an empty string, look for the tell in *root* root
+                    if dir == '' then dir = '/' end
+                end
             end
         else
             return(root)
@@ -161,19 +158,10 @@ local get_root_dir_windows = function(dir, root_tell)
     end
 end
 
--- Initialize "init" table
-local init = {}
--- Table to store user config
-init.user_config = {}
--- Table to store merged configs
-init.config = {}
--- Initialize a variable for load status
-init.loaded = nil
-
 -- Run setup
 init.setup = function(user_config)
-    -- Get OS for use in a couple of functions
-    init.this_os = vim.loop.os_uname().sysname
+    init.this_os = vim.loop.os_uname().sysname -- Get OS
+    init.nvim_version = vim.fn.api_info().version.minor
     -- Get first opened file/buffer path and directory
     init.initial_buf = vim.api.nvim_buf_get_name(0)
     -- Determine initial_dir according to OS
@@ -194,6 +182,7 @@ init.setup = function(user_config)
     end
     -- Load extension if the filetype has a match in config.filetypes
     if load_on_ft[ft] then
+        init.utils = require('mkdnflow.utils')
         -- Read compatibility module & pass user config through config checker
         local compat = require('mkdnflow.compat')
         user_config = compat.userConfigCheck(user_config)
@@ -209,41 +198,47 @@ init.setup = function(user_config)
             -- If one was provided, try to find the root directory for the
             -- notebook/wiki using the tell
             if root_tell then
-                if init.this_os == 'Linux' or init.this_os == 'Darwin' then
-                    init.root_dir = get_root_dir_unix(init.initial_dir, root_tell)
-                    if init.root_dir then
-                        if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
-                    else
-                        local fallback = init.config.perspective.fallback
-                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found! Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
-                        init.config.perspective.priority = init.config.perspective.fallback
-                    end
-                elseif init.this_os == 'Windows_NT' then
-                    init.root_dir = get_root_dir_windows(init.initial_dir, root_tell)
-                    if init.root_dir then
-                        if not silent then vim.api.nvim_echo({{'⬇️  Root directory found: '..init.root_dir}}, true, {}) end
-                    else
-                        local fallback = init.config.perspective.fallback
-                        if not silent then vim.api.nvim_echo({{'⬇️  No suitable root directory found! Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
-                        init.config.perspective.priority = init.config.perspective.fallback
-                    end
+                init.root_dir = init.getRootDir(init.initial_dir, root_tell, init.this_os)
+                -- Get notebook name
+                if init.root_dir then
+                    vim.api.nvim_set_current_dir(init.root_dir)
+                    local name = init.root_dir:match('.*/(.*)') or init.root_dir
+                    if not silent then vim.api.nvim_echo({{'⬇️  Notebook: '..name}}, true, {}) end
                 else
-                    if not silent then vim.api.nvim_echo({{'⬇️  Cannot yet search for root directory on '..init.this_os..' machines.', 'ErrorMsg'}}, true, {}) end
-                    init.config.perspective.priority = init.config.perspective.fallback
+                    local fallback = init.config.perspective.fallback
+                    if not silent then vim.api.nvim_echo({{'⬇️  No notebook found. Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
+                    --init.config.perspective.priority = init.config.perspective.fallback
+                    -- Set working directory according to current perspective
+                    if fallback == 'first' then
+                        vim.api.nvim_set_current_dir(init.initial_dir)
+                    else
+                        local bufname = vim.api.nvim_buf_get_name(0)
+                        if init.this_os:match('Windows') then
+                            vim.api.nvim_set_current_dir(bufname:match('(.*)\\.-$'))
+                        else
+                            vim.api.nvim_set_current_dir(bufname:match('(.*)/.-$'))
+                        end
+                    end
                 end
             else
-                if not silent then vim.api.nvim_echo({{'⬇️  No tell was provided for the root directory. See :h mkdnflow-configuration.', 'WarningMsg'}}, true, {}) end
-                init.config.perspective.priority = init.config.perspective.fallback
+                if not silent then vim.api.nvim_echo({{'⬇️  No tell was provided for the notebook\'s root directory. See :h mkdnflow-configuration.', 'WarningMsg'}}, true, {}) end
+                --init.config.perspective.priority = init.config.perspective.fallback
+                if fallback == 'first' then
+                    vim.api.nvim_set_current_dir(init.initial_dir)
+                else
+                    -- Set working directory
+                    local bufname = vim.api.nvim_buf_get_name(0)
+                    if init.this_os:match('Windows') then
+                        vim.api.nvim_set_current_dir(bufname:match('(.*)\\.-$'))
+                    else
+                        vim.api.nvim_set_current_dir(bufname:match('(.*)/.-$'))
+                    end
+                end
             end
         end
         -- Load functions
-        init.utils = require('mkdnflow.utils')
+        init.paths = require('mkdnflow.paths')
         init.cursor = require('mkdnflow.cursor')
-        if init.this_os == 'Windows_NT' then
-            init.paths = require('mkdnflow.paths_windows')
-        else
-            init.paths = require('mkdnflow.paths')
-        end
         init.links = require('mkdnflow.links')
         init.buffers = require('mkdnflow.buffers')
         init.bib = require('mkdnflow.bib')
@@ -261,17 +256,39 @@ init.setup = function(user_config)
     else
         -- Record load status (i.e. not loaded)
         init.loaded = false
+        -- Make table of extension patterns to try to match
+        local extension_patterns = {}
+        for key, _ in pairs(load_on_ft) do
+            table.insert(extension_patterns, '*.'..key)
+        end
+        -- Define an autocommand to enable to plugin when the right buffer type is entered
+        if init.nvim_version >= 7 then
+            init.autocmd_id = vim.api.nvim_create_autocmd(
+                {'BufEnter'},
+                {
+                    pattern = extension_patterns,
+                    command = "Mkdnflow silent"
+                }
+            )
+        end
     end
 
 end
 
 -- Force start
-init.forceStart = function()
+init.forceStart = function(silent)
+    silent = silent or false
     if init.loaded == true then
         vim.api.nvim_echo({{"⬇️  Mkdnflow is already running!", 'ErrorMsg'}}, true, {})
     else
-        vim.api.nvim_echo({{"⬇️  Starting Mkdnflow.", 'WarningMsg'}}, true, {})
-        init.setup(init.user_config)
+        if silent ~= 'silent' then
+            vim.api.nvim_echo({{"⬇️  Starting Mkdnflow.", 'WarningMsg'}}, true, {})
+        end
+        if vim.fn.api_info().version.minor >= 7 then
+            init.setup(init.user_config)
+            -- Delete the autocommand
+            vim.api.nvim_del_autocmd(init.autocmd_id)
+        end
     end
 end
 

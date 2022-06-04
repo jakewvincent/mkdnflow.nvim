@@ -15,7 +15,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 ### ⚡ Requirements
 
 * Linux, macOS, or Windows
-* Neovim >= 0.5.0
+* Neovim >= 0.7.0 for all functionality (most will work with Neovim >= 0.5.0)
 * (Optional: If you wish to use custom UTF-8 symbols as your to-do symbols, you'll need the luarocks module `luautf8`. Luarocks dependencies can be installed via [Packer](#initlua).)
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
@@ -35,23 +35,24 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### Create and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
-    * Customizable filename prefix (default is the current date in `YYYY-MM-DD` format (see [Configuration](#prefix-dictionary-table)).
+    * 🆕 Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-table) config key for customization instructions.
 * `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
 * Create an anchor link if the visual selection starts with `#` 
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
 * `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste in the current buffer)
-    * 🆕 `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
+    * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
 
 ### Jump between links
 * `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
     * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
 
-### Customize perspective for link interpretation
-* Specify what perspective the plugin-should take when interpreting links to files. There are three options:
+### Customizable link interpretation
+* Specify what perspective the plugin-should take when interpreting links to files. There are [three options](#perspective-dictionary-table):
     1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
     2. Interpret links relative to the file open in the current buffer
-    3. 🆕 Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
-* 🆕 Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
+    3. Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
+    * Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
+* 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-table).
 
 ### Follow links _and citations_
 * `<CR>` on various kinds of links to "follow" them:
@@ -63,7 +64,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
         * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
         * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
 * `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
-    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_bib_path-string)
+    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_path-string)—or if `perspective.priority` is `root`, simply place your bib files to be searched in your notebook/wiki's root directory.
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
     * 🔥 Hot tip: make reaching your contacts via work messaging apps (e.g. Slack) easier by keeping a bib file that associates your contacts' messaging handles with the URL for your direct message thread with that contact. For instance, if you [point the plugin to a bib file](#default_bib_path-string) with the following entry, `<CR>`ing on `@dschrute` in a markdown document would take you to the associated Slack thread.
 
@@ -81,27 +82,31 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * `<Del>` to go **forward** (to the subsequent file/buffer opened in the current window, like clicking the forward button in a web browser)
 
 ### Keybindings
-* Easy-to-remember [default keybindings](#-commands-and-default-mappings)
-* 🆕 [Customize keybindings](#mappings-dictionary-table) individually or [disable them altogether](#use_mappings_table-boolean))
+* Easy-to-remember [default keybindings](#-commands-and-default-mappings) that activate only in markdown files
+* [Customize keybindings](#mappings-dictionary-table) individually or [disable them altogether](#use_mappings_table-boolean))
 
 ### Manipulate headings
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. 🆕 To-do symbols [can now be customized](#to_do-dictionary-table), but certain functions will not work for utf-8 to-do symbols.
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-table) (make sure to use the [luautf8 luarock dependency](#if-you-wish-to-use-custom-utf-8-to-do-symbols-add-the-luautf8-luarock-dependency) if you want to use utf8 to-do symbols).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
-* 🆕 Automatically update any parent to-dos when child to-dos are toggled.
+* Automatically update any parent to-dos when child to-dos are toggled.
     * When all child to-dos have been marked complete, the parent is marked complete
     * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
     * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
     * When a parent to-do is marked complete or in-progress and all child to-dos have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
+* 🆕 Manually update numbering with `MkdnUpdateNumbering` or `MkdnUpdateNumbering 0` if, e.g., you want to start numbering at 0
 * Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
+    * NOTE: The following functionality is disabled by default in case some find it intrusive. To enable the functionality, remap `<CR>` in insert mode (see the following code block).
     * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
-    * In unordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
     * In ordered lists: Add another item on the next line (keeping numbering updated), unless the current item is empty, in which case it will be erased
-    * NOTE: The above list functions are currently disabled by default in case some find them too intrusive. Please test them and provide feedback! To enable the functionality, you'll need to remap `<CR>` in insert mode:
+    * In unordered and ordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
+    * 🆕 Automatically indent a new list item when the current one ends in a colon
+    * 🆕 Demote empty indented list items by reducing the indentation by one level
+    * 🆕 Add new list items using the list type of the current line (see [MkdnExtendList](#-commands-and-default-mappings))
 
 ```lua
 require('mkdnflow').setup({
@@ -197,7 +202,6 @@ EOF
 
 ### ❗ Caveats/warnings
 
-* The plugin won't start *automatically* if the first-opened file is not one of the default or named extensions (see [Configuration](#%EF%B8%8F-configuration)), but you can manually start the plugin with the defined command `:Mkdnflow`.
 * All functionality of the plugin should now work on all operating systems, including Windows! However, since I don't use Windows on my daily driver, there may be edge cases that cause trouble. Please file an issue if anything comes up.
 
 ## ⚙️ Configuration
@@ -212,16 +216,34 @@ require('mkdnflow').setup({
     perspective = {
         priority = 'first',
         fallback = 'current',
-        root_tell = false
+        root_tell = false,
+        nvim_wd_heel = true
     },    
-    prefix = {
-        evaluate = true,
-        string = [[os.date('%Y-%m-%d_')]]
-    },
     wrap = false,
-    default_bib_path = '',
+    bib = {
+        default_path = nil,
+        find_in_root = true
+    },
     silent = false,
     use_mappings_table = true,
+    links = {
+        style = 'markdown',
+        implicit_extension = nil,
+        transform_implicit = false,
+        transform_explicit = function(text)
+            text = text:gsub(" ", "-")
+            text = text:lower()
+            text = os.date('%Y-%m-%d_')..text
+            return(text)
+        end
+    },
+    to_do = {
+        symbols = {' ', '-', 'X'},
+        update_parents = true,
+        not_started = ' ',
+        in_progress = '-',
+        complete = 'X'
+    },
     mappings = {
         MkdnNextLink = {'n', '<Tab>'},
         MkdnPrevLink = {'n', '<S-Tab>'},
@@ -236,18 +258,9 @@ require('mkdnflow').setup({
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {'n', '<C-Space>'},
-        MkdnNewListItem = false
-    },
-    links = {
-        style = 'markdown',
-        implicit_extension = nil
-    },
-    to_do = {
-        symbols = {' ', '-', 'X'},
-        update_parents = true,
-        not_started = ' ',
-        in_progress = '-',
-        complete = 'X'
+        MkdnNewListItem = false,
+        MkdnExtendList = false,
+        MkdnUpdateNumbering = {'n', '<leader>nn'}
     }
 })
 ```
@@ -268,6 +281,7 @@ Note: This functionality references the file's extension. It does not rely on Ne
     * `'first'`: Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)
     * `'current'`: Links will be interpreted relative to the current file
     * `'root'`: Links will be interpreted relative to the root directory of the current notebook/wiki (requires `perspective.root_tell` to be specified)
+    * `'nvim_wd_heel`: Changes in perspective will be reflected in the nvim working directory. This helps ensure (at least) that path completions (if using a completion plugin with support for paths) will be accurate and usable.
 * `perspective.fallback` (string): Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)
     * `'first'`: (see above)
     * `'current'`: (see above)
@@ -275,21 +289,15 @@ Note: This functionality references the file's extension. It does not rely on Ne
 * `perspective.root_tell` (string or boolean)
     * `'<any file name>'`: Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook/wiki. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`.
 
-#### `prefix` (dictionary table)
-* `prefix.string` (string value)
-    * `[[string]]`: A fixed string to prefix to new markdown document names in a link or a string of Lua code to evaluate at the time of link creation and use the output of as a prefix to the file name
-* `prefix.evaluate` (boolean value)
-    * `true`: The plugin will attempt to have Lua evaluate the string and will retrieve its output to prefix to the file name in the link
-    * `false`: The plugin will use `prefix.string` as a fixed prefix
-
-Note: If you don't want prefixes, set `evaluate = false` and `string = ''`
-
 #### `wrap` (boolean)
 * `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
 * `false`: When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
 
-#### `default_bib_path` (string)
-* `'path/to/.bib/file'`: Specifies a path where the plugin will look for a .bib file when citations are "followed"
+#### `bib` (dictionary table)
+* `bib.default_path` (string or `nil`): Specifies a path to a default .bib file to look for citation keys in (need not be in root directory of notebook)
+* `bib.find_in_root` (boolean)
+    * `true`: When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook/wiki's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.
+    * `false`: The notebook/wiki's root directory will not be searched for bib files.
 
 #### `silent` (boolean)
 * `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
@@ -315,6 +323,25 @@ Note: `<name of command>` should be the name of a commands defined in `mkdnflow.
     * `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
 * `links.implicit_extension` (string)
     * `<any extension>`: a string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) that new links should be created without an explicit extension
+* `links.transform_explicit` (function or `false`): A function that transforms the text to be inserted as the source/path of a link when a link is created. Anchor links are not currently customizable. If you want all link paths to be explicitly prefixed with the year, for instance, and for the path to be converted to uppercase, you could provide the following function under this key. (FYI: The previous functionality specified under the `prefix` key has been migrated here to provide greater flexibility.)
+
+```lua
+function(input)
+    return(string.upper(os.date('%Y-')..input))
+end
+```
+
+* `links.transform_implicit` (function or `false`): A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For instance, link paths that match a date pattern can be opened in a `journals` subdirectory of your wiki, and all others can be opened in a `pages` subdirectory, using the following function:
+
+```lua
+function(input)
+    if input:match('%d%d%d%d%-%d%d%-%d%d') then
+        return('journals/'..input)
+    else
+        return('pages/'..input)
+    end
+end
+```
 
 #### `to_do` (dictionary table)
 * `to_do.symbols` (array table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
@@ -359,8 +386,10 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `yfa`        | n    | `:MkdnYankFileAnchorLink<CR>` | Yank a formatted anchor link with the filename included before the anchor (if cursor is currently on a line with a heading) |
 | `+`          | n    | `:MkdnIncreaseHeading<CR>`    | Increase heading importance (remove hashes) |
 | `-`          | n    | `:MkdnDecreaseHeading<CR>`    | Decrease heading importance (add hashes) |
-| `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`         | Toggle to-do list item's completion status |
+| `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`         | Toggle to-do list item's completion status or convert a list item into a to-do list item |
+| `<leader>nn` | n    | `:MkdnUpdateNumbering<CR>`    | Update numbering for all siblings of the list item of the current line |
 | --           | --   | `:MkdnNewListItem<CR>`        | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item |
+| --           | --   | `:MkdnExtendList<CR>`         | Like above, but the cursor stays on the current line (new list items of the same typ are added below) |
 | --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
@@ -380,13 +409,13 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
 * [ ] Improve citation functionality
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
-    * [ ] Add ability to identify/use any given .bib file in notebook/wiki's root directory (if `perspective` is set to `root`)
 * [ ] Headings
     * [ ] Easy folding & unfolding
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Add ability to identify/use any given .bib file in notebook/wiki's root directory (if `perspective` is set to `root`)
 * [X] Lists
     * [X] To-do list functions & mappings
         * [X] Modify status of parent to-do when changing a child to-do (infer based on tab settings)
@@ -402,6 +431,17 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/04/22: Variant of MkdnNewListItem added as MkdnExtendList
+* 06/03/22: Add command and mapping for updating numbering
+* 05/30/22: Implement root directory switching to allow for easier switching between wikis
+* 05/30/22: Indent new list item when current one ends in a colon
+* 05/12/22: Add functionality to search for bib files in the project's root directory
+* 05/11/22: Customize path text when links are created with a customizable transformation function
+* 05/11/22: Customize link interpretation with a customizable interpretation function (thanks @jmbuhr!)
+
+<details>
+<summary>Older changes</summary><p>
+
 * 04/30/22: Customize link style (markdown/wiki; addresses [issue #10](https://github.com/jakewvincent/mkdnflow.nvim/issues/10))
 * 04/30/22: Added functionality to update parent to-dos when child to-do status is changed; customize to-do symbols
 * 04/28/22: Interpret links to markdown files correctly when specified with an absolute path (one starting with `/` or `~/`)
@@ -421,10 +461,6 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 04/11/22: Added ability to change heading level
 * 04/05/22: Added ability to create anchor links; jump to matching headings; yank formatted anchor links from headings
 * 04/03/22: Added ability to jump to headings if a link is an anchor link
-
-<details>
-<summary>Older changes</summary><p>
-
 * 03/06/22: Added ability to search .bib files and act on relevant information in bib entries when the cursor is in a citation and `<CR>` is pressed
 * 02/03/22: Fixed case issue w/ file extensions ([issue #13](https://github.com/jakewvincent/mkdnflow.nvim/issues/13))
 * 01/21/22: Path handler can now identify links with the file: prefix that have absolute paths or paths starting with `~/`

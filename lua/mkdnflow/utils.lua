@@ -31,5 +31,39 @@ M.moduleAvailable = function(name)
   end
 end
 
+M.luaEscape = function(string)
+    -- Which characters to match
+    local chars = "[-.'\"]"
+    -- Set up table of replacements
+    local replacements = {
+        ["-"] = "%-",
+        ["."] = "%.",
+        ["'"] = "\'",
+        ['"'] = '\"'
+    }
+    -- Do the replacement
+    local escaped = string.gsub(string, chars, replacements)
+    -- Return the new string
+    return(escaped)
+end
+
+M.escapeChars = function(string)
+    -- Which characters to match
+    local chars = "[ '&()$#]"
+    -- Set up table of replacements
+    local replacements = {
+        [" "] = "\\ ",
+        ["'"] = "\\'",
+        ["&"] = "\\&",
+        ["("] = "\\(",
+        [")"] = "\\)",
+        ["$"] = "\\$",
+        ["#"] = "\\#",
+    }
+    -- Do the replacement
+    local escaped = string.gsub(string, chars, replacements)
+    -- Return the new string
+    return(escaped)
+end
 
 return M
