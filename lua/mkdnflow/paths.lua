@@ -109,6 +109,8 @@ local handle_internal_file = function(path, anchor)
         path = path:gsub('/', '\\')
     end
 
+    local wd
+
     -- Decide what to pass to internal_open function
     if path:match('^~/') or path:match('^/') or path:match('^%u:\\') then
         path = path
@@ -124,8 +126,10 @@ local handle_internal_file = function(path, anchor)
         -- Paste together the dir of first-opened file & dir in link path
         if this_os:match('Windows') then
             path = initial_dir..'\\'..path
+            wd = path:match('(.*)\\.-$')
         else
             path = initial_dir..'/'..path
+            wd = path:match('(.*)/.-$')
         end
     else -- Otherwise, they want it relative to the current file
         -- Path of current file
@@ -147,9 +151,7 @@ local handle_internal_file = function(path, anchor)
         end
     end
     internal_open(path, anchor)
-    if perspective.update then
-        M.updateRoot()
-    end
+    M.updateRoot()
 end
 
 --[[
@@ -232,25 +234,52 @@ local handle_external_file = function(path)
 end
 
 M.updateRoot = function()
+    local wd
     -- See if the new file is in a different root directory
-    if perspective.priority == 'root' then
-        local cur_file = vim.api.nvim_buf_get_name(0)
-        if not root_dir or not cur_file:match(root_dir) then
-            local dir
-            -- Get the new root dir, if there is one
+    if perspective.update or perspective.vimwd_heel then
+        if perspective.priority == 'root' then
+            local cur_file = vim.api.nvim_buf_get_name(0)
+            if not root_dir or not cur_file:match(root_dir) then
+                local dir
+                -- Get the new root dir, if there is one
+                if this_os:match('Windows') then
+                    dir = cur_file:match('(.*)\\.-')
+                else
+                    dir = cur_file:match('(.*)/.-')
+                end
+                if perspective.update then
+                    root_dir = require('mkdnflow').getRootDir(dir, perspective.root_tell, this_os)
+                    if root_dir then
+                        local name = root_dir:match('.*/(.*)') or root_dir
+                        if not silent then vim.api.nvim_echo({{'⬇️  Notebook: '..name}}, true, {}) end
+                        wd = root_dir
+                    else
+                        if not silent then
+                            vim.api.nvim_echo(
+                                {{'⬇️  No notebook found. Fallback perspective: '..perspective.fallback, 'WarningMsg'}},
+                                true, {}
+                            )
+                            if perspective.fallback == 'first' and perspective.vimwd_heel then
+                                wd = initial_dir
+                            elseif perspective.vimwd_heel then -- Otherwise, set wd to directory the current buffer is in
+                                wd = dir
+                            end
+                        end
+                    end
+                end
+            end
+        elseif perspective.priority == 'first' and perspective.vimwd_heel then
+            wd = initial_dir
+        elseif perspective.vimwd_heel then
+            local cur_file = vim.api.nvim_buf_get_name(0)
             if this_os:match('Windows') then
-                dir = cur_file:match('(.*)\\.-')
+                wd = cur_file:match('(.*)\\.-$')
             else
-                dir = cur_file:match('(.*)/.-')
+                wd = cur_file:match('(.*)/.-$')
             end
-            root_dir = require('mkdnflow').getRootDir(dir, perspective.root_tell, this_os)
-            if root_dir then
-                local name = root_dir:match('.*/(.*)') or root_dir
-                if not silent then vim.api.nvim_echo({{'⬇️  Notebook: '..name}}, true, {}) end
-            else
-                local fallback = perspective.fallback
-                if not silent then vim.api.nvim_echo({{'⬇️  No notebook found. Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
-            end
+        end
+        if perspective.vimwd_heel and wd then
+            vim.api.nvim_set_current_dir(wd)
         end
     end
 end

@@ -21,7 +21,8 @@ local default_config = {
         priority = 'first',
         fallback = 'current',
         root_tell = false,
-        update = true
+        update = true,
+        vimwd_heel = true
     },
     filetypes = {
         md = true,
@@ -200,16 +201,39 @@ init.setup = function(user_config)
                 init.root_dir = init.getRootDir(init.initial_dir, root_tell, init.this_os)
                 -- Get notebook name
                 if init.root_dir then
+                    vim.api.nvim_set_current_dir(init.root_dir)
                     local name = init.root_dir:match('.*/(.*)') or init.root_dir
                     if not silent then vim.api.nvim_echo({{'⬇️  Notebook: '..name}}, true, {}) end
                 else
                     local fallback = init.config.perspective.fallback
                     if not silent then vim.api.nvim_echo({{'⬇️  No notebook found. Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
-                    init.config.perspective.priority = init.config.perspective.fallback
+                    --init.config.perspective.priority = init.config.perspective.fallback
+                    -- Set working directory according to current perspective
+                    if fallback == 'first' then
+                        vim.api.nvim_set_current_dir(init.initial_dir)
+                    else
+                        local bufname = vim.api.nvim_buf_get_name(0)
+                        if init.this_os:match('Windows') then
+                            vim.api.nvim_set_current_dir(bufname:match('(.*)\\.-$'))
+                        else
+                            vim.api.nvim_set_current_dir(bufname:match('(.*)/.-$'))
+                        end
+                    end
                 end
             else
                 if not silent then vim.api.nvim_echo({{'⬇️  No tell was provided for the notebook\'s root directory. See :h mkdnflow-configuration.', 'WarningMsg'}}, true, {}) end
-                init.config.perspective.priority = init.config.perspective.fallback
+                --init.config.perspective.priority = init.config.perspective.fallback
+                if fallback == 'first' then
+                    vim.api.nvim_set_current_dir(init.initial_dir)
+                else
+                    -- Set working directory
+                    local bufname = vim.api.nvim_buf_get_name(0)
+                    if init.this_os:match('Windows') then
+                        vim.api.nvim_set_current_dir(bufname:match('(.*)\\.-$'))
+                    else
+                        vim.api.nvim_set_current_dir(bufname:match('(.*)/.-$'))
+                    end
+                end
             end
         end
         -- Load functions
