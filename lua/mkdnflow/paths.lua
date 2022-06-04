@@ -151,7 +151,7 @@ local handle_internal_file = function(path, anchor)
         end
     end
     internal_open(path, anchor)
-    M.updateRoot()
+    M.updateDirs()
 end
 
 --[[
@@ -233,7 +233,7 @@ local handle_external_file = function(path)
     open(escaped_path)
 end
 
-M.updateRoot = function()
+M.updateDirs = function()
     local wd
     -- See if the new file is in a different root directory
     if perspective.update or perspective.vimwd_heel then
