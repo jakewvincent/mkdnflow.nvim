@@ -506,14 +506,8 @@ M.followLink = function(path, anchor)
     else
         path, anchor = M.getLinkPart('path')
     end
-    local handlePath
-    if this_os == 'Windows_NT' then
-        handlePath = require('mkdnflow.paths_windows').handlePath
-    else
-        handlePath = require('mkdnflow.paths').handlePath
-    end
     if path then
-        handlePath(path, anchor)
+        require('mkdnflow.paths').handlePath(path, anchor)
     else
         M.createLink()
     end
