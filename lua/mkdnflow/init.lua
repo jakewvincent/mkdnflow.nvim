@@ -165,7 +165,7 @@ init.setup = function(user_config)
     -- Get first opened file/buffer path and directory
     init.initial_buf = vim.api.nvim_buf_get_name(0)
     -- Determine initial_dir according to OS
-    if init.this_os == 'Windows_NT' then
+    if init.this_os:match('Windows') then
         init.initial_dir = init.initial_buf:match('(.*)\\.-')
     else
         init.initial_dir = init.initial_buf:match('(.*)/.-')
