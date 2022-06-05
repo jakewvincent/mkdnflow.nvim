@@ -115,7 +115,8 @@ M.getLinkPart = function(part)
                         path_pattern
                     ), 2, -2
                 )
-                local path_com, path_fin = line[1]:find(path, indices['com'])
+                local path_first, path_last = line[1]:find(link_style ~= 'wiki' and '%]%('..path or path, indices['first'])
+                if link_style ~= 'wiki' then path_first = path_first + 2 end
                 local anchor
                 local path_type = require('mkdnflow.paths').pathType(path)
                 if path_type == 'filename' then
@@ -124,7 +125,7 @@ M.getLinkPart = function(part)
                         path = path:match('(.+%.md)#') or path:match('(.+)#')
                     end
                 end
-                return path, anchor, path_com, path_fin, row
+                return path, anchor, path_first, path_last, row
             end
         end
     else -- If one wasn't found, perform another search, this time for citations
