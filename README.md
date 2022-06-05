@@ -77,6 +77,11 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 ### Create missing directories
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#create_dirs-boolean)
 
+### Rename link sources and files simultaneously
+* 🆕 Use built-in dialog triggered by `MkdnMoveSource` (mapped to `<F2>` by default) to rename a link's source *and rename/move the linked file* simultaneously
+    * [Perspective](#customizable-link-interpretation), [implicit extensions](#links-dictionary-table), and custom [implicit transformations](#links-dictionary-table) are all taken into account when moving the linked file
+    * The dialog will confirm the details of the changes for you to approve/reject before taking any action
+
 ### Backward and forward navigation
 * `<BS>` to go **backward** (to the previous file/buffer opened in the current window, like clicking the back button in a web browser)
 * `<Del>` to go **forward** (to the subsequent file/buffer opened in the current window, like clicking the forward button in a web browser)
@@ -253,6 +258,7 @@ require('mkdnflow').setup({
         MkdnGoForward = {'n', '<Del>'},
         MkdnFollowLink = {{'n', 'v'}, '<CR>'},
         MkdnDestroyLink = {'n', '<M-CR>'},
+        MkdnMoveSource = {'n', '<F2>'},
         MkdnYankAnchorLink = {'n', 'ya'},
         MkdnYankFileAnchorLink = {'n', 'yfa'},
         MkdnIncreaseHeading = {'n', '+'},
@@ -381,6 +387,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<BS>`       | n    | `:MkdnGoBack<CR>`             | Open the historically last-active buffer in the current window |
 | `<Del>`      | n    | `:MkdnGoForward<CR>`          | Open the buffer that was historically navigated away from in the current window |
 | `<CR>`       | n, v | `:MkdnFollowLink<CR>`         | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
+| `<F2>`       | n    | `:MkdnMoveSource<CR>`         | Open a dialog where you can provide a new source for a link and the plugin will rename and move the associated file on the backend (and rename the link source) |
 | `<M-CR>`     | n    | `:MkdnDestroyLink<CR>`        | Destoy the link under the cursor, replacing it with just the text from [...] |
 | `ya`         | n    | `:MkdnYankAnchorLink<CR>`     | Yank a formatted anchor link (if cursor is currently on a line with a heading) |
 | `yfa`        | n    | `:MkdnYankFileAnchorLink<CR>` | Yank a formatted anchor link with the filename included before the anchor (if cursor is currently on a line with a heading) |
@@ -400,21 +407,20 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (nvim-autopairs, allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
+* [ ] Headings
+    * [ ] Easy folding & unfolding
+* [ ] Improve citation functionality
+    * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 * [ ] Fancy table creation & editing
     * [ ] Create a table of x columns and y rows
     * [ ] Add/remove columns and rows
     * [ ] Horizontal and vertical navigation through tables (with `<Tab>` and `<CR>`?)
     * [ ] Make a way for the user to define specialized tables (e.g. time sheets)
-* [ ] Easily rename file in link
-* [ ] Command to add a "quick note" (add link to a specified file, e.g. `index.md`, and open the quick note)
-* [ ] Improve citation functionality
-    * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
-* [ ] Headings
-    * [ ] Easy folding & unfolding
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Easily rename file in link
 * [X] Add ability to identify/use any given .bib file in notebook/wiki's root directory (if `perspective` is set to `root`)
 * [X] Lists
     * [X] To-do list functions & mappings
@@ -431,6 +437,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
 * 06/04/22: Variant of MkdnNewListItem added as MkdnExtendList
 * 06/03/22: Add command and mapping for updating numbering
 * 05/30/22: Implement root directory switching to allow for easier switching between wikis
