@@ -401,9 +401,7 @@ M.newListItem = function(fanciness)
             end
             -- Set the next line and move the cursor
             vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
-            if fanciness == 'fancy' then
-                vim.api.nvim_win_set_cursor(0, {row + 1, (next_col)})
-            end
+            vim.api.nvim_win_set_cursor(0, {row + 1, (next_col)})
             -- Update the numbering
             if li_type == 'ol' or li_type == 'oltd' then
                 update_numbering(row, indentation, li_type, false)
@@ -420,7 +418,6 @@ M.newListItem = function(fanciness)
                 update_numbering(row + 1, new_indentation..vim_indent, li_type, false, 1)
             -- Otherwise, demote using the canonical demotion
             else
-                print("Here I am!")
                 -- Make a new line with the demotion
                 local demotion = utf8.match(line, patterns[li_type].demotion)
                 vim.api.nvim_buf_set_lines(0, row - 1, row, false, {demotion})
