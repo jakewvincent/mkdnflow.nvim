@@ -15,8 +15,13 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local utils = require('mkdnflow').utils
+local silent = require('mkdnflow').config.silent
 local warn = function(message)
     vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {})
+end
+-- Show a warning message if nvim < 0.7.x
+if require('mkdnflow').nvim_version < 7 and not silent then
+    warn("⬇️  Not all Mkdnflow functionality will work for your current version of Neovim, including mappings. Please upgrade to Neovim >= 0.7 or make sure to set your mappings in your Neovim config.")
 end
 local M = {}
 
