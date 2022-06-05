@@ -42,18 +42,6 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste in the current buffer)
     * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
 
-### Jump between links
-* `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
-    * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
-
-### Customizable link interpretation
-* Specify what perspective the plugin-should take when interpreting links to files. There are [three options](#perspective-dictionary-table):
-    1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
-    2. Interpret links relative to the file open in the current buffer
-    3. Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
-    * Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
-* 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-table).
-
 ### Follow links _and citations_
 * `<CR>` on various kinds of links to "follow" them:
     * `.md` links open in the current window
@@ -73,6 +61,18 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     url={https://dundermifflin.slack.com/archives/P07BFJD82}
 }
 ```
+
+### Jump between links
+* `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
+    * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
+
+### Customizable link interpretation
+* Specify what perspective the plugin-should take when interpreting links to files. There are [three options](#perspective-dictionary-table):
+    1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
+    2. Interpret links relative to the file open in the current buffer
+    3. Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
+    * Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
+* 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-table).
 
 ### Create missing directories
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#create_dirs-boolean)
