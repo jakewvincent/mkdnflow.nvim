@@ -3,12 +3,12 @@
 </p>
 <p align=center><img src="https://camo.githubusercontent.com/dba3dd4ec5c0640974a4dad6acdef2e5fe9ef9eee3160ff309aa40dcb091b956/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f6c75612d2532333243324437322e7376673f267374796c653d666c6174266c6f676f3d6c7561266c6f676f436f6c6f723d7768697465"></p>
 <p align=center>
-   <a href="#-features">Features</a> / <a href="#-installation">Installation</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
+   <a href="#-features">Features</a> / <a href="#-installation">Installation</a> / <a href="#-starting-a-notebook">Starting a notebook</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
 </p>
 
 ## 📝 Description
 
-This plugin is designed for the *fluent* navigation of notebooks/journals/wikis written in [markdown](https://markdownguide.org). It is a set of functions and mappings to those functions which make it easy to navigate and manipulate markdown notebooks/journals/wikis in Neovim. The original goal of Mkdnflow was to replicate some features from [Vimwiki](https://github.com/vimwiki/vimwiki) in Lua instead of Vimscript, but my current goal for this project is to make this plugin as useful as possible for anyone using Neovim who maintains a set of markdown notes and wishes to efficiently navigate those notes and keep them organized and connected.
+This plugin is designed for the *fluent* navigation of notebooks (AKA "wikis") written in [markdown](https://markdownguide.org). It is a set of functions and mappings to those functions which make it easy to navigate and manipulate markdown notebooks in Neovim. The original goal of Mkdnflow was to replicate some features from [Vimwiki](https://github.com/vimwiki/vimwiki) in Lua instead of Vimscript, but my current goal for this project is to make this plugin as useful as possible for anyone using Neovim who maintains a set of markdown notes and wishes to efficiently navigate those notes and keep them organized and connected.
 
 I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.nvim/issues) and appreciate feature requests, suggestions, and bug reports. If you'd like to contribute to the plugin, fork this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls) with your changes or additions. If you need Lua resources, see [this page](https://neovim.io/doc/lua-resources/) for a starting point or run `:h lua` or `:h api` in Neovim.
 
@@ -52,7 +52,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
         * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
         * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
 * `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
-    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_path-string)—or if `perspective.priority` is `root`, simply place your bib files to be searched in your notebook/wiki's root directory.
+    * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_path-string)—or if `perspective.priority` is `root`, simply place your bib files to be searched in your notebook's root directory.
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
     * 🔥 Hot tip: make reaching your contacts via work messaging apps (e.g. Slack) easier by keeping a bib file that associates your contacts' messaging handles with the URL for your direct message thread with that contact. For instance, if you [point the plugin to a bib file](#default_bib_path-string) with the following entry, `<CR>`ing on `@dschrute` in a markdown document would take you to the associated Slack thread.
 
@@ -70,7 +70,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Specify what perspective the plugin-should take when interpreting links to files. There are [three options](#perspective-dictionary-table):
     1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
     2. Interpret links relative to the file open in the current buffer
-    3. Interpret links relative to the root directory of the notebook/wiki that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
+    3. Interpret links relative to the root directory of the notebook that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
     * Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
 * 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-table).
 
@@ -207,7 +207,11 @@ EOF
 
 ### ❗ Caveats/warnings
 
-* All functionality of the plugin should now work on all operating systems, including Windows! However, since I don't use Windows on my daily driver, there may be edge cases that cause trouble. Please file an issue if anything comes up.
+All functionality of the plugin should now work on all operating systems, including Windows! However, since I don't use Windows on my daily driver, there may be edge cases that cause trouble. Please file an issue if anything comes up.
+
+## 🏁 Starting a notebook
+
+As long as you successfully installed Mkdnflow, you don't need to do anything special to start using the plugin. All of the plugin's features will be enabled for any markdown file (or for any filetype you specify under the `filetypes` config key). If you would like to start a notebook (AKA "wiki"), first create a directory for it. If you're using Neovim in the terminal, simply enter `nvim index.md` and start writing. I would suggest using `index.md` as your landing page/table of contents that contains links to all other notes in your notebook. If you use such a landing page, try setting `perspective.priority` in your Mkdnflow config to `'root'` and your `perspective.root_tell` 'index.md'` so that Mkdnflow can identify your notebook's root directory.
 
 ## ⚙️ Configuration
 
@@ -286,14 +290,14 @@ Note: This functionality references the file's extension. It does not rely on Ne
 * `perspective.priority` (string): Specifies the priority perspective to take when interpreting link paths
     * `'first'`: Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)
     * `'current'`: Links will be interpreted relative to the current file
-    * `'root'`: Links will be interpreted relative to the root directory of the current notebook/wiki (requires `perspective.root_tell` to be specified)
+    * `'root'`: Links will be interpreted relative to the root directory of the current notebook (requires `perspective.root_tell` to be specified)
     * `'nvim_wd_heel'`: Changes in perspective will be reflected in the nvim working directory. (In other words, the working directory will "heel" to the plugin's perspective.) This helps ensure (at least) that path completions (if using a completion plugin with support for paths) will be accurate and usable.
 * `perspective.fallback` (string): Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)
     * `'first'`: (see above)
     * `'current'`: (see above)
     * `'root'`: (see above)
 * `perspective.root_tell` (string or boolean)
-    * `'<any file name>'`: Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook/wiki. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`.
+    * `'<any file name>'`: Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`.
 
 #### `wrap` (boolean)
 * `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
@@ -302,8 +306,8 @@ Note: This functionality references the file's extension. It does not rely on Ne
 #### `bib` (dictionary table)
 * `bib.default_path` (string or `nil`): Specifies a path to a default .bib file to look for citation keys in (need not be in root directory of notebook)
 * `bib.find_in_root` (boolean)
-    * `true`: When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook/wiki's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.
-    * `false`: The notebook/wiki's root directory will not be searched for bib files.
+    * `true`: When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.
+    * `false`: The notebook's root directory will not be searched for bib files.
 
 #### `silent` (boolean)
 * `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
@@ -337,7 +341,7 @@ function(input)
 end
 ```
 
-* `links.transform_implicit` (function or `false`): A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For instance, link paths that match a date pattern can be opened in a `journals` subdirectory of your wiki, and all others can be opened in a `pages` subdirectory, using the following function:
+* `links.transform_implicit` (function or `false`): A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For instance, link paths that match a date pattern can be opened in a `journals` subdirectory of your notebook, and all others can be opened in a `pages` subdirectory, using the following function:
 
 ```lua
 function(input)
@@ -421,7 +425,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 <summary>Completed to-dos</summary><p>
 
 * [X] Easily rename file in link
-* [X] Add ability to identify/use any given .bib file in notebook/wiki's root directory (if `perspective` is set to `root`)
+* [X] Add ability to identify/use any given .bib file in notebook's root directory (if `perspective` is set to `root`)
 * [X] Lists
     * [X] To-do list functions & mappings
         * [X] Modify status of parent to-do when changing a child to-do (infer based on tab settings)
@@ -440,7 +444,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
 * 06/04/22: Variant of MkdnNewListItem added as MkdnExtendList
 * 06/03/22: Add command and mapping for updating numbering
-* 05/30/22: Implement root directory switching to allow for easier switching between wikis
+* 05/30/22: Implement root directory switching to allow for easier switching between notebooks
 * 05/30/22: Indent new list item when current one ends in a colon
 * 05/12/22: Add functionality to search for bib files in the project's root directory
 * 05/11/22: Customize path text when links are created with a customizable transformation function
@@ -459,7 +463,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 04/24/22: User can shut up messages by specifying 'true' in their config under the 'silent' key
 * 04/24/22: Added Windows compatibility!
 * 04/23/22: Major reorganization of followPath() function which ships off some of its old functionality to the new links module and much of it to smaller, path-type-specific functions in the new paths module
-* 04/22/22: Added ability to identify the notebook/wiki's root directory by specifying a "tell" in the config (a file that can be used to identify the root)
+* 04/22/22: Added ability to identify the notebook's root directory by specifying a "tell" in the config (a file that can be used to identify the root)
 * 04/20/22: Added ability to replace a link with just its name (effectively undoing the link) -- mapped to `<M-CR>` by default (Alt-Enter)
 * 04/20/22: Fix for [issue #22](https://github.com/jakewvincent/mkdnflow.nvim/issues/22)
 * 04/19/22: Toggle to-do list item's completion status
