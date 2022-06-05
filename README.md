@@ -111,7 +111,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * In unordered and ordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
     * 🆕 Automatically indent a new list item when the current one ends in a colon
     * 🆕 Demote empty indented list items by reducing the indentation by one level
-    * 🆕 Add new list items using the list type of the current line (see [MkdnExtendList](#-commands-and-default-mappings))
+* 🆕 Add new list items using the list type of the current line without any of the fancy stuff listed above (see [MkdnExtendList](#-commands-and-default-mappings))
 
 ```lua
 require('mkdnflow').setup({
