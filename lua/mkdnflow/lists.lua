@@ -330,6 +330,8 @@ M.toggleToDo = function(row, status, meta)
             end
         elseif string.lower(mode):match('v') then
             if not silent then vim.api.nvim_echo({{'⬇️  Use simple visual mode (not line/block)', 'WarningMsg'}}, true, {}) end
+        else
+            M.toggleToDo()
         end
     else
         -- Get the line the cursor is on or of the row that was provided
