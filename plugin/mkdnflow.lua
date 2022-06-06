@@ -41,7 +41,7 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! -nargs=* Mkdnflow lua require('mkdnflow').forceStart(<f-args>)", true)
     vim.api.nvim_exec("command! MkdnIncreaseHeading lua require('mkdnflow').cursor.changeHeadingLevel('increase')", true)
     vim.api.nvim_exec("command! MkdnDecreaseHeading lua require('mkdnflow').cursor.changeHeadingLevel('decrease')", true)
-    vim.api.nvim_exec("command! MkdnToggleToDo lua require('mkdnflow').lists.toggleToDo()", true)
+    vim.api.nvim_exec("command! MkdnToggleToDo lua require('mkdnflow').lists.toggleToDo(false, false, true)", true)
     vim.api.nvim_exec("command! MkdnNewListItem lua require('mkdnflow').lists.newListItem()", true)
     vim.api.nvim_exec("command! MkdnExtendList lua require('mkdnflow').lists.newListItem('simple')", true)
     vim.api.nvim_exec("command! -nargs=* MkdnUpdateNumbering lua require('mkdnflow').lists.updateNumbering(<f-args>)", true)

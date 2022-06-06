@@ -179,7 +179,7 @@ local same_siblings = function(indentation, row, status)
         local prev_line = vim.api.nvim_buf_get_lines(0, start, start + 1, false)
         local has_status = get_status(prev_line[1])
         if has_status then
-            local sib_indentation = prev_line[1]:match('(%s*)[-*]')
+            local sib_indentation = prev_line[1]:match('(%s*)[-*%d]+%.*')
             if #sib_indentation == #indentation then
                 table.insert(sib_statuses, has_status)
                 start = start - 1
@@ -200,7 +200,7 @@ local same_siblings = function(indentation, row, status)
         local next_line = vim.api.nvim_buf_get_lines(0, start, start + 1, false)
         local has_status = get_status(next_line[1])
         if has_status then
-            local sib_indentation = next_line[1]:match('(%s*)[-*]')
+            local sib_indentation = next_line[1]:match('(%s*)[-*%d]+%.*')
             if #sib_indentation == #indentation then
                 table.insert(sib_statuses, has_status)
                 start = start + 1
@@ -242,7 +242,7 @@ local update_parent_to_do = function() end
 
 update_parent_to_do = function(line, row, symbol)
     -- See if there's any whitespace before the bullet
-    local is_indented = line:match('^(%s+)[-*]')
+    local is_indented = line:match('^(%s+)[-*%d]+%.*')
     -- If the current to-do is indented, it may have a parent to-do
     if is_indented then
         local start = row - 2
@@ -255,7 +255,7 @@ update_parent_to_do = function(line, row, symbol)
             -- If there's a to-do on the prev line, see if it's less indented
             local has_to_do = get_status(prev_line[1])
             if has_to_do then
-                local indentation = prev_line[1]:match('^(%s*)[-*]')
+                local indentation = prev_line[1]:match('^(%s*)[-*%d]+%.*')
                 parent = #indentation < #is_indented
             else
                 parent = nil
@@ -314,45 +314,63 @@ end
 toggleToDo() retrieves a line when called, checks if it has a to-do item with
 [ ], [-], or [X], and changes the completion status to the next in line.
 --]]
-M.toggleToDo = function(row, status)
-    -- Get the line the cursor is on or of the row that was provided
-    local position = vim.api.nvim_win_get_cursor(0)
-    row = row or position[1]
-    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-    -- See if pattern is matched
-    local todo = get_status(line)
-    local get_index = function(symbol)
-        for i, v in ipairs(to_do_symbols) do
-            if symbol == utils.luaEscape(v) then
-                return i
-            end
-        end
-    end
-    -- If it is, do the replacement with the next completion status
-    if todo then
-        local new_symbol
-        if status then
-            new_symbol = status
-        else
-            local index = get_index(todo)
-            local next_index
-            if index == #to_do_symbols then
-                next_index = 1
+M.toggleToDo = function(row, status, meta)
+    -- Run considering the mode
+    if meta then
+        local mode = string.lower(vim.api.nvim_get_mode()['mode'])
+        if mode:match('v') then
+            local first = vim.api.nvim_buf_get_mark(0, '<')[1]
+            local last = vim.api.nvim_buf_get_mark(0, '>')[1]
+            if first == 0 or last == 0 then
+                M.toggleToDo()
             else
-                next_index = index + 1
+                for line = first, last do
+                    M.toggleToDo(line, status, false)
+                end
             end
-            new_symbol = to_do_symbols[next_index]
+        else
+            M.toggleToDo(vim.api.nvim_win_get_cursor(0)[1])
         end
-        local first, last = string.find(line, '%[' .. todo .. '%]')
-        vim.api.nvim_buf_set_text(0, row - 1, first, row - 1, last - 1, {new_symbol})
-        -- Update parent to-dos (if any)
-        if to_do_update_parents then update_parent_to_do(line, row, new_symbol) end
-    elseif has_list_type(line)[1] == 'ul' or has_list_type(line)[1] == 'ol' then
-        local list = has_list_type(line)
-        vim.api.nvim_buf_set_text(0, row - 1, list[2], row - 1, list[2], {' [ ]'})
     else
-        local message = '⬇️  Not a to-do list item!'
-        if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
+        -- Get the line the cursor is on or of the row that was provided
+        --local position = vim.api.nvim_win_get_cursor(0)
+        row = row or vim.api.nvim_win_get_cursor(0)[1]
+        local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+        -- See if pattern is matched
+        local todo = get_status(line)
+        local get_index = function(symbol)
+            for i, v in ipairs(to_do_symbols) do
+                if symbol == utils.luaEscape(v) then
+                    return i
+                end
+            end
+        end
+        -- If it is, do the replacement with the next completion status
+        if todo then
+            local new_symbol
+            if status then
+                new_symbol = status
+            else
+                local index = get_index(todo)
+                local next_index
+                if index == #to_do_symbols then
+                    next_index = 1
+                else
+                    next_index = index + 1
+                end
+                new_symbol = to_do_symbols[next_index]
+            end
+            local first, last = string.find(line, '%[' .. todo .. '%]')
+            vim.api.nvim_buf_set_text(0, row - 1, first, row - 1, last - 1, {new_symbol})
+            -- Update parent to-dos (if any)
+            if to_do_update_parents then update_parent_to_do(line, row, new_symbol) end
+        elseif has_list_type(line) == 'ul' or has_list_type(line) == 'ol' then
+            local list = has_list_type(line)
+            vim.api.nvim_buf_set_text(0, row - 1, list[2], row - 1, list[2], {' [ ]'})
+        else
+            local message = '⬇️  Not a to-do list item!'
+            if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
+        end
     end
 end
 
