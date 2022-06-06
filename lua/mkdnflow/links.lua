@@ -27,6 +27,7 @@ local this_os = require('mkdnflow').this_os
 local link_style = require('mkdnflow').config.links.style
 local implicit_extension = require('mkdnflow').config.links.implicit_extension
 local transform_path = require('mkdnflow').config.links.transform_explicit
+local utils = require('mkdnflow').utils
 
 -- Table for global functions
 local M = {}
@@ -115,7 +116,7 @@ M.getLinkPart = function(part)
                         path_pattern
                     ), 2, -2
                 )
-                local path_first, path_last = line[1]:find(link_style ~= 'wiki' and '%]%('..path or path, indices['first'])
+                local path_first, path_last = line[1]:find(link_style ~= 'wiki' and '%]%('..utils.luaEscape(path) or utils.luaEscape(path), indices['first'])
                 if link_style ~= 'wiki' then path_first = path_first + 2 end
                 local anchor
                 local path_type = require('mkdnflow.paths').pathType(path)
