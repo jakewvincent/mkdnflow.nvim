@@ -41,10 +41,10 @@ local cursor = require('mkdnflow.cursor')
 local links = require('mkdnflow.links')
 
 --[[
-does_exist() determines whether the path specified as the argument exists
+exists() determines whether the path specified as the argument exists
 NOTE: Assumes that the initially opened file is in an existing directory!
 --]]
-local does_exist = function(path, type)
+local exists = function(path, type)
     -- If type is not specified, use "d" (directory) by default
     type = type or "d"
     local handle
@@ -57,16 +57,16 @@ local does_exist = function(path, type)
             'if [ -'..type..' "'..path..'" ]; then echo true; else echo false; fi'
         )
     end
-    local exists = handle:read('*l')
+    local output = handle:read('*l')
     io.close(handle)
     -- Get the contents of the first (only) line & store as a boolean
-    if exists == 'false' then
-        exists = false
+    if output == 'false' then
+        output = false
     else
-        exists = true
+        output = true
     end
     -- Return the existence property of the path
-    return(exists)
+    return(output)
 end
 
 local M = {}
@@ -78,7 +78,7 @@ local handle_internal_file = function(path, anchor)
         local dir = string.match(path_, '(.*)'..sep..'.-$')
         -- If there's a dir & user wants dirs created, do so if necessary
         if dir and create_dirs then
-            local dir_exists = does_exist(dir)
+            local dir_exists = exists(dir)
             if not dir_exists then
                 if this_os:match('Windows') then
                     os.execute('mkdir "'..dir..'"')
@@ -152,8 +152,8 @@ local open = function(path)
     -- false alert if there are escape chars
     if links.hasUrl(path) then
         shell_open(path)
-    elseif does_exist(path, "f") == false and
-        does_exist(path, "d") == false then
+    elseif exists(path, "f") == false and
+        exists(path, "d") == false then
         if not silent then vim.api.nvim_echo({{"⬇️  "..path.." doesn't seem to exist!", 'ErrorMsg'}}, true, {}) end
     else
         shell_open(path)
@@ -395,15 +395,15 @@ M.moveSource = function()
                     end
                 end
                 derived_goal = derive_path(derived_goal, M.pathType(derived_goal))
-                local source_exists = does_exist(derived_source, 'f')
-                local goal_exists = does_exist(derived_goal, 'f')
+                local source_exists = exists(derived_source, 'f')
+                local goal_exists = exists(derived_goal, 'f')
                 local dir = string.match(derived_goal, '(.*)'..sep..'.-$')
                 if goal_exists then -- If the goal location already exists, abort
                     vim.api.nvim_command("normal! :")
                     vim.api.nvim_echo({{'⬇️  \''..location..'\' already exists! Aborting.', 'WarningMsg'}}, true, {})
                 elseif source_exists then -- If the source location exists, proceed
                     if dir then -- If there's a directory in the goal location, ...
-                        local to_dir_exists = does_exist(dir, 'd')
+                        local to_dir_exists = exists(dir, 'd')
                         if not to_dir_exists then
                             if create_dirs then
                                 local path_to_file = utils.escapeChars(dir)
