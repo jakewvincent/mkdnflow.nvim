@@ -71,64 +71,65 @@ end
 
 local M = {}
 
-local handle_internal_file = function(path, anchor)
-    -- Local function to open the provided path
-    local internal_open = function(path_, anchor_)
-        -- See if a directory is part of the path
-        local dir = string.match(path_, '(.*)'..sep..'.-$')
-        -- If there's a dir & user wants dirs created, do so if necessary
-        if dir and create_dirs then
-            local dir_exists = exists(dir)
-            if not dir_exists then
-                if this_os:match('Windows') then
-                    os.execute('mkdir "'..dir..'"')
-                else
-                    local path_to_file = utils.escapeChars(dir)
-                    os.execute('mkdir -p '..path_to_file)
-                end
-            end
-        end
-        -- If the path starts with a tilde, replace it w/ $HOME
-        if this_os == 'Linux' or this_os == 'Darwin' then
-            if string.match(path_, '^~/') then
-                path_ = string.gsub(path_, '^~/', '$HOME/')
-            end
-        end
-        -- Push the current buffer name onto the main buffer stack
-        buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
-        vim.cmd(':e '..path_)
-        if anchor_ then
-            cursor.toHeading(anchor_)
-        end
-    end
-
+local resolve_notebook_path = function(path, sub_home_var)
+    sub_home_var = sub_home_var or false
+    local derived_path = path
     if this_os:match('Windows') then
-        path = path:gsub('/', '\\')
+        derived_path = derived_path:gsub('/', '\\')
     end
-
-    local wd
-
     -- Decide what to pass to internal_open function
-    if path:match('^~/') or path:match('^/') or path:match('^%u:\\') then
-        path = path
+    if derived_path:match('^~/') or derived_path:match('^/') or derived_path:match('^%u:\\') then
+        derived_path = sub_home_var and string.gsub(derived_path, '^~/', '$HOME/') or derived_path
     elseif perspective.priority == 'root' and root_dir then
         -- Paste root directory and the directory in link
-        path = root_dir..sep..path
+        derived_path = root_dir..sep..derived_path
         -- See if the path exists
     elseif perspective.priority == 'first' or (perspective.priority == 'root' and perspective.fallback == 'first') then
         -- Paste together the dir of first-opened file & dir in link path
-        path = initial_dir..sep..path
-        wd = path:match('(.*)'..sep..'.-$')
+        derived_path = initial_dir..sep..derived_path
     else -- Otherwise, they want it relative to the current file
         -- Path of current file
         local cur_file = vim.api.nvim_buf_get_name(0)
         -- Directory current file is in
         local cur_file_dir = string.match(cur_file, '(.*)'..sep..'.-$')
         -- Paste together dir of current file & dir path provided in link
-        if cur_file_dir then path = cur_file_dir..sep..path end
+        if cur_file_dir then derived_path = cur_file_dir..sep..derived_path end
     end
-    internal_open(path, anchor)
+    return(derived_path)
+end
+
+local internal_open = function(path, anchor)
+    if this_os:match('Windows') then
+        path = path:gsub('/', '\\')
+    end
+
+    path = resolve_notebook_path(path)
+
+    -- See if a directory is part of the path
+    local dir = string.match(path, '(.*)'..sep..'.-$')
+    -- If there's a dir & user wants dirs created, do so if necessary
+    if dir and create_dirs then
+        if not exists(dir) then
+            if this_os:match('Windows') then
+                os.execute('mkdir "'..dir..'"')
+            else
+                os.execute('mkdir -p '..utils.escapeChars(dir))
+            end
+        end
+    end
+    -- If the path starts with a tilde, replace it w/ $HOME
+    if this_os == 'Linux' or this_os == 'Darwin' then
+        if string.match(path, '^~/') then
+            path = string.gsub(path, '^~/', '$HOME/')
+        end
+    end
+    -- Push the current buffer name onto the main buffer stack
+    buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
+    vim.cmd(':e '..path)
     M.updateDirs()
+    if anchor then
+        cursor.toHeading(anchor)
+    end
 end
 
 --[[
@@ -177,20 +178,12 @@ local handle_external_file = function(path)
         end
     elseif perspective.priority == 'root' and root_dir then
         -- Paste together root directory path and path in link and escape
-        if this_os:match('Windows') then
-            escaped_path = root_dir..sep..real_path
-        else
-            escaped_path = utils.escapeChars(root_dir..sep..real_path)
-        end
+        escaped_path = this_os:match('Windows') and root_dir..sep..real_path or utils.escapeChars(root_dir..sep..real_path)
     elseif perspective.priority == 'first' or (perspective.priority == 'root' and perspective.fallback == 'first') then
         -- Otherwise, links are relative to the first-opened file, so
         -- paste together the directory of the first-opened file and the
         -- path in the link and escape for the shell
-        if this_os:match('Windows') then
-            escaped_path = initial_dir..sep..real_path
-        else
-            escaped_path = utils.escapeChars(initial_dir..sep..real_path)
-        end
+        escaped_path = this_os:match('Windows') and initial_dir..sep..real_path or utils.escapeChars(initial_dir..sep..real_path)
     else
         -- Get the path of the current file
         local cur_file = vim.api.nvim_buf_get_name(0)
@@ -198,11 +191,7 @@ local handle_external_file = function(path)
         -- directory of the current file and the directory path provided in the
         -- link, and escape for shell
         local cur_file_dir = string.match(cur_file, '(.*)'..sep..'.-$')
-        if this_os:match('Windows') then
-            escaped_path = cur_file_dir..sep..real_path
-        else
-            escaped_path = utils.escapeChars(cur_file_dir..sep..real_path)
-        end
+        escaped_path = this_os:match('Windows') and cur_file_dir..sep..real_path or utils.escapeChars(cur_file_dir..sep..real_path)
     end
     -- Pass to the open() function
     open(escaped_path)
@@ -312,7 +301,7 @@ M.handlePath = function(path, anchor)
                 path = path..'.md'
             end
         end
-        handle_internal_file(path, anchor)
+        internal_open(path, anchor)
     elseif M.pathType(path) == 'url' then
         path = vim.fn.escape(path, '%')
         open(path)
@@ -334,33 +323,30 @@ M.moveSource = function()
         vim.api.nvim_echo({{this_os_err, 'ErrorMsg'}}, true, {})
     else
         local derive_path = function(source, type)
-            local derived_path
             if type == 'file' then
                 source = source:gsub('^file:', '')
             end
-            if string.match(source, '^~/') then
-                derived_path = string.gsub(source, '^~/', '$HOME/')
-            elseif string.match(source, '^/') then
-                derived_path = source
-            elseif perspective == 'root' then
-                -- Paste root directory and the directory in link
-                derived_path = root_dir..'/'..source
-            elseif perspective == 'first' then
-                -- Paste together the directory of the first-opened file
-                -- and the directory in the link source
-                derived_path = initial_dir..'/'..source
-            else -- Otherwise, they want it relative to the current file
-                -- So, get the source of the current file
-                local cur_file = vim.api.nvim_buf_get_name(0)
-                -- Get the directory the current file is in
-                local cur_file_dir = string.match(cur_file, '(.*)'..sep..'.-$')
-                -- Paste together the directory of the current file and the
-                -- directory source provided in the link
-                if cur_file_dir then
-                    derived_path = cur_file_dir..sep..source
-                end
-            end
+            local derived_path = resolve_notebook_path(source, true)
             return derived_path
+        end
+        local confirm_and_execute = function(derived_source, derived_goal, location, path_row, first, last)
+            vim.ui.input(
+                {prompt = '⬇️  Move \''..derived_source..'\' to \''..derived_goal..'\' and rename the link source to \''..location..'\'? [y/n] '},
+                function(response)
+                    if response == 'y' then
+                        os.execute('mv '..derived_source..' '..derived_goal)
+                        -- Change the link content
+                        vim.api.nvim_buf_set_text(0, path_row - 1, first - 1, path_row - 1, last, {location})
+                        -- Clear the prompt & print sth
+                        vim.api.nvim_command("normal! :")
+                        vim.api.nvim_echo({{'⬇️  Success! File moved to '..derived_goal}}, true, {})
+                    else
+                        -- Clear the prompt & print sth
+                        vim.api.nvim_command("normal! :")
+                        vim.api.nvim_echo({{'⬇️  Aborted', 'WarningMsg'}}, true, {})
+                    end
+                end
+            )
         end
         -- Retrieve source from link
         local source, anchor, first, last, path_row = links.getLinkPart('path')
@@ -413,42 +399,10 @@ M.moveSource = function()
                                 vim.api.nvim_echo({{'⬇️  The goal directory doesn\'t exist. Set create_dirs to true for automatic directory creation.'}})
                             end
                         else
-                            vim.ui.input(
-                                {prompt = '⬇️  Move \''..derived_source..'\' to \''..derived_goal..'\' and rename the link source to \''..location..'\'? [y/n] '},
-                                function(response)
-                                    if response == 'y' then
-                                        os.execute('mv '..derived_source..' '..derived_goal)
-                                        -- Change the link content
-                                        vim.api.nvim_buf_set_text(0, path_row - 1, first - 1, path_row - 1, last, {location})
-                                        -- Clear the prompt & print sth
-                                        vim.api.nvim_command("normal! :")
-                                        vim.api.nvim_echo({{'⬇️  Success! File moved to '..derived_goal}}, true, {})
-                                    else
-                                        -- Clear the prompt & print sth
-                                        vim.api.nvim_command("normal! :")
-                                        vim.api.nvim_echo({{'⬇️  Aborted', 'WarningMsg'}}, true, {})
-                                    end
-                                end
-                            )
+                            confirm_and_execute(derived_source, derived_goal, location, path_row, first, last)
                         end
                     else -- Move
-                        vim.ui.input(
-                            {prompt = '⬇️  Move \''..derived_source..'\' to \''..derived_goal..'\' and rename the link source to \''..location..'\'? [y/n] '},
-                            function(response)
-                                if response == 'y' then
-                                    os.execute('mv '..derived_source..' '..derived_goal)
-                                    -- Change the link content
-                                    vim.api.nvim_buf_set_text(0, path_row - 1, first - 1, path_row - 1, last, {location})
-                                    -- Clear the prompt & print sth
-                                    vim.api.nvim_command("normal! :")
-                                    vim.api.nvim_echo({{'⬇️  Success! File moved to '..derived_goal}}, true, {})
-                                else
-                                    -- Clear the prompt & print sth
-                                    vim.api.nvim_command("normal! :")
-                                    vim.api.nvim_echo({{'⬇️  Aborted', 'WarningMsg'}}, true, {})
-                                end
-                            end
-                        )
+                        confirm_and_execute(derived_source, derived_goal, location, path_row, first, last)
                     end
                 else -- Otherwise, the file we're trying to move must not exist
                     -- Clear the prompt & send a warning
