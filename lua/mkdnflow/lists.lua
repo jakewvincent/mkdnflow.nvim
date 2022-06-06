@@ -58,6 +58,7 @@ local patterns = {
         main = '^%s*[-*]%s+',
         indentation = '^(%s*)[-*]%s+',
         marker = '^%s*([-*]%s+)',
+        pre = '^%s*[-*]',
         content = '^%s*[-*]%s+(.+)',
         demotion = '^%s*'
     },
@@ -66,6 +67,7 @@ local patterns = {
         main = '^%s*%d+%.%s+',
         indentation = '^(%s*)%d+%.',
         marker = '^%s*%d+(%.%s+)',
+        pre = '^%s*%d+%.',
         number = '^%s*(%d+)%.',
         content = '^%s*%d+%.%s+(.+)',
         demotion = '^%s*'
@@ -348,6 +350,7 @@ M.toggleToDo = function(row, status, meta)
             end
         end
         -- If it is, do the replacement with the next completion status
+        local li_type = has_list_type(line)
         if todo then
             local new_symbol
             if status then
@@ -366,9 +369,9 @@ M.toggleToDo = function(row, status, meta)
             vim.api.nvim_buf_set_text(0, row - 1, first, row - 1, last - 1, {new_symbol})
             -- Update parent to-dos (if any)
             if to_do_update_parents then update_parent_to_do(line, row, new_symbol) end
-        elseif has_list_type(line) == 'ul' or has_list_type(line) == 'ol' then
-            local list = has_list_type(line)
-            vim.api.nvim_buf_set_text(0, row - 1, list[2], row - 1, list[2], {' [ ]'})
+        elseif li_type == 'ul' or li_type == 'ol' then
+            local first, last = utf8.find(line, patterns[li_type].pre)
+            vim.api.nvim_buf_set_text(0, row - 1, last, row - 1, last, {' [ ]'})
         else
             local message = '⬇️  Not a to-do list item!'
             if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
