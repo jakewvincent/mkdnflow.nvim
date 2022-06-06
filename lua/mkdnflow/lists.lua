@@ -317,10 +317,10 @@ toggleToDo() retrieves a line when called, checks if it has a to-do item with
 M.toggleToDo = function(row, status, meta)
     -- Run considering the mode
     if meta then
-        local mode = string.lower(vim.api.nvim_get_mode()['mode'])
-        if mode:match('v') then
-            local first = vim.api.nvim_buf_get_mark(0, '<')[1]
-            local last = vim.api.nvim_buf_get_mark(0, '>')[1]
+        local mode = vim.api.nvim_get_mode()['mode']
+        if mode == 'v' then
+            local pos_a, pos_b = vim.fn.getpos("v")[2], vim.api.nvim_win_get_cursor(0)[1]
+            local first, last = (pos_a < pos_b and pos_a) or pos_b, (pos_b > pos_a and pos_b) or pos_a
             if first == 0 or last == 0 then
                 M.toggleToDo()
             else
@@ -328,8 +328,8 @@ M.toggleToDo = function(row, status, meta)
                     M.toggleToDo(line, status, false)
                 end
             end
-        else
-            M.toggleToDo(vim.api.nvim_win_get_cursor(0)[1])
+        elseif string.lower(mode):match('v') then
+            if not silent then vim.api.nvim_echo({{'⬇️  Use simple visual mode (not line/block)', 'WarningMsg'}}, true, {}) end
         end
     else
         -- Get the line the cursor is on or of the row that was provided
