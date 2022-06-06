@@ -98,6 +98,8 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
+* 🆕 Toggle multiple to-do items at once by selecting the lines to toggle in (simple) visual mode (mapped to `<C-Space>` by default)
+* 🆕 Create to-do items from plain unordered or ordered lists (mapped to `<C-Space>` by default)
 * Automatically update any parent to-dos when child to-dos are toggled.
     * When all child to-dos have been marked complete, the parent is marked complete
     * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
@@ -267,7 +269,7 @@ require('mkdnflow').setup({
         MkdnYankFileAnchorLink = {'n', 'yfa'},
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
-        MkdnToggleToDo = {'n', '<C-Space>'},
+        MkdnToggleToDo = {{'n', 'v'}, '<C-Space>'},
         MkdnNewListItem = false,
         MkdnExtendList = false,
         MkdnUpdateNumbering = {'n', '<leader>nn'}
@@ -441,6 +443,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/06/22: Extend functionality of MkdnToggleToDo so that it (a) will create a to-do item from a plain list item, and (b) can toggle multiple to-do items selected with simple visual mode
 * 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
 * 06/04/22: Variant of MkdnNewListItem added as MkdnExtendList
 * 06/03/22: Add command and mapping for updating numbering
