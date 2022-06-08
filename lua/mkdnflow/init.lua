@@ -22,7 +22,7 @@ local default_config = {
         fallback = 'current',
         root_tell = false,
         update = true,
-        vimwd_heel = true
+        nvim_wd_heel = true
     },
     filetypes = {
         md = true,

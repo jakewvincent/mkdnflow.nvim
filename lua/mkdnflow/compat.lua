@@ -160,6 +160,9 @@ M.userConfigCheck = function(user_config)
                 user_config.perspective = table
             end
         end
+        if user_config.perspective.vimwd_heel ~= nil then
+            user_config.perspective['nvim_wd_heel'] = user_config.perspective.vimwd_heel
+        end
     end
     -- Inspect mappings
     if user_config.mappings then

@@ -200,7 +200,7 @@ end
 M.updateDirs = function()
     local wd
     -- See if the new file is in a different root directory
-    if perspective.update or perspective.vimwd_heel then
+    if perspective.update or perspective.nvim_wd_heel then
         if perspective.priority == 'root' then
             local cur_file = vim.api.nvim_buf_get_name(0)
             if not root_dir or not cur_file:match(root_dir) then
@@ -218,22 +218,22 @@ M.updateDirs = function()
                                 {{'⬇️  No notebook found. Fallback perspective: '..perspective.fallback, 'WarningMsg'}},
                                 true, {}
                             )
-                            if perspective.fallback == 'first' and perspective.vimwd_heel then
+                            if perspective.fallback == 'first' and perspective.nvim_wd_heel then
                                 wd = initial_dir
-                            elseif perspective.vimwd_heel then -- Otherwise, set wd to directory the current buffer is in
+                            elseif perspective.nvim_wd_heel then -- Otherwise, set wd to directory the current buffer is in
                                 wd = dir
                             end
                         end
                     end
                 end
             end
-        elseif perspective.priority == 'first' and perspective.vimwd_heel then
+        elseif perspective.priority == 'first' and perspective.nvim_wd_heel then
             wd = initial_dir
-        elseif perspective.vimwd_heel then
+        elseif perspective.nvim_wd_heel then
             local cur_file = vim.api.nvim_buf_get_name(0)
             wd = cur_file:match('(.*)'..sep..'.-$')
         end
-        if perspective.vimwd_heel and wd then
+        if perspective.nvim_wd_heel and wd then
             vim.api.nvim_set_current_dir(wd)
         end
     end
