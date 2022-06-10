@@ -125,21 +125,21 @@ local internal_open = function(path, anchor)
             path = string.gsub(path, '^~/', '$HOME/')
         end
     end
-    local path_ext
+    local path_w_ext
     if not path:match('%..+$') then
         if implicit_extension then
-            path_ext = path..'.'..implicit_extension
+            path_w_ext = path..'.'..implicit_extension
         else
-            path_ext = path..'.md'
+            path_w_ext = path..'.md'
         end
     end
-    if exists(path, 'd') and not exists(path_ext, 'f') then
+    if exists(path, 'd') and not exists(path_w_ext, 'f') then
         -- Looks like this links to a directory, possibly a notebook
         enter_internal_path(path)
     else
         -- Push the current buffer name onto the main buffer stack
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
-        vim.cmd(':e '..path)
+        vim.cmd(':e '..path_w_ext)
         M.updateDirs()
         if anchor then
             cursor.toHeading(anchor)
