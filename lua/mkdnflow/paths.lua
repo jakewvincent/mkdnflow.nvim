@@ -132,6 +132,8 @@ local internal_open = function(path, anchor)
         else
             path_w_ext = path..'.md'
         end
+    else
+        path_w_ext = path
     end
     if exists(path, 'd') and not exists(path_w_ext, 'f') then
         -- Looks like this links to a directory, possibly a notebook
