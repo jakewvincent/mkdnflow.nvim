@@ -98,6 +98,8 @@ local resolve_notebook_path = function(path, sub_home_var)
     return(derived_path)
 end
 
+local enter_internal_path = function() end
+
 local internal_open = function(path, anchor)
     if this_os:match('Windows') then
         path = path:gsub('/', '\\')
@@ -123,13 +125,42 @@ local internal_open = function(path, anchor)
             path = string.gsub(path, '^~/', '$HOME/')
         end
     end
-    -- Push the current buffer name onto the main buffer stack
-    buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
-    vim.cmd(':e '..path)
-    M.updateDirs()
-    if anchor then
-        cursor.toHeading(anchor)
+    local path_ext
+    if not path:match('%..+$') then
+        if implicit_extension then
+            path_ext = path..'.'..implicit_extension
+        else
+            path_ext = path..'.md'
+        end
     end
+    if exists(path, 'd') and not exists(path_ext, 'f') then
+        -- Looks like this links to a directory, possibly a notebook
+        enter_internal_path(path)
+    else
+        -- Push the current buffer name onto the main buffer stack
+        buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
+        vim.cmd(':e '..path)
+        M.updateDirs()
+        if anchor then
+            cursor.toHeading(anchor)
+        end
+    end
+end
+
+enter_internal_path = function(path)
+    path = path:match(sep..'$') ~= nil and path or path..sep
+    local input_opts = {
+        prompt = '⬇️  Name of file in directory to open or create: ',
+        default = path,
+        completion = 'file'
+    }
+    vim.ui.input(input_opts, function(response)
+        if response ~= nil and response ~= path..sep then
+            internal_open(response)
+            vim.api.nvim_command("normal! :")
+        end
+    end
+    )
 end
 
 --[[
@@ -292,13 +323,6 @@ M.handlePath = function(path, anchor)
     local path_type = M.pathType(path)
     -- Handle according to path type
     if path_type == 'filename' then
-        if not path:match('%..+$') then
-            if implicit_extension then
-                path = path..'.'..implicit_extension
-            else
-                path = path..'.md'
-            end
-        end
         internal_open(path, anchor)
     elseif path_type == 'url' then
         path = vim.fn.escape(path, '%')
