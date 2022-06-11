@@ -180,14 +180,18 @@ init.setup = function(user_config)
         end
         init.user_config = user_config
     end
+    -- Read compatibility module & pass user config through config checker
+    init.utils = require('mkdnflow.utils')
+    local compat = require('mkdnflow.compat')
     -- Load extension if the filetype has a match in config.filetypes
+    -- Overwrite defaults w/ user's config settings, if any
+    user_config = compat.userConfigCheck(user_config)
+    init.config = MergeConfigs(default_config, user_config)
+    -- Only load the mapping autocommands if the user hasn't said "no"
+    if init.config.use_mappings_table == true then
+        require('mkdnflow.maps')
+    end
     if load_on_ft[ft] then
-        init.utils = require('mkdnflow.utils')
-        -- Read compatibility module & pass user config through config checker
-        local compat = require('mkdnflow.compat')
-        user_config = compat.userConfigCheck(user_config)
-        -- Overwrite defaults w/ user's config settings, if any
-        init.config = MergeConfigs(default_config, user_config)
         -- Get silence preference
         local silent = init.config.silent
         -- Determine perspective
@@ -244,13 +248,6 @@ init.setup = function(user_config)
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
         init.files = compat
-        -- Only load the mappings if the user hasn't said "no"
-        if init.config.use_mappings_table == true and user_config.default_mappings ~= false then
-            require('mkdnflow.maps')
-            if user_config.default_mappings == true then
-                vim.api.nvim_echo({{"⬇️  NOTE: Mappings can now be specified in the setup function. See :h mkdnflow-mappings.", 'WarningMsg'}}, true, {})
-            end
-        end
         -- Record load status (i.e. loaded)
         init.loaded = true
     else
@@ -264,7 +261,7 @@ init.setup = function(user_config)
         -- Define an autocommand to enable to plugin when the right buffer type is entered
         if init.nvim_version >= 7 then
             init.autocmd_id = vim.api.nvim_create_autocmd(
-                {'BufEnter'},
+                {"BufEnter", "BufWinEnter"},
                 {
                     pattern = extension_patterns,
                     command = "Mkdnflow silent"
@@ -284,8 +281,8 @@ init.forceStart = function(silent)
         if silent ~= 'silent' then
             vim.api.nvim_echo({{"⬇️  Starting Mkdnflow.", 'WarningMsg'}}, true, {})
         end
+        init.setup(init.user_config)
         if vim.fn.api_info().version.minor >= 7 then
-            init.setup(init.user_config)
             -- Delete the autocommand
             vim.api.nvim_del_autocmd(init.autocmd_id)
         end
