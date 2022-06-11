@@ -247,6 +247,7 @@ init.setup = function(user_config)
         init.buffers = require('mkdnflow.buffers')
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
+        init.tables = require('mkdnflow.tables')
         init.files = compat
         -- Record load status (i.e. loaded)
         init.loaded = true
