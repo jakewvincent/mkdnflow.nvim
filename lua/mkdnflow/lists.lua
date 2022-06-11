@@ -446,8 +446,10 @@ M.newListItem = function(fanciness)
                 vim.api.nvim_buf_set_lines(0, row - 1, row, false, {demotion})
                 vim.api.nvim_win_set_cursor(0, {row, #demotion})
                 update_numbering(row - 1, indentation, li_type, false)
-                -- Update any subsequent ordered list items that had the same indentation
-                update_numbering(row + 1, indentation, li_type, false, 1)
+                -- Update any subsequent ordered list items that had the same indentation (if there's a next line)
+                if vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] then
+                    update_numbering(row + 1, indentation, li_type, false, 1)
+                end
             end
         end
     else
