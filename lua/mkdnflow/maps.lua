@@ -24,7 +24,7 @@ end
 
 if nvim_version >= 7 then
     vim.api.nvim_create_augroup("MkdnflowMappings", {clear = true})
-    vim.api.nvim_create_autocmd({"BufEnter"}, {
+    vim.api.nvim_create_autocmd({"BufEnter, BufWinEnter"}, {
         pattern = extension_patterns,
         callback = function()
             local mappings = require("mkdnflow").config.mappings
