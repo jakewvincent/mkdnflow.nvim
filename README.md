@@ -123,6 +123,9 @@ require('mkdnflow').setup({
 })
 ```
 
+### Tables
+* 🆕 Create a markdown table of 3 columns and 6 rows with `:MkdnTable 3 6`. Table headers are added automatically; to exclude headers, use `:MkdnTable 3 6 noh`
+
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
 ## 📦 Installation
@@ -404,6 +407,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | --           | --   | `:MkdnNewListItem<CR>`        | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item |
 | --           | --   | `:MkdnExtendList<CR>`         | Like above, but the cursor stays on the current line (new list items of the same typ are added below) |
 | --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
+| --           | --   | `:MkdnTable ncol nrow (noh)`  | Make a table of ncol columns and nrow rows. Pass 'noh' as a third argument to exclude table headers. |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
 ### Miscellaneous notes (+ troubleshooting) on remapping
@@ -418,7 +422,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Improve citation functionality
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 * [ ] Fancy table creation & editing
-    * [ ] Create a table of x columns and y rows
+    * [X] Create a table of x columns and y rows
     * [ ] Add/remove columns and rows
     * [ ] Horizontal and vertical navigation through tables (with `<Tab>` and `<CR>`?)
     * [ ] Make a way for the user to define specialized tables (e.g. time sheets)
@@ -443,6 +447,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/11/22: Added function and command to insert tables
 * 06/06/22: Extend functionality of MkdnToggleToDo so that it (a) will create a to-do item from a plain list item, and (b) can toggle multiple to-do items selected with simple visual mode
 * 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
 * 06/04/22: Variant of MkdnNewListItem added as MkdnExtendList
