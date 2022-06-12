@@ -125,7 +125,7 @@ require('mkdnflow').setup({
 ```
 
 ### Tables
-* 🆕 Create a markdown table of 3 columns and 6 rows with `:MkdnTable 3 6`. Table headers are added automatically; to exclude headers, use `:MkdnTable 3 6 noh`
+* 🆕 Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
 
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
