@@ -46,6 +46,7 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! MkdnExtendList lua require('mkdnflow').lists.newListItem('simple')", true)
     vim.api.nvim_exec("command! -nargs=* MkdnUpdateNumbering lua require('mkdnflow').lists.updateNumbering(<f-args>)", true)
     vim.api.nvim_exec("command! -nargs=* MkdnTable lua require('mkdnflow').tables.newTable(<f-args>)", true)
+    vim.api.nvim_exec("command! MkdnProcessTable lua require('mkdnflow').tables.processTable()", true)
 
     -- Return coptions to user values
     vim.api.nvim_set_option('cpoptions', save_cpo)
