@@ -227,7 +227,9 @@ local handle_external_file = function(path)
         escaped_path = this_os:match('Windows') and cur_file_dir..sep..real_path or utils.escapeChars(cur_file_dir..sep..real_path)
     end
     -- Pass to the open() function
-    open(escaped_path)
+    if escaped_path then
+        open(escaped_path)
+    end
 end
 
 M.updateDirs = function()
