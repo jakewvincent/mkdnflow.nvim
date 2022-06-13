@@ -199,7 +199,7 @@ local handle_external_file = function(path)
     local real_path = string.match(path, '^file:(.*)')
     local escaped_path
     -- Check if path provided is absolute or relative to $HOME
-    if real_path:match('^~/') or real_path:match('^/') or real_path:match('^%:\\') then
+    if real_path:match('^~/') or real_path:match('^/') or real_path:match('^%u:\\') then
         if this_os:match('Windows') then
             open(real_path)
         else
