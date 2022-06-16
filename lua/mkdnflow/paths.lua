@@ -169,7 +169,7 @@ end
 open() handles vim-external paths, including local files or web URLs
 Returns nothing
 --]]
-local open = function(path)
+local open = function(path, type)
     local shell_open = function(path_)
         if this_os == "Linux" then
             vim.api.nvim_command('silent !xdg-open '..path_)
@@ -184,7 +184,7 @@ local open = function(path)
     -- If the file exists, handle it; otherwise,  a warning
     -- Don't want to use the shell-escaped version; it will throw a
     -- false alert if there are escape chars
-    if links.hasUrl(path) then
+    if type == 'url' then
         shell_open(path)
     elseif exists(path, "f") == false and
         exists(path, "d") == false then
@@ -199,7 +199,7 @@ local handle_external_file = function(path)
     local real_path = string.match(path, '^file:(.*)')
     local escaped_path
     -- Check if path provided is absolute or relative to $HOME
-    if real_path:match('^~/') or real_path:match('^/') or real_path:match('^%:\\') then
+    if real_path:match('^~/') or real_path:match('^/') or real_path:match('^%u:\\') then
         if this_os:match('Windows') then
             open(real_path)
         else
@@ -227,7 +227,9 @@ local handle_external_file = function(path)
         escaped_path = this_os:match('Windows') and cur_file_dir..sep..real_path or utils.escapeChars(cur_file_dir..sep..real_path)
     end
     -- Pass to the open() function
-    open(escaped_path)
+    if escaped_path then
+        open(escaped_path)
+    end
 end
 
 M.updateDirs = function()
@@ -328,7 +330,7 @@ M.handlePath = function(path, anchor)
         internal_open(path, anchor)
     elseif path_type == 'url' then
         path = vim.fn.escape(path, '%')
-        open(path)
+        open(path, 'url')
     elseif path_type == 'file' then
         handle_external_file(path)
     elseif path_type == 'anchor' then
