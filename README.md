@@ -126,6 +126,8 @@ require('mkdnflow').setup({
 
 ### Tables
 * 🆕 Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
+* 🆕 Format existing tables with `:MkdnTableFormat`
+* 🆕 Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
 
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
@@ -276,7 +278,9 @@ require('mkdnflow').setup({
         MkdnToggleToDo = {{'n', 'v'}, '<C-Space>'},
         MkdnNewListItem = false,
         MkdnExtendList = false,
-        MkdnUpdateNumbering = {'n', '<leader>nn'}
+        MkdnUpdateNumbering = {'n', '<leader>nn'},
+        MkdnTableNextCell = {'i', '<Tab>'},
+        MkdnTablePrevCell = {'i', '<S-Tab>'}
     }
 })
 ```
@@ -409,6 +413,9 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | --           | --   | `:MkdnExtendList<CR>`         | Like above, but the cursor stays on the current line (new list items of the same typ are added below) |
 | --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
 | --           | --   | `:MkdnTable ncol nrow (noh)`  | Make a table of ncol columns and nrow rows. Pass 'noh' as a third argument to exclude table headers. |
+| --           | --   | `:MkdnTableFormat<CR>`        | Format a table under the cursor |
+| `<Tab>`      | i    | `:MkdnNextCell<CR>`           | Move the cursor to the beginning of the next cell in the table, jumping to the next row if needed |
+| `<S-Tab>`    | i    | `:MkdnPrevCell<CR>`           | Move the cursor to the beginning of the previous cell in the table, jumping to the previous row if needed |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
 ### Miscellaneous notes (+ troubleshooting) on remapping
@@ -425,7 +432,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Fancy table creation & editing
     * [X] Create a table of x columns and y rows
     * [ ] Add/remove columns and rows
-    * [ ] Horizontal and vertical navigation through tables (with `<Tab>` and `<CR>`?)
+    * [X] Horizontal navigation through tables (with `<Tab>`)
+    * [ ] Vertical navigation through tables (with `<CR>`?)
     * [ ] Make a way for the user to define specialized tables (e.g. time sheets)
 
 <details>
@@ -448,6 +456,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/16/22: Added functionality to format tables and jump cells in tables
 * 06/11/22: Added function and command to insert tables
 * 06/06/22: Extend functionality of MkdnToggleToDo so that it (a) will create a to-do item from a plain list item, and (b) can toggle multiple to-do items selected with simple visual mode
 * 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
