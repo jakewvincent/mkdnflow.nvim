@@ -71,7 +71,9 @@ local default_config = {
         MkdnToggleToDo = {{'n', 'v'}, '<C-Space>'},
         MkdnNewListItem = false,
         MkdnExtendList = false,
-        MkdnUpdateNumbering = {'n', '<leader>nn'}
+        MkdnUpdateNumbering = {'n', '<leader>nn'},
+        MkdnTableNextCell = {'i', '<Tab>'},
+        MkdnTablePrevCell = {'i', '<S-Tab>'}
     }
 }
 
