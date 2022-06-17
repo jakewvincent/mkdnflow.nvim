@@ -74,7 +74,9 @@ local patterns = {
     }
 }
 
-local has_list_type = function(line)
+local M = {}
+
+M.hasListType = function(line)
     local match
     local i = 1
     local li_types = {'ultd', 'oltd', 'ul', 'ol'}
@@ -108,7 +110,7 @@ local get_siblings = function(row, indentation, li_type, up)
     while not done do
         local adj_line = (up and vim.api.nvim_buf_get_lines(0, row - 2, row - 1, false)[1]) or vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
         if adj_line then
-            local adj_li_type = has_list_type(adj_line)
+            local adj_li_type = M.hasListType(adj_line)
             if adj_li_type then
                 local adj_indentation = utf8.match(adj_line, patterns[adj_li_type].indentation) or nil
                 if adj_li_type == li_type and adj_indentation == indentation then -- Add row
@@ -236,8 +238,6 @@ local same_siblings = function(indentation, row, status)
     end
 end
 
-local M = {}
-
 -- Initialize the names for these two functions
 M.toggleToDo = function() end
 local update_parent_to_do = function() end
@@ -350,7 +350,7 @@ M.toggleToDo = function(row, status, meta)
             end
         end
         -- If it is, do the replacement with the next completion status
-        local li_type = has_list_type(line)
+        local li_type = M.hasListType(line)
         if todo then
             local new_symbol
             if status then
@@ -379,12 +379,12 @@ M.toggleToDo = function(row, status, meta)
     end
 end
 
-M.newListItem = function(fanciness)
+M.newListItem = function(fanciness, line)
     fanciness = fanciness or 'fancy'
     -- Get the line
-    local line = vim.api.nvim_get_current_line()
+    line = line or vim.api.nvim_get_current_line()
     -- Get the list type
-    local li_type = has_list_type(line)
+    local li_type = M.hasListType(line)
     -- If the line has an item, do some stuff
     if li_type then
         local has_contents = fanciness == 'simple' or utf8.match(line, patterns[li_type].content)
@@ -453,7 +453,7 @@ M.newListItem = function(fanciness)
             end
         end
     else
-        -- If not a list item, just do the normal version of whatever the mapping for MkdnNewListItem is
+        -- Otherwise, just do the normal version of whatever the mapping for MkdnNewListItem is
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
     end
 end
@@ -462,7 +462,7 @@ M.updateNumbering = function(start)
     start = start or 1
     local row = vim.api.nvim_win_get_cursor(0)[1]
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-    local li_type, indentation = has_list_type(line)
+    local li_type, indentation = M.hasListType(line)
     update_numbering(row, indentation, li_type, true, start)
 end
 
