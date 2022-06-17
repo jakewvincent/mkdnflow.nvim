@@ -68,10 +68,9 @@ local get_max_lengths = function(table_data)
         table.insert(max_lengths, cell_data.length)
     end
     for rownr, row_data in pairs(table_data.rowdata) do
-        if #max_lengths ~= #row_data then
-            if not silent then vim.api.nvim_echo({{'⬇️  At least one row does not have the same number of cells as there are column headers.', 'WarningMsg'}}, true, {}) end
-        end
-        if #row_data > 0 then
+        if max_lengths and #max_lengths ~= #row_data then
+            max_lengths = nil
+        elseif max_lengths and #row_data > 0 then
             for cellnr, cell_data in pairs(row_data) do
                 if cell_data.length > max_lengths[cellnr] and tonumber(rownr) ~= tonumber(midrule_row) then
                     max_lengths[cellnr] = cell_data.length
@@ -121,44 +120,53 @@ end
 
 local format_table = function(table_rows)
     local max_lengths = get_max_lengths(table_rows)
-    for cur_col, max_length in ipairs(max_lengths) do
-        for row, rowdata in pairs(table_rows.rowdata) do
-            local diff = max_length - rowdata[cur_col].length
-            if diff > 0 then
-                local replacement = ''
-                if tonumber(row) == table_rows.metadata.midrule_row then
+    local result = true
+    if max_lengths then
+        for cur_col, max_length in ipairs(max_lengths) do
+            for row, rowdata in pairs(table_rows.rowdata) do
+                local diff = max_length - rowdata[cur_col].length
+                if diff > 0 then
+                    local replacement = ''
+                    if tonumber(row) == table_rows.metadata.midrule_row then
+                        local target_length = (max_length > 2 and max_length - 2) or max_length * -1
+                        repeat replacement = replacement..'-' until #replacement == target_length
+                        replacement = ' '..replacement..' '
+                        vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
+                    else
+                        repeat replacement = replacement..' ' until #replacement == diff
+                        vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].finish, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
+                        -- Update indices for that row
+                    end
+                elseif diff < 0 and tonumber(row) == table_rows.metadata.midrule_row then
+                    local replacement = ''
+                    -- Guard against negative to zero numbers, which would cause the repeat loop to repeat till EOT
                     local target_length = (max_length > 2 and max_length - 2) or max_length * -1
                     repeat replacement = replacement..'-' until #replacement == target_length
                     replacement = ' '..replacement..' '
                     vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
-                else
-                    repeat replacement = replacement..' ' until #replacement == diff
-                    vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].finish, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
-                    -- Update indices for that row
                 end
-            elseif diff < 0 and tonumber(row) == table_rows.metadata.midrule_row then
-                local replacement = ''
-                -- Guard against negative to zero numbers, which would cause the repeat loop to repeat till EOT
-                local target_length = (max_length > 2 and max_length - 2) or max_length * -1
-                repeat replacement = replacement..'-' until #replacement == target_length
-                replacement = ' '..replacement..' '
-                vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
-            end
-            -- Update indices in table data
-            for col, _ in ipairs(rowdata) do
-                if col >= cur_col then
-                    table_rows.rowdata[row][col].start = table_rows.rowdata[row][col].start + diff
-                    table_rows.rowdata[row][col].finish = table_rows.rowdata[row][col].finish + diff
+                -- Update indices in table data
+                for col, _ in ipairs(rowdata) do
+                    if col >= cur_col then
+                        table_rows.rowdata[row][col].start = table_rows.rowdata[row][col].start + diff
+                        table_rows.rowdata[row][col].finish = table_rows.rowdata[row][col].finish + diff
+                    end
                 end
             end
         end
+    else
+        result = false
     end
-    return(table_rows)
+    return table_rows, result
 end
 
 M.formatTable = function()
     local table_rows = ingest_table()
-    table_rows = format_table(table_rows)
+    local result
+    table_rows, result = format_table(table_rows)
+    if not result then
+        if not silent then vim.api.nvim_echo({{'⬇️  At least one row does not have the same number of cells as there are column headers.', 'WarningMsg'}}, true, {}) end
+    end
 end
 
 M.moveToCell = function(row_offset, cell_offset)
@@ -184,7 +192,7 @@ M.moveToCell = function(row_offset, cell_offset)
         if cell_offset > 0 and target_cell > ncols then -- If we want to move forward, but the target cell is greater than the current number of columns
             local quotient = math.floor(target_cell/ncols)
             row_offset, cell_offset = row_offset + quotient, (ncols - cell_offset) * -1
-            M.moveTocell(row_offset, cell_offset)
+            M.moveToCell(row_offset, cell_offset)
         elseif cell_offset < 0 and target_cell < 1 then
             local quotient = math.abs(math.floor(target_cell - 1/ncols))
             row_offset, cell_offset = row_offset - quotient, target_cell + (ncols * quotient) - 1
