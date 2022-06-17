@@ -91,7 +91,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Easy-to-remember [default keybindings](#-commands-and-default-mappings) that activate only in markdown files
 * [Customize keybindings](#mappings-dictionary-table) individually or [disable them altogether](#use_mappings_table-boolean))
 
-### Manipulate headings
+### [Manipulate](2022-06-17_manipulate) headings
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
@@ -106,7 +106,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
     * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
     * When a parent to-do is marked complete or in-progress and all child to-dos have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
-* 🆕 Manually update numbering with `MkdnUpdateNumbering` or `MkdnUpdateNumbering 0` if, e.g., you want to start numbering at 0
+* 🆕 Manually update numbering with `MkdnUpdateNumbering` (mapped to `<leader>nn` by default) or `MkdnUpdateNumbering 0` if, e.g., you want to start numbering at 0
 * Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
     * NOTE: The following functionality is disabled by default in case some find it intrusive. To enable the functionality, remap `<CR>` in insert mode (see the following code block).
     * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
@@ -128,6 +128,8 @@ require('mkdnflow').setup({
 * 🆕 Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
 * 🆕 Format existing tables with `:MkdnTableFormat`
 * 🆕 Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
+* 🆕 Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default)
+    * NOTE: No default mapping is provided for jumping to the next row. To use this functionality, specify an insert-mode mapping for either [MkdnNextRow](#-commands-and-default-mappings) or [MkdnCR](#-commands-and-default-mappings) in the [mappings table](#mappings-dictionary-table).
 
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
@@ -280,7 +282,10 @@ require('mkdnflow').setup({
         MkdnExtendList = false,
         MkdnUpdateNumbering = {'n', '<leader>nn'},
         MkdnTableNextCell = {'i', '<Tab>'},
-        MkdnTablePrevCell = {'i', '<S-Tab>'}
+        MkdnTablePrevCell = {'i', '<S-Tab>'},
+        MkdnTableNextRow = false,
+        MkdnTablePrevRow = {'i', '<M-CR>'},
+        MkdnCR = false
     }
 })
 ```
@@ -416,13 +421,14 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | --           | --   | `:MkdnTableFormat<CR>`        | Format a table under the cursor |
 | `<Tab>`      | i    | `:MkdnNextCell<CR>`           | Move the cursor to the beginning of the next cell in the table, jumping to the next row if needed |
 | `<S-Tab>`    | i    | `:MkdnPrevCell<CR>`           | Move the cursor to the beginning of the previous cell in the table, jumping to the previous row if needed |
+| --           | --   | `:MkdnCR<CR>`                 | Wrapper function which will add a new list item (if cursor is in a list item) or go to the same cell in the next row (if cursor is in a table) |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
 ### Miscellaneous notes (+ troubleshooting) on remapping
 * The back-end function for `:MkdnGoBack`, `require('mkdnflow').buffers.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
-* If you are attempting to map `<CR>` to `MkdnNewListItem` in insert mode but can't get it to work, try inspecting your current insert mode mappings and seeing if anything is overriding your mapping. Possible candidates are completion plugins and auto-pair plugins.
+* If you are attempting to map `<CR>` to `MkdnNewListItem` or `MkdnCR` in insert mode but can't get it to work, try inspecting your current insert mode mappings and seeing if anything is overriding your mapping. Possible candidates are completion plugins and auto-pair plugins.
     * If using [nvim-cmp](https://github.com/hrsh7th/nvim-cmp), consider using using the mapping with a fallback, as shown here: [*cmp-mapping*](https://github.com/hrsh7th/nvim-cmp/blob/bba6fb67fdafc0af7c5454058dfbabc2182741f4/doc/cmp.txt#L238)
-    * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (nvim-autopairs, allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
+    * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (e.g. nvim-autopairs allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
 * [ ] Headings
@@ -433,8 +439,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [X] Create a table of x columns and y rows
     * [ ] Add/remove columns and rows
     * [X] Horizontal navigation through tables (with `<Tab>`)
-    * [ ] Vertical navigation through tables (with `<CR>`?)
-    * [ ] Make a way for the user to define specialized tables (e.g. time sheets)
+    * [X] Vertical navigation through tables (with `<CR>`?)
 
 <details>
 <summary>Completed to-dos</summary><p>
@@ -456,6 +461,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/17/22: Added functionality to jump rows in tables
 * 06/16/22: Added functionality to format tables and jump cells in tables
 * 06/11/22: Added function and command to insert tables
 * 06/06/22: Extend functionality of MkdnToggleToDo so that it (a) will create a to-do item from a plain list item, and (b) can toggle multiple to-do items selected with simple visual mode
