@@ -15,13 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 local silent = require('mkdnflow').config.silent
 
-local is_part_of_table = function(text)
-    if text:match('^|.+|.-$') then
-        return true
-    else
-        return false
-    end
-end
+local M = {}
 
 local extract_cell_data = function(text)
     local cells, complete, first, last = {}, false, nil, 1
@@ -47,19 +41,19 @@ local ingest_table = function(row)
     row = row or vim.api.nvim_win_get_cursor(0)[1]
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     local next_row, i, table_rows = row, 1, {rowdata = {}, metadata = {}}
-    while is_part_of_table(line) do
+    while M.isPartOfTable(line) do
         table_rows.rowdata[tostring(next_row)] = extract_cell_data(line)
         if line:match('%a') == nil then
             table_rows.metadata.midrule_row = next_row
         end
         next_row = next_row + i
         line = vim.api.nvim_buf_get_lines(0, next_row - 1, next_row, false)[1]
-        if i == 1 and not is_part_of_table(line) then
+        if i == 1 and not M.isPartOfTable(line) then
             next_row = row - 1
             i = -1
             line = vim.api.nvim_buf_get_lines(0, next_row - 1, next_row, false)[1]
         end
-        if i == -1 and not is_part_of_table(line) then
+        if i == -1 and not M.isPartOfTable(line) then
             table_rows.metadata.header_row = next_row - i
         end
     end
@@ -88,7 +82,13 @@ local get_max_lengths = function(table_data)
     return max_lengths
 end
 
-local M = {}
+M.isPartOfTable = function(text)
+    if text:match('^|.+|.-$') then
+        return true
+    else
+        return false
+    end
+end
 
 M.newTable = function(cols, rows, header)
     cols, rows = tonumber(cols), tonumber(rows)
@@ -162,18 +162,18 @@ M.formatTable = function()
 end
 
 --M.nextcell = function() end
-M.nextCell = function(row_offset, cell_offset)
+M.moveToCell = function(row_offset, cell_offset)
     row_offset = row_offset or 0
     cell_offset = cell_offset or 0
     local position = vim.api.nvim_win_get_cursor(0)
     local row, col = position[1] + row_offset, position[2] + 1
-    if is_part_of_table(vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]) then
+    if M.isPartOfTable(vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]) then
         local table_rows = ingest_table(row)
         table_rows = format_table(table_rows)
         local ncols = #table_rows.rowdata[tostring(table_rows.metadata.header_row)]
         -- Figure out which cell the cursor is currently in
         local continue, cell = true, 1
-        while continue and row_offset == 0 do
+        while continue do
             local celldata = table_rows.rowdata[tostring(row)][cell]
             if celldata.start <= col and celldata.finish >= col then
                 continue = false
@@ -184,12 +184,12 @@ M.nextCell = function(row_offset, cell_offset)
         local target_cell = cell_offset + cell
         if cell_offset > 0 and target_cell > ncols then -- If we want to move forward, but the target cell is greater than the current number of columns
             local quotient = math.floor(target_cell/ncols)
-            row_offset, cell_offset = row_offset + quotient, target_cell - (ncols * quotient) - 1
-            M.nextCell(row_offset, cell_offset)
+            row_offset, cell_offset = row_offset + quotient, (ncols - cell_offset) * -1
+            M.moveTocell(row_offset, cell_offset)
         elseif cell_offset < 0 and target_cell < 1 then
             local quotient = math.abs(math.floor(target_cell - 1/ncols))
             row_offset, cell_offset = row_offset - quotient, target_cell + (ncols * quotient) - 1
-            M.nextCell(row_offset, cell_offset)
+            M.moveToCell(row_offset, cell_offset)
         else
             vim.api.nvim_win_set_cursor(0, {row, table_rows.rowdata[tostring(row)][target_cell].start})
         end
