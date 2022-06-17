@@ -161,7 +161,6 @@ M.formatTable = function()
     table_rows = format_table(table_rows)
 end
 
---M.nextcell = function() end
 M.moveToCell = function(row_offset, cell_offset)
     row_offset = row_offset or 0
     cell_offset = cell_offset or 0
