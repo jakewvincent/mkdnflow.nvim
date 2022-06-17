@@ -22,6 +22,7 @@ for key, _ in pairs(load_on_ft) do
     table.insert(extension_patterns, "*."..key)
 end
 
+-- Enable mappings in buffers in which Mkdnflow activates
 if nvim_version >= 7 then
     vim.api.nvim_create_augroup("MkdnflowMappings", {clear = true})
     vim.api.nvim_create_autocmd({"BufEnter, BufWinEnter"}, {
