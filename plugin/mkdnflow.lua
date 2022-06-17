@@ -47,10 +47,10 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! -nargs=* MkdnUpdateNumbering lua require('mkdnflow').lists.updateNumbering(<f-args>)", true)
     vim.api.nvim_exec("command! -nargs=* MkdnTable lua require('mkdnflow').tables.newTable(<f-args>)", true)
     vim.api.nvim_exec("command! MkdnTableFormat lua require('mkdnflow').tables.formatTable()", true)
-    vim.api.nvim_exec("command! MkdnTableNextCell lua require('mkdnflow').tables.nextCell(0, 1)", true)
-    vim.api.nvim_exec("command! MkdnTablePrevCell lua require('mkdnflow').tables.nextCell(0, -1)", true)
-    vim.api.nvim_exec("command! MkdnTableNextRow lua require('mkdnflow').tables.nextCell(1, 0)", true)
-    vim.api.nvim_exec("command! MkdnTablePrevRow lua require('mkdnflow').tables.nextCell(-1, 0)", true)
+    vim.api.nvim_exec("command! MkdnTableNextCell lua require('mkdnflow').tables.moveToCell(0, 1)", true)
+    vim.api.nvim_exec("command! MkdnTablePrevCell lua require('mkdnflow').tables.moveToCell(0, -1)", true)
+    vim.api.nvim_exec("command! MkdnTableNextRow lua require('mkdnflow').tables.moveToCell(1, 0)", true)
+    vim.api.nvim_exec("command! MkdnTablePrevRow lua require('mkdnflow').tables.moveToCell(-1, 0)", true)
     vim.api.nvim_exec("command! MkdnCR lua require('mkdnflow.wrappers').newListItemOrNextTableRow()", true)
 
     -- Return coptions to user values
