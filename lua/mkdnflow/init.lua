@@ -73,7 +73,10 @@ local default_config = {
         MkdnExtendList = false,
         MkdnUpdateNumbering = {'n', '<leader>nn'},
         MkdnTableNextCell = {'i', '<Tab>'},
-        MkdnTablePrevCell = {'i', '<S-Tab>'}
+        MkdnTablePrevCell = {'i', '<S-Tab>'},
+        MkdnTableNextRow = false,
+        MkdnTablePrevRow = {'i', '<M-CR>'},
+        MkdnCR = false
     }
 }
 
@@ -228,8 +231,7 @@ init.setup = function(user_config)
                 end
             else
                 if not silent then vim.api.nvim_echo({{'⬇️  No tell was provided for the notebook\'s root directory. See :h mkdnflow-configuration.', 'WarningMsg'}}, true, {}) end
-                --init.config.perspective.priority = init.config.perspective.fallback
-                if fallback == 'first' then
+                if init.config.perspective.fallback == 'first' then
                     vim.api.nvim_set_current_dir(init.initial_dir)
                 else
                     -- Set working directory
