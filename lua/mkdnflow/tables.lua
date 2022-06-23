@@ -13,7 +13,7 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
-local silent = require('mkdnflow').config.silent
+local config = require('mkdnflow').config
 
 local M = {}
 
@@ -25,9 +25,11 @@ local extract_cell_data = function(text)
             local content = text:sub(first + 1, last - 1)
             cells[#cells + 1] = {
                 content = content,
+                trimmed_content = content:match('(.- ) *$'),
                 start = first + 1,
                 finish = last - 1,
-                length = #content
+                length = #content,
+                trimmed_length = #content:match('(.- ) *$')
             }
         else
             complete = true
@@ -65,15 +67,25 @@ local get_max_lengths = function(table_data)
     local header = table_data.rowdata[tostring(table_data.metadata.header_row)]
     local midrule_row = table_data.metadata.midrule_row
     for _, cell_data in pairs(header) do
-        table.insert(max_lengths, cell_data.length)
+        if config.tables.trim_whitespace then
+            table.insert(max_lengths, cell_data.trimmed_length)
+        else
+            table.insert(max_lengths, cell_data.length)
+        end
     end
     for rownr, row_data in pairs(table_data.rowdata) do
         if max_lengths and #max_lengths ~= #row_data then
             max_lengths = nil
         elseif max_lengths and #row_data > 0 then
             for cellnr, cell_data in pairs(row_data) do
-                if cell_data.length > max_lengths[cellnr] and tonumber(rownr) ~= tonumber(midrule_row) then
-                    max_lengths[cellnr] = cell_data.length
+                if config.tables.trim_whitespace then
+                    if cell_data.trimmed_length > max_lengths[cellnr] and tonumber(rownr) ~= tonumber(midrule_row) then
+                        max_lengths[cellnr] = cell_data.trimmed_length
+                    end
+                else
+                    if cell_data.length > max_lengths[cellnr] and tonumber(rownr) ~= tonumber(midrule_row) then
+                        max_lengths[cellnr] = cell_data.length
+                    end
                 end
             end
         end
@@ -144,6 +156,12 @@ local format_table = function(table_rows)
                     repeat replacement = replacement..'-' until #replacement == target_length
                     replacement = ' '..replacement..' '
                     vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
+                elseif diff < 0 then
+                    local replacement = rowdata[cur_col].trimmed_content
+                    if #replacement < max_length then
+                        repeat replacement = replacement..' ' until #replacement == max_length
+                    end
+                    vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
                 end
                 -- Update indices in table data
                 for col, _ in ipairs(rowdata) do
@@ -165,7 +183,7 @@ M.formatTable = function()
     local result
     table_rows, result = format_table(table_rows)
     if not result then
-        if not silent then vim.api.nvim_echo({{'⬇️  At least one row does not have the same number of cells as there are column headers.', 'WarningMsg'}}, true, {}) end
+        if not config.silent then vim.api.nvim_echo({{'⬇️  At least one row does not have the same number of cells as there are column headers.', 'WarningMsg'}}, true, {}) end
     end
 end
 
