@@ -53,6 +53,9 @@ local default_config = {
         in_progress = '-',
         complete = 'X'
     },
+    tables = {
+        trim_whitespace = true
+    },
     use_mappings_table = true,
     mappings = {
         MkdnGoBack = {'n', '<BS>'},
