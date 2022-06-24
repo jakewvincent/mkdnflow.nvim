@@ -27,7 +27,7 @@ local extract_cell_data = function(text)
                 content = content,
                 trimmed_content = content:match('(.- ) *$'),
                 start = first + 1,
-                finish = last - 1,
+                finish = last,
                 length = #content,
                 trimmed_length = #content:match('(.- ) *$')
             }
@@ -143,10 +143,10 @@ local format_table = function(table_rows)
                         local target_length = (max_length > 2 and max_length - 2) or max_length * -1
                         repeat replacement = replacement..'-' until #replacement == target_length
                         replacement = ' '..replacement..' '
-                        vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
+                        vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                     else
                         repeat replacement = replacement..' ' until #replacement == diff
-                        vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].finish, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
+                        vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].finish, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                         -- Update indices for that row
                     end
                 elseif diff < 0 and tonumber(row) == table_rows.metadata.midrule_row then
@@ -155,13 +155,13 @@ local format_table = function(table_rows)
                     local target_length = (max_length > 2 and max_length - 2) or max_length * -1
                     repeat replacement = replacement..'-' until #replacement == target_length
                     replacement = ' '..replacement..' '
-                    vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
+                    vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                 elseif diff < 0 then
                     local replacement = rowdata[cur_col].trimmed_content
                     if #replacement < max_length then
                         repeat replacement = replacement..' ' until #replacement == max_length
                     end
-                    vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish, {replacement})
+                    vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                 end
                 -- Update indices in table data
                 for col, _ in ipairs(rowdata) do
