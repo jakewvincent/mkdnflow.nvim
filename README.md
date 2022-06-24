@@ -91,7 +91,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Easy-to-remember [default keybindings](#-commands-and-default-mappings) that activate only in markdown files
 * [Customize keybindings](#mappings-dictionary-table) individually or [disable them altogether](#use_mappings_table-boolean))
 
-### [Manipulate](2022-06-17_manipulate) headings
+### Manipulate headings
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
