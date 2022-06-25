@@ -146,7 +146,7 @@ local format_table = function(table_rows)
                         vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                     else
                         repeat replacement = replacement..' ' until #replacement == diff
-                        vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].finish, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
+                        vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].finish - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                         -- Update indices for that row
                     end
                 elseif diff < 0 and tonumber(row) == table_rows.metadata.midrule_row then
