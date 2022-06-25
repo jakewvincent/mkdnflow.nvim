@@ -98,7 +98,8 @@ end
 local get_siblings = function(row, indentation, li_type, up)
     up = up or true
     local orig_row = row
-    local number = patterns[li_type].number and vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]:match(patterns[li_type].number)
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+    local number = patterns[li_type].number and line and line:match(patterns[li_type].number)
     local siblings = {}
     local info = {}
     if number then info = {number} end
@@ -390,7 +391,6 @@ M.newListItem = function(fanciness, line)
         local has_contents = fanciness == 'simple' or utf8.match(line, patterns[li_type].content)
         local row, col = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_win_get_cursor(0)[2]
         local indentation = utf8.match(line, patterns[li_type].indentation)
-        --vim.pretty_print(get_siblings(row, indentation, type))
         if has_contents then
             local next_line = indentation
             local next_number
