@@ -344,6 +344,28 @@ M.handlePath = function(path, anchor)
     end
 end
 
+local truncate_path = function(oldpath, newpath)
+    local difference = ''
+    local last_slash = string.find(string.reverse(newpath), '/')
+    last_slash = last_slash and #newpath - last_slash + 1 or nil
+    local continue = true
+    local char = 1
+    while continue do
+        local newpath_char = newpath:sub(char, char)
+        if oldpath:sub(char, char) ~= newpath_char and char <= #newpath then
+            continue = false
+        else
+            char = char + 1
+        end
+    end
+    if char > last_slash then
+        difference = string.sub(newpath, last_slash)
+    else
+        difference = string.sub(newpath, char)
+    end
+    return difference
+end
+
 M.moveSource = function()
     local derive_path = function(source, type)
         if type == 'file' then
@@ -352,8 +374,9 @@ M.moveSource = function()
         return resolve_notebook_path(source, true)
     end
     local confirm_and_execute = function(derived_source, source, derived_goal, location, path_row, first, last)
+        local truncated_goal = '...'..truncate_path(derived_source, derived_goal)
         vim.ui.input(
-            {prompt = "⬇️  Move '"..derived_source.."' ("..source..") to '"..derived_goal.."' ("..location..")? [y/n] "},
+            {prompt = "⬇️  Move '"..derived_source.."' ("..source..") to '"..truncated_goal.."' ("..location..")? [y/n] "},
             function(response)
                 if response == 'y' then
                     if this_os:match('Windows') then
