@@ -52,6 +52,10 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! MkdnTableNextRow lua require('mkdnflow').tables.moveToCell(1, 0)", true)
     vim.api.nvim_exec("command! MkdnTablePrevRow lua require('mkdnflow').tables.moveToCell(-1, 0)", true)
     vim.api.nvim_exec("command! MkdnCR lua require('mkdnflow.wrappers').newListItemOrNextTableRow()", true)
+    vim.api.nvim_exec("command! MkdnTableNewRowBelow lua require('mkdnflow').tables.addRow()", true)
+    vim.api.nvim_exec("command! MkdnTableNewRowAbove lua require('mkdnflow').tables.addRow(-1)", true)
+    vim.api.nvim_exec("command! MkdnTableNewColAfter lua require('mkdnflow').tables.addCol()", true)
+    vim.api.nvim_exec("command! MkdnTableNewColBefore lua require('mkdnflow').tables.addCol(-1)", true)
 
     -- Return coptions to user values
     vim.api.nvim_set_option('cpoptions', save_cpo)
