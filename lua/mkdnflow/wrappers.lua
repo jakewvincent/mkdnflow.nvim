@@ -29,4 +29,25 @@ M.newListItemOrNextTableRow = function()
     end
 end
 
+M.indentListItemOrJumpTableCell = function(direction)
+    -- Get the current line
+    local line = vim.api.nvim_get_current_line()
+    local list_type = require('mkdnflow').lists.hasListType(line)
+    if list_type and line:match(require('mkdnflow').lists.patterns[list_type].empty) then
+        if direction == -1 then
+            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-D>", true, false, true), 'n', true)
+        else
+            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-T>", true, false, true), 'n', true)
+        end
+    elseif require('mkdnflow').tables.isPartOfTable(line) then
+        if direction == -1 then
+            require('mkdnflow').tables.moveToCell(0, -1)
+        else
+            require('mkdnflow').tables.moveToCell(0, 1)
+        end
+    else
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-I>", true, false, true), 'n', true)
+    end
+end
+
 return M
