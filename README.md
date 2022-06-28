@@ -131,6 +131,7 @@ require('mkdnflow').setup({
 * 🆕 Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default)
     * NOTE: No default mapping is provided for jumping to the next row. To use this functionality, specify an insert-mode mapping for either [MkdnNextRow](#-commands-and-default-mappings) or [MkdnCR](#-commands-and-default-mappings) in the [mappings table](#mappings-dictionary-table).
 * 🆕 Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
+* 🆕 Add new rows or columns (before or after the current row/cell; see [default mappings](#-commands-and-default-mappings))
 
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
@@ -289,6 +290,10 @@ require('mkdnflow').setup({
         MkdnTablePrevCell = {'i', '<S-Tab>'},
         MkdnTableNextRow = false,
         MkdnTablePrevRow = {'i', '<M-CR>'},
+        MkdnTableNewRowBelow = {{'n', 'i'}, '<M-i><M-r>'},
+        MkdnTableNewRowAbove = {{'n', 'i'}, '<M-i><M-R>'},
+        MkdnTableNewColBefore = {{'n', 'i'}, '<M-i><M-c>'},
+        MkdnTableNewColAfter = {{'n', 'i'}, '<M-i><M-C>'},
         MkdnCR = false
     }
 })
@@ -426,8 +431,12 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
 | --           | --   | `:MkdnTable ncol nrow (noh)`  | Make a table of ncol columns and nrow rows. Pass 'noh' as a third argument to exclude table headers. |
 | --           | --   | `:MkdnTableFormat<CR>`        | Format a table under the cursor |
-| `<Tab>`      | i    | `:MkdnNextCell<CR>`           | Move the cursor to the beginning of the next cell in the table, jumping to the next row if needed |
-| `<S-Tab>`    | i    | `:MkdnPrevCell<CR>`           | Move the cursor to the beginning of the previous cell in the table, jumping to the previous row if needed |
+| `<Tab>`      | i    | `:MkdnTableNextCell<CR>`      | Move the cursor to the beginning of the next cell in the table, jumping to the next row if needed |
+| `<S-Tab>`    | i    | `:MkdnTablePrevCell<CR>`      | Move the cursor to the beginning of the previous cell in the table, jumping to the previous row if needed |
+| `<M-i><M-r>` | i, n | `:MkdnTableNewRowBelow<CR>`   | Add a new row below the row the cursor is currently in |
+| `<M-i><M-R>` | i, n | `:MkdnTableNewRowAbove<CR>`   | Add a new row above the row the cursor is currently in |
+| `<M-i><M-c>` | i, n | `:MkdnTableNewColAfter<CR>`   | Add a new column following the column the cursor is currently in |
+| `<M-i><M-C>` | i, n | `:MkdnTableNewColBefore<CR>`  | Add a new column before the column the cursor is currently in |
 | --           | --   | `:MkdnCR<CR>`                 | Wrapper function which will add a new list item (if cursor is in a list item) or go to the same cell in the next row (if cursor is in a table) |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
@@ -442,15 +451,15 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [ ] Easy folding & unfolding
 * [ ] Improve citation functionality
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
-* [ ] Fancy table creation & editing
-    * [X] Create a table of x columns and y rows
-    * [ ] Add/remove columns and rows
-    * [X] Horizontal navigation through tables (with `<Tab>`)
-    * [X] Vertical navigation through tables (with `<CR>`?)
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Fancy table creation & editing
+    * [X] Create a table of x columns and y rows
+    * [X] Add/remove columns and rows
+    * [X] Horizontal navigation through tables (with `<Tab>`)
+    * [X] Vertical navigation through tables (with `<CR>`?)
 * [X] Easily rename file in link
 * [X] Add ability to identify/use any given .bib file in notebook's root directory (if `perspective` is set to `root`)
 * [X] Lists
@@ -468,6 +477,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/27/22: Added functionality to add new rows and columns
 * 06/17/22: Added functionality to jump rows in tables
 * 06/16/22: Added functionality to format tables and jump cells in tables
 * 06/11/22: Added function and command to insert tables
