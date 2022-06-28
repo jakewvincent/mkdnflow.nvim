@@ -68,7 +68,11 @@ local get_max_lengths = function(table_data)
     local midrule_row = table_data.metadata.midrule_row
     for _, cell_data in pairs(header) do
         if config.tables.trim_whitespace then
-            table.insert(max_lengths, cell_data.trimmed_length)
+            if cell_data.trimmed_length < 3 then
+                table.insert(max_lengths, 3)
+            else
+                table.insert(max_lengths, cell_data.trimmed_length)
+            end
         else
             table.insert(max_lengths, cell_data.length)
         end
@@ -187,25 +191,31 @@ M.formatTable = function()
     end
 end
 
+local which_cell = function(table_rows, row, col)
+    -- Figure out which cell the cursor is currently in
+    local continue, cell = true, 1
+    while continue do
+        local celldata = table_rows.rowdata[tostring(row)][cell]
+        if celldata.start - 1 <= col + 1 and celldata.finish >= col + 1 then
+            continue = false
+        else
+            cell = cell + 1
+        end
+    end
+    return cell
+end
+
 M.moveToCell = function(row_offset, cell_offset)
     row_offset = row_offset or 0
     cell_offset = cell_offset or 0
     local position = vim.api.nvim_win_get_cursor(0)
-    local row, col = position[1] + row_offset, position[2] + 1
+    local row, col = position[1] + row_offset, position[2]
     if M.isPartOfTable(vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]) then
         local table_rows = ingest_table(row)
         table_rows = format_table(table_rows)
         local ncols = #table_rows.rowdata[tostring(table_rows.metadata.header_row)]
         -- Figure out which cell the cursor is currently in
-        local continue, cell = true, 1
-        while continue do
-            local celldata = table_rows.rowdata[tostring(row)][cell]
-            if celldata.start <= col and celldata.finish >= col then
-                continue = false
-            else
-                cell = cell + 1
-            end
-        end
+        local cell = which_cell(table_rows, row, col)
         local target_cell = cell_offset + cell
         if cell_offset > 0 and target_cell > ncols then -- If we want to move forward, but the target cell is greater than the current number of columns
             local quotient = math.floor(target_cell/ncols)
@@ -221,6 +231,38 @@ M.moveToCell = function(row_offset, cell_offset)
     else
         if position[1] == row then
             vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-I>", true, false, true), 'i', true)
+        end
+    end
+end
+
+M.addRow = function(offset)
+    offset = offset or 0
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row = cursor[1] + offset
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+    if M.isPartOfTable(line) then
+        line = line:gsub('[^|]', ' ')
+        vim.api.nvim_buf_set_lines(0, row, row, false, {line})
+    end
+end
+
+M.addCol = function(offset)
+    local line = vim.api.nvim_get_current_line()
+    if M.isPartOfTable(line) then
+        offset = offset or 0
+        local cursor = vim.api.nvim_win_get_cursor(0)
+        local table_data = ingest_table(cursor[1])
+        local cell = which_cell(table_data, cursor[1], cursor[2]) + offset
+        for row, rowdata in pairs(table_data.rowdata) do
+            -- Get header row
+            local midrule_row = table_data.metadata.midrule_row
+            local replacement = (tonumber(row) == midrule_row and ' - |') or '   |'
+            -- Add a cell to each row
+            if cell > 0 then
+                vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cell].finish, tonumber(row - 1), rowdata[cell].finish, {replacement})
+            else
+                vim.api.nvim_buf_set_text(0, tonumber(row) - 1, 1, tonumber(row - 1), 1, {replacement})
+            end
         end
     end
 end
