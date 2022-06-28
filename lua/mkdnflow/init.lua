@@ -79,10 +79,10 @@ local default_config = {
         MkdnTablePrevCell = {'i', '<S-Tab>'},
         MkdnTableNextRow = false,
         MkdnTablePrevRow = {'i', '<M-CR>'},
-        MkdnTableNewRowBelow = {{'n', 'i'}, '<M-r><M-j>'},
-        MkdnTableNewRowAbove = {{'n', 'i'}, '<M-r><M-k>'},
-        MkdnTableNewColBefore = {{'n', 'i'}, '<M-c><M-h>'},
-        MkdnTableNewColAfter = {{'n', 'i'}, '<M-c><M-l>'},
+        MkdnTableNewRowBelow = {{'n', 'i'}, '<M-i><M-r>'},
+        MkdnTableNewRowAbove = {{'n', 'i'}, '<M-i><M-R>'},
+        MkdnTableNewColBefore = {{'n', 'i'}, '<M-i><M-c>'},
+        MkdnTableNewColAfter = {{'n', 'i'}, '<M-i><M-C>'},
         MkdnCR = false
     }
 }
