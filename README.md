@@ -294,7 +294,9 @@ require('mkdnflow').setup({
         MkdnTableNewRowAbove = {{'n', 'i'}, '<M-i><M-R>'},
         MkdnTableNewColBefore = {{'n', 'i'}, '<M-i><M-c>'},
         MkdnTableNewColAfter = {{'n', 'i'}, '<M-i><M-C>'},
-        MkdnCR = false
+        MkdnCR = false,
+        MkdnTab = false,
+        MkdnSTab = false
     }
 })
 ```
@@ -438,6 +440,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<M-i><M-c>` | i, n | `:MkdnTableNewColAfter<CR>`   | Add a new column following the column the cursor is currently in |
 | `<M-i><M-C>` | i, n | `:MkdnTableNewColBefore<CR>`  | Add a new column before the column the cursor is currently in |
 | --           | --   | `:MkdnCR<CR>`                 | Wrapper function which will add a new list item (if cursor is in a list item) or go to the same cell in the next row (if cursor is in a table) |
+| --           | --   | `:MkdnTab<CR>`                | Wrapper function which will jump to the next cell in a table (if cursor is in a table) or indent an (empty) list item (if cursor is in a list item) |
+| --           | --   | `:MkdnSTab<CR>`               | Wrapper function which will jump to the previous cell in a table (if cursor is in a table) or de-indent an (empty) list item (if cursor is in a list item) |
 | --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
 
 ### Miscellaneous notes (+ troubleshooting) on remapping
@@ -477,6 +481,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/27/22: Added wrapper functions so `<Tab>` and `<S-Tab>` can be used in both tables and lists
 * 06/27/22: Added functionality to add new rows and columns
 * 06/17/22: Added functionality to jump rows in tables
 * 06/16/22: Added functionality to format tables and jump cells in tables
@@ -487,13 +492,13 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 06/03/22: Add command and mapping for updating numbering
 * 05/30/22: Implement root directory switching to allow for easier switching between notebooks
 * 05/30/22: Indent new list item when current one ends in a colon
-* 05/12/22: Add functionality to search for bib files in the project's root directory
-* 05/11/22: Customize path text when links are created with a customizable transformation function
-* 05/11/22: Customize link interpretation with a customizable interpretation function (thanks @jmbuhr!)
 
 <details>
 <summary>Older changes</summary><p>
 
+* 05/12/22: Add functionality to search for bib files in the project's root directory
+* 05/11/22: Customize path text when links are created with a customizable transformation function
+* 05/11/22: Customize link interpretation with a customizable interpretation function (thanks @jmbuhr!)
 * 04/30/22: Customize link style (markdown/wiki; addresses [issue #10](https://github.com/jakewvincent/mkdnflow.nvim/issues/10))
 * 04/30/22: Added functionality to update parent to-dos when child to-do status is changed; customize to-do symbols
 * 04/28/22: Interpret links to markdown files correctly when specified with an absolute path (one starting with `/` or `~/`)
