@@ -54,7 +54,7 @@ local exists = function(path, type)
     else
         -- Use the shell to determine if the path exists
         handle = io.popen(
-            'if [ -'..type..' "'..path..'" ]; then echo true; else echo false; fi'
+            'if [ -'..type..' '..path..' ]; then echo true; else echo false; fi'
         )
     end
     local output = handle:read('*l')
