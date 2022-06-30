@@ -355,6 +355,24 @@ Note: This functionality references the file's extension. It does not rely on Ne
     * `<any extension>`: A string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) that new links should be created without an explicit extension
 * `links.transform_explicit` (function or `false`): A function that transforms the text to be inserted as the source/path of a link when a link is created. Anchor links are not currently customizable. If you want all link paths to be explicitly prefixed with the year, for instance, and for the path to be converted to uppercase, you could provide the following function under this key. (FYI: The previous functionality specified under the `prefix` key has been migrated here to provide greater flexibility.)
 
+```lua
+function(input)
+    return(string.upper(os.date('%Y-')..input))
+end
+```
+
+* `links.transform_implicit` (function or `false`): A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For instance, link paths that match a date pattern can be opened in a `journals` subdirectory of your notebook, and all others can be opened in a `pages` subdirectory, using the following function:
+
+```lua
+function(input)
+    if input:match('%d%d%d%d%-%d%d%-%d%d') then
+        return('journals/'..input)
+    else
+        return('pages/'..input)
+    end
+end
+```
+
 #### `to_do` (dictionary-like table)
 * `to_do.symbols` (array-like table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
     * NOTE: Lua support for UTF-8 characters is limited, so some functionality will be limited if you supply UTF-8 characters as to-do symbols until I implement a workaround.
@@ -382,24 +400,6 @@ Note: See [default mappings](#-commands-and-default-mappings)
     * set `mappings.<name of command> = false` to disable default mapping without providing a custom mapping
 
 Note: `<name of command>` should be the name of a commands defined in `mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
-
-```lua
-function(input)
-    return(string.upper(os.date('%Y-')..input))
-end
-```
-
-* `links.transform_implicit` (function or `false`): A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For instance, link paths that match a date pattern can be opened in a `journals` subdirectory of your notebook, and all others can be opened in a `pages` subdirectory, using the following function:
-
-```lua
-function(input)
-    if input:match('%d%d%d%d%-%d%d%-%d%d') then
-        return('journals/'..input)
-    else
-        return('pages/'..input)
-    end
-end
-```
 
 ### 👍 Recommended vim settings
 
