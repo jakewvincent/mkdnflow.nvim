@@ -19,16 +19,16 @@ vim.wo.conceallevel = 2
 
 if link_style == 'markdown' then
     vim.api.nvim_exec([[
-        call matchadd('Conceal', '\[[^[]\{-}\]\zs(.\{-})\ze', 0, 14, {'conceal': ''})
-        call matchadd('Conceal', '\zs\[\ze[^[]\{-}\](.\{-})', 0, 15, {'conceal': ''})
-        call matchadd('Conceal', '\[[^[]\{-}\zs\]\ze(.\{-})', 0, 16, {'conceal': ''})
+        call matchadd('Conceal', '\[[^[]\{-}\]\zs([^(]\{-})\ze', 0, 14, {'conceal': ''})
+        call matchadd('Conceal', '\zs\[\ze[^[]\{-}\]([^(]\{-})', 0, 15, {'conceal': ''})
+        call matchadd('Conceal', '\[[^[]\{-}\zs\]\ze([^(]\{-})', 0, 16, {'conceal': ''})
     ]], false)
 elseif link_style == 'wiki' then
     vim.api.nvim_exec([[
-        call matchadd('Conceal', '\zs\[\[.\{-}[|]\ze.\{-}\]\]', 0, 14, {'conceal': ''})
-        call matchadd('Conceal', '\[\[.\{-}[|].\{-}\zs\]\]\ze', 0, 15, {'conceal': ''})
-        call matchadd('Conceal', '\zs\[\[\ze.\{-}\]\]', 0, 16, {'conceal': ''})
-        call matchadd('Conceal', '\[\[.\{-}\zs\]\]\ze', 0, 17, {'conceal': ''})
+        call matchadd('Conceal', '\zs\[\[[^[]\{-}[|]\ze[^[]\{-}\]\]', 0, 14, {'conceal': ''})
+        call matchadd('Conceal', '\[\[[^[\{-}[|][^[]\{-}\zs\]\]\ze', 0, 15, {'conceal': ''})
+        call matchadd('Conceal', '\zs\[\[\ze[^[]\{-}\]\]', 0, 16, {'conceal': ''})
+        call matchadd('Conceal', '\[\[[^[]\{-}\zs\]\]\ze', 0, 17, {'conceal': ''})
     ]], false)
 end
 
