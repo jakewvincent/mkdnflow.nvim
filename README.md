@@ -443,10 +443,10 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | --           | --   | `:MkdnTableFormat<CR>`        | Format a table under the cursor |
 | `<Tab>`      | i    | `:MkdnTableNextCell<CR>`      | Move the cursor to the beginning of the next cell in the table, jumping to the next row if needed |
 | `<S-Tab>`    | i    | `:MkdnTablePrevCell<CR>`      | Move the cursor to the beginning of the previous cell in the table, jumping to the previous row if needed |
-| `<M-i><M-r>` | i, n | `:MkdnTableNewRowBelow<CR>`   | Add a new row below the row the cursor is currently in |
-| `<M-i><M-R>` | i, n | `:MkdnTableNewRowAbove<CR>`   | Add a new row above the row the cursor is currently in |
-| `<M-i><M-c>` | i, n | `:MkdnTableNewColAfter<CR>`   | Add a new column following the column the cursor is currently in |
-| `<M-i><M-C>` | i, n | `:MkdnTableNewColBefore<CR>`  | Add a new column before the column the cursor is currently in |
+| `<leader>ir` | i, n | `:MkdnTableNewRowBelow<CR>`   | Add a new row below the row the cursor is currently in |
+| `<leader>iR` | i, n | `:MkdnTableNewRowAbove<CR>`   | Add a new row above the row the cursor is currently in |
+| `<leader>ic` | i, n | `:MkdnTableNewColAfter<CR>`   | Add a new column following the column the cursor is currently in |
+| `<leader>iC` | i, n | `:MkdnTableNewColBefore<CR>`  | Add a new column before the column the cursor is currently in |
 | --           | --   | `:MkdnCR<CR>`                 | Wrapper function which will add a new list item (if cursor is in a list item) or go to the same cell in the next row (if cursor is in a table) |
 | --           | --   | `:MkdnTab<CR>`                | Wrapper function which will jump to the next cell in a table (if cursor is in a table) or indent an (empty) list item (if cursor is in a list item) |
 | --           | --   | `:MkdnSTab<CR>`               | Wrapper function which will jump to the previous cell in a table (if cursor is in a table) or de-indent an (empty) list item (if cursor is in a list item) |
