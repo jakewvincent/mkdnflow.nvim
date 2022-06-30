@@ -37,6 +37,7 @@ local default_config = {
     silent = false,
     links = {
         style = 'markdown',
+        conceal = false,
         implicit_extension = nil,
         transform_implicit = false,
         transform_explicit = function(text)
@@ -260,6 +261,9 @@ init.setup = function(user_config)
         init.lists = require('mkdnflow.lists')
         init.tables = require('mkdnflow.tables')
         init.files = compat
+        if init.config.links.conceal then
+            init.conceal = require('mkdnflow.conceal')
+        end
         -- Record load status (i.e. loaded)
         init.loaded = true
     else
