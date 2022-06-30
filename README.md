@@ -39,7 +39,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### Create and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
-    * 🆕 Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-table) config key for customization instructions.
+    * 🆕 Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-like-table) config key for customization instructions.
 * `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
 * Create an anchor link if the visual selection starts with `#` 
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
@@ -72,19 +72,19 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
 
 ### Customizable link interpretation
-* Specify what perspective the plugin-should take when interpreting links to files. There are [three options](#perspective-dictionary-table):
+* Specify what perspective the plugin-should take when interpreting links to files. There are [three options](#perspective-dictionary-like-table):
     1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
     2. Interpret links relative to the file open in the current buffer
     3. Interpret links relative to the root directory of the notebook that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
     * Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
-* 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-table).
+* 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-like-table).
 
 ### Create missing directories
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#create_dirs-boolean)
 
 ### Rename link sources and files simultaneously
 * 🆕 Use built-in dialog triggered by `MkdnMoveSource` (mapped to `<F2>` by default) to rename a link's source *and rename/move the linked file* simultaneously
-    * [Perspective](#customizable-link-interpretation), [implicit extensions](#links-dictionary-table), and custom [implicit transformations](#links-dictionary-table) are all taken into account when moving the linked file
+    * [Perspective](#customizable-link-interpretation), [implicit extensions](#links-dictionary-like-table), and custom [implicit transformations](#links-dictionary-like-table) are all taken into account when moving the linked file
     * The dialog will confirm the details of the changes for you to approve/reject before taking any action
 
 ### Backward and forward navigation
@@ -93,13 +93,13 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### Keybindings
 * Easy-to-remember [default keybindings](#-commands-and-default-mappings) that activate only in markdown files
-* [Customize keybindings](#mappings-dictionary-table) individually or [disable them altogether](#use_mappings_table-boolean))
+* [Customize keybindings](#mappings-dictionary-like-table) individually or [disable them altogether](#use_mappings_table-boolean))
 
 ### Manipulate headings
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
 ### Lists
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-table) (make sure to use the [luautf8 luarock dependency](#if-you-wish-to-use-custom-utf-8-to-do-symbols-add-the-luautf8-luarock-dependency) if you want to use utf8 to-do symbols).
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table) (make sure to use the [luautf8 luarock dependency](#if-you-wish-to-use-custom-utf-8-to-do-symbols-add-the-luautf8-luarock-dependency) if you want to use utf8 to-do symbols).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
@@ -133,7 +133,7 @@ require('mkdnflow').setup({
 * 🆕 Format existing tables with `:MkdnTableFormat`
 * 🆕 Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
 * 🆕 Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default)
-    * NOTE: No default mapping is provided for jumping to the next row. To use this functionality, specify an insert-mode mapping for either [MkdnNextRow](#-commands-and-default-mappings) or [MkdnCR](#-commands-and-default-mappings) in the [mappings table](#mappings-dictionary-table).
+    * NOTE: No default mapping is provided for jumping to the next row. To use this functionality, specify an insert-mode mapping for either [MkdnNextRow](#-commands-and-default-mappings) or [MkdnCR](#-commands-and-default-mappings) in the [mappings table](#mappings-dictionary-like-table).
 * 🆕 Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
 * 🆕 Add new rows or columns (before or after the current row/cell; see [default mappings](#-commands-and-default-mappings))
 
