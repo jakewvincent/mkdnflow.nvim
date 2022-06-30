@@ -32,6 +32,10 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### Two link styles
 * Use either markdown or wiki-link link styles by setting a [config option](#link_style-string).
+* 🆕 Conceal link sources for either link type by enabling conceal in [your config](#-configuration)
+    * Markdown-style links are shortened from `[Link](source.md)` to `Link`
+    * Wiki-style links are shortened from `[[source|Link]]` to `Link` or from `[[source]]` to `source`
+    * NOTE: If you are using the [treesitter parsers for markdown](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages), you do not need to enable conceal through mkdnflow. Just make sure you have `markdown` and `markdown_inline` installed and enabled in markdown filetypes, and in your `.vimrc` or `init.lua`, enable conceal (`set conceallevel=2` or `vim.wo.conceallevel = 2`)
 
 ### Create and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
@@ -248,6 +252,7 @@ require('mkdnflow').setup({
     silent = false,
     links = {
         style = 'markdown',
+        conceal = false,
         implicit_extension = nil,
         transform_implicit = false,
         transform_explicit = function(text)
@@ -343,6 +348,9 @@ Note: This functionality references the file's extension. It does not rely on Ne
 * `links.style` (string)
     * `'markdown'`: Links will be expected in the standard markdown format: `[<title>](<source>)`
     * `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
+* `links.conceal` (boolean)
+    * `true`: Link sources and delimiters will be concealed (depending on which link style is selected)
+    * `false`: Link sources and delimiters will not be concealed by mkdnflow
 * `links.implicit_extension` (string)
     * `<any extension>`: A string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) that new links should be created without an explicit extension
 * `links.transform_explicit` (function or `false`): A function that transforms the text to be inserted as the source/path of a link when a link is created. Anchor links are not currently customizable. If you want all link paths to be explicitly prefixed with the year, for instance, and for the path to be converted to uppercase, you could provide the following function under this key. (FYI: The previous functionality specified under the `prefix` key has been migrated here to provide greater flexibility.)
@@ -481,6 +489,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 06/29/22: Conceal links
 * 06/27/22: Added wrapper functions so `<Tab>` and `<S-Tab>` can be used in both tables and lists
 * 06/27/22: Added functionality to add new rows and columns
 * 06/17/22: Added functionality to jump rows in tables
