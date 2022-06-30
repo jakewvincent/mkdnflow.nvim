@@ -35,7 +35,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * 🆕 Conceal link sources for either link type by enabling conceal in [your config](#-configuration)
     * Markdown-style links are shortened from `[Link](source.md)` to `Link`
     * Wiki-style links are shortened from `[[source|Link]]` to `Link` or from `[[source]]` to `source`
-    * NOTE: If you are using the [treesitter parsers for markdown](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages), you do not need to enable conceal through mkdnflow. Just make sure you have `markdown` and `markdown_inline` installed and enabled in markdown filetypes, and in your `.vimrc` or `init.lua`, enable conceal (`set conceallevel=2` or `vim.wo.conceallevel = 2`)
+    * NOTE: If you are using the [recently split treesitter parsers for markdown](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages), you do not need to enable conceal through mkdnflow--if you are using markdown-style links. Just make sure you have `markdown` and `markdown_inline` installed and enabled in markdown filetypes, and in your `.vimrc` or `init.lua`, enable conceal (`set conceallevel=2` or `vim.wo.conceallevel = 2`).
 
 ### Create and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
