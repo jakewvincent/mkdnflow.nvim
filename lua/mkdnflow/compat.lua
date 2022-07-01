@@ -85,13 +85,14 @@ M.userConfigCheck = function(user_config)
             end
         end
         if user_config.to_do.symbols then
-            local max = 2
+            local max = 0
             for _, symbol in ipairs(user_config.to_do.symbols) do
-                if string.len(string.byte(symbol)) > 2 then
-                    max = 3
+                print(symbol, string.byte(symbol))
+                if string.byte(symbol) > max then
+                    max = string.byte(symbol)
                 end
             end
-            if max > 2 and not utils.moduleAvailable('lua-utf8') then
+            if max >= 127 and not utils.moduleAvailable('lua-utf8') then
                 warn('⬇️  One of your to-do symbols is a utf8 symbol, but the lua-utf8 dependency could not be found. To-do functionality may not work as expected.')
             end
         end
