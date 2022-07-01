@@ -83,17 +83,31 @@ local get_max_lengths = function(table_data)
         elseif max_lengths and #row_data > 0 then
             for cellnr, cell_data in pairs(row_data) do
                 if config.tables.trim_whitespace then
-                    if cell_data.trimmed_length > max_lengths[cellnr] and tonumber(rownr) ~= tonumber(midrule_row) then
+                    -- See if a minimum is required by the midrule row
+                    if tonumber(rownr) == tonumber(midrule_row) then
+                        if cell_data.content:match('^ *:.*: *$') then
+                            max_lengths[cellnr] = (max_lengths[cellnr] < 5 and 5) or max_lengths[cellnr]
+                        elseif cell_data.content:match('^ *:') or cell_data.content:match('^ *.+:') then
+                            max_lengths[cellnr] = (max_lengths[cellnr] < 4 and 4) or max_lengths[cellnr]
+                        end
+                    elseif cell_data.trimmed_length > max_lengths[cellnr] then
                         max_lengths[cellnr] = cell_data.trimmed_length
                     end
                 else
-                    if cell_data.length > max_lengths[cellnr] and tonumber(rownr) ~= tonumber(midrule_row) then
+                    if tonumber(rownr) == tonumber(midrule_row) then
+                        if cell_data.content:match('^ *:.*: *$') then
+                            max_lengths[cellnr] = (max_lengths[cellnr] < 5 and 5) or max_lengths[cellnr]
+                        elseif cell_data.content:match('^ *:') or cell_data.content:match('^ *.+:') then
+                            max_lengths[cellnr] = (max_lengths[cellnr] < 4 and 4) or max_lengths[cellnr]
+                        end
+                    elseif cell_data.length > max_lengths[cellnr] then
                         max_lengths[cellnr] = cell_data.length
                     end
                 end
             end
         end
     end
+    vim.pretty_print(max_lengths)
     return max_lengths
 end
 
@@ -145,7 +159,18 @@ local format_table = function(table_rows)
                     local replacement = ''
                     if tonumber(row) == table_rows.metadata.midrule_row then
                         local target_length = (max_length > 2 and max_length - 2) or max_length * -1
-                        repeat replacement = replacement..'-' until #replacement == target_length
+                        -- If there are colons to explicitly state alignment, make sure to retain them
+                        if rowdata[cur_col].content:match(' *:.*: *') then
+                            replacement = ':'
+                            repeat replacement = replacement..'-' until #replacement == target_length - 1
+                            replacement = replacement..':'
+                        elseif rowdata[cur_col].content:match('^ *:') then
+                            replacement = ':'
+                            repeat replacement = replacement..'-' until #replacement == target_length
+                        elseif rowdata[cur_col].content:match(': *$') then
+                            repeat replacement = replacement..'-' until #replacement == target_length - 1
+                            replacement = replacement..':'
+                        end
                         replacement = ' '..replacement..' '
                         vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                     else
