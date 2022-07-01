@@ -135,6 +135,7 @@ require('mkdnflow').setup({
 * 🆕 Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default)
     * NOTE: No default mapping is provided for jumping to the next row. To use this functionality, specify an insert-mode mapping for either [MkdnNextRow](#-commands-and-default-mappings) or [MkdnCR](#-commands-and-default-mappings) in the [mappings table](#mappings-dictionary-like-table).
 * 🆕 Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
+* 🆕 Optionally disable formatting when moving cells
 * 🆕 Add new rows or columns (before or after the current row/cell; see [default mappings](#-commands-and-default-mappings))
 
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
@@ -270,7 +271,8 @@ require('mkdnflow').setup({
         complete = 'X'
     },
     tables = {
-        trim_whitespace = true
+        trim_whitespace = true,
+        format_on_move = true
     },
     use_mappings_table = true,
     mappings = {
@@ -385,7 +387,8 @@ end
     * `to_do.complete` (string):  Stipulates which symbol represents a complete to-do
 
 #### `tables` (dictionary-like table)
-* `tables.trim_whitespace` (boolean): Whether extra whitespace should be trimmed from the end of a table cell when a table is formatted
+* `tables.trim_whitespace` (boolean): Whether extra whitespace should be trimmed from the end of a table cell when a table is formatted (default: `true`)
+* `tables.format_on_move` (boolean): Whether tables should be formatted each time the cursor is moved via MkdnTable{Next/Prev}{Cell/Row} (default: `true`)
 
 #### `use_mappings_table` (boolean)
 * `true`: Mappings will be defined with the help of `mappings` (see below), including your custom mappings (if defined in your mkdnflow config)
@@ -459,6 +462,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (e.g. nvim-autopairs allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
+* [ ] Table formatting for tables with explicit left-, center-, or right-aligned columns
 * [ ] Headings
     * [ ] Easy folding & unfolding
 * [ ] Improve citation functionality
@@ -489,6 +493,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 07/01/22: Add option not to format table when moving the cursor to a different cell
 * 06/29/22: Conceal links
 * 06/27/22: Added wrapper functions so `<Tab>` and `<S-Tab>` can be used in both tables and lists
 * 06/27/22: Added functionality to add new rows and columns
@@ -499,12 +504,12 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
 * 06/04/22: Variant of MkdnNewListItem added as MkdnExtendList
 * 06/03/22: Add command and mapping for updating numbering
-* 05/30/22: Implement root directory switching to allow for easier switching between notebooks
-* 05/30/22: Indent new list item when current one ends in a colon
 
 <details>
 <summary>Older changes</summary><p>
 
+* 05/30/22: Implement root directory switching to allow for easier switching between notebooks
+* 05/30/22: Indent new list item when current one ends in a colon
 * 05/12/22: Add functionality to search for bib files in the project's root directory
 * 05/11/22: Customize path text when links are created with a customizable transformation function
 * 05/11/22: Customize link interpretation with a customizable interpretation function (thanks @jmbuhr!)
