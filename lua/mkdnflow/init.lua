@@ -55,7 +55,8 @@ local default_config = {
         complete = 'X'
     },
     tables = {
-        trim_whitespace = true
+        trim_whitespace = true,
+        format_on_move = true
     },
     use_mappings_table = true,
     mappings = {
