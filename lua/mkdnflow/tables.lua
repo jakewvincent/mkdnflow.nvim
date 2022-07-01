@@ -23,13 +23,14 @@ local extract_cell_data = function(text)
         first, last = text:find('|.-|', last - 1)
         if first and last then
             local content = text:sub(first + 1, last - 1)
+            local trimmed_content = content:match('(.- ) *$') or content:match('(.-) *$')
             cells[#cells + 1] = {
                 content = content,
-                trimmed_content = content:match('(.- ) *$'),
+                trimmed_content = trimmed_content,
                 start = first + 1,
                 finish = last,
                 length = #content,
-                trimmed_length = #content:match('(.- ) *$')
+                trimmed_length = #trimmed_content
             }
         else
             complete = true
@@ -70,6 +71,8 @@ local get_max_lengths = function(table_data)
         if config.tables.trim_whitespace then
             if cell_data.trimmed_length < 3 then
                 table.insert(max_lengths, 3)
+            elseif cell_data.content:sub(#cell_data.content) ~= ' ' then
+                table.insert(max_lengths, cell_data.trimmed_length + 1)
             else
                 table.insert(max_lengths, cell_data.trimmed_length)
             end
@@ -90,6 +93,8 @@ local get_max_lengths = function(table_data)
                         elseif cell_data.content:match('^ *:') or cell_data.content:match('^ *.+:') then
                             max_lengths[cellnr] = (max_lengths[cellnr] < 4 and 4) or max_lengths[cellnr]
                         end
+                    elseif cell_data.content:sub(#cell_data.content) ~= ' ' and cell_data.trimmed_length + 1 > max_lengths[cellnr] then
+                        max_lengths[cellnr] = cell_data.trimmed_length + 1
                     elseif cell_data.trimmed_length > max_lengths[cellnr] then
                         max_lengths[cellnr] = cell_data.trimmed_length
                     end
@@ -100,6 +105,8 @@ local get_max_lengths = function(table_data)
                         elseif cell_data.content:match('^ *:') or cell_data.content:match('^ *.+:') then
                             max_lengths[cellnr] = (max_lengths[cellnr] < 4 and 4) or max_lengths[cellnr]
                         end
+                    elseif cell_data.content:sub(#cell_data.content) ~= ' ' and cell_data.length + 1 > max_lengths[cellnr] then
+                        max_lengths[cellnr] = cell_data.length + 1
                     elseif cell_data.length > max_lengths[cellnr] then
                         max_lengths[cellnr] = cell_data.length
                     end
