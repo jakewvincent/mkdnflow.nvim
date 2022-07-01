@@ -218,24 +218,27 @@ M.moveToCell = function(row_offset, cell_offset)
         -- Figure out which cell the cursor is currently in
         local cell = which_cell(table_rows, position[1], col)
         local target_cell = cell_offset + cell
-        --print(cell, cell_offset, target_cell, col)
         if cell_offset > 0 and target_cell > ncols then -- If we want to move forward, but the target cell is greater than the current number of columns
-            --print("If")
             local quotient = math.floor(target_cell/ncols)
             row_offset, cell_offset = row_offset + quotient, (ncols - cell_offset) * -1
             M.moveToCell(row_offset, cell_offset)
         elseif cell_offset < 0 and target_cell < 1 then
-            --print("Elseif")
             local quotient = math.abs(math.floor(target_cell - 1/ncols))
             row_offset, cell_offset = row_offset - quotient, target_cell + (ncols * quotient) - 1
             M.moveToCell(row_offset, cell_offset)
         else
-            --print("Else")
             vim.api.nvim_win_set_cursor(0, {row, table_rows.rowdata[tostring(row)][target_cell].start})
         end
     else
         if position[1] == row then
             vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-I>", true, false, true), 'i', true)
+        elseif row_offset == 1 and cell_offset == 0 then
+            -- Create new line if needed
+            if vim.api.nvim_buf_line_count(0) == position[1] then
+                vim.api.nvim_buf_set_lines(0, position[1] + 1, position[1] + 1, false, {''})
+            end
+            -- Move cursor to next line
+            vim.api.nvim_win_set_cursor(0, {position[1] + 1, 1})
         end
     end
 end
