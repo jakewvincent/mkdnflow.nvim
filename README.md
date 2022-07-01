@@ -462,7 +462,6 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (e.g. nvim-autopairs allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
-* [ ] Table formatting for tables with explicit left-, center-, or right-aligned columns
 * [ ] Headings
     * [ ] Easy folding & unfolding
 * [ ] Improve citation functionality
@@ -476,6 +475,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [X] Add/remove columns and rows
     * [X] Horizontal navigation through tables (with `<Tab>`)
     * [X] Vertical navigation through tables (with `<CR>`?)
+    * [X] Table formatting for tables with explicit left-, center-, or right-aligned columns
 * [X] Easily rename file in link
 * [X] Add ability to identify/use any given .bib file in notebook's root directory (if `perspective` is set to `root`)
 * [X] Lists
@@ -493,6 +493,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 07/01/22: Properly handle alignment markers in tables
 * 07/01/22: Add option not to format table when moving the cursor to a different cell
 * 06/29/22: Conceal links
 * 06/27/22: Added wrapper functions so `<Tab>` and `<S-Tab>` can be used in both tables and lists
