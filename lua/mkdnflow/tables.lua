@@ -107,7 +107,6 @@ local get_max_lengths = function(table_data)
             end
         end
     end
-    vim.pretty_print(max_lengths)
     return max_lengths
 end
 
@@ -159,7 +158,7 @@ local format_table = function(table_rows)
                     local replacement = ''
                     if tonumber(row) == table_rows.metadata.midrule_row then
                         local target_length = (max_length > 2 and max_length - 2) or max_length * -1
-                        -- If there are colons to explicitly state alignment, make sure to retain them
+                        -- Make sure to retain alignment markers
                         if rowdata[cur_col].content:match(' *:.*: *') then
                             replacement = ':'
                             repeat replacement = replacement..'-' until #replacement == target_length - 1
@@ -170,6 +169,8 @@ local format_table = function(table_rows)
                         elseif rowdata[cur_col].content:match(': *$') then
                             repeat replacement = replacement..'-' until #replacement == target_length - 1
                             replacement = replacement..':'
+                        else
+                            repeat replacement = replacement..'-' until #replacement == target_length
                         end
                         replacement = ' '..replacement..' '
                         vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
@@ -221,7 +222,6 @@ local which_cell = function(table_rows, row, col)
     local continue, cell = true, 1
     while continue do
         local celldata = table_rows.rowdata[tostring(row)][cell]
-        --print('Row ' .. tostring(row) .. ', cell '.. tostring(cell) .. ': ' .. tostring(celldata.start-1) .. ' <= ' .. tostring(col+1) .. ' and ' .. tostring(celldata.finish) .. ' >= ' .. tostring(col+1))
         if celldata.start - 1 <= col + 1 and celldata.finish >= col + 1 then
             continue = false
         else
