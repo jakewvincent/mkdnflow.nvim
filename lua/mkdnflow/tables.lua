@@ -196,6 +196,7 @@ local which_cell = function(table_rows, row, col)
     local continue, cell = true, 1
     while continue do
         local celldata = table_rows.rowdata[tostring(row)][cell]
+        --print('Row ' .. tostring(row) .. ', cell '.. tostring(cell) .. ': ' .. tostring(celldata.start-1) .. ' <= ' .. tostring(col+1) .. ' and ' .. tostring(celldata.finish) .. ' >= ' .. tostring(col+1))
         if celldata.start - 1 <= col + 1 and celldata.finish >= col + 1 then
             continue = false
         else
@@ -212,20 +213,24 @@ M.moveToCell = function(row_offset, cell_offset)
     local row, col = position[1] + row_offset, position[2]
     if M.isPartOfTable(vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]) then
         local table_rows = ingest_table(row)
-        table_rows = format_table(table_rows)
+        table_rows = config.tables.format_on_move and format_table(table_rows) or table_rows
         local ncols = #table_rows.rowdata[tostring(table_rows.metadata.header_row)]
         -- Figure out which cell the cursor is currently in
-        local cell = which_cell(table_rows, row, col)
+        local cell = which_cell(table_rows, position[1], col)
         local target_cell = cell_offset + cell
+        --print(cell, cell_offset, target_cell, col)
         if cell_offset > 0 and target_cell > ncols then -- If we want to move forward, but the target cell is greater than the current number of columns
+            --print("If")
             local quotient = math.floor(target_cell/ncols)
             row_offset, cell_offset = row_offset + quotient, (ncols - cell_offset) * -1
             M.moveToCell(row_offset, cell_offset)
         elseif cell_offset < 0 and target_cell < 1 then
+            --print("Elseif")
             local quotient = math.abs(math.floor(target_cell - 1/ncols))
             row_offset, cell_offset = row_offset - quotient, target_cell + (ncols * quotient) - 1
             M.moveToCell(row_offset, cell_offset)
         else
+            --print("Else")
             vim.api.nvim_win_set_cursor(0, {row, table_rows.rowdata[tostring(row)][target_cell].start})
         end
     else
