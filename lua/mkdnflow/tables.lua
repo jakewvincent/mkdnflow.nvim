@@ -247,7 +247,7 @@ M.addRow = function(offset)
     offset = offset or 0
     local cursor = vim.api.nvim_win_get_cursor(0)
     local row = cursor[1] + offset
-    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+    local line = vim.api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1]
     if M.isPartOfTable(line) then
         line = line:gsub('[^|]', ' ')
         vim.api.nvim_buf_set_lines(0, row, row, false, {line})
