@@ -45,7 +45,7 @@ local ingest_table = function(row)
     local next_row, i, table_rows = row, 1, {rowdata = {}, metadata = {}}
     while M.isPartOfTable(line) do
         table_rows.rowdata[tostring(next_row)] = extract_cell_data(line)
-        if line:match('%a') == nil then
+        if line:match('[:-]') and line:match('%a') == nil then
             table_rows.metadata.midrule_row = next_row
         end
         next_row = next_row + i
