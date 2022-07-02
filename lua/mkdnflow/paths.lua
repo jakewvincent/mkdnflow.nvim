@@ -171,8 +171,6 @@ Returns nothing
 --]]
 local open = function(path, type)
     local shell_open = function(path_)
-        path_ = "'"..path_:gsub('#', '\\#').."'"
-        
         if this_os == "Linux" then
             vim.api.nvim_command('silent !xdg-open '..path_)
         elseif this_os == "Darwin" then
@@ -331,7 +329,7 @@ M.handlePath = function(path, anchor)
     if path_type == 'filename' then
         internal_open(path, anchor)
     elseif path_type == 'url' then
-        path = vim.fn.escape(path, '%')
+        path = vim.fn.escape(path, '%#')
         open(path, 'url')
     elseif path_type == 'file' then
         handle_external_file(path)
