@@ -329,7 +329,8 @@ M.handlePath = function(path, anchor)
     if path_type == 'filename' then
         internal_open(path, anchor)
     elseif path_type == 'url' then
-        path = vim.fn.escape(path, '%#')
+        --path = vim.fn.escape(path, '%#')
+        path = vim.fn.shellescape(path)
         open(path, 'url')
     elseif path_type == 'file' then
         handle_external_file(path)
