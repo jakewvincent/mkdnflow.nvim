@@ -33,7 +33,7 @@ end
 
 M.luaEscape = function(string)
     -- Which characters to match
-    local chars = "[-.'\"+?]"
+    local chars = "[-.'\"+?%]"
     -- Set up table of replacements
     local replacements = {
         ["-"] = "%-",
@@ -41,7 +41,8 @@ M.luaEscape = function(string)
         ["'"] = "\'",
         ['"'] = '\"',
         ['+'] = '%+',
-        ['?'] = '%?'
+        ['?'] = '%?',
+        ['%'] = '%%'
     }
     -- Do the replacement
     local escaped = string.gsub(string, chars, replacements)
