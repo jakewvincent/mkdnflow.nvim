@@ -66,7 +66,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
 * 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-like-table).
 
-### Create and destroy links
+### Create, customize, and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
     * 🆕 Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-like-table) config key for customization instructions.
 * `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
@@ -74,6 +74,19 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
 * `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste in the current buffer)
     * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
+* Customize how link sources are generated from text using a custom explicit transformation function
+    * Adding the following to your setup would result in a link that looks like the following: [Some text the link was created from](sometextthelinkwascreatedfrom.md)
+
+```lua
+require('mkdnflow').setup({
+    links = {
+        transform_explicit = function(text)
+            -- Make lowercase, remove spaces, and reverse the string
+            return string.lower(text:gsub(' ', '')
+        end
+    }
+})
+```
 
 ### Jump between links
 * `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
