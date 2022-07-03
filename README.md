@@ -88,9 +88,10 @@ require('mkdnflow').setup({
 })
 ```
 
-### Jump between links
-* `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
-    * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
+### Jump to links, headings
+* `<Tab>` and `<S-Tab>` jump to the next and previous links in the file
+* `<leader>]` and `<leader>[` jump to the next and previous headings in the file
+* "Wrap" back to the beginning/end of the file when jumping with a [config setting](#wrap-boolean)
 
 ### Create missing directories
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#create_dirs-boolean)
