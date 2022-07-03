@@ -37,16 +37,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * Wiki-style links are shortened from `[[source|Link]]` to `Link` or from `[[source]]` to `source`
     * NOTE: If you are using the [recently split treesitter parsers for markdown](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages), you do not need to enable conceal through mkdnflow--if you are using markdown-style links. Just make sure you have `markdown` and `markdown_inline` installed and enabled in markdown filetypes, and in your `.vimrc` or `init.lua`, enable conceal (`set conceallevel=2` or `vim.wo.conceallevel = 2`).
 
-### Create and destroy links
-* `<CR>` on word under cursor or visual selection to create a notebook-internal link
-    * 🆕 Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-like-table) config key for customization instructions.
-* `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
-* Create an anchor link if the visual selection starts with `#` 
-* Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
-* `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste in the current buffer)
-    * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
-
-### Follow links _and citations_
+### Follow links and citations
 * `<CR>` on various kinds of links to "follow" them:
     * `.md` links open in the current window
     * Absolute links or `.md` links relative to home open in the current window but are interpreted with absolute perspective (e.g. `[File](/home/user/file.md)`/`[File](C:\Users\user\file.md)` on Windows, or `[File](~/Documents/file.md)`)
@@ -67,10 +58,6 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 }
 ```
 
-### Jump between links
-* `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
-    * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
-
 ### Customizable link interpretation
 * Specify what perspective the plugin-should take when interpreting links to files. There are [three options](#perspective-dictionary-like-table):
     1. Interpret links relative to the first-opened file (default behavior; similar to #3 if your first-opened file is always in the root directory)
@@ -78,6 +65,19 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     3. Interpret links relative to the root directory of the notebook that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
     * Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
 * 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-like-table).
+
+### Create and destroy links
+* `<CR>` on word under cursor or visual selection to create a notebook-internal link
+    * 🆕 Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-like-table) config key for customization instructions.
+* `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
+* Create an anchor link if the visual selection starts with `#` 
+* Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
+* `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste in the current buffer)
+    * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
+
+### Jump between links
+* `<Tab>` and `<S-Tab>` to jump to the next and previous links in the file
+    * "Wrap" to the beginning/end of the file with a [config setting](#wrap-boolean)
 
 ### Create missing directories
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#create_dirs-boolean)
@@ -87,7 +87,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * [Perspective](#customizable-link-interpretation), [implicit extensions](#links-dictionary-like-table), and custom [implicit transformations](#links-dictionary-like-table) are all taken into account when moving the linked file
     * The dialog will confirm the details of the changes for you to approve/reject before taking any action
 
-### Backward and forward navigation
+### Backward and forward navigation through buffers
 * `<BS>` to go **backward** (to the previous file/buffer opened in the current window, like clicking the back button in a web browser)
 * `<Del>` to go **forward** (to the subsequent file/buffer opened in the current window, like clicking the forward button in a web browser)
 
