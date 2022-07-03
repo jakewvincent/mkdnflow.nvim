@@ -75,7 +75,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * `ya` on a heading to add a formatted anchor link for the heading to the default register (ready to paste in the current buffer)
     * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
 * Customize how link sources are generated from text using a custom explicit transformation function
-    * Adding the following to your setup would result in a link that looks like the following: [Some text the link was created from](sometextthelinkwascreatedfrom.md)
+    * Adding the following to your setup would result in a link that looks like the following: `[Some text the link was created from](sometextthelinkwascreatedfrom.md)`
 
 ```lua
 require('mkdnflow').setup({
