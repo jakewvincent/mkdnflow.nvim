@@ -202,8 +202,10 @@ local format_table = function(table_rows)
                 end
                 -- Update indices in table data
                 for col, _ in ipairs(rowdata) do
-                    if col >= cur_col then
+                    if col > cur_col then
                         table_rows.rowdata[row][col].start = table_rows.rowdata[row][col].start + diff
+                        table_rows.rowdata[row][col].finish = table_rows.rowdata[row][col].finish + diff
+                    elseif col == cur_col then
                         table_rows.rowdata[row][col].finish = table_rows.rowdata[row][col].finish + diff
                     end
                 end
