@@ -45,7 +45,7 @@ M.patterns = {
         marker = '^%s*([*-]%s+)%[.%]%s+',
         content = '^%s*[*-]%s+%[.%]%s+(.+)',
         demotion = '^%s*[*-]%s+',
-        empty = '^%s*[*-]%s+$'
+        empty = '^%s*[*-]%s+%[.%]%s+$'
     },
     oltd = {
         li_type = 'oltd',
@@ -55,7 +55,7 @@ M.patterns = {
         number = '^%s*(%d+)%.',
         content = '^%s*%d+%.%s+%[.%]%s+(.+)',
         demotion = '^%s*%d+%.%s+',
-        empty = '^%s*%d+%.%s+$'
+        empty = '^%s*%d+%.%s+%[.%]%s+$'
     },
     ul = {
         li_type = 'ul',
