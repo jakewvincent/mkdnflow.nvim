@@ -174,6 +174,7 @@ end
 
 -- Run setup
 init.setup = function(user_config)
+    user_config = user_config or {}
     init.this_os = vim.loop.os_uname().sysname -- Get OS
     init.nvim_version = vim.fn.api_info().version.minor
     -- Get first opened file/buffer path and directory
