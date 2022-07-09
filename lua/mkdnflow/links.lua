@@ -18,7 +18,6 @@
 local config = require('mkdnflow').config
 local new_file_prefix = config.prefix ~= nil and config.prefix.string
 local evaluate_prefix = config.prefix ~= nil and config.prefix.evaluate
-local this_os = require('mkdnflow').this_os
 local link_style = config.links.style
 local implicit_extension = config.links.implicit_extension
 local transform_path = config.links.transform_explicit
