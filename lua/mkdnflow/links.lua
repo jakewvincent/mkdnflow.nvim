@@ -130,14 +130,15 @@ M.getLinkPart = function(part)
             local first, last = string.find(line[1], bib_pattern, prev_last)
             -- If there was a match, see if the cursor is inside it
             if first and last then
-                -- If there is, check if the match overlaps with the cursor
-                -- position
+                -- If there is, check if the match overlaps with the cursor position
                 if first - 1 <= col and last - 1 >= col then
-                    -- If it does overlap, save the indices of the match
+                    -- Check if there's a possessive marker
+                    local poss = string.match(string.sub(line[1], first, last), "('s[^%a]?)$")
+                    last = (poss and last - string.len(poss)) or last
+                    -- Save the indices of the match
                     indices = {first = first, last = last}
-                    -- End the loop
+                    -- End the loop & note the link type
                     continue = false
-                    -- Note link type
                     link_type = 'citation'
                 else
                     -- If it doesn't overlap, save the end index of the match so
