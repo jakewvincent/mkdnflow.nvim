@@ -462,8 +462,8 @@ M.newListItem = function(fanciness, line)
     end
 end
 
-M.updateNumbering = function(start)
-    start = start or 1
+M.updateNumbering = function(opts)
+    local start = opts[1] or 1
     local row = vim.api.nvim_win_get_cursor(0)[1]
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     local li_type, indentation = M.hasListType(line)

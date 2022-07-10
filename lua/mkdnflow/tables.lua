@@ -125,7 +125,8 @@ M.isPartOfTable = function(text)
     end
 end
 
-M.newTable = function(cols, rows, header)
+M.newTable = function(opts)
+    local cols, rows, header = opts[1], opts[2], opts[3]
     cols, rows = tonumber(cols), tonumber(rows)
     if header and header:match('noh') then
         header = false

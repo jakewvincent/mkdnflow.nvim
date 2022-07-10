@@ -295,13 +295,13 @@ init.setup = function(user_config)
 end
 
 -- Force start
-init.forceStart = function(silent)
-    silent = silent or false
+init.forceStart = function(opts)
+    local silent = opts[1] or false
     if init.loaded == true then
         vim.api.nvim_echo({{"⬇️  Mkdnflow is already running!", 'ErrorMsg'}}, true, {})
     else
         if silent ~= 'silent' then
-            vim.api.nvim_echo({{"⬇️  Starting Mkdnflow.", 'WarningMsg'}}, true, {})
+            vim.api.nvim_echo({{"⬇️  Starting Mkdnflow", 'WarningMsg'}}, true, {})
         end
         init.setup(init.user_config)
         if vim.fn.api_info().version.minor >= 7 then
