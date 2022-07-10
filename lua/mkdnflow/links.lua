@@ -38,17 +38,9 @@ M.getLinkPart = function(part)
     local row, col = position[1], position[2]
     -- Get the indices of the links in the line
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
-    local link_pattern
-    if link_style == 'wiki' then
-        link_pattern = '%[(%[.*%])%]' -- What links look like
-    else
-        link_pattern = '%b[](%b())' -- What links look like
-    end
+    local link_pattern = (link_style == 'wiki' and '%[(%[.*%])%]') or '%b[](%b())'
     local bib_pattern = '[^%a%d]-(@[%a%d_%.%-\']+)[%s%p%c]?' -- Bib. citation pattern
-    local indices = {} -- Table for match indices
-    local prev_last = 1 -- Last end index
-    local link_type = nil
-    local continue = true
+    local indices, prev_last, link_type, continue = {}, 1, nil, true
     -- TODO: Move the check overlap bit, which is repeated twice, to a function
     -- definition here, then call the function twice
     while continue do
