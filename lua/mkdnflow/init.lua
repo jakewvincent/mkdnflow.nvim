@@ -65,7 +65,7 @@ local default_config = {
         MkdnMoveSource = {'n', '<F2>'},
         MkdnNextLink = {'n', '<Tab>'},
         MkdnPrevLink = {'n', '<S-Tab>'},
-        MkdnFollowLink = {{'n', 'v'}, '<CR>'},
+        MkdnFollowLink = false,
         MkdnDestroyLink = {'n', '<M-CR>'},
         MkdnYankAnchorLink = {'n', 'ya'},
         MkdnYankFileAnchorLink = {'n', 'yfa'},
@@ -85,7 +85,10 @@ local default_config = {
         MkdnTableNewRowAbove = {{'n', 'i'}, '<leader>iR'},
         MkdnTableNewColAfter = {{'n', 'i'}, '<leader>ic'},
         MkdnTableNewColBefore = {{'n', 'i'}, '<leader>iC'},
-        MkdnCR = false
+        MkdnCRi = false,
+        MkdnCRnv = {{'n', 'v'}, '<CR>'},
+        MkdnFoldSection = {'n', '<leader>f'},
+        MkdnUnfoldSection = {'n', '<leader>F'}
     }
 }
 
@@ -266,6 +269,7 @@ init.setup = function(user_config)
         if init.config.links.conceal then
             init.conceal = require('mkdnflow.conceal')
         end
+        init.folds = require('mkdnflow.folds')
         -- Record load status (i.e. loaded)
         init.loaded = true
     else
