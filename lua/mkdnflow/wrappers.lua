@@ -50,4 +50,20 @@ M.indentListItemOrJumpTableCell = function(direction)
     end
 end
 
+M.followOrCreateLinksOrToggleFolds = function()
+    if vim.api.nvim_get_mode()['mode'] == 'v' then
+        require('mkdnflow').links.followLink()
+    else
+        local row, line = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_get_current_line()
+        local on_fold = vim.fn.foldclosed(tostring(row)) ~= -1
+        if not on_fold and require('mkdnflow').folds.getHeadingLevel(line) < 99 then
+            require('mkdnflow').folds.foldSection()
+        elseif on_fold then
+            require('mkdnflow').folds.unfoldSection(row)
+        else
+            require('mkdnflow').links.followLink()
+        end
+    end
+end
+
 return M
