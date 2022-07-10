@@ -179,6 +179,10 @@ M.userConfigCheck = function(user_config)
             end
             user_config.mappings = compatible_mappings
         end
+        -- If MkdnCR has a mapping, update it to MkdnImodeMultiFunc
+        if user_config.mappings.MkdnCR then
+            user_config.mappings.MkdnImodeMultiFunc = user_config.mappings.MkdnCR
+        end
     end
     return(user_config)
 end
