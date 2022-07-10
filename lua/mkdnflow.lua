@@ -85,8 +85,8 @@ local default_config = {
         MkdnTableNewRowAbove = {{'n', 'i'}, '<leader>iR'},
         MkdnTableNewColAfter = {{'n', 'i'}, '<leader>ic'},
         MkdnTableNewColBefore = {{'n', 'i'}, '<leader>iC'},
-        MkdnCRi = false,
-        MkdnCRnv = {{'n', 'v'}, '<CR>'},
+        MkdnImodeMultiFunc = false,
+        MkdnNVmodeMultiFunc = {{'n', 'v'}, '<CR>'},
         MkdnFoldSection = {'n', '<leader>f'},
         MkdnUnfoldSection = {'n', '<leader>F'}
     }
