@@ -143,7 +143,7 @@ local internal_open = function(path, anchor)
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
         vim.cmd(':e '..path_w_ext)
         M.updateDirs()
-        if anchor then
+        if anchor and anchor ~= '' then
             cursor.toHeading(anchor)
         end
     end
@@ -375,7 +375,7 @@ M.moveSource = function()
         end
         return resolve_notebook_path(source, true)
     end
-    local confirm_and_execute = function(derived_source, source, derived_goal, location, path_row, first, last)
+    local confirm_and_execute = function(derived_source, source, derived_goal, anchor, location, path_row, first, last)
         local truncated_goal = '...'..truncate_path(derived_source, derived_goal)
         vim.ui.input(
             {prompt = "⬇️  Move '"..derived_source.."' ("..source..") to '"..truncated_goal.."' ("..location..")? [y/n] "},
@@ -387,7 +387,7 @@ M.moveSource = function()
                         os.execute('mv '..derived_source..' '..derived_goal)
                     end
                     -- Change the link content
-                    vim.api.nvim_buf_set_text(0, path_row - 1, first - 1, path_row - 1, last, {location})
+                    vim.api.nvim_buf_set_text(0, path_row - 1, first - 1, path_row - 1, last, {location..anchor})
                     -- Clear the prompt & print sth
                     vim.api.nvim_command("normal! :")
                     vim.api.nvim_echo({{'⬇️  Success! File moved to '..derived_goal}}, true, {})
@@ -454,10 +454,10 @@ M.moveSource = function()
                             vim.api.nvim_echo({{'⬇️  The goal directory doesn\'t exist. Set create_dirs to true for automatic directory creation.'}})
                         end
                     else
-                        confirm_and_execute(derived_source, source, derived_goal, location, path_row, first, last)
+                        confirm_and_execute(derived_source, source, derived_goal, anchor, location, path_row, first, last)
                     end
                 else -- Move
-                    confirm_and_execute(derived_source, source, derived_goal, location, path_row, first, last)
+                    confirm_and_execute(derived_source, source, derived_goal, anchor, location, path_row, first, last)
                 end
             else -- Otherwise, the file we're trying to move must not exist
                 -- Clear the prompt & send a warning
