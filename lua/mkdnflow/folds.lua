@@ -90,14 +90,4 @@ M.unfoldSection = function(row)
     end
 end
 
-M.toggleFold = function()
-    local row = vim.api.nvim_win_get_cursor(0)[1]
-    local foldstart = vim.fn.foldclosed(tostring(row))
-    if foldstart > -1 then
-        M.unfoldSection(row)
-    else
-        M.foldSection()
-    end
-end
-
 return M
