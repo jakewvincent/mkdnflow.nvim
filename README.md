@@ -115,7 +115,7 @@ require('mkdnflow').setup({
 ### Section folding
 * 🆕 Fold a section using `<CR>` in normal mode if the cursor is on the heading of the section
     * Unfold a folded section using `<CR>` or `<leader>F` (both are default mappings; the former maps to a wrapper function that will follow links if the cursor is not on a fold or section heading; the latter is mapped specifically to `:MkdnUnfoldSection<CR>`)
-    * If you wish to create a link in a heading (normally done with `<CR>`), you'll need to do so by making a visual selection of the text you wish to create a link from and then hitting `<CR>`, or otherwise disabling the mapping for `MkdnCRnv` and mapping `MkdnFollowLink` to `<CR>` in visual and normal modes.
+    * If you wish to create a link in a heading (normally done with `<CR>`), you'll need to do so by making a visual selection of the text you wish to create a link from and then hitting `<CR>`, or otherwise disabling the mapping for `MkdnNVmodeMultiFunc` and mapping `MkdnFollowLink` to `<CR>` in visual and normal modes.
 * 🆕 Fold the section the cursor is currently in—even if the cursor is not on the heading—using `<leader>f`
 
 ### Lists
@@ -154,7 +154,7 @@ require('mkdnflow').setup({
 * 🆕 Format existing tables with `:MkdnTableFormat`
 * 🆕 Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
 * 🆕 Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default)
-    * NOTE: No default mapping is provided for jumping to the next row. To use this functionality, specify an insert-mode mapping for either [MkdnNextRow](#-commands-and-default-mappings) or [MkdnCRi](#-commands-and-default-mappings) in the [mappings table](#mappings-dictionary-like-table).
+    * NOTE: No default mapping is provided for jumping to the next row. To use this functionality, specify an insert-mode mapping for either [MkdnNextRow](#-commands-and-default-mappings) or [MkdnImodeMultiFunc](#-commands-and-default-mappings) in the [mappings table](#mappings-dictionary-like-table).
 * 🆕 Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
 * 🆕 Optionally disable formatting when moving cells
 * 🆕 Add new rows or columns (before or after the current row/cell; see [default mappings](#-commands-and-default-mappings))
@@ -303,7 +303,7 @@ require('mkdnflow').setup({
         MkdnPrevHeading = {'n', '<leader>['},
         MkdnGoBack = {'n', '<BS>'},
         MkdnGoForward = {'n', '<Del>'},
-        MkdnFollowLink = false, -- see MkdnCRnv
+        MkdnFollowLink = false, -- see MkdnNVmodeMultiFunc
         MkdnDestroyLink = {'n', '<M-CR>'},
         MkdnMoveSource = {'n', '<F2>'},
         MkdnYankAnchorLink = {'n', 'ya'},
@@ -324,8 +324,8 @@ require('mkdnflow').setup({
         MkdnTableNewColBefore = {{'n', 'i'}, '<leader>iC'},
         MkdnTab = false,
         MkdnSTab = false
-        MkdnCRi = false,
-        MkdnCRnv = {{'n', 'v'}, '<CR>'},
+        MkdnImodeMultiFunc = false,
+        MkdnNVmodeMultiFunc = {{'n', 'v'}, '<CR>'},
         MkdnFoldSection = {'n', '<leader>f'},
         MkdnUnfoldSection = {'n', '<leader>F'}
     }
@@ -474,8 +474,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<leader>iR` | i, n | `:MkdnTableNewRowAbove<CR>`   | Add a new row above the row the cursor is currently in                                                                                                                           |
 | `<leader>ic` | i, n | `:MkdnTableNewColAfter<CR>`   | Add a new column following the column the cursor is currently in                                                                                                                 |
 | `<leader>iC` | i, n | `:MkdnTableNewColBefore<CR>`  | Add a new column before the column the cursor is currently in                                                                                                                    |
-| --           | --   | `:MkdnCRi<CR>`                | Wrapper function which will add a new list item (if cursor is in a list item) or go to the same cell in the next row (if cursor is in a table)                                   |
-| `<CR>`       | n, v | `:MkdnCRnv<CR>`               | Wrapper function which will follow a link, create a new link from the word under the cursor or visual selection, or fold a section (if cursor is on a section heading)           |
+| --           | --   | `:MkdnImodeMultiFunc<CR>`     | Wrapper function which will add a new list item (if cursor is in a list item) or go to the same cell in the next row (if cursor is in a table)                                   |
+| `<CR>`       | n, v | `:MkdnNVmodeMultiFunc<CR>`               | Wrapper function which will follow a link, create a new link from the word under the cursor or visual selection, or fold a section (if cursor is on a section heading)           |
 | --           | --   | `:MkdnTab<CR>`                | Wrapper function which will jump to the next cell in a table (if cursor is in a table) or indent an (empty) list item (if cursor is in a list item)                              |
 | --           | --   | `:MkdnSTab<CR>`               | Wrapper function which will jump to the previous cell in a table (if cursor is in a table) or de-indent an (empty) list item (if cursor is in a list item)                       |
 | `<leader>f`  | --   | `:MkdnFoldSection<CR>`        | Fold the section the cursor is currently on/in                                                                                                                                   |
@@ -484,7 +484,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 ### Miscellaneous notes (+ troubleshooting) on remapping
 * The back-end function for `:MkdnGoBack`, `require('mkdnflow').buffers.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
-* If you are attempting to map `<CR>` to `MkdnNewListItem` or `MkdnCRi` in insert mode but can't get it to work, try inspecting your current insert mode mappings and seeing if anything is overriding your mapping. Possible candidates are completion plugins and auto-pair plugins.
+* If you are attempting to map `<CR>` to `MkdnNewListItem` or `MkdnImodeMultiFunc` in insert mode but can't get it to work, try inspecting your current insert mode mappings and seeing if anything is overriding your mapping. Possible candidates are completion plugins and auto-pair plugins.
     * If using [nvim-cmp](https://github.com/hrsh7th/nvim-cmp), consider using using the mapping with a fallback, as shown here: [*cmp-mapping*](https://github.com/hrsh7th/nvim-cmp/blob/bba6fb67fdafc0af7c5454058dfbabc2182741f4/doc/cmp.txt#L238)
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (e.g. nvim-autopairs allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
