@@ -51,13 +51,16 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_exec("command! MkdnTablePrevCell lua require('mkdnflow').tables.moveToCell(0, -1)", true)
     vim.api.nvim_exec("command! MkdnTableNextRow lua require('mkdnflow').tables.moveToCell(1, 0)", true)
     vim.api.nvim_exec("command! MkdnTablePrevRow lua require('mkdnflow').tables.moveToCell(-1, 0)", true)
-    vim.api.nvim_exec("command! MkdnCR lua require('mkdnflow.wrappers').newListItemOrNextTableRow()", true)
+    vim.api.nvim_exec("command! MkdnCRi lua require('mkdnflow.wrappers').newListItemOrNextTableRow()", true)
+    vim.api.nvim_exec("command! MkdnCRnv lua require('mkdnflow.wrappers').followOrCreateLinksOrToggleFolds()", true)
     vim.api.nvim_exec("command! MkdnTab lua require('mkdnflow.wrappers').indentListItemOrJumpTableCell(1)", true)
     vim.api.nvim_exec("command! MkdnSTab lua require('mkdnflow.wrappers').indentListItemOrJumpTableCell(-1)", true)
     vim.api.nvim_exec("command! MkdnTableNewRowBelow lua require('mkdnflow').tables.addRow()", true)
     vim.api.nvim_exec("command! MkdnTableNewRowAbove lua require('mkdnflow').tables.addRow(-1)", true)
     vim.api.nvim_exec("command! MkdnTableNewColAfter lua require('mkdnflow').tables.addCol()", true)
     vim.api.nvim_exec("command! MkdnTableNewColBefore lua require('mkdnflow').tables.addCol(-1)", true)
+    vim.api.nvim_exec("command! MkdnFoldSection lua require('mkdnflow').folds.foldSection()", true)
+    vim.api.nvim_exec("command! MkdnUnfoldSection lua require('mkdnflow').folds.unfoldSection()", true)
 
     -- Return coptions to user values
     vim.api.nvim_set_option('cpoptions', save_cpo)
