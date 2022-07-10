@@ -106,7 +106,7 @@ require('mkdnflow').setup({
 * `<Del>` to go **forward** (to the subsequent file/buffer opened in the current window, like clicking the forward button in a web browser)
 
 ### Keybindings
-* Easy-to-remember [default keybindings](#-commands-and-default-mappings) that activate only in markdown files
+* Easy-to-remember [default keybindings](#-commands-and-default-mappings) that activate only in markdown files (and/or other filetypes you specify in the `filetypes` config table)
 * [Customize keybindings](#mappings-dictionary-like-table) individually or [disable them altogether](#use_mappings_table-boolean))
 
 ### Manipulate headings
