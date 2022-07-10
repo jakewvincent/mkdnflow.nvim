@@ -253,10 +253,10 @@ As long as you successfully installed Mkdnflow, you don't need to do anything sp
 
 ## ⚙️ Configuration
 
-Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the [section below the following block](#config-descriptions). **To use these defaults, simply pass an empty table to the setup function:** `require('mkdnflow').setup({})`. To change these settings, specify new values for any of them them in the setup function.
+Currently, the setup function uses the defaults shown below. See the descriptions and non-default options in the [section below the following block](#config-descriptions). **To use these defaults, simply pass no arguments setup function:** `require('mkdnflow').setup()`. To change these settings, specify new values for any of them them in the setup function.
 
 ```lua
--- ** DEFAULT SETTINGS; TO USE THESE, PASS AN EMPTY TABLE TO THE SETUP FUNCTION **
+-- ** DEFAULT SETTINGS; TO USE THESE, PASS NO ARGUMENTS TO THE SETUP FUNCTION **
 require('mkdnflow').setup({
     filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,             
@@ -303,7 +303,7 @@ require('mkdnflow').setup({
         MkdnPrevHeading = {'n', '<leader>['},
         MkdnGoBack = {'n', '<BS>'},
         MkdnGoForward = {'n', '<Del>'},
-        MkdnFollowLink = {{'n', 'v'}, '<CR>'},
+        MkdnFollowLink = false, -- see MkdnCRnv
         MkdnDestroyLink = {'n', '<M-CR>'},
         MkdnMoveSource = {'n', '<F2>'},
         MkdnYankAnchorLink = {'n', 'ya'},
@@ -322,9 +322,12 @@ require('mkdnflow').setup({
         MkdnTableNewRowAbove = {{'n', 'i'}, '<leader>iR'},
         MkdnTableNewColAfter = {{'n', 'i'}, '<leader>ic'},
         MkdnTableNewColBefore = {{'n', 'i'}, '<leader>iC'},
-        MkdnCR = false,
         MkdnTab = false,
         MkdnSTab = false
+        MkdnCRi = false,
+        MkdnCRnv = {{'n', 'v'}, '<CR>'},
+        MkdnFoldSection = {'n', '<leader>f'},
+        MkdnUnfoldSection = {'n', '<leader>F'}
     }
 })
 ```
@@ -443,38 +446,41 @@ autocmd FileType markdown set autowriteall
 
 These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configuration). Commands with no mappings trigger functions that are called by the functions with mappings, but I've given them a command name so you can use them as independent functions if you'd like to.
 
-| Keymap       | Mode | Command                       | Description |
-|--------------| ---- | ----------------------------- | ------------|
-| `<Tab>`      | n    | `:MkdnNextLink<CR>`           | Move cursor to the beginning of the next link (if there is a next link) |
-| `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`           | Move the cursor to the beginning of the previous link (if there is one) |
-| `<leader>]`  | n    | `:MkdnNextHeading<CR>`        | Move the cursor to the beginning of the next heading (if there is one) |
-| `<leader>[`  | n    | `:MkdnPrevHeading<CR>`        | Move the cursor to the beginning of the previous heading (if there is one) |
-| `<BS>`       | n    | `:MkdnGoBack<CR>`             | Open the historically last-active buffer in the current window |
-| `<Del>`      | n    | `:MkdnGoForward<CR>`          | Open the buffer that was historically navigated away from in the current window |
-| `<CR>`       | n, v | `:MkdnFollowLink<CR>`         | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor |
-| `<F2>`       | n    | `:MkdnMoveSource<CR>`         | Open a dialog where you can provide a new source for a link and the plugin will rename and move the associated file on the backend (and rename the link source) |
-| `<M-CR>`     | n    | `:MkdnDestroyLink<CR>`        | Destoy the link under the cursor, replacing it with just the text from [...] |
-| `ya`         | n    | `:MkdnYankAnchorLink<CR>`     | Yank a formatted anchor link (if cursor is currently on a line with a heading) |
-| `yfa`        | n    | `:MkdnYankFileAnchorLink<CR>` | Yank a formatted anchor link with the filename included before the anchor (if cursor is currently on a line with a heading) |
-| `+`          | n    | `:MkdnIncreaseHeading<CR>`    | Increase heading importance (remove hashes) |
-| `-`          | n    | `:MkdnDecreaseHeading<CR>`    | Decrease heading importance (add hashes) |
-| `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`         | Toggle to-do list item's completion status or convert a list item into a to-do list item |
-| `<leader>nn` | n    | `:MkdnUpdateNumbering<CR>`    | Update numbering for all siblings of the list item of the current line |
-| --           | --   | `:MkdnNewListItem<CR>`        | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item |
-| --           | --   | `:MkdnExtendList<CR>`         | Like above, but the cursor stays on the current line (new list items of the same typ are added below) |
+| Keymap       | Mode | Command                       | Description                                                                                                                                                                      |
+| ------------ | ---- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<Tab>`      | n    | `:MkdnNextLink<CR>`           | Move cursor to the beginning of the next link (if there is a next link)                                                                                                          |
+| `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`           | Move the cursor to the beginning of the previous link (if there is one)                                                                                                          |
+| `<leader>]`  | n    | `:MkdnNextHeading<CR>`        | Move the cursor to the beginning of the next heading (if there is one)                                                                                                           |
+| `<leader>[`  | n    | `:MkdnPrevHeading<CR>`        | Move the cursor to the beginning of the previous heading (if there is one)                                                                                                       |
+| `<BS>`       | n    | `:MkdnGoBack<CR>`             | Open the historically last-active buffer in the current window                                                                                                                   |
+| `<Del>`      | n    | `:MkdnGoForward<CR>`          | Open the buffer that was historically navigated away from in the current window                                                                                                  |
+| --           | --   | `:MkdnFollowLink<CR>`         | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor                     |
+| `<F2>`       | n    | `:MkdnMoveSource<CR>`         | Open a dialog where you can provide a new source for a link and the plugin will rename and move the associated file on the backend (and rename the link source)                  |
+| `<M-CR>`     | n    | `:MkdnDestroyLink<CR>`        | Destoy the link under the cursor, replacing it with just the text from [...]                                                                                                     |
+| `ya`         | n    | `:MkdnYankAnchorLink<CR>`     | Yank a formatted anchor link (if cursor is currently on a line with a heading)                                                                                                   |
+| `yfa`        | n    | `:MkdnYankFileAnchorLink<CR>` | Yank a formatted anchor link with the filename included before the anchor (if cursor is currently on a line with a heading)                                                      |
+| `+`          | n    | `:MkdnIncreaseHeading<CR>`    | Increase heading importance (remove hashes)                                                                                                                                      |
+| `-`          | n    | `:MkdnDecreaseHeading<CR>`    | Decrease heading importance (add hashes)                                                                                                                                         |
+| `<C-Space>`  | n    | `:MkdnToggleToDo<CR>`         | Toggle to-do list item's completion status or convert a list item into a to-do list item                                                                                         |
+| `<leader>nn` | n    | `:MkdnUpdateNumbering<CR>`    | Update numbering for all siblings of the list item of the current line                                                                                                           |
+| --           | --   | `:MkdnNewListItem<CR>`        | Add a new ordered list item, unordered list item, or (uncompleted) to-do list item                                                                                               |
+| --           | --   | `:MkdnExtendList<CR>`         | Like above, but the cursor stays on the current line (new list items of the same typ are added below)                                                                            |
 | --           | --   | `:MkdnCreateLink<CR>`         | Replace the word under the cursor with a link in which the word under the cursor is the name of the link. This is called by MkdnFollowLink if there is no link under the cursor. |
-| --           | --   | `:MkdnTable ncol nrow (noh)`  | Make a table of ncol columns and nrow rows. Pass 'noh' as a third argument to exclude table headers. |
-| --           | --   | `:MkdnTableFormat<CR>`        | Format a table under the cursor |
-| `<Tab>`      | i    | `:MkdnTableNextCell<CR>`      | Move the cursor to the beginning of the next cell in the table, jumping to the next row if needed |
-| `<S-Tab>`    | i    | `:MkdnTablePrevCell<CR>`      | Move the cursor to the beginning of the previous cell in the table, jumping to the previous row if needed |
-| `<leader>ir` | i, n | `:MkdnTableNewRowBelow<CR>`   | Add a new row below the row the cursor is currently in |
-| `<leader>iR` | i, n | `:MkdnTableNewRowAbove<CR>`   | Add a new row above the row the cursor is currently in |
-| `<leader>ic` | i, n | `:MkdnTableNewColAfter<CR>`   | Add a new column following the column the cursor is currently in |
-| `<leader>iC` | i, n | `:MkdnTableNewColBefore<CR>`  | Add a new column before the column the cursor is currently in |
-| --           | --   | `:MkdnCR<CR>`                 | Wrapper function which will add a new list item (if cursor is in a list item) or go to the same cell in the next row (if cursor is in a table) |
-| --           | --   | `:MkdnTab<CR>`                | Wrapper function which will jump to the next cell in a table (if cursor is in a table) or indent an (empty) list item (if cursor is in a list item) |
-| --           | --   | `:MkdnSTab<CR>`               | Wrapper function which will jump to the previous cell in a table (if cursor is in a table) or de-indent an (empty) list item (if cursor is in a list item) |
-| --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow |
+| --           | --   | `:MkdnTable ncol nrow (noh)`  | Make a table of ncol columns and nrow rows. Pass 'noh' as a third argument to exclude table headers.                                                                             |
+| --           | --   | `:MkdnTableFormat<CR>`        | Format a table under the cursor                                                                                                                                                  |
+| `<Tab>`      | i    | `:MkdnTableNextCell<CR>`      | Move the cursor to the beginning of the next cell in the table, jumping to the next row if needed                                                                                |
+| `<S-Tab>`    | i    | `:MkdnTablePrevCell<CR>`      | Move the cursor to the beginning of the previous cell in the table, jumping to the previous row if needed                                                                        |
+| `<leader>ir` | i, n | `:MkdnTableNewRowBelow<CR>`   | Add a new row below the row the cursor is currently in                                                                                                                           |
+| `<leader>iR` | i, n | `:MkdnTableNewRowAbove<CR>`   | Add a new row above the row the cursor is currently in                                                                                                                           |
+| `<leader>ic` | i, n | `:MkdnTableNewColAfter<CR>`   | Add a new column following the column the cursor is currently in                                                                                                                 |
+| `<leader>iC` | i, n | `:MkdnTableNewColBefore<CR>`  | Add a new column before the column the cursor is currently in                                                                                                                    |
+| --           | --   | `:MkdnCRi<CR>`                | Wrapper function which will add a new list item (if cursor is in a list item) or go to the same cell in the next row (if cursor is in a table)                                   |
+| `<CR>`       | n, v | `:MkdnCRnv<CR>`               | Wrapper function which will follow a link, create a new link from the word under the cursor or visual selection, or fold a section (if cursor is on a section heading)           |
+| --           | --   | `:MkdnTab<CR>`                | Wrapper function which will jump to the next cell in a table (if cursor is in a table) or indent an (empty) list item (if cursor is in a list item)                              |
+| --           | --   | `:MkdnSTab<CR>`               | Wrapper function which will jump to the previous cell in a table (if cursor is in a table) or de-indent an (empty) list item (if cursor is in a list item)                       |
+| `<leader>f`  | --   | `:MkdnFoldSection<CR>`        | Fold the section the cursor is currently on/in                                                                                                                                   |
+| `<leader>F`  | --   | `:MkdnUnfoldSection<CR>`      | Unfold the folded section the cursor is currently on                                                                                                                             |
+| --           | --   | `:Mkdnflow<CR>`               | Manually start Mkdnflow                                                                                                                                                          |
 
 ### Miscellaneous notes (+ troubleshooting) on remapping
 * The back-end function for `:MkdnGoBack`, `require('mkdnflow').buffers.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
@@ -485,6 +491,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 ## ☑️ To do
 * [ ] Improve citation functionality
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
+* [ ] Interpret reference-style links (spec: [Reference-style Links](https://www.markdownguide.org/basic-syntax#reference-style-links))
+* [ ] Overhaul help documents (i.e. `:h mkdnflow`)
 
 <details>
 <summary>Completed to-dos</summary><p>
@@ -586,7 +594,7 @@ end
     * [glow.nvim](https://github.com/npxbr/glow.nvim) (Markdown preview using [glow](https://github.com/charmbracelet/glow)—render markdown in Neovim, with *pizzazz*!)
     * [auto-pandoc.nvim](https://github.com/jghauser/auto-pandoc.nvim) ("[...] allows you to easily convert your markdown files using pandoc.")
 ### Alternatives to mkdnflow
-* [Vimwiki](https://github.com/vimwiki/vimwiki) (Full-featured journal navigation/maintenance, written in Vimscript)
+* [Vimwiki](https://github.com/vimwiki/vimwiki) (Full-featured wiki navigation/maintenance and filetype plugin, written in Vimscript)
 * [wiki.vim](https://github.com/lervag/wiki.vim/) (A lighter-weight alternative to Vimwiki, written in Vimscript)
 * [Neorg](https://github.com/nvim-neorg/neorg) (A revised [Org-mode](https://en.wikipedia.org/wiki/Org-mode) for Neovim, written in Lua)
 * [follow-md-links.nvim](https://github.com/jghauser/follow-md-links.nvim) (A simpler plugin for following markdown links, written in Lua)
