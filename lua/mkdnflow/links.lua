@@ -110,6 +110,8 @@ M.getLinkPart = function(part)
                     anchor = path:match('%.md(#.+)') or path:match('.+(#.+)')
                     if anchor then
                         path = path:match('(.+%.md)#') or path:match('(.+)#')
+                    else
+                        anchor = ''
                     end
                 end
                 return path, anchor, path_first, path_last, row
