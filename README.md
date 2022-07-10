@@ -64,11 +64,11 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     2. Interpret links relative to the file open in the current buffer
     3. Interpret links relative to the root directory of the notebook that the file in the current buffer is a part of. To enable this functionality, set `perspective.priority` to `root` in your config, and pass a file as the value of `perspective.root_tell`. The _tell_ is the name of a single file that can be used to identify the root directory (e.g. `index.md`, `.git`, `.root`, `.wiki_root`, etc.). See [the default config](#%EF%B8%8F-configuration) for how to configure the `perspective` table.
     * Override any of the above settings by specifying a link to a markdown file with an absolute path (one that starts with `/` or `~/`). Links within this file will still receive the relative interpretation, so this is best for references out of the project directory to markdown files without their own dependencies (unless those dependencies are within the project directory).
-* 🆕 Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-like-table).
+* Keep your files organized **and** your links simple by customizing link interpretation using an [implicit transformation function](#links-dictionary-like-table).
 
 ### Create, customize, and destroy links
 * `<CR>` on word under cursor or visual selection to create a notebook-internal link
-    * 🆕 Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-like-table) config key for customization instructions.
+    * Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-like-table) config key for customization instructions.
 * `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
 * Create an anchor link if the visual selection starts with `#` 
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
@@ -97,7 +97,7 @@ require('mkdnflow').setup({
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#create_dirs-boolean)
 
 ### Rename link sources and files simultaneously
-* 🆕 Use built-in dialog triggered by `MkdnMoveSource` (mapped to `<F2>` by default) to rename a link's source *and rename/move the linked file* simultaneously
+* Use built-in dialog triggered by `MkdnMoveSource` (mapped to `<F2>` by default) to rename a link's source *and rename/move the linked file* simultaneously
     * [Perspective](#customizable-link-interpretation), [implicit extensions](#links-dictionary-like-table), and custom [implicit transformations](#links-dictionary-like-table) are all taken into account when moving the linked file
     * The dialog will confirm the details of the changes for you to approve/reject before taking any action
 
@@ -112,27 +112,34 @@ require('mkdnflow').setup({
 ### Manipulate headings
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
 
+### Section folding
+* 🆕 Fold a section using `<CR>` in normal mode if the cursor is on the heading of the section
+    * Unfold a folded section using `<CR>` or `<leader>F` (both are default mappings; the former maps to a wrapper function that will follow links if the cursor is not on a fold or section heading; the latter is mapped specifically to `:MkdnUnfoldSection<CR>`)
+    * If you wish to create a link in a heading (normally done with `<CR>`), you'll need to do so by making a visual selection of the text you wish to create a link from and then hitting `<CR>`, or otherwise disabling the mapping for `MkdnCRnv` and mapping `MkdnFollowLink` to `<CR>` in visual and normal modes.
+* 🆕 Fold the section the cursor is currently in—even if the cursor is not on the heading—using `<leader>f`
+
 ### Lists
 * Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table) (make sure to use the [luautf8 luarock dependency](#if-you-wish-to-use-custom-utf-8-to-do-symbols-add-the-luautf8-luarock-dependency) if you want to use utf8 to-do symbols).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
-* 🆕 Toggle multiple to-do items at once by selecting the lines to toggle in (simple) visual mode (mapped to `<C-Space>` by default)
-* 🆕 Create to-do items from plain unordered or ordered lists (mapped to `<C-Space>` by default)
+* Toggle multiple to-do items at once by selecting the lines to toggle in (simple) visual mode (mapped to `<C-Space>` by default)
+* Create to-do items from plain unordered or ordered lists by toggling a non-to-do-list item (`<C-Space>` by default)
 * Automatically update any parent to-dos when child to-dos are toggled.
     * When all child to-dos have been marked complete, the parent is marked complete
     * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
     * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
     * When a parent to-do is marked complete or in-progress and all child to-dos have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
-* 🆕 Manually update numbering with `MkdnUpdateNumbering` (mapped to `<leader>nn` by default) or `MkdnUpdateNumbering 0` if, e.g., you want to start numbering at 0
+* Update numbering for the list the cursor is currently on
+    * `<leader>nn` (default mapping) or `:MkdnUpdateNumbering 0<CR>`, e.g., if you want to start numbering at 0
 * Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
     * NOTE: The following functionality is disabled by default in case some find it intrusive. To enable the functionality, remap `<CR>` in insert mode (see the following code block).
     * In unordered lists: Add another bullet on the next line, unless the current list item is empty, in which case it will be erased
     * In ordered lists: Add another item on the next line (keeping numbering updated), unless the current item is empty, in which case it will be erased
     * In unordered and ordered to-do lists: Add another to-do item on the next line, unless the current to-do is empty, in which case it will be replaced with a simple (non-to-do) list item
-    * 🆕 Automatically indent a new list item when the current one ends in a colon
-    * 🆕 Demote empty indented list items by reducing the indentation by one level
-* 🆕 Add new list items using the list type of the current line without any of the fancy stuff listed above (see [MkdnExtendList](#-commands-and-default-mappings))
+    * Automatically indent a new list item when the current one ends in a colon
+    * Demote empty indented list items by reducing the indentation by one level
+* Add new list items using the list type of the current line without any of the fancy stuff listed above (see [MkdnExtendList](#-commands-and-default-mappings))
 
 ```lua
 require('mkdnflow').setup({
@@ -476,14 +483,14 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (e.g. nvim-autopairs allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
-* [ ] Headings
-    * [ ] Easy folding & unfolding
 * [ ] Improve citation functionality
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Headings
+    * [X] Easy folding & unfolding
 * [X] Fancy table creation & editing
     * [X] Create a table of x columns and y rows
     * [X] Add/remove columns and rows
@@ -507,6 +514,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 07/09/22: Added folding functionality; replaced default normal/visual-mode mapping with mapping to wrapper function that will fold/open sections
 * 07/01/22: Properly handle alignment markers in tables
 * 07/01/22: Add option not to format table when moving the cursor to a different cell
 * 06/29/22: Conceal links
@@ -515,14 +523,14 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 06/17/22: Added functionality to jump rows in tables
 * 06/16/22: Added functionality to format tables and jump cells in tables
 * 06/11/22: Added function and command to insert tables
-* 06/06/22: Extend functionality of MkdnToggleToDo so that it (a) will create a to-do item from a plain list item, and (b) can toggle multiple to-do items selected with simple visual mode
-* 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
-* 06/04/22: Variant of MkdnNewListItem added as MkdnExtendList
-* 06/03/22: Add command and mapping for updating numbering
 
 <details>
 <summary>Older changes</summary><p>
 
+* 06/06/22: Extend functionality of MkdnToggleToDo so that it (a) will create a to-do item from a plain list item, and (b) can toggle multiple to-do items selected with simple visual mode
+* 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
+* 06/04/22: Variant of MkdnNewListItem added as MkdnExtendList
+* 06/03/22: Add command and mapping for updating numbering
 * 05/30/22: Implement root directory switching to allow for easier switching between notebooks
 * 05/30/22: Indent new list item when current one ends in a colon
 * 05/12/22: Add functionality to search for bib files in the project's root directory
