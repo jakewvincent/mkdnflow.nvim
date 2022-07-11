@@ -160,6 +160,7 @@ M.userConfigCheck = function(user_config)
         -- If MkdnCR has a mapping, update it to MkdnImodeMultiFunc
         if user_config.mappings.MkdnCR then
             user_config.mappings.MkdnImodeMultiFunc = user_config.mappings.MkdnCR
+            user_config.mappings.MkdnCR = nil
         end
     end
     return(user_config)
