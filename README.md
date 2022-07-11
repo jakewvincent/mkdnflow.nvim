@@ -8,7 +8,9 @@
 
 ## 📝 Description
 
-This plugin is designed for the *fluent* navigation of notebooks (AKA "wikis") written in [markdown](https://markdownguide.org). It is a set of functions and mappings to those functions which make it easy to navigate and manipulate markdown notebooks in Neovim. The original goal of Mkdnflow was to replicate some features from [Vimwiki](https://github.com/vimwiki/vimwiki) in Lua instead of Vimscript, but my current goal for this project is to make this plugin as useful as possible for anyone using Neovim who maintains a set of markdown notes and wishes to efficiently navigate those notes and keep them organized and connected.
+This plugin is designed for the *fluent* navigation of documents and notebooks (AKA "wikis") written in [markdown](https://markdownguide.org). The plugin's flexibility and its prioritization of markdown also means it can become part of your webdev workflow if you use static site generators like Jekyll or Hugo, which can generate static sites from markdown documents.
+
+Mkdnflow is an extended set of functions and mappings to those functions which make it easy to navigate and manipulate markdown documents and notebooks in Neovim. I originally started writing Mkdnflow to replicate some features from [Vimwiki](https://github.com/vimwiki/vimwiki) in Lua instead of Vimscript, but my current goal for this project is to make this plugin as useful as possible for anyone using Neovim who maintains a set of markdown notes and wishes to efficiently navigate those notes and keep them organized and connected. The plugin now includes some convenience features I wished Vimwiki had, including functionality to [rename the source part of a link and its associated file](#rename-link-sources-and-files-simultaneously) simultaneously.
 
 I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.nvim/issues) and appreciate feature requests, suggestions, and bug reports. If you'd like to contribute to the plugin, fork this repo and submit a [pull request](https://github.com/jakewvincent/mkdnflow.nvim/pulls) with your changes or additions. If you need Lua resources, see [this page](https://neovim.io/doc/lua-resources/) for a starting point or run `:h lua` or `:h api` in Neovim.
 
@@ -20,8 +22,8 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
 
-* Vimwiki doesn't use markdown by default; mkdnflow only works for markdown.
-* I'm intending mkdnflow to be a little lighter weight/less involved than Vimwiki. Mkdnflow doesn't and won't provide syntax highlighting and won't create new filetypes.
+* Vimwiki doesn't use markdown by default; mkdnflow only works for markdown
+* I'm intending mkdnflow to be a little lighter weight/less involved than Vimwiki. Mkdnflow doesn't and won't provide syntax highlighting and won't create new filetypes (although it now optionally provides link concealing, since this was a requested feature).
 * Written in Lua
 
 ## ✨ Features
@@ -110,7 +112,7 @@ require('mkdnflow').setup({
 * [Customize keybindings](#mappings-dictionary-like-table) individually or [disable them altogether](#use_mappings_table-boolean))
 
 ### Manipulate headings
-* Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing a hash symbol*.
+* Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing* a hash symbol.
 
 ### Section folding
 * 🆕 Fold a section using `<CR>` in normal mode if the cursor is on the heading of the section
@@ -161,7 +163,7 @@ require('mkdnflow').setup({
 
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
-## 📦 Installation
+## 📦 Installation and usage
 
 ### init.lua
 <details>
@@ -247,7 +249,7 @@ EOF
 
 All functionality of the plugin should now work on all operating systems, including Windows! However, since I don't use Windows on my daily driver, there may be edge cases that cause trouble. Please file an issue if anything comes up.
 
-## 🏁 Starting a notebook
+### 🏁 Starting a notebook
 
 As long as you successfully installed Mkdnflow, you don't need to do anything special to start using the plugin. All of the plugin's features will be enabled for any markdown file (or for any filetype you specify under the `filetypes` config key). If you would like to start a notebook (AKA "wiki"), first create a directory for it. If you're using Neovim in the terminal, simply enter `nvim index.md` and start writing. I suggest using `index.md` as a landing page/table of contents that contains links to all other notes in your notebook. If you use such a landing page, try setting `perspective.priority` in your Mkdnflow config to `'root'` and your `perspective.root_tell` to `'index.md'` so that Mkdnflow can identify your notebook's root directory and reliably interpret links relative to this directory.
 
@@ -475,7 +477,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<leader>ic` | i, n | `:MkdnTableNewColAfter<CR>`   | Add a new column following the column the cursor is currently in                                                                                                                 |
 | `<leader>iC` | i, n | `:MkdnTableNewColBefore<CR>`  | Add a new column before the column the cursor is currently in                                                                                                                    |
 | --           | --   | `:MkdnImodeMultiFunc<CR>`     | Wrapper function which will add a new list item (if cursor is in a list item) or go to the same cell in the next row (if cursor is in a table)                                   |
-| `<CR>`       | n, v | `:MkdnNVmodeMultiFunc<CR>`               | Wrapper function which will follow a link, create a new link from the word under the cursor or visual selection, or fold a section (if cursor is on a section heading)           |
+| `<CR>`       | n, v | `:MkdnNVmodeMultiFunc<CR>`    | Wrapper function which will follow a link, create a new link from the word under the cursor or visual selection, or fold a section (if cursor is on a section heading)           |
 | --           | --   | `:MkdnTab<CR>`                | Wrapper function which will jump to the next cell in a table (if cursor is in a table) or indent an (empty) list item (if cursor is in a list item)                              |
 | --           | --   | `:MkdnSTab<CR>`               | Wrapper function which will jump to the previous cell in a table (if cursor is in a table) or de-indent an (empty) list item (if cursor is in a list item)                       |
 | `<leader>f`  | --   | `:MkdnFoldSection<CR>`        | Fold the section the cursor is currently on/in                                                                                                                                   |
@@ -493,6 +495,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 * [ ] Interpret reference-style links (spec: [Reference-style Links](https://www.markdownguide.org/basic-syntax#reference-style-links))
 * [ ] Overhaul help documents (i.e. `:h mkdnflow`)
+* [ ] Add a way to disable modules the user doesn't wish/plan to use
 
 <details>
 <summary>Completed to-dos</summary><p>
