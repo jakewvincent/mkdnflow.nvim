@@ -265,7 +265,6 @@ init.setup = function(user_config)
         init.bib = require('mkdnflow.bib')
         init.lists = require('mkdnflow.lists')
         init.tables = require('mkdnflow.tables')
-        init.files = compat
         if init.config.links.conceal then
             init.conceal = require('mkdnflow.conceal')
         end
