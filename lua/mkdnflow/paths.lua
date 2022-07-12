@@ -126,7 +126,7 @@ local internal_open = function(path, anchor)
         end
     end
     local path_w_ext
-    if not path:match('%..+$') then
+    if not path:match('%.[%a]+$') then
         if implicit_extension then
             path_w_ext = path..'.'..implicit_extension
         else
