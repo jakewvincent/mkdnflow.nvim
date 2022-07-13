@@ -165,6 +165,11 @@ require('mkdnflow').setup({
 
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
+### 🆕 Disable unused modules
+* Individually disable any of the modules that enable all of the above functionality (see [`modules` config option descriptions](#modules-dictionary-like-table))
+    * Prevents the module from being loaded (rather than simply disabling the functionality the module provides)
+    * Disabling a module prevents commands that are dependent on that module from being defined (and prevents mappings to those commands from being set)
+
 ## 📦 Installation and usage
 
 ### init.lua
@@ -517,11 +522,11 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 * [ ] Interpret reference-style links (spec: [Reference-style Links](https://www.markdownguide.org/basic-syntax#reference-style-links))
 * [ ] Overhaul help documents (i.e. `:h mkdnflow`)
-* [ ] Add a way to disable modules the user doesn't wish/plan to use
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Add a way to disable modules the user doesn't wish/plan to use
 * [X] Headings
     * [X] Easy folding & unfolding
 * [X] Fancy table creation & editing
@@ -547,6 +552,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 07/13/22: Individually disable modules
 * 07/09/22: Added folding functionality; replaced default normal/visual-mode mapping with mapping to wrapper function that will fold/open sections
 * 07/01/22: Properly handle alignment markers in tables
 * 07/01/22: Add option not to format table when moving the cursor to a different cell
@@ -555,11 +561,11 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 06/27/22: Added functionality to add new rows and columns
 * 06/17/22: Added functionality to jump rows in tables
 * 06/16/22: Added functionality to format tables and jump cells in tables
-* 06/11/22: Added function and command to insert tables
 
 <details>
 <summary>Older changes</summary><p>
 
+* 06/11/22: Added function and command to insert tables
 * 06/06/22: Extend functionality of MkdnToggleToDo so that it (a) will create a to-do item from a plain list item, and (b) can toggle multiple to-do items selected with simple visual mode
 * 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
 * 06/04/22: Variant of MkdnNewListItem added as MkdnExtendList
