@@ -94,7 +94,7 @@ require('mkdnflow').setup({
 
 ### Jump to links, headings
 * `<Tab>` and `<S-Tab>` jump to the next and previous links in the file
-* `<leader>]` and `<leader>[` jump to the next and previous headings in the file
+* `]]` and `[[` jump to the next and previous headings in the file
 * "Wrap" back to the beginning/end of the file when jumping with a [config setting](#wrap-boolean)
 
 ### Create missing directories
@@ -319,8 +319,8 @@ require('mkdnflow').setup({
     mappings = {
         MkdnNextLink = {'n', '<Tab>'},
         MkdnPrevLink = {'n', '<S-Tab>'},
-        MkdnNextHeading = {'n', '<leader>]'},
-        MkdnPrevHeading = {'n', '<leader>['},
+        MkdnNextHeading = {'n', ']]'},
+        MkdnPrevHeading = {'n', '[['},
         MkdnGoBack = {'n', '<BS>'},
         MkdnGoForward = {'n', '<Del>'},
         MkdnFollowLink = false, -- see MkdnNVmodeMultiFunc
@@ -479,8 +479,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | ------------ | ---- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `<Tab>`      | n    | `:MkdnNextLink<CR>`           | Move cursor to the beginning of the next link (if there is a next link)                                                                                                          |
 | `<S-Tab>`    | n    | `:MkdnPrevLink<CR>`           | Move the cursor to the beginning of the previous link (if there is one)                                                                                                          |
-| `<leader>]`  | n    | `:MkdnNextHeading<CR>`        | Move the cursor to the beginning of the next heading (if there is one)                                                                                                           |
-| `<leader>[`  | n    | `:MkdnPrevHeading<CR>`        | Move the cursor to the beginning of the previous heading (if there is one)                                                                                                       |
+| `]]`  | n    | `:MkdnNextHeading<CR>`        | Move the cursor to the beginning of the next heading (if there is one)                                                                                                           |
+| `[[`  | n    | `:MkdnPrevHeading<CR>`        | Move the cursor to the beginning of the previous heading (if there is one)                                                                                                       |
 | `<BS>`       | n    | `:MkdnGoBack<CR>`             | Open the historically last-active buffer in the current window                                                                                                                   |
 | `<Del>`      | n    | `:MkdnGoForward<CR>`          | Open the buffer that was historically navigated away from in the current window                                                                                                  |
 | --           | --   | `:MkdnFollowLink<CR>`         | Open the link under the cursor, creating missing directories if desired, or if there is no link under the cursor, make a link from the word under the cursor                     |
