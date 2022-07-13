@@ -16,6 +16,17 @@
 
 -- Default config table (where defaults and user-provided config will be combined)
 local default_config = {
+    modules = {
+        bib = true,
+        buffers = true,
+        conceal = true,
+        cursor = true,
+        folds = true,
+        links = true,
+        lists = true,
+        maps = true,
+        tables = true
+    },
     create_dirs = true,
     perspective = {
         priority = 'first',
@@ -88,7 +99,10 @@ local default_config = {
         MkdnImodeMultiFunc = false,
         MkdnNVmodeMultiFunc = {{'n', 'v'}, '<CR>'},
         MkdnFoldSection = {'n', '<leader>f'},
-        MkdnUnfoldSection = {'n', '<leader>F'}
+        MkdnUnfoldSection = {'n', '<leader>F'},
+        MkdnTab = false,
+        MkdnSTab = false,
+        MkdnCreateLink = false
     }
 }
 
@@ -97,6 +111,44 @@ init.utils = require('mkdnflow.utils')
 init.user_config = {} -- For user config
 init.config = {} -- For merged configs
 init.loaded = nil -- For load status
+
+init.command_deps = {
+    MkdnGoBack = {'buffers'},
+    MkdnGoForward = {'buffers'},
+    MkdnMoveSource = {'paths', 'links'},
+    MkdnNextLink = {'links', 'cursor'},
+    MkdnPrevLink = {'links', 'cursor'},
+    MkdnCreateLink = {'links'},
+    MkdnFollowLink = {'links', 'paths'},
+    MkdnDestroyLink = {'links'},
+    MkdnYankAnchorLink = {'cursor'},
+    MkdnYankFileAnchorLink = {'cursor'},
+    MkdnNextHeading = {'cursor'},
+    MkdnPrevHeading = {'cursor'},
+    MkdnIncreaseHeading = {'cursor'},
+    MkdnDecreaseHeading = {'cursor'},
+    MkdnToggleToDo = {'lists'},
+    MkdnNewListItem = {'lists'},
+    MkdnExtendList = {'lists'},
+    MkdnUpdateNumbering = {'lists'},
+    MkdnTable = {'tables'},
+    MkdnTableFormat = {'tables'},
+    MkdnTableNextCell = {'tables'},
+    MkdnTablePrevCell = {'tables'},
+    MkdnTableNextRow = {'tables'},
+    MkdnTablePrevRow = {'tables'},
+    MkdnTableNewRowBelow = {'tables'},
+    MkdnTableNewRowAbove = {'tables'},
+    MkdnTableNewColAfter = {'tables'},
+    MkdnTableNewColBefore = {'tables'},
+    MkdnImodeMultiFunc = {},
+    MkdnNVmodeMultiFunc = {},
+    MkdnFoldSection = {'folds'},
+    MkdnUnfoldSection = {'folds'},
+    MkdnTab = {},
+    MkdnSTab = {}
+}
+
 
 -- Run setup
 init.setup = function(user_config)
@@ -128,9 +180,6 @@ init.setup = function(user_config)
     user_config = compat.userConfigCheck(user_config)
     init.config = init.utils.mergeTables(default_config, user_config)
     -- Only load the mapping autocommands if the user hasn't said "no"
-    if init.config.use_mappings_table == true then
-        require('mkdnflow.maps')
-    end
     if load_on_ft[ft] then
         -- Get silence preference
         local silent = init.config.silent
@@ -180,17 +229,26 @@ init.setup = function(user_config)
             end
         end
         -- Load modules
-        init.paths = require('mkdnflow.paths')
-        init.cursor = require('mkdnflow.cursor')
-        init.links = require('mkdnflow.links')
-        init.buffers = require('mkdnflow.buffers')
-        init.bib = require('mkdnflow.bib')
-        init.lists = require('mkdnflow.lists')
-        init.tables = require('mkdnflow.tables')
-        if init.config.links.conceal then
-            init.conceal = require('mkdnflow.conceal')
+        for k, v in pairs(init.config.modules) do
+            if init.config.modules[k] then
+                if k == 'conceal' and v and init.config.links.conceal then
+                    init.conceal = require('mkdnflow.'..k)
+                elseif k ~= 'conceal' then
+                    init[k] = require('mkdnflow.'..k)
+                end
+            end
         end
-        init.folds = require('mkdnflow.folds')
+        --init.paths = require('mkdnflow.paths')
+        --init.cursor = require('mkdnflow.cursor')
+        --init.links = require('mkdnflow.links')
+        --init.buffers = require('mkdnflow.buffers')
+        --init.bib = require('mkdnflow.bib')
+        --init.lists = require('mkdnflow.lists')
+        --init.tables = require('mkdnflow.tables')
+        --if init.config.links.conceal then
+        --    init.conceal = require('mkdnflow.conceal')
+        --end
+        --init.folds = require('mkdnflow.folds')
         -- Record load status (i.e. loaded)
         init.loaded = true
     else

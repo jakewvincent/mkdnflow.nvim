@@ -15,10 +15,11 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Mkdnflow mappings
-local load_on_ft = require("mkdnflow").config.filetypes
+local config = require("mkdnflow").config
 local nvim_version = require("mkdnflow").nvim_version
+local command_deps = require("mkdnflow").command_deps
 local extension_patterns = {}
-for key, _ in pairs(load_on_ft) do
+for key, _ in pairs(config.filetypes) do
     table.insert(extension_patterns, "*."..key)
 end
 
@@ -28,9 +29,15 @@ if nvim_version >= 7 then
     vim.api.nvim_create_autocmd({"BufEnter, BufWinEnter"}, {
         pattern = extension_patterns,
         callback = function()
-            local mappings = require("mkdnflow").config.mappings
-            for command, mapping in pairs(mappings) do
-                if mapping and type(mapping[1]) == "table" then
+            for command, mapping in pairs(config.mappings) do
+                local available = true
+                -- Check if the modules the command is dependent on are disabled by user
+                for _, module in ipairs(command_deps[command]) do
+                    if not config.modules[module] then
+                        available = false
+                    end
+                end
+                if available and mapping and type(mapping[1]) == "table" then
                     for _, value in ipairs(mapping[1]) do
                         vim.api.nvim_buf_set_keymap(
                             0,
@@ -40,7 +47,7 @@ if nvim_version >= 7 then
                             {noremap = true}
                         )
                     end
-                elseif type(mapping) == "table" then
+                elseif available and type(mapping) == "table" then
                     vim.api.nvim_buf_set_keymap(
                         0,
                         mapping[1],
