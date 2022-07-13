@@ -70,7 +70,6 @@ local default_config = {
         trim_whitespace = true,
         format_on_move = true
     },
-    use_mappings_table = true,
     mappings = {
         MkdnGoBack = {'n', '<BS>'},
         MkdnGoForward = {'n', '<Del>'},
