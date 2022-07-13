@@ -25,6 +25,7 @@ local default_config = {
         links = true,
         lists = true,
         maps = true,
+        paths = true,
         tables = true
     },
     create_dirs = true,
@@ -141,10 +142,12 @@ init.command_deps = {
     MkdnTableNewRowAbove = {'tables'},
     MkdnTableNewColAfter = {'tables'},
     MkdnTableNewColBefore = {'tables'},
-    MkdnImodeMultiFunc = {},
-    MkdnNVmodeMultiFunc = {},
     MkdnFoldSection = {'folds'},
     MkdnUnfoldSection = {'folds'},
+    -- The following four depend on multiple modules; they will be defined but will
+    -- self-limit their functionality depending on the available modules
+    MkdnImodeMultiFunc = {},
+    MkdnNVmodeMultiFunc = {},
     MkdnTab = {},
     MkdnSTab = {}
 }
@@ -238,17 +241,6 @@ init.setup = function(user_config)
                 end
             end
         end
-        --init.paths = require('mkdnflow.paths')
-        --init.cursor = require('mkdnflow.cursor')
-        --init.links = require('mkdnflow.links')
-        --init.buffers = require('mkdnflow.buffers')
-        --init.bib = require('mkdnflow.bib')
-        --init.lists = require('mkdnflow.lists')
-        --init.tables = require('mkdnflow.tables')
-        --if init.config.links.conceal then
-        --    init.conceal = require('mkdnflow.conceal')
-        --end
-        --init.folds = require('mkdnflow.folds')
         -- Record load status (i.e. loaded)
         init.loaded = true
     else
