@@ -92,88 +92,11 @@ local default_config = {
     }
 }
 
--- Function to merge the user_config with the default config
-MergeConfigs = function(defaults, user_config)
-    for k, v in pairs(user_config) do
-        if type(v) == 'table' then
-            if type(defaults[k] or false) == 'table' then
-                MergeConfigs(defaults[k] or {}, user_config[k] or {})
-            else
-                defaults[k] = v
-            end
-        else
-            defaults[k] = v
-        end
-    end
-    return(defaults)
-end
-
--- Private function to detect the extension of a filename passed as a string
-local get_file_type = function(string)
-    local ext = string:match("^.*%.(.+)$")
-    return(ext ~= nil and string.lower(ext) or '')
-end
-
 local init = {} -- Init functions & variables
+init.utils = require('mkdnflow.utils')
 init.user_config = {} -- For user config
 init.config = {} -- For merged configs
 init.loaded = nil -- For load status
-
--- Public function to identify root directory on a unix or Windows machine
-init.getRootDir = function(dir, root_tell, os)
-    local drive = dir:match('^%u')
-    -- List files in directory
-    local search_is_on, root = true, nil
-    -- Until the root directory is found, keep looking higher and higher
-    -- each pass
-    while search_is_on do
-        -- Get the output of running ls -a in dir
-        local pfile
-        if os:match('Windows') then
-            pfile = io.popen('dir /b "'..dir..'"')
-        else
-            pfile = io.popen('ls -a "'..dir..'"')
-        end
-        -- Check the list of files for the tell
-        for filename in pfile:lines() do
-            local match = filename == root_tell
-            if match then
-                root = dir
-                search_is_on = false
-            end
-        end
-        pfile:close()
-        if search_is_on then
-            if os:match('Windows') then
-                if dir == drive..':\\' then
-                    -- If we've reached the highest directory possible, call off
-                    -- the search and return nothing
-                    search_is_on = false
-                    return(nil)
-                else
-                    -- If there's still more to remove, remove it
-                    dir = dir:match('(.*)\\')
-                    -- If dir is an empty string, look for the tell in *root* root
-                    if dir == drive..':' then dir = drive..':\\' end
-                end
-            else
-                if dir == '/' or dir == '~/' then
-                    -- If we've reached the highest directory possible, call off
-                    -- the search and return nothing
-                    search_is_on = false
-                    return(nil)
-                else
-                    -- If there's still more to remove, remove it
-                    dir = dir:match('(.*)/')
-                    -- If dir is an empty string, look for the tell in *root* root
-                    if dir == '' then dir = '/' end
-                end
-            end
-        else
-            return(root)
-        end
-    end
-end
 
 -- Run setup
 init.setup = function(user_config)
@@ -189,22 +112,21 @@ init.setup = function(user_config)
         init.initial_dir = init.initial_buf:match('(.*)/.-')
     end
     -- Get the extension of the file being edited
-    local ft = get_file_type(init.initial_buf)
+    local ft = init.utils.getFileType(init.initial_buf)
     -- Before fully loading config see if the plugin should be started
     local load_on_ft = default_config.filetypes
     if next(user_config) then
         if user_config.filetypes then
-            load_on_ft = MergeConfigs(load_on_ft, user_config.filetypes)
+            load_on_ft = init.utils.mergeTables(load_on_ft, user_config.filetypes)
         end
         init.user_config = user_config
     end
     -- Read compatibility module & pass user config through config checker
-    init.utils = require('mkdnflow.utils')
     local compat = require('mkdnflow.compat')
     -- Load extension if the filetype has a match in config.filetypes
     -- Overwrite defaults w/ user's config settings, if any
     user_config = compat.userConfigCheck(user_config)
-    init.config = MergeConfigs(default_config, user_config)
+    init.config = init.utils.mergeTables(default_config, user_config)
     -- Only load the mapping autocommands if the user hasn't said "no"
     if init.config.use_mappings_table == true then
         require('mkdnflow.maps')
@@ -220,7 +142,7 @@ init.setup = function(user_config)
             -- If one was provided, try to find the root directory for the
             -- notebook/wiki using the tell
             if root_tell then
-                init.root_dir = init.getRootDir(init.initial_dir, root_tell, init.this_os)
+                init.root_dir = init.utils.getRootDir(init.initial_dir, root_tell, init.this_os)
                 -- Get notebook name
                 if init.root_dir then
                     vim.api.nvim_set_current_dir(init.root_dir)
@@ -257,7 +179,7 @@ init.setup = function(user_config)
                 end
             end
         end
-        -- Load functions
+        -- Load modules
         init.paths = require('mkdnflow.paths')
         init.cursor = require('mkdnflow.cursor')
         init.links = require('mkdnflow.links')

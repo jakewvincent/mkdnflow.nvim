@@ -243,7 +243,7 @@ M.updateDirs = function()
                 -- Get the new root dir, if there is one
                 local dir = cur_file:match('(.*)'..sep..'.-')
                 if perspective.update then
-                    root_dir = require('mkdnflow').getRootDir(dir, perspective.root_tell, this_os)
+                    root_dir = require('mkdnflow').utils.getRootDir(dir, perspective.root_tell, this_os)
                     if root_dir then
                         local name = root_dir:match('.*'..sep..'(.*)') or root_dir
                         if not silent then vim.api.nvim_echo({{'⬇️  Notebook: '..name}}, true, {}) end
