@@ -53,7 +53,7 @@ local go_to = function(pattern, reverse)
     local position = vim.api.nvim_win_get_cursor(0)
     local row = position[1]
     local col = position[2]
-    local line, rev_col, left, right, left_, right_ = nil
+    local line, rev_col, left, right, left_, right_
     local already_wrapped = false
 
     if reverse then
@@ -161,21 +161,10 @@ local go_to_heading = function(anchor_text, reverse)
     -- Record which line we're on; chances are the link goes to something later,
     -- so we'll start looking from here onwards and then circle back to the beginning
     local position = vim.api.nvim_win_get_cursor(0)
-    local starting_row = position[1]
-    local continue = true
-    local row
-    if reverse then
-        row = starting_row - 1
-    else
-        row = starting_row + 1
-    end
+    local starting_row, continue = position[1], true
+    local row = (reverse and starting_row - 1) or starting_row + 1
     while continue do
-        local line
-        if reverse then
-            line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
-        else
-            line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
-        end
+        local line = (reverse and vim.api.nvim_buf_get_lines(0, row - 1, row, false)) or vim.api.nvim_buf_get_lines(0, row - 1, row, false)
         -- If the line has contents, do the thing
         if line[1] then
             -- Does the line start with a hash?
@@ -197,11 +186,7 @@ local go_to_heading = function(anchor_text, reverse)
                     end
                 end
             end
-            if reverse then
-                row = row - 1
-            else
-                row = row + 1
-            end
+            row = (reverse and row - 1) or row + 1
             if row == starting_row + 1 then
                 continue = nil
                 if anchor_text == nil then
@@ -215,19 +200,11 @@ local go_to_heading = function(anchor_text, reverse)
         else
             -- If the line does not have contents, start searching from the beginning
             if anchor_text ~= nil or wrap == true then
-                if reverse then
-                    row = vim.api.nvim_buf_line_count(0)
-                else
-                    row = 1
-                end
+                row = (reverse and vim.api.nvim_buf_line_count(0)) or 1
             else
                 continue = nil
-                local place, preposition
-                if reverse then
-                    place = 'beginning'; preposition = 'after'
-                else
-                    place = 'end'; preposition = 'before'
-                end
+                local place = (reverse and 'beginning') or 'end'
+                local preposition = (reverse and 'after') or 'before'
                 local message = "⬇️  There are no more headings "..preposition.." the "..place.." of the document!"
                 if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
             end
