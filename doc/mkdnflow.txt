@@ -102,8 +102,8 @@ Create links from a visual selection (mapped to `<CR>` by default)
 Jump to the next or previous link in the file (mapped to `<Tab>` and `<S-Tab>`
 by default, respectively)
 
-Jump to the next or previous heading in the file (mapped to `<leader>]` and
-`<leader>[`, respectively)
+Jump to the next or previous heading in the file (mapped to `]]` and
+`[[`, respectively)
 
 Follow links relative to the first-opened file or the current file (mapped to
 `<CR>` by default)
@@ -316,8 +316,8 @@ A sample config showing the defaults:~
         mappings = {
             MkdnNextLink = {'n', '<Tab>'},
             MkdnPrevLink = {'n', '<S-Tab>'},
-            MkdnNextHeading = {'n', '<leader>]'},
-            MkdnPrevHeading = {'n', '<leader>['},
+            MkdnNextHeading = {'n', ']]'},
+            MkdnPrevHeading = {'n', '[['},
             MkdnGoBack = {'n', '<BS>'},
             MkdnGoForward = {'n', '<Del>'},
             MkdnFollowLink = {{'n', 'v'}, '<CR>'},
@@ -351,13 +351,13 @@ e`.)
   link (if there is one). If `wrap` is true and there is no previous link befor-
   e the beginning of the file, will wrap to the end of the file.
 
-<leader>] (normal mode)
+]] (normal mode)
   Mapped to `:MkdnNextHeading`. Moves the cursor to the next heading in the
   file. If `wrap` is `true` and there are no more headings between the cursor
   position and the end of the document, this will cause the search to continue
   from the beginning of the document.
 
-<leader>[ (normal mode)
+[[ (normal mode)
   Mapped to `:MkdnPrevHeading`. Moves the cursor to the previous heding in the
   file (if one exists). Similar logic re: wrapping applies as above.
 
