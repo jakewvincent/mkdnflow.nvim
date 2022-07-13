@@ -139,6 +139,17 @@ M.userConfigCheck = function(user_config)
         end
     end
 
+    -- Check for old use_mappings_table config option
+    if user_config.use_mappings_table == false then
+        if user_config.modules then
+            user_config.modules.maps = false
+        else
+            user_config.modules = {
+                maps = false
+            }
+        end
+    end
+
     -- Inspect mappings
     if user_config.mappings then
         local string = false
