@@ -117,7 +117,7 @@ M.getLinkPart = function(part)
                 return path, anchor, path_first, path_last, row
             end
         end
-    else -- If one wasn't found, perform another search, this time for citations
+    elseif config.modules.bib then -- If one wasn't found, perform another search, this time for citations
         continue = true
         prev_last = 1
         while continue do
@@ -156,6 +156,8 @@ M.getLinkPart = function(part)
             -- Below will need to be the else condition
             return(nil)
         end
+    else
+        return(nil)
     end
 end
 
