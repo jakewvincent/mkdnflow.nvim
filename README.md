@@ -8,7 +8,7 @@
 
 ## 📝 Description
 
-Mkdnflow is designed for the *fluent* navigation of documents and notebooks (AKA "wikis") written in [markdown](https://markdownguide.org). The plugin's flexibility and its prioritization of markdown also means it can become part of your webdev workflow if you use static site generators like Jekyll or Hugo, which can generate static sites from markdown documents.
+Mkdnflow is designed for the *fluent* navigation of documents and notebooks (AKA "wikis") written in [markdown](https://markdownguide.org). The plugin's [flexibility](#customizable-link-interpretation) and its prioritization of markdown also means it can become part of your webdev workflow if you use static site generators like Jekyll or Hugo, which can generate static sites from markdown documents.
 
 The plugin is an extended set of functions and mappings to those functions which make it easy to navigate and manipulate markdown documents and notebooks in Neovim. I originally started writing Mkdnflow to replicate some features from [Vimwiki](https://github.com/vimwiki/vimwiki) in Lua instead of Vimscript, but my current goal for this project is to make this plugin as useful as possible for anyone using Neovim who maintains a set of markdown notes and wishes to efficiently navigate those notes and keep them organized and connected. The plugin now includes some convenience features I wished Vimwiki had, including functionality to [rename the source part of a link and its associated file](#rename-link-sources-and-files-simultaneously) simultaneously.
 
@@ -24,6 +24,8 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 * Vimwiki doesn't use markdown by default; mkdnflow only works for markdown
 * I'm intending mkdnflow to be a little lighter weight/less involved than Vimwiki. Mkdnflow doesn't and won't provide syntax highlighting and won't create new filetypes (although it now optionally provides link concealing, since this was a requested feature).
+* Mkdnflow allows you to [prevent modules from being loaded](#modules-dictionary-like-table) that provide features you don't want or don't expect to use (all are enabled by default)
+    * User commands associated with these modules will not be defined if it depends on a module that is not loaded, and mappings to those commands will not be created either
 * Written in Lua
 
 ## ✨ Features
@@ -109,7 +111,7 @@ require('mkdnflow').setup({
 
 ### Keybindings
 * Easy-to-remember [default keybindings](#-commands-and-default-mappings) that activate only in markdown files (and/or other filetypes you specify in the `filetypes` config table)
-* [Customize keybindings](#mappings-dictionary-like-table) individually or [disable them altogether](#use_mappings_table-boolean))
+* [Customize keybindings](#mappings-dictionary-like-table) individually or [disable them altogether](#modules-dictionary-like-table) by disabling the `maps` module)
 
 ### Manipulate headings
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing* a hash symbol.
@@ -260,6 +262,18 @@ Currently, the setup function uses the defaults shown below. See the description
 ```lua
 -- ** DEFAULT SETTINGS; TO USE THESE, PASS NO ARGUMENTS TO THE SETUP FUNCTION **
 require('mkdnflow').setup({
+    modules = {
+        bib = true,
+        buffers = true,
+        conceal = true,
+        cursor = true,
+        folds = true,
+        links = true,
+        lists = true,
+        maps = true,
+        paths = true,
+        tables = true
+    },
     filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,             
     perspective = {
@@ -297,7 +311,6 @@ require('mkdnflow').setup({
         trim_whitespace = true,
         format_on_move = true
     },
-    use_mappings_table = true,
     mappings = {
         MkdnNextLink = {'n', '<Tab>'},
         MkdnPrevLink = {'n', '<S-Tab>'},
@@ -335,6 +348,19 @@ require('mkdnflow').setup({
 ```
 
 ### Config descriptions
+#### `modules` (dictionary-like table)
+* All modules are enabled by default:
+    * `modules.bib` (required for [parsing bib files](#follow-links-and-citations) and [following citations](#follow-links-and-citations))
+    * `modules.buffers` (required for [backward and forward navigation through buffers](#backward-and-forward-navigation-through-buffers))
+    * `modules.conceal` (required if you wish to enable [link concealing](#two-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to enabling this module if you wish to conceal links)
+    * `modules.cursor` (required for [jumping to links and headings](#jump-to-links-headings); [yanking anchor links](#create-customize-and-destroy-links))
+    * `modules.folds` (required for [folding by section](#section-folding))
+    * `modules.links` (required for [creating and destroying links](#create-customize-and-destroy-links) and [following links](#follow-links-and-citations))
+    * `modules.lists` (required for [manipulating lists, toggling to-do list items, etc.](#lists))
+    * `modules.maps` (required for [setting mappings via the mappings table](#keybindings); set to `false` if you wish to set mappings outside of the plugin)
+    * `modules.paths` (required for [link interpretation](#customizable-link-interpretation) and [following links](#follow-links-and-citations))
+    * `modules.tables` (required for [table navigation and formatting](#tables))
+
 #### `create_dirs` (boolean)
 * `true`: Directories referenced in a link will be (recursively) created if they do not exist
 * `false` No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
@@ -415,10 +441,6 @@ end
 #### `tables` (dictionary-like table)
 * `tables.trim_whitespace` (boolean): Whether extra whitespace should be trimmed from the end of a table cell when a table is formatted (default: `true`)
 * `tables.format_on_move` (boolean): Whether tables should be formatted each time the cursor is moved via MkdnTable{Next/Prev}{Cell/Row} (default: `true`)
-
-#### `use_mappings_table` (boolean)
-* `true`: Mappings will be defined with the help of `mappings` (see below), including your custom mappings (if defined in your mkdnflow config)
-* `false`: Mappings will not be defined with the help of the `mappings` table, and in fact, **no default mappings will be activated at all**
 
 Note: See [default mappings](#-commands-and-default-mappings)
 
