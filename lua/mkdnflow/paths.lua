@@ -144,7 +144,9 @@ local internal_open = function(path, anchor)
         vim.cmd(':e '..path_w_ext)
         M.updateDirs()
         if anchor and anchor ~= '' then
-            cursor.toHeading(anchor)
+            if not cursor.toId(anchor) then
+                cursor.toHeading(anchor)
+            end
         end
     end
 end
@@ -337,7 +339,9 @@ M.handlePath = function(path, anchor)
         handle_external_file(path)
     elseif path_type == 'anchor' then
         -- Send cursor to matching heading
-        cursor.toHeading(path)
+        if not cursor.toId(path) then
+            cursor.toHeading(path)
+        end
     elseif path_type == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
         local field = bib.citationHandler(utils.luaEscape(path))
