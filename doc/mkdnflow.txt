@@ -1,7 +1,20 @@
-*Mkdnflow.nvim* Tools for markdown notebook navigation and management
+*Mkdnflow.nvim* Tools for fluent navigation and management of notebooks written
+in markdown
 
-===============================================================================
-CONTENTS                                                        *Mkdnflow-help*
+88b     d88 88    dBB88888b.  Nb     88B8888888888      .d88888b.,d88       8~
+888b   d888 88   dP  88  "Y8b 88b    88 88      88     d88"   "88b"88       8~
+8888b.d8888 88  dP   88    88 888b   88 88      88     88       88 88       8~
+88Y88888P88 88d8K    88    88 88Y8b  88 888888  88     88       88 88   o   8~
+88 Y888P 88 8888b    88    88 88  Y8b88 88      88     88       88 88  888  8~
+88  Y8P  88 88  Yb   88    88 88   Y888 88      88     88       88 88 8P Y8 8~
+88   "   88 88   Yb  88  .d8Pb88    Y88 88      88    yY8b.   .d8P 888P   Y88~
+88       88888    Yb 88888P" "88     Y8 88      8888888""Y88888P"  88P     Y8~
+
+Author: Jake Vincent (jakewvincent@gmail.com)
+https://github.com/jakewvincent/mkdnflow.nvim
+
+==============================================================================
+CONTENTS                                                       *Mkdnflow-help*
 
   Description.............................|Mkdnflow-description|
   Commands................................|Mkdnflow-commands|
@@ -14,290 +27,593 @@ CONTENTS                                                        *Mkdnflow-help*
   Credits.................................|Mkdnflow-credits|
   References..............................|Mkdnflow-references|
   Breaking changes........................|Mkdnflow-changes|
+  License.................................Mkdnflow-license
 
-===============================================================================
-Description                                              *Mkdnflow-description*
+==============================================================================
+DESCRIPTION                                             *Mkdnflow-description*
 
-This plugin is designed to replicate the features I use most from Vimwiki,
-implementing them in Lua instead of VimL. It is a set of functions and
-keybindings (optional, but enabled by default) that make it easy to navigate
-and manipulate personal markdown notebooks/journals/wikis in Neovim.
+Mkdnflow is designed for the fluent navigation of documents and notebooks (AKA
+"wikis") written in markdown. The plugin's flexibility and its prioritization
+of markdown also means it can become part of your webdev workflow if you use
+static site generators like Jekyll or Hugo, which can generate static sites
+from markdown documents.
 
-If you have a suggestion or problem with anything, file an issue; or if you'd
-like to contribute, work on a fork of this repo and submit a pull request.
+The plugin is an extended set of functions and mappings to those functions
+which make it easy to navigate and manipulate markdown documents and notebooks
+in Neovim. I originally started writing Mkdnflow to replicate some features
+from Vimwiki in Lua instead of Vimscript, but my current goal for this project
+is to make this plugin as useful as possible for anyone using Neovim who
+maintains a set of markdown notes and wishes to efficiently navigate those
+notes and keep them organized and connected. The plugin now includes some
+convenience features I wished Vimwiki had, including functionality to rename
+the source part of a link and its associated file simultaneously.
 
-===============================================================================
-Commands                                                    *Mkdnflow-commands*
+I keep tabs on the project's issues and appreciate feature requests,
+suggestions, and bug reports. If you'd like to contribute to the plugin, fork
+this repo and submit a pull request with your changes or additions. If you need
+Lua resources, see this page for a starting point or run :h lua or :h api in
+Neovim.
+
+==============================================================================
+COMMANDS AND MAPPINGS                                      *Mkdnflow-commands*
+                                                           *Mkdnflow-mappings*
 
 Mkdnflow provides the following commands for interacting with the contents of 
-markdown files:
+markdown files. These are shown in order of importance. Default mappings are
+shown for commands that have them.
 
-:MkdnNextLink
-  Move cursor to the beginning of the next link (if there is a next link).
+*:Mkdnflow*
+    `Default mapping: none`
+    Manually start Mkdnflow. You should generally not need to use this.
 
-:MkdnPrevLink
-  Move the cursor to the beginning of the previous link (if there is one).
+*:MkdnEnter*
+    `Default mapping: <CR> (Modes: normal, visual, insert)`
+    In normal mode, follows a link under the cursor or creates a link from the
+    word under the cursor.
 
-:MkdnNextHeading
-  Move the cursor to the next heading in the document (if there is one).
+    In visual mode, creates a link from the selected text.
 
-:MkdnPrevHeading
-  Move the cursor to the previous heading in the document (if there is one).
+    In insert mode, creates a new list item of the same type of the current
+    line (if the cursor is in an ordered or unordered list), moves the cursor
+    to the same cell in the next row of a table (if the cursor is in a table),
+    or behaves like a normal `<CR>` if the cursor is neither in a list or a
+    table.
 
-:MkdnGoBack
-  Open the historically last-active buffer in the current window.
+*:MkdnTab*
+    `Default mapping: <Tab> (Modes: insert)`
+    If the cursor is in a list and the current list item is empty except for
+    the bullet point/item number, indents the list item (creating a child of
+    the previous list item). If the cursor is in a table, moves the cursor to
+    the next cell in the table.
 
-:MkdnGoForward
-  Open the buffer that was historically last navigated away from in the current
-  window.
+*:MkdnSTab*
+    `Default mapping: <S-Tab> (Modes: insert)`
+    If the cursor is in a list and the current list item is empty except for
+    the bullet point/item number, un-indents the list item (if possible). If
+    the cursor is in a table, moves the cursor to the previous cell in the
+    table.
 
-:MkdnFollowLink
-  Open the link under the cursor, creating missing directories if desired, or
-  if there is no link under the cursor, make a link from the word under the
-  cursor.
+*:MkdnNextLink*
+    `Default mapping: <Tab> (Modes: normal)`
+    Moves the cursor to the beginning of the next link (if there is a next
+    link).
 
-:MkdnCreateLink
-  Replace the word under the cursor with a link in which the word under the
-  cursor is the name of the link.
+*:MkdnPrevLink*
+    `Default mapping: <S-Tab> (Modes: normal)`
+    Moves the cursor to the beginning of the previous link (if there is one).
 
-:MkdnYankAnchorLink
-  Add a formatted anchor link to the unnamed register (clipboard) if the curre-
-  nt line that the cursor is on is a heading.
+*:MkdnNextHeading*
+    `Default mapping: ]] (Modes: normal)`
+    Moves the cursor to the next heading in the document (if there is one).
 
-:MkdnYankFileAnchorLink
-  Add a formatted anchor link with the full file path before the anchor to the
-  unnamed register (clipboard) if the current line that the cursor is on is a
-  heading.
+*:MkdnPrevHeading*
+    `Default mapping: [[ (Modes: normal)`
+    Moves the cursor to the previous heading in the document (if there is
+    one).
 
-:MkdnIncreaseHeading
-  Increase heading importance (remove hashes).
+*:MkdnGoBack*
+    `Default mapping: <BS> (Modes: normal)`
+    Open the historically last-active buffer in the current window.
 
-:MkdnDecreaseHeading
-  Decrease heading importance (add hashes).
+*:MkdnGoForward*
+    `Default mapping: <Del> (Modes: normal)`
+    Open the buffer that was historically last navigated away from in the
+    current window.
 
-:MkdnToggleToDo
-  Toggle a to-do list item's completion status. To-do item must be in a markdown
-  -style list, e.g.:
+*:MkdnFollowLink*
+    `Default mapping: none`
+    Open the link under the cursor, creating missing directories if desired,
+    or if there is no link under the cursor, make a link from the word under
+    the cursor.
+
+*:MkdnCreateLink*
+    `Default mapping: none`
+    Replace the word under the cursor with a link in which the word under the
+    cursor is the name of the link.
+
+*:MkdnDestroyLink*
+    `Default mapping: <M-CR> (alt-enter) (Modes: normal)`
+    Replaces the link with the link text.
+
+*:MkdnMoveSource*
+    `Default mapping: <F2> (Modes: normal)`
+    Opens a dialog in the command line where you can specify a name to change
+    the link source to. After entering the name change, Mkdnflow will rename
+    both the link and the associated file for you. It will confirm before
+    renaming so that you have the option to cancel if the name change appears
+    incorrect.
+
+*:MkdnYankAnchorLink*
+    `Default mapping: ya (Modes: normal)`
+    Add a formatted anchor link to the unnamed register (clipboard) if the
+    current line that the cursor is on is a heading.
+
+*:MkdnYankFileAnchorLink*
+    `Default mapping: yfa (Modes: normal)`
+    Add a formatted anchor link with the full file path before the anchor to
+    the unnamed register (clipboard) if the current line that the cursor is on
+    is a heading.
+
+*:MkdnIncreaseHeading*
+    `Default mapping: + (plus key) (Modes: normal)`
+    Increase heading importance (remove hashes).
+
+*:MkdnDecreaseHeading*
+    `Default mapping: - (minus/dash key) (Modes: normal)`
+    Decrease heading importance (add hashes).
+
+*:MkdnToggleToDo*
+    `Default mapping: <C-Space> (Modes: normal)`
+    Toggle a to-do list item's completion status. To-do item must be in a
+    markdown-style list, e.g.:
 >
     * [ ] Email boss
     * [ ] Submit résumé
+<
+*:MkdnUpdateNumbering*
+    `Default mapping: <leader>nn (Modes: normal)`
+    Fixes the numbering for the list the cursor is currently in. Only updates
+    the numbering for the current list item and its sister items (not its
+    parent or children items).
 
-:Mkdnflow
-  Manually start Mkdnflow.
+*:MkdnNewListItem*
+    `Default mapping: none`
+    Adds a new list item below the current line. The new list item will be of
+    the same type as the line the cursor is currently on.
+    NOTE: |:MkdnEnter| provides a superset of this command's functionality; if
+    you have that command mapped, I recommend not mapping this one.
 
-===============================================================================
-Features                                                    *Mkdnflow-features*
+*:MkdnExtendList*
+    `Default mapping: none`
+    Adds a new list item below the current line. This is like
+    |:MkdnNewListItem| except that it always adds an _empty_ list item, even
+    if it is called when the cursor is in the middle of a list item on the
+    current line.
 
-Create links from the word under the cursor (mapped to `<CR>` by default)
-  - The default filename provided for the path prefixes the word under the
-    cursor with the date in `YYYY-MM-DD` format: `YYYY-MM-DD_<word>.md`. The
-    prefix can be changed. See |Mkdnflow-configuration|.
-  - If a URL is under the cursor, create a link from the URL.
+*:MkdnTable* <ncols> <nrows> (<noh>)
+    `Default mapping: none`
+    Inserts a table into the buffer at the current position of the cursor
+    (starting on the following line). Must be called with two arguments: the
+    first specifying the number of columns in the table, and the second
+    specifying the number of rows. A header row is included automatically and
+    is not factored into the row numbers, so calling `:MkdnTable 5 4` will
+    result in a five-column table with four rows plus a header row and a
+    midrule below the header row. To insert a table without a header or
+    midrule row, include "noh(eader)" as a third argument (e.g.
+    `MkdnTable 5 4 noh`)
 
-Create links from a visual selection (mapped to `<CR>` by default)
-  - If visual selection begins with a hash, an anchor link will be created. Ot-
-  herwise, a link to a markdown document named after the visual selection will
-  be created.
+*:MkdnTableFormat*
+    `Default mapping: none`
+    Formats the table under the cursor. If `tables.format_on_move` is set to
+    true in your Mkdnflow config, the Lua function underlying this command is
+    triggered. Tables cannot be formatted if not all rows have the same number
+    of columns.
 
-Jump to the next or previous link in the file (mapped to `<Tab>` and `<S-Tab>`
-by default, respectively)
+*:MkdnTableNextCell*
+    `Default mapping: none`
+    Moves the cursor to the next cell in the current row, or if the cursor is
+    already in the last cell of the current row, moves the cursor to the first
+    cell of the next row.
+    NOTE: |:MkdnTab| provides a superset of this command's functionality. If
+    you have MkdnTab mapped, I recommend leaving this command unmapped.
 
-Jump to the next or previous heading in the file (mapped to `]]` and
-`[[`, respectively)
+*:MkdnTablePrevCell*
+    `Default mapping: none`
+    Moves the cursor to the previous cell in the current row, or if the cursor
+    is already in the first cell of the current row, moves the cursor to the
+    last cell of the previous row.
+    NOTE: MkdnSTab provides a superset of this command's functionality. If you
+    have MkdnSTab mapped, I recommend leaving this command unmapped.
 
-Follow links relative to the first-opened file or the current file (mapped to
-`<CR>` by default)
-  - `<CR>`ing on a link to any kind of text file will open it (i.e.
-    `:e <filename>`)
-  - `<CR>`ing on a link to a file tagged with `file:` (formerly local:), e.g.
-    [My Xournal notes](file:notes.xopp), will open that file with whatever the
-    system's associated program is for that filetype (using `xdg-open` on Linux
-    and `open` on macOS)
-  - `<CR>`ing on a link to a web URL will open that link in your default browser
+*:MkdnTableNewRowBelow*
+    `Default mapping: <leader>ir (Modes: normal, insert)`
+    Inserts a new empty table row beneath the row the cursor is currently on.
+    The new row will have the same number of cells as the current row.
 
-Act on citations (mapped to `<CR>` by default) if `default_bib_path` is specif-
-ied in the table passed to the setup function (see |Mkdnflow-configuration|)
-  - If a citation key is found and has a file associated with it, Mkdnflow tri-
-  es to open the file. If there's no file and is a URL, Mkdnflow opens the URL
-  in the default browser. If there's no URL and is a DOI, Mkdnflow opens the
-  DOI in the default browser. Otherwise, no action is taken.
+*:MkdnTableNewRowAbove*
+    `Default mapping: <leader>iR (Modes: normal, insert)`
+    Inserts a new empty table row above the row the cursor is currently on.
+    The new row will have the same number of cells as the current row.
 
-Yank a formatted anchor link if the line the cursor is currently on is a heading
+*:MkdnTableNewColAfter*
+    `Default mapping: <leader>ic (Modes: normal, insert)`
+    Inserts a new column following the column the cursor is currently on.
 
-Follow anchor links to the first-matching heading in the file
+*:MkdnTableNewColBefore*
+    `Default mapping: <leader>iC (Modes: normal, insert)`
+    Inserts a new column before the column the cursor is currently on.
 
-Create missing directories if a link goes to a file in a directory that doesn't
-exist
+*:MkdnFoldSection*
+    `Default mapping: none`
+    Causes the current section (as determined by headings) to be folded. The
+    command can be called when the cursor is anywhere in the current section.
+    The section or subsection established by the closest heading is what will
+    be folded.
 
-`<BS>` to go to previous file/buffer opened in the window and `<Del>` to go to
-the subsequent file/buffer opened in the window.
+*:MkdnUnfoldSection*
+    `Default mapping: none`
+    Causes the folded section under the cursor to be unfolded.
 
-Enable/disable default keybindings (see |Mkdnflow-configuration|) or specify
-your own
+==============================================================================
+FEATURES                                                   *Mkdnflow-features*
 
-Toggle to-do list item's completion status (`<C-Space>` by default)
+TWO LINK STYLES                                         *Mkdnflow-link-styles*
+- Use either markdown or wiki-link link styles by setting a config option.
+- Conceal link sources for either link type by enabling conceal in your config
+    - Markdown-style links are shortened from `[Link](source.md)` to `Link`
+    - Wiki-style links are shortened from `[[source|Link]]` to `Link` or from
+      `[[source]]` to `source`
+    - NOTE: If you are using the recently split treesitter parsers for
+      markdown (see
+      https://github.com/nvim-treesitter/nvim-treesitter#supported-languages),
+      you do not need to enable conceal through mkdnflow if you are using
+      markdown-style links. Just make sure you have the `markdown` and
+      `markdown_inline` treesitter parsers installed and enabled in markdown
+      filetypes, and in your `.vimrc` or `init.lua`, enable conceal
+      (`set conceallevel=2` or `vim.wo.conceallevel = 2`).
 
-===============================================================================
-Caveats and warnings                                         *Mkdnflow-caveats*
+FOLLOW LINKS AND CITATIONS                             *Mkdnflow-follow-links*
+- `<CR>` on various kinds of links to "follow" them:
+    - `.md` links open in the current window
+    - Absolute links or `.md` links relative to home open in the current
+      window but are interpreted with absolute perspective (e.g.
+      `[File](/home/user/file.md)`/`[File](C:\Users\user\file.md)` on Windows,
+      or `[File](~/Documents/file.md)` otherwise)
+    - Links to a file prefixed with `file:` (e.g.
+      `[My Xournal notes](file:notes.xopp)`) open with the system's default
+      program for that filetype
+    - Link to URLs are opened in the default browser
+    - Anchor links to headings in the current file will trigger a jump to that
+      heading. Headings must start with a hash, and the path part of the link
+      must look like the heading with (a) any spaces between the last hash
+      mark and the beginning of the heading text removed, (b) all other spaces
+      converted to a dash, (c) non-alphanumeric characters removed, (d)
+      strings of multiple hashes converted into a single hash, and (e) all
+      upper-case characters converted to lower-case characters. For example:
+        - `## Bills to pay` will be jumped to if the path in the anchor link
+          is `#bills-to-pay`
+        - `#### Groceries/other things to buy` will be jumped to if the path
+          in the anchor link is `#groceriesother-things-to-buy`
+    - Following a link to a directory (e.g. another notebook) will open a
+      dialogue for you to select which file in the directory to open in the
+      current window
+- `<CR>` on citations to open associated files or websites (e.g.
+  `@Chomsky1957`, with or without brackets around it)
+    - Specify a path to a .bib file in your |Mkdnflow-config|—or if
+      `perspective.priority` is `root`, simply place your bib files to be
+      searched in your notebook's root directory.
+    - Files are prioritized. If no file is found associated with the citation
+      key, a URL associated with it will be opened. If no URL is found, a DOI
+      is opened. If no DOI is found, whatever is in the `howpublished` field is
+      opened.
+    - 🔥 Hot tip: make reaching your contacts via work messaging apps (e.g.
+      Slack) easier by keeping a bib file that associates your contacts'
+      messaging handles with the URL for your direct message thread with that
+      contact. For instance, if you point the plugin to a bib file with the
+      following entry, `<CR>`ing on `@dschrute` in a markdown document would
+      take you to the associated Slack thread.
+>
+    @misc{dschrute,
+        url={https://dundermifflin.slack.com/archives/P07BFJD82}
+    }
+<
+CUSTOMIZABLE LINK INTERPRETATION                        *Mkdnflow-perspective*
+- Specify what perspective the plugin-should take when interpreting links to
+  files. There are three options:
+    1. Interpret links relative to the first-opened file (default behavior;
+    similar to #3 if your first-opened file is always in the root
+    directory)
+    2. Interpret links relative to the file open in the current buffer
+    3. Interpret links relative to the root directory of the notebook that the
+    file in the current buffer is a part of. To enable this functionality, set
+    `perspective.priority` to `root` in your config, and pass a file as the
+    value of `perspective.root_tell`. The _tell_ is the name of a single file
+    that can be used to identify the root directory (e.g. `index.md`, `.git`,
+    `.root`, `.wiki_root`, etc.). See the default |Mkdnflow-config| for how to
+    configure the `perspective` table.
+    - Override any of the above settings by specifying a link to a markdown
+      file with an absolute path (one that starts with `/` or `~/`). Links
+      within this file will still receive the relative interpretation, so this
+      is best for references out of the project directory to markdown files
+      without their own dependencies (unless those dependencies are within the
+      project directory).
+- Keep your files organized **and** your links simple by customizing link
+  interpretation using an implicit transformation function (see
+  |Mkdnflow-config|).
 
-The plugin won't start automatically if the first-opened file is not one of the
-default or named extensions (see Configuration), but you can manually start the
-plugin with the defined command `:MkdnFlow`.
+CREATE OR CUSTOMIZE OR DESTROY LINKS
+- `<CR>` on word under cursor or visual selection to create a notebook-
+  internal link
+    - Customizable path text transformations (by default, text is converted to
+      lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD
+      format is prefixed to the filename, separated by an underscore). See the
+      description of the [`links`](#links-dictionary-like-table) config key
+      for customization instructions.
+- `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it
+  (replace it with the text in [...])
+- Create an anchor link if the visual selection starts with `#` 
+- Create a web link if what's under the cursor is a URL (and move the cursor
+  to enter the link name)
+- `ya` on a heading to add a formatted anchor link for the heading to the
+  default register (ready to paste in the current buffer)
+    - `yfa` to do the same, but adding the absolute path of the file before
+      the anchor (for pasting in another buffer)
+- Customize how link sources are generated from text using a custom explicit
+  transformation function
+    - Adding the following to your setup would result in a link that looks
+      like the following: `[Some text](sometext.md)`
+>
+    require('mkdnflow').setup({
+        links = {
+            transform_explicit = function(text)
+                -- Make lowercase, remove spaces, and reverse the string
+                return string.lower(text:gsub(' ', '')
+            end
+        }
+    })
+<
+JUMP TO LINKS AND HEADINGS                                  *Mkdnflow-jumping*
+- `<Tab>` and `<S-Tab>` jump to the next and previous links in the file
+- `]]` and `[[` jump to the next and previous headings in the file
+- "Wrap" back to the beginning/end of the file when jumping with a config
+  setting (see |Mkdnflow-config|)
 
-The plugin should now work on Windows, but should you encounter any problems w-
-ith the expected functionality, please file an issue!
+CREATE MISSING DIRECTORIES                      *Mkdnflow-create-missing-dirs*
+- If a link goes to a file in a directory that doesn't exist, it can
+  optionally be created (see `create_dirs` in |Mkdnflow-config|)
 
-===============================================================================
-Lua functions                                          *Mkdnflow-lua-functions*
+RENAME LINK SOURCES AND FILES SIMULTANEOUSLY                 *Mkdnflow-rename*
+- Use built-in dialog triggered by `MkdnMoveSource` (mapped to `<F2>` by
+  default) to rename a link's source and rename/move the linked file
+  simultaneously
+    - `perspective`, `implicit extensions`, and custom
+      `implicit transformations` are all taken into account when moving the
+      linked file
+    - The dialog will confirm the details of the changes for you to
+      approve/reject before taking any action
 
-Mkdnflow utilizes the following lua functions under the hood. The only one that
-is intended to be used directly is the setup function. The functions following
-that are utilized when the commands are called.
+BACKWARD AND FORWARD NAVIGATION THROUGH BUFFERS   *Mkdnflow-buffer-navigation*
+- `<BS>` to go backward (to the previous file/buffer opened in the current
+  window, like clicking the back button in a web browser)
+- `<Del>` to go forward (to the subsequent file/buffer opened in the current
+  window, like clicking the forward button in a web browser)
 
-The following functions are defined in one of the files `init.lua`,
-`paths.lua`, `buffers.lua`, `links.lua`, `bib.lua`, or `cursor.lua` but are ultimately returned as part of the table
-defined in `init.lua` for public use.
+KEYBINDINGS
+- Easy-to-remember default keybindings that activate only in markdown
+  files (and/or other filetypes you specify in the `filetypes` config
+  table)
+- Customize keybindings individually or disable them altogether by disabling
+  the `maps` module)
 
-require('mkdnflow').setup(table)
-  Initializes the plugin using a configuration specified in the argument (a
-  table), but only if the filetype of the current buffer is matched in the list
-  of filetypes specified in the table (or one of the defaults). Providing an
-  empty table initializes the plugin using the defaults.
+MANIPULATE HEADINGS
+- Increase/decrease heading levels (mapped to `+`/`-` by default).
+  NOTE: Increasing the heading means increasing it in importance (i.e. making
+  it bigger or more prominent when converted to HTML and rendered in a
+  browser), which counterintuitively means removing a hash symbol.
 
-require('mkdnflow').forceStart()
-  Initializes the plugin using a configuration specified in the argument (a
-  table), regardless of what the current filetype is. Providing an empty table
-  initializes the plugin using the defaults.
+SECTION FOLDING                                             *Mkdnflow-folding*
+- Fold a section using `<CR>` in normal mode if the cursor is on the heading
+  of the section
+    - Unfold a folded section using `<CR>` or `<leader>F` (both are default
+      mappings; the former maps to a wrapper function that will follow links
+      if the cursor is not on a fold or section heading; the latter is mapped
+        specifically to `:MkdnUnfoldSection<CR>`)
+    - If you wish to create a link in a heading (normally done with `<CR>`),
+      you'll need to do so by making a visual selection of the text you wish
+      to create a link from and then hitting `<CR>`, or otherwise disabling
+      the mapping for `MkdnEnter` and mapping `MkdnFollowLink` to `<CR>` in
+      visual and normal modes.
+- Fold the section the cursor is currently in—even if the cursor is not on the
+  heading—using `<leader>f`
 
-require('mkdnflow.links').createLink()
-  Makes a link from the word under the cursor--or, if no word is under the
-  cursor, produces the syntax for a md link: []({prefix-}.md). If there's a URL
-  under the cursor, the whole URL is made into a link. Returns nothing via std-
-  out, but inserts text into the vim buffer.
+LISTS                                                         *Mkdnflow-lists*
+- Toggle the status of a to-do list item on the current line (mapped to
+  `<C-Space>` by default). Using the default settings, toggling will result in
+  the following changes. To-do symbols can be customized (make sure to use the
+  luautf8 luarock dependency if you want to use utf8 to-do symbols).
+    - `- [ ] ...` → `- [-] ...`
+    - `- [-] ...` → `- [X] ...`
+    - `- [X] ...` → `- [ ] ...`
+- Toggle multiple to-do items at once by selecting the lines to toggle in
+  (simple) visual mode (mapped to `<C-Space>` by default)
+- Create to-do items from plain unordered or ordered lists by toggling a
+  non-to-do-list item (`<C-Space>` by default)
+- Automatically update any parent to-dos when child to-dos are toggled.
+    - When all child to-dos have been marked complete, the parent is marked
+      complete
+    - When at least one child to-do has been marked in-progress, the parent
+      to-do is marked in-progress
+    - When a parent to-do is marked complete and one child to-do is reverted
+      to not-yet-started or in-progress, the parent to-do is marked in-progress
+    - When a parent to-do is marked complete or in-progress and all child
+      to-dos have been reverted to not-yet-started, the parent to-do is marked
+      not-yet-started.
+- Update numbering for the list the cursor is currently on
+    - `<leader>nn` (default mapping) or `:MkdnUpdateNumbering 0<CR>`, e.g., if
+      you want to start numbering at 0
+- Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by
+  default. See below.)
+    - NOTE: The following functionality is disabled by default in case some
+      find it intrusive. To enable the functionality, remap `<CR>` in insert
+      mode (see the following code block).
+    - In unordered lists: Add another bullet on the next line, unless the
+      current list item is empty, in which case it will be erased
+    - In ordered lists: Add another item on the next line (keeping numbering
+      updated), unless the current item is empty, in which case it will be
+      erased
+    - In unordered and ordered to-do lists: Add another to-do item on the next
+      line, unless the current to-do is empty, in which case it will be
+      replaced with a simple (non-to-do) list item
+    - Automatically indent a new list item when the current one ends in a colon
+    - Demote empty indented list items by reducing the indentation by one level
+- Add new list items using the list type of the current line without any of
+  the fancy stuff listed above (see |:MkdnExtendList|)
+>
+    require('mkdnflow').setup({
+        mappings = {
+            MkdnNewListItem = {'i', '<CR>'}
+        }
+    })
+<
+TABLES                                                       *Mkdnflow-tables*
+- Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`.
+  Table headers are added automatically; to exclude headers, use
+  `:MkdnTable x y noh`
+- Format existing tables with `:MkdnTableFormat`
+- Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in
+  insert mode by default)
+- Jump forward and backward between rows (mapped to `<CR>` and `<M-CR>` in
+  insert mode by default)
+- Optionally trim extra whitespace from a cell when formatting (see
+  |Mkdnflow-config|)
+- Optionally disable formatting when moving cells
+- Add new rows or columns (before or after the current row/cell; see
+  |Mkdnflow-commands| for default mappings to these functions
 
-require('mkdnflow.links').followLink()
-  Does something with the path in the link under the cursor. If the path is a
-  filename, it creates the file specified in the path. If the path is a URL,
-  it uses `path_handler()` to open the URL specified in the path. If the path
-  is determined to be neither the filename for a text file nor a URL, it uses
-  `path_handler()` to open a local file at the specified path via the system's
-  default application for that filetype (if on macOS or Linux). Returns nothing.
+DISABLE UNUSED MODULES                                      *Mkdnflow-modules*
+- Individually disable any of the modules that enable all of the above
+  functionality (see description of this option in |Mkdnflow-config|)
+    - Prevents the module from being loaded (rather than simply disabling the
+      functionality the module provides)
+    - Disabling a module prevents commands that are dependent on that module
+      from being defined (and prevents mappings to those commands from being
+      set)
 
-require('mkdnflow.buffers').goBack()
-  Uses the main buffer stack to go to the last-opened buffer.
+==============================================================================
+CAVEATS AND WARNINGS                                        *Mkdnflow-caveats*
+                                                           *Mkdnflow-warnings*
 
-require('mkdnflow.buffers').goForward()
-  Uses the historical buffer stack to go to the last-opened buffer.
+The plugin won't start automatically if the first-opened file is not one of
+the default or named extensions (see Configuration), but you can manually
+start the plugin with the defined command `:MkdnFlow`.
 
-require('mkdnflow.cursor').toNextLink()
-  Finds the next link in the file.
+The plugin should now work on Windows, but should you encounter any problems
+with the expected functionality, please file an issue!
 
-require('mkdnflow.cursor').toPrevLink()
-  Finds the previous link in the file.
+==============================================================================
+LUA FUNCTIONS                                         *Mkdnflow-lua-functions*
 
-require('mkdnflow.cursor').changeHeadingLevel('increase')
-  Increases heading level importance (removes hashes)
+Mkdnflow utilizes the following public Lua functions under the hood. The only
+one that is intended to be used directly is the setup function. The functions
+following that are utilized when the commands are called.
 
-require('mkdnflow.cursor').changeHeadingLevel('decrease')
-  Decreases heading level importance (adds hashes)
+The following functions are defined in one of the module files but are
+ultimately returned as part of the table defined in `init.lua` for public use,
+such as for reference by the vim user commands the plugin defines.
 
-require('mkdnflow.lists').toggleToDo()
-  Toggle a to-do list item's completion status
+require("mkdnflow").setup(table)~
+    Initializes the plugin using a configuration specified in the argument (a
+    table), but only if the filetype of the current buffer is matched in the
+    list of filetypes specified in the table (or one of the defaults).
+    Providing an empty table initializes the plugin using the defaults.
 
-===============================================================================
-Configuration                                          *Mkdnflow-configuration*
+require("mkdnflow").forceStart()~
+    Initializes the plugin using a configuration specified in the argument (a
+    table), regardless of what the current filetype is. Providing an empty
+    table initializes the plugin using the defaults.
+
+require("mkdnflow").links.createLink()~
+    Makes a link from the word under the cursor--or, if no word is under the
+    cursor, produces the syntax for a md link: `[](<prefix->.md)`. If there's
+    a URL under the cursor, the whole URL is made into a link. Returns nothing
+    via std out, but inserts text into the vim buffer.
+
+require("mkdnflow").links.followLink()~
+    Does something with the path in the link under the cursor. If the path is
+    a filename, it creates the file specified in the path. If the path is a
+    URL, it uses `path_handler()` to open the URL specified in the path. If
+    the path is determined to be neither the filename for a text file nor a
+    URL, it uses`path_handler()` to open a local file at the specified path
+    via the system's default application for that filetype. Returns nothing.
+
+require("mkdnflow").buffers.goBack()~
+    Uses the main buffer stack to go to the last-opened buffer.
+
+require("mkdnflow").buffers.goForward()~
+    Uses the historical buffer stack to go to the last-opened buffer.
+
+require("mkdnflow").cursor.toNextLink()~
+    Finds the next link in the file.
+
+require("mkdnflow").cursor.toPrevLink()~
+    Finds the previous link in the file.
+
+require("mkdnflow").cursor.changeHeadingLevel("increase")~
+    Increases heading level importance (removes hashes)
+
+require("mkdnflow").cursor.changeHeadingLevel("decrease")~
+    Decreases heading level importance (adds hashes)
+
+require("mkdnflow").lists.toggleToDo()~
+    Toggle a to-do list item's completion status
+
+==============================================================================
+CONFIGURATION                                         *Mkdnflow-configuration*
+                                                      *Mkdnflow-config*
+                                                      *Mkdnflow-setup*
 
 To use Mkdnflow with the default behavior, just call the setup function in your
 init config and provide an empty table.
-
 >
     require('mkdnflow').setup({})
-
+>
 To change Mkdnflow's behavior, you can change any of the following elements by
 specifying a new value for them in the table passed to the setup function.
+There is no need to provide values for everything; any settings you pass to
+the setup function will override defaults for those specific settings.
 
-create_dirs
-  Must be a boolean. If `true`, directories are created (recursively) if
-  the link contains a missing directory. If `false`, missing directories are
-  not created. Default: `true`.
-
-perspective
-  Must be a table with at least a value specified for the key `priority`. If `fir-
-  st`, link navigation proceeds relative to the directory of the first-opened f-
-  ile. If `current`, link navigation proceeds relative to the currently visible
-  file. If `root`, link navigation proceeds according to a root directory that
-  has been identified by a particular file that you specify under they key
-  `root_tell` in the `perspective` table. For cases when a root directory cannot
-  be found, the plugin also recognizes a `fallback` key that can be either
-  `first` or `current`, whichever behavior you'd like the plugin to default back
-  to. Default value for `priority`: `first`.
-
-filetypes
-  Must be a table of key-value pairs, where the key is the name of a filetype
-  and the value is a boolean. The plugin's features are enabled only when one
-  of these filetypes is opened; otherwise, the plugin does nothing unless it
-  is manually started by calling `:Mkdnflow`. Default filetypes: `md`, `rmd`,
-  and `markdown`.
-
-links
-  Must be a table of key-value pairs. Four keys can be defined: `style`, which
-  can be either 'markdown' or 'wiki'; `implicit_extension`, which defines a file
-  extension to interpret notebook/wiki-internal links with (when an explicit ex-
-  tension is not added to the path in the link); transform_implicit, which can
-  be used to define a function that defines interpretation transformations for
-  links; and transform_explicit, which affects how link paths appear when new
-  links are created.
-
-wrap
-  Must be a boolean. If true, when jumping to the next or previous link or head-
-  ing in a doc, the search will proceed from the beginning or end of the docume-
-  nt (respectively) if there are no more links between the current cursor posit-
-  ion and the end of the document. Default: `false`
-
-bib
-  Must be a table. Values can be specified for `default_path`, which should be
-  the location of a .bib file, if used, and `find_in_root`, which should be a
-  boolean. If `true`--and `perspective.priority` is set to `root`--then Mkdnf-
-  low will search the project's root directory for bib files to look for cita-
-  tion keys in.
-
-silent
-  Must be a boolean. Tells Mkdnflow to be quiet if you so desire. If set to tr-
-  ue, important compatibility messages related to upcoming breaking changes wi-
-  ll still be displayed, but you will not see messages that will potentially h-
-  elp troubleshoot unexpected behavior.
-
-use_mappings_table
-  Must be a boolean. If `true` and nothing is specified for `mappings`, the def-
-  ault mappings are used. If `true` and a table is passed under the `mappings`
-  key, then default mappings are overridden if a value is provided in the table.
-  If `false`, the default mappings are not used and you will have to specify yo-
-  ur own outside of the setup function. Default: `true`.
-
-mappings
-  Must be a table of key-value pairs, where the key is the name of the command
-  and the value `false` (to disable mapping for that command) or is another tab-
-  le with two entries, the first of which is either a string (e.g. `'n'`) or ta-
-  ble (e.g. `{'n', 'v'}`), and the second of which is the mapping (e.g.
-  `'<Space>'`)
-
-
-A sample config showing the defaults:~
+SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
 >
     require('mkdnflow').setup({
-        create_dirs = true,
+        modules = {
+            bib = true,
+            buffers = true,
+            conceal = true,
+            cursor = true,
+            folds = true,
+            links = true,
+            lists = true,
+            maps = true,
+            paths = true,
+            tables = true
+        },
+        filetypes = {md = true, rmd = true, markdown = true},
+        create_dirs = true,             
         perspective = {
             priority = 'first',
             fallback = 'current',
-            root_tell = ''
+            root_tell = false,
+            nvim_wd_heel = true
+        },    
+        wrap = false,
+        bib = {
+            default_path = nil,
+            find_in_root = true
         },
-        filetypes = {md = true, rmd = true, markdown = true},
-        prefix = {
-            evaluate = true,
-            string = [[os.date('%Y-%m-%d_')]]
-        },
+        silent = false,
         links = {
             style = 'markdown',
+            conceal = false,
             implicit_extension = nil,
             transform_implicit = false,
             transform_explicit = function(text)
@@ -307,163 +623,339 @@ A sample config showing the defaults:~
                 return(text)
             end
         },
-        bib = {
-            default_path = nil,
-            find_in_root = true
+        to_do = {
+            symbols = {' ', '-', 'X'},
+            update_parents = true,
+            not_started = ' ',
+            in_progress = '-',
+            complete = 'X'
         },
-        wrap = false,
-        use_mappings_table = true,
+        tables = {
+            trim_whitespace = true,
+            format_on_move = true
+        },
         mappings = {
+            MkdnEnter = {{'n', 'v', 'i'}, '<CR>'},
+            MkdnTab = false,
+            MkdnSTab = false,
             MkdnNextLink = {'n', '<Tab>'},
             MkdnPrevLink = {'n', '<S-Tab>'},
             MkdnNextHeading = {'n', ']]'},
             MkdnPrevHeading = {'n', '[['},
             MkdnGoBack = {'n', '<BS>'},
             MkdnGoForward = {'n', '<Del>'},
-            MkdnFollowLink = {{'n', 'v'}, '<CR>'},
+            MkdnFollowLink = false, -- see MkdnEnter
             MkdnDestroyLink = {'n', '<M-CR>'},
+            MkdnMoveSource = {'n', '<F2>'},
             MkdnYankAnchorLink = {'n', 'ya'},
             MkdnYankFileAnchorLink = {'n', 'yfa'},
             MkdnIncreaseHeading = {'n', '+'},
             MkdnDecreaseHeading = {'n', '-'},
-            MkdnNewListItem = false
+            MkdnToggleToDo = {{'n', 'v'}, '<C-Space>'},
+            MkdnNewListItem = false,
+            MkdnExtendList = false,
+            MkdnUpdateNumbering = {'n', '<leader>nn'},
+            MkdnTableNextCell = {'i', '<Tab>'},
+            MkdnTablePrevCell = {'i', '<S-Tab>'},
+            MkdnTableNextRow = false,
+            MkdnTablePrevRow = {'i', '<M-CR>'},
+            MkdnTableNewRowBelow = {{'n', 'i'}, '<leader>ir'},
+            MkdnTableNewRowAbove = {{'n', 'i'}, '<leader>iR'},
+            MkdnTableNewColAfter = {{'n', 'i'}, '<leader>ic'},
+            MkdnTableNewColBefore = {{'n', 'i'}, '<leader>iC'},
+            MkdnFoldSection = {'n', '<leader>f'},
+            MkdnUnfoldSection = {'n', '<leader>F'}
         }
     })
+<
+CONFIG DESCRIPTIONS                                *Mkdnflow-config-details*
 
-===============================================================================
-Mappings                                                    *Mkdnflow-mappings*
+`modules` (dictionary-like table)~
+                                                     *Mkdnflow-config-modules*
+- All modules are enabled by default:
+                                                 *Mkdnflow-config-modules-bib*
+    - `modules.bib` (required for parsing bib files and following citations)
+                                             *Mkdnflow-config-modules-buffers*
+    - `modules.buffers` (required for backward and forward navigation through
+      buffers)
+                                             *Mkdnflow-config-modules-conceal*
+    - `modules.conceal` (required if you wish to enable link concealing; note
+      that you must declare `links.conceal` as `true` in addition to enabling
+      this module if you wish to conceal links)
+                                              *Mkdnflow-config-modules-cursor*
+    - `modules.cursor` (required for jumping to links and headings; yanking
+      anchor links)
+                                               *Mkdnflow-config-modules-folds*
+    - `modules.folds` (required for folding by section)
+                                               *Mkdnflow-config-modules-links*
+    - `modules.links` (required for creating and destroying links and
+      following links)
+                                               *Mkdnflow-config-modules-lists*
+    - `modules.lists` (required for manipulating lists, toggling to-do list
+      items, etc.)
+                                                *Mkdnflow-config-modules-maps*
+    - `modules.maps` (required for setting mappings via the mappings table;
+      set to `false` if you wish to set mappings outside of the plugin)
+                                               *Mkdnflow-config-modules-paths*
+    - `modules.paths` (required for link interpretation and following links)
+                                              *Mkdnflow-config-modules-tables*
+    - `modules.tables` (required for table navigation and formatting)
 
-These are the default mappings. If you would like to disable them, see
-|Mkdnflow-configuration|. NEW: Mappings can now be changed on a case-by-case
-basis by passing a table value under the 'mappings' key in the setup function. 
-For now, the old 'default_mappings' key is still respected. (If it is set to
-false in your config, the default mappings below will not be loaded. Note, ho-
-wever, that this will eventually be replaced by the new key `use_mappings_tabl-
-e`.)
+`create_dirs` (boolean)~
+                                                 *Mkdnflow-config-create_dirs*
+- `true`: Directories referenced in a link will be (recursively) created if
+  they do not exist
+- `false` No action will be taken when directories referenced in a link do not
+  exist. Neovim will open a new file, but you will get an error when you
+  attempt to write the file.
 
-<Tab> (normal mode)
-  Mapped to `:MkdnNextLink`. Moves the cursor to the beginning of the next link
-  (if there is a next link). If `wrap` is true and there is no next link before
-  the end of the file, will wrap to the beginnning of the file.
+`perspective` (dictionary-like table)~
+                                                 *Mkdnflow-config-perspective*
+                                        *Mkdnflow-config-perspective-priority*
+- `perspective.priority` (string): Specifies the priority perspective to take
+  when interpreting link paths
+    - `'first'`: Links will be interpreted relative to the first-opened file
+      (when the current instance of Neovim was started)
+    - `'current'`: Links will be interpreted relative to the current file
+    - `'root'`: Links will be interpreted relative to the root directory of
+      the current notebook (requires `perspective.root_tell` to be specified)
+    - `'nvim_wd_heel'`: Changes in perspective will be reflected in the nvim
+      working directory. (In other words, the working directory will "heel" to
+      the plugin's perspective.) This helps ensure (at least) that path
+      completions (if using a completion plugin with support for paths) will
+      be accurate and usable.
+                                        *Mkdnflow-config-perspective-fallback*
+- `perspective.fallback` (string): Specifies the backup perspective to take if
+  priority isn't possible (e.g. if it is `'root'` but no root directory is
+  found)
+    - `'first'`: (see above)
+    - `'current'`: (see above)
+    - `'root'`: (see above)
+                                       *Mkdnflow-config-perspective-root_tell*
+- `perspective.root_tell` (string or boolean)
+    - `'<any file name>'`: Any arbitrary filename by which the plugin can
+      uniquely identify the root directory of the current notebook. If `false`
+      is used instead, the plugin will never search for a root directory, even
+      if `perspective.priority` is set to `root`.
 
-<S-Tab> (normal mode)
-  Mapped to `:MkdnPrevLink`. Moves the cursor to the beginning of the previous
-  link (if there is one). If `wrap` is true and there is no previous link befor-
-  e the beginning of the file, will wrap to the end of the file.
+`filetypes` (dictionary-like table)~
+                                                   *Mkdnflow-config-filetypes*
+- `<any arbitrary filetype extension>` (boolean value)
+    - `true`: A matching extension will enable the plugin's functionality for
+      a file with that extension
 
-]] (normal mode)
-  Mapped to `:MkdnNextHeading`. Moves the cursor to the next heading in the
-  file. If `wrap` is `true` and there are no more headings between the cursor
-  position and the end of the document, this will cause the search to continue
-  from the beginning of the document.
+NOTE: This functionality references the file's extension. It does not rely on
+Neovim's filetype recognition. The extension must be provided in lower case
+because the plugin converts file names to lowercase. Any arbitrary extension
+can be supplied. Setting an extension to `false` is the same as not including
+it in the list.
 
-[[ (normal mode)
-  Mapped to `:MkdnPrevHeading`. Moves the cursor to the previous heding in the
-  file (if one exists). Similar logic re: wrapping applies as above.
+`wrap` (boolean)~
+                                                        *Mkdnflow-config-wrap*
+- `true`: When jumping to next/previous links or headings, the cursor will
+  continue searching at the beginning/end of the file
+- `false`: When jumping to next/previous links or headings, the cursor will
+  stop searching at the end/beginning of the file
 
-<BS> (normal mode)
-  Mapped to `:MkdnGoBack`. Opens the last-active buffer in the current window.
+`bib` (dictionary-like table)~
+                                                         *Mkdnflow-config-bib*
+                                            *Mkdnflow-config-bib-default_path*
+- `bib.default_path` (string or `nil`): Specifies a path to a default .bib
+  file to look for citation keys in (need not be in root directory of
+  notebook)
+                                            *Mkdnflow-config-bib-find_in_root*
+- `bib.find_in_root` (boolean)
+    - `true`: When `perspective.priority` is also set to `root` (and a root
+      directory was found), the plugin will search for bib files to reference
+      in the notebook's top-level directory. If `bib.default_path` is also
+      specified, the default path will be appended to the list of bib files
+      found in the top level directory so that it will also be searched.
+    - `false`: The notebook's root directory will not be searched for bib
+      files.
 
-<Del> (normal mode)
-  Mapped to `:MkdnGoForward`. Opens the buffer that was historically last navi-
-  gated away from in the current window.
+`silent` (boolean)~
+                                                      *Mkdnflow-config-silent*
+- `true`: The plugin will not display any messages in the console except
+  compatibility warnings related to your config
+- `false`: The plugin will display messages to the console (all messages from
+  the plugin start with ⬇️ )
 
-<CR> (normal mode)
-  Mapped to `:MkdnFollowLink`. If a link to a .md file is under the cursor, op-
-  ens the link under the cursor, creating missing directories if desired. If
-  there is a citation under the cursor, open any of the following (in order of
-  priority): a file associated with the citation key, a website associated with
-  the citation key, or a DOI associated with the citation key. If there is an
-  anchor link under the cursor, jumps to a matching heading in the current file
-  (if one exists). If there is no link under the cursor, make a link from the
-  word (or URL) under the cursor.
+`links` (dictionary-like table)~
+                                                       *Mkdnflow-config-links*
+                                                 *Mkdnflow-config-links-style*
+- `links.style` (string)
+    - `'markdown'`: Links will be expected in the standard markdown format:
+      `[<title>](<source>)`
+    - `'wiki'`: Links will be expected in the unofficial wiki-link style,
+      specifically the title-after-pipe format (see 
+      https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
+                                               *Mkdnflow-config-links-conceal*
+- `links.conceal` (boolean)
+    - `true`: Link sources and delimiters will be concealed (depending on
+      which link style is selected)
+    - `false`: Link sources and delimiters will not be concealed by mkdnflow
+                                    *Mkdnflow-config-links-implicit_extension*
+- `links.implicit_extension` (string)
+    - `<any extension>`: A string that instructs the plugin (a) how to
+      interpret links to files that do not have an extension, and (b) that new
+      links should be created without an explicit extension
+                                    *Mkdnflow-config-links-transform_explicit*
+- `links.transform_explicit` (function or `false`): A function that transforms
+  the text to be inserted as the source/path of a link when a link is created.
+  Anchor links are not currently customizable. If you want all link paths to
+  be explicitly prefixed with the year, for instance, and for the path to be
+  converted to uppercase, you could provide the following function under this
+  key. (NOTE: The previous functionality specified under the `prefix` key has
+  been migrated here to provide greater flexibility.)
+>
+    function(input)
+        return(string.upper(os.date('%Y-')..input))
+    end
+<
+                                    *Mkdnflow-config-links-transform_implicit*
+- `links.transform_implicit` (function or `false`): A function that transforms
+  the path of a link immediately before interpretation. It does not transform
+  the actual text in the buffer but can be used to modify link interpretation.
+  For instance, link paths that match a date pattern can be opened in a
+  `journals` subdirectory of your notebook, and all others can be opened in a
+  `pages` subdirectory, using the following function:
+>
+    function(input)
+        if input:match('%d%d%d%d%-%d%d%-%d%d') then
+            return('journals/'..input)
+        else
+            return('pages/'..input)
+        end
+    end
+<
+`to_do` (dictionary-like table)~
+                                                        *Mkdnfow-config-to-do*
+                                               *Mkdnflow-config-to-do-symbols*
+- `to_do.symbols` (array-like table): A list of symbols (each no more than one
+  character) that represent to-do list completion statuses. `MkdnToggleToDo`
+  references these when toggling the status of a to-do item. Three are
+  expected: one representing not-yet-started to-dos (default: `' '`), one
+  representing in-progress to-dos (default: `-`), and one representing
+  complete to-dos (default: `X`).
+    - NOTE: Native Lua support for UTF-8 characters is limited, so in order
+      to ensure all functionality works as intended if you are using non-ascii
+      to-do symbols, you'll need to install the luarocks module "luautf8".
+                                        *Mkdnflow-config-to-do-update_parents*
+- `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be
+  updated based on child to-do status changes performed via `MkdnToggleToDo`
+    - `true` (default): Parent to-do statuses will be inferred and
+      automatically updated when a child to-do's status is changed
+    - `false`: To-do items can be toggled, but parent to-do statuses (if any)
+      will not be automatically changed
+- The following entries can be used to stipulate which symbols shall be used
+  when updating a parent to-do's status when a child to-do's status is
+  changed. These are **not required**: if `to_do.symbols` is customized but
+  these options are not provided, the plugin will attempt to infer what the
+  meanings of the symbols in your list are by their order. For example, if you
+  set `to_do.symbols` as `{' ', '⧖', '✓'}`, `' '` will be assiged to
+  `to_do.not_started`, '⧖' will be assigned to `to_do.in_progress`, etc. If
+  more than three symbols are specified, the first will be used as
+  `not_started`, the second will be used as `in_progress`, and the last will
+  be used as `complete`. If two symbols are provided (e.g. `' ', '✓'`), the
+  first will be used as both `not_started` and `in_progress`, and the second
+  will be used as `complete`.
+    - `to_do.not_started` (string): Stipulates which symbol represents a
+      not-yet-started to-do
+    - `to_do.in_progress` (string):  Stipulates which symbol represents an
+      in-progress to-do
+    - `to_do.complete` (string):  Stipulates which symbol represents a
+      complete to-do
 
-  When used in visual mode, <CR> does one of two things: creates a link to a .md
-  file from the visual selection, or if the visual selection starts with a hash
-  symbol, creates an anchor link to a heading of the name specified by the visu-
-  al selection.
+`tables` (dictionary-like table)~
+                                                      *Mkdnflow-config-tables*
+                                      *Mkdnflow-config-tables-trim_whitespace*
+- `tables.trim_whitespace` (boolean): Whether extra whitespace should be
+  trimmed from the end of a table cell when a table is formatted (default:
+  `true`)
+                                       *Mkdnflow-config-tables-format_on_move*
+- `tables.format_on_move` (boolean): Whether tables should be formatted each
+  time the cursor is moved via MkdnTableNext/PrevCell or
+  MkdnTableNext/Prev/Row (default: `true`)
 
-ya (normal mode)
-  Mapped to `:MkdnYankAnchorLink`. If the cursor is on the same line as a headi-
-  ng, a formatted link to that heading is added to the unnamed register (clipbo-
-  ard).
+NOTE: See |Mkdnflow-mappings|
 
-yfa (normal mode)
-  Mapped to `:MkdnYankFileAnchorLink`. If the cursor is on the same line as a h-
-  eading, a formatted link to that heading *in that file* is added to the unnam-
-  ed register (clipboard).
+`mappings` (dictionary-like table)~
+                                                  *Mkdnflow-config-mappings*
+- `mappings.<name of command>` (array-like table or `false`)
+    - `mappings.<name of command>[1]` string or array table representing the
+      mode (or array of modes) that the mapping should apply in (`'n'`, `'v'`,
+      etc.)
+    - `mappings.<name of command>[2]` string representing the keymap (e.g.
+      `'<Space>'`)
+    - set `mappings.<name of command> = false` to disable default mapping
+      without providing a custom mapping
 
-+ (normal mode)
-  Mapped to `:MkdnIncreaseHeading`. If the cursor is on a line with a heading 
-  and the heading is not already the highest possible (one hash), remove a hash
-  (to *increase* the heading importance). When rendered in a browser from a con-
-  verted HTML document, this usually means the heading will be larger in size.
+NOTE: `<name of command>` should be the name of a commands defined in
+`mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
 
-- (normal mode)
-  Mapped to `:MkdnDecreaseHeading`. If the cursor is on a line with a heading,
-  add a hash (to *decrease* the heading importance). When rendered in a browser
-  from a converted HTML document, this usually means the heading will be smalle-
-  r.
 
-<C-Space> (normal mode)
-  Mapped to `:MkdnToggleToDo`. If the cursor is on a line with a to-do item in
-  a markdown list, the status of the to-do item will be cycled between the fol-
-  lowing states, looping back to the beginning if needed: [ ] ~ [-] ~ [X].
-
-(no mapping)
-  `:MkdnNewListItem` does not have a default mapping, but would most naturally
-  be mapped to `<CR>`.
-
-===============================================================================
-Recommended vim settings                    *Mkdnflow-recommended-vim-settings*
+==============================================================================
+RECOMMENDED VIM SETTINGS                   *Mkdnflow-recommended-vim-settings*
 
 I recommend turning on `autowriteall` for markdown documents. This will ensure
 that changes to buffers are saved when you navigate away from that buffer, e.g.
 by following a link to another file. See `:h awa`.
 
 One way to do this would be to use an autocmd, such as below:
-> 
+>
     vim.cmd('autocmd FileType markdown set autowriteall') 
-
-===============================================================================
-Credits                                                      *Mkdnflow-credits*
+<
+==============================================================================
+CREDITS                                                     *Mkdnflow-credits*
 
 Mkdnflow is created and maintained by Jake Vincent <jakewvincent@gmail.com>,
-and you are free to use and extend it. Please consider opening a pull request
-if extended.
+and you are free to use and extend it. Please consider opening a pull
+request if extended.
 
 Source is located at https://github.com/jakewvincent/mkdnflow.nvim
 
-===============================================================================
-Resources                                                  *Mkdnflow-resources*
+==============================================================================
+RESOURCES                                                 *Mkdnflow-resources*
+
+- Awesome Neovim's list of (markdown) plugins:
+  https://github.com/rockerBOO/awesome-neovim#markdown
+- A more granular list of Neovim plugins:
+  https://github.com/yutkat/my-neovim-pluginlist
 
 Plugins that would complement Mkdnflow:
-  - Paste links to images in markdown syntax: https://github.com/ekickx/clipboard-image.nvim
-  - Evaluate code blocks inside markdown documents: https://github.com/jubnzv/mdeval.nvim
+  - Paste links to images in markdown syntax:
+    https://github.com/ekickx/clipboard-image.nvim
+  - Evaluate code blocks inside markdown documents:
+    https://github.com/jubnzv/mdeval.nvim
   - Markdown document preview plugins:
     - https://github.com/iamcco/markdown-preview.nvim
     - https://github.com/davidgranstrom/nvim-markdown-preview
     - https://github.com/npxbr/glow.nvim
     - https://github.com/jghauser/auto-pandoc.nvim
 
-A big list of plugins for Neovim: https://github.com/rockerBOO/awesome-neovim#markdown
+Alternatives to Mkdnflow:
+- Vimwiki (https://github.com/vimwiki/vimwiki): Full-featured wiki navigation
+  & maintenance and filetype plugin, written in Vimscript
+- wiki.vim (https://github.com/lervag/wiki.vim): A lighter-weight alternative
+  to Vimwiki, written in Vimscript
+- Neorg (https://github.com/nvim-neorg/neorg): A revised Org-mode plugin for
+  Neovim, written in Lua)
+- follow-md-links.nvim (https://github.com/jghauser/follow-md-links.nvim): A
+  simpler plugin for following markdown links, written in Lua
 
-Full-featured journal navigation/maintenance: https://github.com/vimwiki/vimwiki
+==============================================================================
+RECENT BREAKING CHANGES                                     *Mkdnflow-changes*
 
-===============================================================================
-Recent breaking changes                                      *Mkdnflow-changes*
-
-commit e9f78158a68cdb6740cf2442541cdfeada68bd6c
+commit e9f78158a68cdb6740cf2442541cdfeada68bd6c~
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Thu May 12 21:16:26 2022 -0700
 
-Previously, just one bib file could be specified via the `default_bib_path` key.
-Now any number of bib files can be searched, as long as they are in the project-
-'s top-level directory and as long as `perspective.priority` is set to `root`.
-This is enabled by default, but the setting can be turned off in the following
-way. Also note in the sample config below that default_bib_path has now been mi-
-grated to the `default_path` key under the table called `bib`:
-
+Previously, just one bib file could be specified via the `default_bib_path`
+key. Now any number of bib files can be searched, as long as they are in the
+project's top-level directory and as long as `perspective.priority` is set to
+`root`. This is enabled by default, but the setting can be turned off in the
+following way. Also note in the sample config below that default_bib_path has
+now been migrated to the `default_path` key under the table called `bib`:
 >
     require('mkdnflow').setup({
         bib = {
@@ -471,14 +963,13 @@ grated to the `default_path` key under the table called `bib`:
             find_in_root = true
         }
     })
-
-commit f0544407f179972f577838d3eec998577f82022e
+<
+commit f0544407f179972f577838d3eec998577f82022e~
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Wed May 11 19:44:06 2022 -0700
 
-Previously, a customizable prefix could be specified in your config. The default
-settings were as follows:
-
+Previously, a customizable prefix could be specified in your config. The
+default settings were as follows:
 >
     require('mkdnflow').setup({
         prefix = {
@@ -486,19 +977,19 @@ settings were as follows:
             string = [[os.date('%Y-%m-%d_')]]
         }
     })
-
-This functionality has now been relocated into a much more flexible transformat-
-ion function, which will not only allow you to add any prefix or suffix that you
-wish, but also transform the text of the path of a link in any way you like. The
-default behavior is still the same. To use your own transformation, you would s-
-pecify it under the `transform_explicit` key in the new links `table`. To add a
-prefix that is just the month, for instance, and to maintain the default behavi-
-or of transforming spaces to dashes and converting upper-case characters to low-
-er case characters, you would specify the following in your config. If you want
-to maintain the default behavior completely, you should remove the `prefix` key
-from your config (if it is there) and avoid providing a value for `transform_e`-
-`xplicit` so that the default value for it is used.
-
+<
+This functionality has now been relocated into a much more flexible
+transformation function, which will not only allow you to add any prefix or
+suffix that you wish, but also transform the text of the path of a link in any
+way you like. The default behavior is still the same. To use your own
+transformation, you would specify it under the `transform_explicit` key in the
+new links `table`. To add a prefix that is just the month, for instance, and
+to maintain the default behavior of transforming spaces to dashes and
+converting upper-case characters to lower case characters, you would specify
+the following in your config. If you want to maintain the default behavior
+completely, you should remove the `prefix` key from your config (if it is
+there) and avoid providing a value for `transform_explicit` so that the
+default value for it is used.
 >
     require('mkdnflow').setup({
         links = {
@@ -510,23 +1001,21 @@ from your config (if it is there) and avoid providing a value for `transform_e`-
             end
         }
     })
-
-commit 1a21955cf51c15fe7424c61db4c4c531249ddd11
+<
+commit 1a21955cf51c15fe7424c61db4c4c531249ddd11~
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Mon Apr 25 11:10:48 2022 -0700
 
-There were previously two settings related to file prefixes that were specified
-separately in an instructured way:
-
+There were previously two settings related to file prefixes that were
+specified separately in an instructured way:
 >
     require('mkdnflow').setup({
         evaluate_prefix = true,
         new_file_prefix = [[string]]
     })
-
-After this commit, these settings must be set by passing a table to the new `pr-`
-`efix` key, as follows:
-
+<
+After this commit, these settings must be set by passing a table to the new
+`prefix` key, as follows:
 >
     require('mkdnflow').setup({
         prefix = {
@@ -534,21 +1023,20 @@ After this commit, these settings must be set by passing a table to the new `pr-
             string = [[string]]
         }
     })
-
-commit e422905de904a5c8259254029dd5025e45000357
+<
+commit e422905de904a5c8259254029dd5025e45000357~
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Mon Apr 25 10:58:02 2022 -0700
 
-Previously, the plugin's behavior around how links are interpreted was affected
-by the value of the `links_relative_to` key. This feature is now named `perspe-`
-`tive`, and you can now request that the plugin try to interpret links relative
-to the root of your wiki, where the root directory is flagged by what I've cal-
-led a "tell"--a specific file that resides in your root directory, such as one
-that would normally occur in a project's root (such as `.git`). However, the t-
-ell is arbitrary. You can set it as `index.md` if you have an index file in yo-
-ur root directory, or an empty file named `.wiki_root`. The new `perspective`
-key is specified as follows:
-
+Previously, the plugin's behavior around how links are interpreted was
+affected by the value of the `links_relative_to` key. This feature is now
+named `perspective`, and you can now request that the plugin try to interpret
+links relative to the root of your wiki, where the root directory is flagged
+by what I've called a "tell"--a specific file that resides in your root
+directory, such as one that would normally occur in a project's root (such as
+`.git`). However, the tell is arbitrary. You can set it as `index.md` if you
+have an index file in your root directory, or an empty file named
+`.wiki_root`. The new `perspective` key is specified as follows:
 >
     require('mkdnflow').setup({
         perspective = {
@@ -557,31 +1045,31 @@ key is specified as follows:
             root_tell = 'some-file-that-can-uniquely-id-your-notebook-root'
         }
     })
-
-commit 9068e12b14568ad2dbb22ed8fda2458593d5570f
+<
+commit 9068e12b14568ad2dbb22ed8fda2458593d5570f~
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Mon Apr 25 10:40:39 2022 -0700
 
-The two previous settings `wrap_to_beginning` and `wrap_to_end` are now a sing-
-le settings `wrap` since in all likelihood anyone who wishes the cursor to jump
-to the beginning of the file when searching for links or headings also would w-
-ant the cursor to jump to the end of the document what searching for links or
-headings in reverse. You'll need to replace both of those settings (if you have
-them set to true) with `wrap`, which also takes a boolean. The default is still
-false.
+The two previous settings `wrap_to_beginning` and `wrap_to_end` are now a
+single settings `wrap` since in all likelihood anyone who wishes the cursor to
+jump to the beginning of the file when searching for links or headings also
+would want the cursor to jump to the end of the document what searching for
+links or headings in reverse. You'll need to replace both of those settings
+(if you have them set to true) with `wrap`, which also takes a boolean. The
+default is still false.
 
-commit 4365100020949eaf5c465c4e4dbf656d10a1b65c
+commit 4365100020949eaf5c465c4e4dbf656d10a1b65c~
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Mon Apr 25 10:13:28 2022 -0700
 
-This commit contained a revision to the way mappings are provided for each com-
-mand so that the mode for the mapping can be specified (e.g. normal, visual, e-
-tc.). Previously the mapping was passed as the value in a table for a particul-
-ar command. The key in the mappings table should still be named exactly after a
-command, but a table should be passed to them, the first value of which is a s-
-ingle mode (e.g. 'n') or a table with multiple modes (e.g. {'n', 'v'}), and the
-second value should be a string representing the mapping. Example:
-
+This commit contained a revision to the way mappings are provided for each
+command so that the mode for the mapping can be specified (e.g. normal,
+visual, etc.). Previously the mapping was passed as the value in a table for a
+particular command. The key in the mappings table should still be named
+exactly after a command, but a table should be passed to them, the first value
+of which is a single mode (e.g. 'n') or a table with multiple modes (e.g.
+{'n', 'v'}), and the second value should be a string representing the mapping.
+Example:
 >
   {
     mappings = {
@@ -589,35 +1077,36 @@ second value should be a string representing the mapping. Example:
       MkdnCreateLink = {{'n', 'v'}, '<leader>l'}
     }
   }
-
+<
 A compatibility function in the `compat.lua` module will (for now) migrate any
 of the old config types to the new type each time the plugin is started.
 
-commit c1cf25f061e29be5ed7b9e5d44e5f0f427d46444
+commit c1cf25f061e29be5ed7b9e5d44e5f0f427d46444~
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Sat Apr 23 16:10:04 2022 -0700
 
 This commit contained a reorganization of the function in `files.lua` that was
-called followPath(). The higher-level functionality of followPath() was shipped
-off to a new function called followLink(), which is located in the new links m-
-odule. The vim command MkdnFollowPath was at around the same time changed to
-MkdnFollowLink. If you have any custom commands or references to either MkdnFo-
-llowPath or files.followPath(), please use MkdnFollowLink and/or
-links.followLink() from now on.
+called followPath(). The higher-level functionality of followPath() was
+shipped off to a new function called followLink(), which is located in the new
+links module. The vim command MkdnFollowPath was at around the same time
+changed to MkdnFollowLink. If you have any custom commands or references to
+either MkdnFollowPath or files.followPath(), please use MkdnFollowLink and/
+or links.followLink() from now on.
 
 
-commit 75c8ecc5c81bd048b6cd452f30ebde54db258165
+commit 75c8ecc5c81bd048b6cd452f30ebde54db258165~
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Fri Apr 22 13:32:54 2022 -0700
 
-Starting in this commit, mkdnflow now expects the `perspective` key in your co-
-nfig (or in the default config) to point to a table, rather than a string
+Starting in this commit, mkdnflow now expects the `perspective` key in your
+config (or in the default config) to point to a table, rather than a string
 (see |Mkdnflow-configuration|). For now, if you have customized `perspective`
-and it currently points to a string (i.e. 'first' or 'current'), a compatibilit-
-y function will read your config and (internally) convert it into the expected
-format before overwriting the default settings with any you specify.
+and it currently points to a string (i.e. 'first' or 'current'), a
+compatibility function will read your config and (internally) convert it into
+the expected format before overwriting the default settings with any you
+specify.
 
-commit 511e8ed5a89a1d117ae4ff3e93cf3d1d14338a1c
+commit 511e8ed5a89a1d117ae4ff3e93cf3d1d14338a1c~
 Author: Jake Vincent <jakewvincent@gmail.com>
 Date:   Thu Apr 21 20:16:39 2022 -0700
 
@@ -627,8 +1116,28 @@ modules to improve organization. Link-related functions were moved into
 into `paths.lua`. The only reason you're likely to be reading this is if you
 received a friendly warning about referencing files.goBack() or
 files.goForward(). A compatibility module was added to temporarily ensure
-compatibility, but you should replace any references to `files` with references
-to `buffers`. For instance:
+compatibility, but you should replace any references to `files` with
+references to `buffers`. For instance:
 
   `require('mkdnflow').files.goBack()` -> `require('mkdnflow').buffers.goBack()`
   `require('mkdnflow').files.goForward()` -> `require('mkdnflow').buffers.goForward()`
+
+==============================================================================
+LICENSE                                                     *Mkdnflow-license*
+mkdnflow.nvim (Tools for personal markdown notebook navigation and management)
+Copyright (C) 2022 Jake W. Vincent <https://github.com/jakewvincent>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+vim:tw=79:ts=4:ft=help:norl:
