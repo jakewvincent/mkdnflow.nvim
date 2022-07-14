@@ -499,7 +499,7 @@ M.followLink = function(path, anchor)
         path, anchor = M.getLinkPart('path')
     end
     if path then
-        require('mkdnflow.paths').handlePath(path, anchor)
+        require('mkdnflow').paths.handlePath(path, anchor)
     else
         M.createLink()
     end
