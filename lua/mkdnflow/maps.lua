@@ -32,9 +32,11 @@ if nvim_version >= 7 then
             for command, mapping in pairs(config.mappings) do
                 local available = true
                 -- Check if the modules the command is dependent on are disabled by user
-                for _, module in ipairs(command_deps[command]) do
-                    if not config.modules[module] then
-                        available = false
+                if command_deps[command] then
+                    for _, module in ipairs(command_deps[command]) do
+                        if not config.modules[module] then
+                            available = false
+                        end
                     end
                 end
                 if available and mapping and type(mapping[1]) == "table" then
