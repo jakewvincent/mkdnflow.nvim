@@ -432,7 +432,7 @@ end
 
 #### `to_do` (dictionary-like table)
 * `to_do.symbols` (array-like table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
-    * NOTE: Lua support for UTF-8 characters is limited, so some functionality will be limited if you supply UTF-8 characters as to-do symbols until I implement a workaround.
+    * NOTE: Native Lua support for UTF-8 characters is limited, so in order to ensure all functionality works as intended if you are using non-ascii to-do symbols, you'll need to install the luarocks module "luautf8".
 * `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
     * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
     * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
