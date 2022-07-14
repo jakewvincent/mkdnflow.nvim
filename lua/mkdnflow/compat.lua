@@ -172,7 +172,36 @@ M.userConfigCheck = function(user_config)
         end
         -- If MkdnCR has a mapping, update it to MkdnImodeMultiFunc
         if user_config.mappings.MkdnCR then
-            user_config.mappings.MkdnImodeMultiFunc = user_config.mappings.MkdnCR
+            if user_config.mappings.MkdnEnter then
+                if user_config.mappings.MkdnEnter[2]:lower() == user_config.mappings.MkdnCR[2]:lower() then
+                    local mode = user_config.mappings.MkdnEnter[1]
+                    local mapping = user_config.mappings.MkdnEnter[2]
+                    if type(mode) == 'table' then
+                        table.insert(mode, 'i')
+                    else
+                        mode = {mode, 'i'}
+                    end
+                    user_config.mappings.MkdnEnter = {mode, mapping}
+                    warn('⬇️  Merging MkdnCR mapping (deprecated) with MkdnEnter. Consider merging these in your Mkdnflow config.')
+                else
+                    warn('⬇️  MkdnCR is deprecated in favor of MkdnEnter. Could not merge your mapping for MkdnCR with that for MkdnEnter because they have different key mappings.')
+                end
+            else
+                local mode = user_config.mappings.MkdnCR[1]
+                local mapping = user_config.mappings.MkdnCR[2]
+                if type(mode) == 'table' then
+                    table.insert(mode, 'n')
+                    table.insert(mode, 'v')
+                else
+                    mode = {mode, 'n', 'v'}
+                end
+                if mapping:lower() ~= '<cr>' then
+                    warn('⬇️  MkdnCR is deprecated in favor of MkdnEnter. Could not merge your mapping for MkdnCR with the default mapping for MkdnEnter because they have different key mappings.')
+                else
+                    warn('⬇️  Merging MkdnCR mapping (deprecated) with default mapping for MkdnEnter. Consider merging your MkdnCR mapping with a mapping for MkdnEnter in your Mkdnflow config.')
+                    user_config.mappings.MkdnEnter = {mode, mapping}
+                end
+            end
             user_config.mappings.MkdnCR = nil
         end
     end
