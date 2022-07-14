@@ -71,7 +71,7 @@ local default_config = {
         format_on_move = true
     },
     mappings = {
-        MkdnEnter = {{'n', 'v', 'i'}, '<CR>'},
+        MkdnEnter = {{'n', 'v'}, '<CR>'},
         MkdnGoBack = {'n', '<BS>'},
         MkdnGoForward = {'n', '<Del>'},
         MkdnMoveSource = {'n', '<F2>'},
