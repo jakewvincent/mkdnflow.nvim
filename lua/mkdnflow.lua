@@ -71,6 +71,7 @@ local default_config = {
         format_on_move = true
     },
     mappings = {
+        MkdnEnter = {{'n', 'v', 'i'}, '<CR>'},
         MkdnGoBack = {'n', '<BS>'},
         MkdnGoForward = {'n', '<Del>'},
         MkdnMoveSource = {'n', '<F2>'},
@@ -96,8 +97,6 @@ local default_config = {
         MkdnTableNewRowAbove = {{'n', 'i'}, '<leader>iR'},
         MkdnTableNewColAfter = {{'n', 'i'}, '<leader>ic'},
         MkdnTableNewColBefore = {{'n', 'i'}, '<leader>iC'},
-        MkdnImodeMultiFunc = false,
-        MkdnNVmodeMultiFunc = {{'n', 'v'}, '<CR>'},
         MkdnFoldSection = {'n', '<leader>f'},
         MkdnUnfoldSection = {'n', '<leader>F'},
         MkdnTab = false,
@@ -143,10 +142,9 @@ init.command_deps = {
     MkdnTableNewColBefore = {'tables'},
     MkdnFoldSection = {'folds'},
     MkdnUnfoldSection = {'folds'},
-    -- The following four depend on multiple modules; they will be defined but will
+    -- The following three depend on multiple modules; they will be defined but will
     -- self-limit their functionality depending on the available modules
-    MkdnImodeMultiFunc = {},
-    MkdnNVmodeMultiFunc = {},
+    MkdnEnter = {},
     MkdnTab = {},
     MkdnSTab = {}
 }

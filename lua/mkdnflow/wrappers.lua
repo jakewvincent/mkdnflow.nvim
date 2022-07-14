@@ -51,8 +51,9 @@ M.indentListItemOrJumpTableCell = function(direction)
     end
 end
 
-M.followOrCreateLinksOrToggleFolds = function()
-    if config.modules.links and vim.api.nvim_get_mode()['mode'] == 'v' then
+M.followOrCreateLinksOrToggleFolds = function(mode)
+    mode = mode or vim.api.nvim_get_mode()['mode']
+    if config.modules.links and mode == 'v' then
         require('mkdnflow').links.followLink()
     else
         local row, line = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_get_current_line()
@@ -64,6 +65,15 @@ M.followOrCreateLinksOrToggleFolds = function()
         elseif config.modules.links then
             require('mkdnflow').links.followLink()
         end
+    end
+end
+
+M.multiFuncEnter = function()
+    local mode = vim.api.nvim_get_mode()['mode']
+    if mode == 'n' or mode == 'v' then
+        M.followOrCreateLinksOrToggleFolds(mode)
+    elseif mode == 'i' then
+        M.newListItemOrNextTableRow()
     end
 end
 

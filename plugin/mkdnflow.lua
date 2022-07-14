@@ -25,9 +25,17 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     vim.api.nvim_set_option('cpoptions', cpo_defaults)
     local user_command = vim.api.nvim_create_user_command
     local mkdnflow = require('mkdnflow')
-    local modules = mkdnflow.config.modules
     local command_deps = mkdnflow.command_deps
     local define_command = {
+        MkdnEnter = function()
+            user_command('MkdnEnter', function(opts) require('mkdnflow.wrappers').multiFuncEnter() end, {})
+        end,
+        MkdnTab = function()
+            user_command('MkdnTab', function(opts) require('mkdnflow.wrappers').indentListItemOrJumpTableCell(1) end, {})
+        end,
+        MkdnSTab = function()
+            user_command('MkdnSTab', function(opts) require('mkdnflow.wrappers').indentListItemOrJumpTableCell(-1) end, {})
+        end,
         MkdnGoBack = function()
             user_command('MkdnGoBack', function(opts) mkdnflow.buffers.goBack() end, {})
         end,
@@ -112,24 +120,12 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
         MkdnTableNewColBefore = function()
             user_command('MkdnTableNewColBefore', function(opts) mkdnflow.tables.addCol(-1) end, {})
         end,
-        MkdnImodeMultiFunc = function()
-            user_command('MkdnImodeMultiFunc', function(opts) require('mkdnflow.wrappers').newListItemOrNextTableRow() end, {})
-        end,
-        MkdnNVmodeMultiFunc = function()
-            user_command('MkdnNVmodeMultiFunc', function(opts) require('mkdnflow.wrappers').followOrCreateLinksOrToggleFolds() end, {})
-        end,
         MkdnFoldSection = function()
             user_command('MkdnFoldSection', function(opts) mkdnflow.folds.foldSection() end, {})
         end,
         MkdnUnfoldSection = function()
             user_command('MkdnUnfoldSection', function(opts) mkdnflow.folds.unfoldSection() end, {})
         end,
-        MkdnTab = function()
-            user_command('MkdnTab', function(opts) require('mkdnflow.wrappers').indentListItemOrJumpTableCell(1) end, {})
-        end,
-        MkdnSTab = function()
-            user_command('MkdnSTab', function(opts) require('mkdnflow.wrappers').indentListItemOrJumpTableCell(-1) end, {})
-        end
     }
 
     -- Define forceStart command
