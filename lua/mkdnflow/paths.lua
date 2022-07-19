@@ -381,8 +381,18 @@ M.moveSource = function()
     end
     local confirm_and_execute = function(derived_source, source, derived_goal, anchor, location, path_row, first, last)
         local truncated_goal = '...'..truncate_path(derived_source, derived_goal)
+        local prompt = "⬇️  Move '"..derived_source.."' ("..source..") to '"..truncated_goal.."' ("..location..")? [y/n] "
+        local cmdheight = vim.api.nvim_get_option('cmdheight')
+        local str_width, win_width = vim.api.nvim_strwidth(prompt), vim.api.nvim_win_get_width(0)
+        local rows_needed = str_width/win_width
+        if rows_needed/math.floor(rows_needed) > 1.0 then
+            rows_needed = math.floor(rows_needed) + 1
+        else
+            rows_needed = math.floor(rows_needed)
+        end
+        vim.api.nvim_set_option('cmdheight', rows_needed)
         vim.ui.input(
-            {prompt = "⬇️  Move '"..derived_source.."' ("..source..") to '"..truncated_goal.."' ("..location..")? [y/n] "},
+            {prompt = prompt},
             function(response)
                 if response == 'y' then
                     if this_os:match('Windows') then
@@ -393,11 +403,15 @@ M.moveSource = function()
                     -- Change the link content
                     vim.api.nvim_buf_set_text(0, path_row - 1, first - 1, path_row - 1, last, {location..anchor})
                     -- Clear the prompt & print sth
+                    -- Reset cmdheight value
                     vim.api.nvim_command("normal! :")
+                    vim.api.nvim_set_option('cmdheight', cmdheight)
                     vim.api.nvim_echo({{'⬇️  Success! File moved to '..derived_goal}}, true, {})
                 else
                     -- Clear the prompt & print sth
+                    -- Reset cmdheight value
                     vim.api.nvim_command("normal! :")
+                    vim.api.nvim_set_option('cmdheight', cmdheight)
                     vim.api.nvim_echo({{'⬇️  Aborted', 'WarningMsg'}}, true, {})
                 end
             end
