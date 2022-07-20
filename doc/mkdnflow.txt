@@ -513,6 +513,9 @@ with the expected functionality, please file an issue!
 ==============================================================================
 LUA FUNCTIONS                                         *Mkdnflow-lua-functions*
 
+NOTE: This section is under construction. Not all currently-defined Lua
+functions are described here.
+
 Mkdnflow utilizes the following public Lua functions under the hood. The only
 one that is intended to be used directly is the setup function. The functions
 following that are utilized when the commands are called.
@@ -543,7 +546,7 @@ require("mkdnflow").links.followLink()~
     a filename, it creates the file specified in the path. If the path is a
     URL, it uses `path_handler()` to open the URL specified in the path. If
     the path is determined to be neither the filename for a text file nor a
-    URL, it uses`path_handler()` to open a local file at the specified path
+    URL, it uses `path_handler()` to open a local file at the specified path
     via the system's default application for that filetype. Returns nothing.
 
 require("mkdnflow").buffers.goBack()~
