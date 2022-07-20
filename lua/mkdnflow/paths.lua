@@ -423,13 +423,14 @@ M.moveSource = function()
     local source_type = M.pathType(source)
     -- Modify source path in the same way as when links are interpreted
     local derived_source = M.transformPath(source)
-    if not derived_source:match('%..+$') then
-        if implicit_extension then
-            derived_source = derived_source..'.'..implicit_extension
-        else
-            derived_source = derived_source..'.md'
+    if derived_source then
+        if not derived_source:match('%..+$') then
+            if implicit_extension then
+                derived_source = derived_source..'.'..implicit_extension
+            else
+                derived_source = derived_source..'.md'
+            end
         end
-    end
     -- If it's a file, determine the full path of the source using perspective
     derived_source = derive_path(derived_source, source_type)
     -- Ask user to edit name in console (only display what's in the link)
@@ -484,6 +485,9 @@ M.moveSource = function()
             end
         end
     end)
+    else
+        vim.api.nvim_echo({{'⬇️  Couldn\'t find a link under the cursor to rename!', 'WarningMsg'}}, true, {})
+    end
 end
 
 -- Return all the functions added to the table M!
