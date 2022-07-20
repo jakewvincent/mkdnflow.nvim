@@ -374,9 +374,23 @@ M.toggleToDo = function(row, status, meta)
             vim.api.nvim_buf_set_text(0, row - 1, first, row - 1, last - 1, {new_symbol})
             -- Update parent to-dos (if any)
             if to_do_update_parents then update_parent_to_do(line, row, new_symbol) end
-        elseif li_type == 'ul' or li_type == 'ol' then
+        elseif li_type == 'ul' or li_type == 'ol' then -- Convert into a to-do list item if current line is a list item
             local first, last = utf8.find(line, M.patterns[li_type].pre)
             vim.api.nvim_buf_set_text(0, row - 1, last, row - 1, last, {' [ ]'})
+            if to_do_update_parents then
+                local new_todo_indent = line:match('^(%s*)[^%s]')
+                local next_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
+                local next_li_type = M.hasListType(next_line)
+                if next_li_type == 'ultd' or next_li_type == 'oltd' then
+                    local next_todo_indent = next_line:match('^(%s*)[^%s]')
+                    if string.len(next_todo_indent) > string.len(new_todo_indent) then
+                        -- Get the status of the to-do on the next line
+                        local next_symbol = get_status(next_line)
+                        -- Update the (new) parent
+                        update_parent_to_do(next_line, row + 1, next_symbol)
+                    end
+                end
+            end
         else
             local message = '⬇️  Not a to-do list item!'
             if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
