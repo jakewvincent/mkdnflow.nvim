@@ -50,7 +50,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
     * Anchor links to headings in the current file will trigger a jump to that heading. Headings must start with a hash, and the path part of the link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
         * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
         * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
-    * 🆕 Following a link to a directory (e.g. another notebook) will open a dialogue for you to select which file in the directory to open in the current window
+    * Following a link to a directory (e.g. another notebook) will open a dialogue for you to select which file in the directory to open in the current window
 * `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
     * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_path-string)—or if `perspective.priority` is `root`, simply place your bib files to be searched in your notebook's root directory.
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
@@ -550,6 +550,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 07/19/22: Update newly-converted (via `MkdnToggleToDo`/`<C-Space>`) to-do item's status if it has children
+* 07/13/22: Follow links to arbitrary spans
 * 07/13/22: Individually disable modules
 * 07/09/22: Added folding functionality; replaced default normal/visual-mode mapping with mapping to wrapper function that will fold/open sections
 * 07/01/22: Properly handle alignment markers in tables
@@ -557,12 +559,12 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 06/29/22: Conceal links
 * 06/27/22: Added wrapper functions so `<Tab>` and `<S-Tab>` can be used in both tables and lists
 * 06/27/22: Added functionality to add new rows and columns
-* 06/17/22: Added functionality to jump rows in tables
-* 06/16/22: Added functionality to format tables and jump cells in tables
 
 <details>
-<summary>Older changes</summary><p>
+<summary>Older changes (> 1 month ago)</summary><p>
 
+* 06/17/22: Added functionality to jump rows in tables
+* 06/16/22: Added functionality to format tables and jump cells in tables
 * 06/11/22: Added function and command to insert tables
 * 06/06/22: Extend functionality of MkdnToggleToDo so that it (a) will create a to-do item from a plain list item, and (b) can toggle multiple to-do items selected with simple visual mode
 * 06/04/22: Easily rename files in links (with `MkdnMoveSource`, mapped to `<F2>` by default)
