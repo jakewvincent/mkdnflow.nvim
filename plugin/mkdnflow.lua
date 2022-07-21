@@ -133,11 +133,11 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     -- Define remaining commands based on module availability
     for command, deps in pairs(command_deps) do
         local available = true
-        for _, module in ipairs(deps) do
-            if not mkdnflow.config.modules[module] then
-                available = false
-            end
-        end
+        --for _, module in ipairs(deps) do
+        --    if not mkdnflow.config.modules[module] then
+        --        available = false
+        --    end
+        --end
         if available then
             define_command[command]()
         end
