@@ -18,7 +18,16 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 * Linux, macOS, or Windows
 * Neovim >= 0.7.0 for all functionality (most will work with Neovim >= 0.5.0, but mappings will need to be set separately)
-* (Optional: If you wish to use custom UTF-8 symbols as your to-do symbols, you'll need the luarocks module `luautf8`. Luarocks dependencies can be installed via [Packer](#initlua).)
+* Optional: If you wish to use custom UTF-8 symbols as your to-do symbols or in tables that you wish to have the plugin format, you'll need the luarocks module `luautf8`. Luarocks dependencies can be installed via [Packer](#initlua) using the `rocks` key:
+
+```lua
+use({'jakewvincent/mkdnflow.nvim',
+    rocks = 'luautf8', -- Ensures optional luautf8 dependency is installed
+    config = function()
+        require('mkdnflow').setup({})
+    end
+})
+```
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
 
@@ -157,6 +166,7 @@ require('mkdnflow').setup({
 ### Tables
 * 🆕 Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
 * 🆕 Format existing tables with `:MkdnTableFormat`
+    * Make sure you have the `luautf8` rock installed if you want to format tables containing non-ascii symbols!
 * 🆕 Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
 * 🆕 Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default; jumping forward is not mapped to anything by default; see `MkdnEnter` or `MkdnTableNextRow` in [default mappings](#-commands-and-default-mappings))
 * 🆕 Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
