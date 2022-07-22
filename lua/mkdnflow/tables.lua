@@ -14,8 +14,18 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 local config = require('mkdnflow').config
+local utils = require('mkdnflow').utils
+local utf8_available = utils.moduleAvailable('lua-utf8')
 
 local M = {}
+
+local width = function(string)
+    if utf8_available then
+        return require('lua-utf8').width(string)
+    else
+        return #string
+    end
+end
 
 local extract_cell_data = function(text)
     local cells, complete, first, last = {}, false, nil, 1
@@ -29,8 +39,8 @@ local extract_cell_data = function(text)
                 trimmed_content = trimmed_content,
                 start = first + 1,
                 finish = last,
-                length = #content,
-                trimmed_length = #trimmed_content
+                length = width(content),
+                trimmed_length = width(trimmed_content)
             }
         else
             complete = true
@@ -169,21 +179,21 @@ local format_table = function(table_rows)
                         -- Make sure to retain alignment markers
                         if rowdata[cur_col].content:match(' *:.*: *') then
                             replacement = ':'
-                            repeat replacement = replacement..'-' until #replacement == target_length - 1
+                            repeat replacement = replacement..'-' until width(replacement) == target_length - 1
                             replacement = replacement..':'
                         elseif rowdata[cur_col].content:match('^ *:') then
                             replacement = ':'
-                            repeat replacement = replacement..'-' until #replacement == target_length
+                            repeat replacement = replacement..'-' until width(replacement) == target_length
                         elseif rowdata[cur_col].content:match(': *$') then
-                            repeat replacement = replacement..'-' until #replacement == target_length - 1
+                            repeat replacement = replacement..'-' until width(replacement) == target_length - 1
                             replacement = replacement..':'
                         else
-                            repeat replacement = replacement..'-' until #replacement == target_length
+                            repeat replacement = replacement..'-' until width(replacement) == target_length
                         end
                         replacement = ' '..replacement..' '
                         vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                     else
-                        repeat replacement = replacement..' ' until #replacement == diff
+                        repeat replacement = replacement..' ' until width(replacement) == diff
                         vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].finish - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                         -- Update indices for that row
                     end
@@ -191,13 +201,13 @@ local format_table = function(table_rows)
                     local replacement = ''
                     -- Guard against negative to zero numbers, which would cause the repeat loop to repeat till EOT
                     local target_length = (max_length > 2 and max_length - 2) or max_length * -1
-                    repeat replacement = replacement..'-' until #replacement == target_length
+                    repeat replacement = replacement..'-' until width(replacement) == target_length
                     replacement = ' '..replacement..' '
                     vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                 elseif diff < 0 then
                     local replacement = rowdata[cur_col].trimmed_content
                     if #replacement < max_length then
-                        repeat replacement = replacement..' ' until #replacement == max_length
+                        repeat replacement = replacement..' ' until width(replacement) == max_length
                     end
                     vim.api.nvim_buf_set_text(0, tonumber(row) - 1, rowdata[cur_col].start - 1, tonumber(row) - 1, rowdata[cur_col].finish - 1, {replacement})
                 end
@@ -284,7 +294,22 @@ M.addRow = function(offset)
     local row = cursor[1] + offset
     local line = vim.api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1]
     if M.isPartOfTable(line) then
-        line = line:gsub('[^|]', ' ')
+        if utf8_available then
+            local utf8 = require('lua-utf8')
+            local newline = ''
+            for i = 1, #line, 1 do
+                local char = utf8.sub(line, i, i)
+                if char:match('[^|]') then
+                    local char_width = utf8.width(char)
+                    newline = newline..string.rep(' ', char_width)
+                else
+                    newline = newline..char
+                end
+            end
+            line = newline
+        else
+            line = line:gsub('[^|]', ' ')
+        end
         vim.api.nvim_buf_set_lines(0, row, row, false, {line})
     end
 end
