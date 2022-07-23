@@ -179,7 +179,6 @@ init.setup = function(user_config)
     -- Overwrite defaults w/ user's config settings, if any
     user_config = compat.userConfigCheck(user_config)
     init.config = init.utils.mergeTables(default_config, user_config)
-    -- Only load the mapping autocommands if the user hasn't said "no"
     if load_on_ft[ft] then
         -- Get silence preference
         local silent = init.config.silent
@@ -257,6 +256,10 @@ init.setup = function(user_config)
                     command = "Mkdnflow silent"
                 }
             )
+        end
+        -- If maps module is not disabled, load the mapping autocmds
+        if init.config.modules.maps then
+            require('mkdnflow.maps')
         end
     end
 
