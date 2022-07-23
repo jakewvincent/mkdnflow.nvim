@@ -158,11 +158,7 @@ init.setup = function(user_config)
     -- Get first opened file/buffer path and directory
     init.initial_buf = vim.api.nvim_buf_get_name(0)
     -- Determine initial_dir according to OS
-    if init.this_os:match('Windows') then
-        init.initial_dir = init.initial_buf:match('(.*)\\.-')
-    else
-        init.initial_dir = init.initial_buf:match('(.*)/.-')
-    end
+    init.initial_dir = (init.this_os:match('Windows') ~= nil and init.initial_buf:match('(.*)\\.-')) or init.initial_buf:match('(.*)/.-')
     -- Get the extension of the file being edited
     local ft = init.utils.getFileType(init.initial_buf)
     -- Before fully loading config see if the plugin should be started
@@ -187,8 +183,7 @@ init.setup = function(user_config)
         if perspective.priority == 'root' then
             -- Retrieve the root 'tell'
             local root_tell = perspective.root_tell
-            -- If one was provided, try to find the root directory for the
-            -- notebook/wiki using the tell
+            -- If one was provided, try to find the root directory for the notebook/wiki using the tell
             if root_tell then
                 init.root_dir = init.utils.getRootDir(init.initial_dir, root_tell, init.this_os)
                 -- Get notebook name
