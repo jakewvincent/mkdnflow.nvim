@@ -277,10 +277,14 @@ M.moveToCell = function(row_offset, cell_offset)
     else
         if position[1] == row then
             vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-I>", true, false, true), 'i', true)
-        elseif row_offset == 1 and cell_offset == 0 then
+        elseif row_offset == 1 and cell_offset == 0 then -- If moving to the next row
             -- Create new line if needed
             if vim.api.nvim_buf_line_count(0) == position[1] then
                 vim.api.nvim_buf_set_lines(0, position[1] + 1, position[1] + 1, false, {''})
+            end
+            -- Format the table
+            if config.tables.format_on_move then
+                format_table(ingest_table(row - 1))
             end
             -- Move cursor to next line
             vim.api.nvim_win_set_cursor(0, {position[1] + 1, 1})
