@@ -178,7 +178,7 @@ require('mkdnflow').setup({
 ### 🆕 Disable unused modules
 * Individually disable any of the modules that enable all of the above functionality (see [`modules` config option descriptions](#modules-dictionary-like-table))
     * Prevents the module from being loaded (rather than simply disabling the functionality the module provides)
-    * Disabling a module prevents commands that are dependent on that module from being defined (and prevents mappings to those commands from being set)
+    * Disabling a module prevents mappings to commands that are dependent on that module from being defined
 
 ## 📦 Installation and usage
 
