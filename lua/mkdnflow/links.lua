@@ -495,4 +495,51 @@ M.followLink = function(path, anchor)
     end
 end
 
+M.tagSpan = function()
+    -- Get mode & cursor position from vim
+    local mode, position = vim.api.nvim_get_mode()['mode'], vim.api.nvim_win_get_cursor(0)
+    local row, col = position[1], position[2]
+    -- If the current mode is 'normal', make link from word under cursor
+    if mode == 'v' then
+        -- Get the start of the visual selection (the end is the cursor position)
+        local first = vim.fn.getpos('v')
+        -- If the start of the visual selection is after the cursor position,
+        -- use the cursor position as start and the visual position as finish
+        local inverted = first[3] > col
+        local start = (inverted and {row - 1, col}) or {first[2] - 1, first[3] - 1 + first[4]}
+        local finish = (inverted and {first[2] - 1, first[3] - 1 + first[4]}) or {row - 1, col}
+        local start_row = (inverted and row - 1) or first[2] - 1
+        local start_col = (inverted and col) or first[3] - 1
+        local end_row = (inverted and first[2] - 1) or row - 1
+        local end_col = (inverted and first[3]) or col + 1
+        local region = vim.region(
+            0,
+            start,
+            finish,
+            vim.fn.visualmode(),
+            (vim.o.selection ~= 'exclusive')
+        )
+        local lines = vim.api.nvim_buf_get_lines(
+            0, start[1], finish[1] + 1, false
+        )
+        lines[1] = lines[1]:sub(
+            region[start[1]][1] + 1, region[start[1]][2]
+        )
+        if start[1] ~= finish[1] then
+            lines[#lines] = lines[#lines]:sub(
+                region[finish[1]][1] + 1, region[finish[1]][2]
+            )
+        end
+        -- Save the text selection & replace spaces with dashes
+        local text = table.concat(lines)
+        local replacement = '['..text..']'..'{'..M.formatLink('#'..text, 2)..'}'
+        -- Replace the visual selection w/ the formatted link replacement
+        vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, {replacement})
+        -- Leave visual mode
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), 'x', true)
+        -- Retain original cursor position
+        vim.api.nvim_win_set_cursor(0, {row, col + 1})
+    end
+end
+
 return M
