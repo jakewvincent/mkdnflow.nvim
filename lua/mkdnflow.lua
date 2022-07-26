@@ -79,6 +79,7 @@ local default_config = {
         MkdnPrevLink = {'n', '<S-Tab>'},
         MkdnFollowLink = false,
         MkdnDestroyLink = {'n', '<M-CR>'},
+        MkdnTagSpan = {'v', '<M-CR>'},
         MkdnYankAnchorLink = {'n', 'ya'},
         MkdnYankFileAnchorLink = {'n', 'yfa'},
         MkdnNextHeading = {'n', ']]'},
