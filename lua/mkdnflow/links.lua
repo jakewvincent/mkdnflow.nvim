@@ -348,16 +348,6 @@ under the cursor, produces the syntax for a md link: [](YYYY-MM-DD_.md)
 Returns nothing via stdout, but does insert text into the vim buffer
 --]]
 M.createLink = function()
-    -- Make a variable for the prefix to use
-    local prefix = nil
-    -- If the user wants the prefix evaluated, eval when this function is run
-    -- (i.e. right here)
-    if evaluate_prefix then
-        prefix = loadstring("return "..new_file_prefix)()
-        -- Otherwise, just use the string provided by the user for the prefix
-    else
-        prefix = new_file_prefix
-    end
     -- Get mode from vim
     local mode = vim.api.nvim_get_mode()['mode']
     -- Get the cursor position
