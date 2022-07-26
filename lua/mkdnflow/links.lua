@@ -361,16 +361,8 @@ M.createLink = function()
         local url_start, url_end = M.hasUrl(line, 'positions', col)
         if url_start and url_end then
             -- Prepare the replacement
-            local replacement
-            if link_style == 'wiki' then
-                replacement = {
-                    '[['..line:sub(url_start, url_end - 1)..'|]]'
-                }
-            else
-                replacement = {
-                    '[]'..'('..line:sub(url_start, url_end - 1)..')'
-                }
-            end
+            local url = line:sub(url_start, url_end - 1)
+            local replacement = (link_style == 'wiki' and {'[['..url..'|]]'}) or {'[]'..'('..url..')'}
             -- Replace
             vim.api.nvim_buf_set_text(0, row - 1, url_start - 1, row - 1, url_end - 1, replacement)
             -- Move the cursor to the name part of the link and change mode
@@ -390,9 +382,8 @@ M.createLink = function()
                 left, right = string.find(line, cursor_word, right, true)
             end
             -- Replace the word under the cursor w/ the formatted link replacement
-            vim.api.nvim_buf_set_text(
-                0, row - 1, left - 1, row - 1, right, replacement
-            )
+            vim.api.nvim_buf_set_text(0, row - 1, left - 1, row - 1, right, replacement)
+            vim.api.nvim_win_set_cursor(0, {row, col + 1})
         end
     -- If current mode is 'visual', make link from selection
     elseif mode == 'v' then
@@ -400,68 +391,40 @@ M.createLink = function()
         local first = vim.fn.getpos('v')
         -- If the start of the visual selection is after the cursor position,
         -- use the cursor position as start and the visual position as finish
-        local start = {}
-        local finish = {}
-        if first[3] > col then
-            start = {row - 1, col}
-            finish = {first[2] - 1, first[3] - 1 + first[4]}
-            local region =
-                vim.region(
-                    0,
-                    start,
-                    finish,
-                    vim.fn.visualmode(),
+        local inverted = first[3] > col
+        local start = (inverted and {row - 1, col}) or {first[2] - 1, first[3] - 1 + first[4]}
+        local finish = (inverted and {first[2] - 1, first[3] - 1 + first[4]}) or {row - 1, col}
+        local start_row = (inverted and row - 1) or first[2] - 1
+        local start_col = (inverted and col) or first[3] - 1
+        local end_row = (inverted and first[2] - 1) or row - 1
+        local end_col = (inverted and first[3]) or col + 1
+        local region = vim.region(
+                0,
+                start,
+                finish,
+                vim.fn.visualmode(),
                 (vim.o.selection ~= 'exclusive')
-                )
-            local lines = vim.api.nvim_buf_get_lines(
-                0, start[1], finish[1] + 1, false
             )
-            lines[1] = lines[1]:sub(
-                region[start[1]][1] + 1, region[start[1]][2]
-            )
-            if start[1] ~= finish[1] then
-                lines[#lines] = lines[#lines]:sub(
-                    region[finish[1]][1] + 1, region[finish[1]][2]
-                )
-            end
-            -- Save the text selection & replace spaces with dashes
-            local text = table.concat(lines)
-            local replacement = M.formatLink(text)
-            -- Replace the visual selection w/ the formatted link replacement
-            vim.api.nvim_buf_set_text(
-                0, row - 1, col, first[2] - 1, first[3], replacement
-            )
-        else
-            start = {first[2] - 1, first[3] - 1 + first[4]}
-            finish = {row - 1, col}
-            local region =
-                vim.region(
-                    0,
-                    start,
-                    finish,
-                    vim.fn.visualmode(),
-                (vim.o.selection ~= 'exclusive')
-                )
-            local lines = vim.api.nvim_buf_get_lines(
-                0, start[1], finish[1] + 1, false
-            )
-            lines[1] = lines[1]:sub(
-                region[start[1]][1] + 1, region[start[1]][2]
-            )
-            if start[1] ~= finish[1] then
-                lines[#lines] = lines[#lines]:sub(
-                    region[finish[1]][1] + 1, region[finish[1]][2]
-                )
-            end
-            -- Save the text selection
-            local text = table.concat(lines)
-            local replacement = M.formatLink(text)
-            -- Replace the visual selection w/ the formatted link replacement
-            vim.api.nvim_buf_set_text(
-                0, first[2] - 1, first[3] - 1, row - 1, col + 1, replacement
+        local lines = vim.api.nvim_buf_get_lines(
+            0, start[1], finish[1] + 1, false
+        )
+        lines[1] = lines[1]:sub(
+            region[start[1]][1] + 1, region[start[1]][2]
+        )
+        if start[1] ~= finish[1] then
+            lines[#lines] = lines[#lines]:sub(
+                region[finish[1]][1] + 1, region[finish[1]][2]
             )
         end
-
+        -- Save the text selection & replace spaces with dashes
+        local text = table.concat(lines)
+        local replacement = M.formatLink(text)
+        -- Replace the visual selection w/ the formatted link replacement
+        vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, replacement)
+        -- Leave visual mode
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), 'x', true)
+        -- Retain original cursor position
+        vim.api.nvim_win_set_cursor(0, {row, col + 1})
     end
 end
 
