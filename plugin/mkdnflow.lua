@@ -38,6 +38,7 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     user_command('MkdnFollowLink', function(opts) mkdnflow.links.followLink() end, {})
     user_command('MkdnCreateLink', function(opts) mkdnflow.links.createLink() end, {})
     user_command('MkdnDestroyLink', function(opts) mkdnflow.links.destroyLink() end, {})
+    user_command('MkdnTagSpan', function(opts) mkdnflow.links.tagSpan() end, {})
     user_command('MkdnYankAnchorLink', function(opts) mkdnflow.cursor.yankAsAnchorLink() end, {})
     user_command('MkdnYankFileAnchorLink', function(opts) mkdnflow.cursor.yankAsAnchorLink({}) end, {})
     user_command('MkdnNextHeading', function(opts) mkdnflow.cursor.toHeading(nil) end, {})
