@@ -167,8 +167,11 @@ require('mkdnflow').setup({
 ```lua
 require('mkdnflow').setup({
     mappings = {
-        MkdnEnter = {{'i', 'n', 'v'}, '<CR>'} -- This monolithic command has the aforementioned insert-mode-specific behavior and also will trigger row jumping in tables. Outside of lists and tables, it behaves as <CR> normally does.
-        -- MkdnNewListItem = {'i', '<CR>'} -- Use this command instead of you only want <CR> in insert mode to add a new list item (and behave as usual outside of lists)
+        MkdnEnter = {{'i', 'n', 'v'}, '<CR>'} -- This monolithic command has the aforementioned
+            -- insert-mode-specific behavior and also will trigger row jumping in tables. Outside
+            -- of lists and tables, it behaves as <CR> normally does.
+        -- MkdnNewListItem = {'i', '<CR>'} -- Use this command instead if you only want <CR> in
+            -- insert mode to add a new list item (and behave as usual outside of lists).
     }
 })
 ```
@@ -470,8 +473,6 @@ end
 * `tables.format_on_move` (boolean): Whether tables should be formatted each time the cursor is moved via MkdnTable{Next/Prev}{Cell/Row} (default: `true`)
 * `tables.auto_extend_rows` (boolean): Whether calling `MkdnTableNextRow` when the cursor is in the last row should add another row instead of leaving the table (default: `false`)
 * `tables.auto_extend_cols` (boolean): Whether calling `MkdnTableNextCol` when the cursor is in the last cell should add another column instead of jumping to the first cell of the next row (default: `false`)
-
-Note: See [default mappings](#-commands-and-default-mappings)
 
 #### `mappings` (dictionary-like table)
 * `mappings.<name of command>` (array-like table or `false`)
