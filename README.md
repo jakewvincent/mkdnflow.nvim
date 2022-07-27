@@ -8,7 +8,7 @@
 
 ### 🆕 Top three [latest features](#-recent-changes)
 
-1. [Create bracketed spans with ID attributes and jump to them with anchor links](#create-customize-and-destroy-links)
+1. [Create Pandoc-flavored bracketed spans w/ ID attributes & jump to them with anchor links](#create-customize-and-destroy-links)
 2. [Individually disable modules you don't plan to use](#-disable-unused-modules)
 3. [Intuitively fold sections defined by headings](#section-folding)
 
