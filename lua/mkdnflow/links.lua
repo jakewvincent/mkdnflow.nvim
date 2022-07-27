@@ -41,25 +41,17 @@ M.getLinkPart = function(part)
     local link_pattern = (link_style == 'wiki' and '%[(%[.*%])%]') or '%b[](%b())'
     local bib_pattern = '[^%a%d]-(@[%a%d_%.%-\']+)[%s%p%c]?' -- Bib. citation pattern
     local indices, prev_last, link_type, continue = {}, 1, nil, true
-    -- TODO: Move the check overlap bit, which is repeated twice, to a function
-    -- definition here, then call the function twice
+    -- TODO: Move the check overlap bit, which is repeated twice, to a function definition here, then call the function twice
     while continue do
         -- Get the indices of any match on the current line
         local first, last = string.find(line[1], link_pattern, prev_last)
-        -- Check if there's a match that begins after the last from the previous
-        -- iteration of the loop
+        -- Check if there's a match that begins after the last from the previous iteration of the loop
         if first and last then
             -- If there is, check if the match overlaps with the cursor position
             if first - 1 <= col and last - 1 >= col then
-                -- If it does overlap, save the indices of the match
-                indices = {first = first, last = last}
-                -- End the loop
-                continue = false
-                -- Note link type
-                link_type = 'address'
-            else
-                -- If it doesn't overlap, save the end index of the match so
-                -- we can look for a match following it on the next loop.
+                -- If it does overlap, save the indices of the match, and the loop, and note the link type
+                indices, continue, link_type = {first = first, last = last}, false, 'address'
+            else -- If it doesn't overlap, save the end index of the match so we can look for a match following it on the next loop.
                 prev_last = last
             end
         else
@@ -68,9 +60,7 @@ M.getLinkPart = function(part)
     end
 
     -- Check if a link was found under the cursor
-    if continue == false then
-        -- If one was found and it's an address, get correct part of the match
-        -- and return it
+    if continue == false then -- If one was found and it's an address, get correct part of the match and return it
         if part == 'name' then
             if link_type == 'address' then
                 local name_pattern
@@ -90,12 +80,7 @@ M.getLinkPart = function(part)
             end
         elseif part == 'path' then
             if link_type == 'address' then
-                local path_pattern
-                if link_style == 'wiki' then
-                    path_pattern = '%[(%[.-[|%]]).*%]+'
-                else
-                    path_pattern = '%b[](%b())'
-                end
+                local path_pattern = (link_style =='wiki' and '%[(%[.-[|%]]).*%]+') or '%b[](%b())'
                 local path = string.sub(
                     string.match(
                         string.sub(line[1], indices['first'], indices['last']),
@@ -118,25 +103,18 @@ M.getLinkPart = function(part)
             end
         end
     elseif config.modules.bib then -- If one wasn't found, perform another search, this time for citations
-        continue = true
-        prev_last = 1
+        continue, prev_last = true, 1
         while continue do
             local first, last = string.find(line[1], bib_pattern, prev_last)
             -- If there was a match, see if the cursor is inside it
-            if first and last then
-                -- If there is, check if the match overlaps with the cursor position
+            if first and last then -- If there is, check if the match overlaps with the cursor position
                 if first - 1 <= col and last - 1 >= col then
                     -- Check if there's a possessive marker
                     local poss = string.match(string.sub(line[1], first, last), "('s[^%a]?)$")
                     last = (poss and last - string.len(poss)) or last
-                    -- Save the indices of the match
-                    indices = {first = first, last = last}
-                    -- End the loop & note the link type
-                    continue = false
-                    link_type = 'citation'
-                else
-                    -- If it doesn't overlap, save the end index of the match so
-                    -- we can look for a match following it on the next loop.
+                    -- Save the indices of the match, end the loop, and note the link type
+                    indices, continue, link_type = {first = first, last = last}, false, 'citation'
+                else -- If it doesn't overlap, save the end index of the match so we can look for a match following it on the next loop.
                     prev_last = last
                 end
             else
@@ -153,7 +131,6 @@ M.getLinkPart = function(part)
                 return(citation)
             end
         else
-            -- Below will need to be the else condition
             return(nil)
         end
     else
