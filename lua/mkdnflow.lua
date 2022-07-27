@@ -121,6 +121,7 @@ init.command_deps = {
     MkdnNextLink = {'links', 'cursor'},
     MkdnPrevLink = {'links', 'cursor'},
     MkdnCreateLink = {'links'},
+    MkdnTagSpan = {'links'},
     MkdnFollowLink = {'links', 'paths'},
     MkdnDestroyLink = {'links'},
     MkdnYankAnchorLink = {'cursor'},
