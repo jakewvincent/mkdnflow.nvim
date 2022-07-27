@@ -1,20 +1,16 @@
 <p align=center>
 <img src="assets/logo/mkdnflow_logo.png">
 </p>
+<p align=center><img src="https://camo.githubusercontent.com/dba3dd4ec5c0640974a4dad6acdef2e5fe9ef9eee3160ff309aa40dcb091b956/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f6c75612d2532333243324437322e7376673f267374796c653d666c6174266c6f676f3d6c7561266c6f676f436f6c6f723d7768697465"></p>
 <p align=center>
    <a href="#-features">Features</a> / <a href="#-installation">Installation</a> / <a href="#-starting-a-notebook">Starting a notebook</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
 </p>
 
-<p align=center>
-    🆕 <i>Latest features</i> (see <a href="#-recent-changes">recent changes</a> for a complete list) 🆕
-</p>
-<ol>
-    <li><a href="#create-customize-and-destroy-links">Creating and jumping to bracketed spans</a></li>
-    <li><a href="#-disable-unused-modules">Individually disable modules you don't plan to use</a></li>
-    <li><a href="#section-folding">Intuitively fold sections defined by headings</li>
-</ol>
+### 🆕 Top three [latest features](#-recent-changes)
 
-<p align=center><img src="https://camo.githubusercontent.com/dba3dd4ec5c0640974a4dad6acdef2e5fe9ef9eee3160ff309aa40dcb091b956/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f6c75612d2532333243324437322e7376673f267374796c653d666c6174266c6f676f3d6c7561266c6f676f436f6c6f723d7768697465"></p>
+1. [Creating and jumping to bracketed spans](#create-customize-and-destroy-links)
+2. [Individually disable modules you don't plan to use](#-disable-unused-modules)
+3. [Intuitively fold sections defined by headings](#section-folding)
 
 ## 📝 Description
 
