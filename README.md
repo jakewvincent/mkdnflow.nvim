@@ -382,7 +382,7 @@ require('mkdnflow').setup({
 * All modules are enabled by default:
     * `modules.bib` (required for [parsing bib files](#follow-links-and-citations) and [following citations](#follow-links-and-citations))
     * `modules.buffers` (required for [backward and forward navigation through buffers](#backward-and-forward-navigation-through-buffers))
-    * `modules.conceal` (required if you wish to enable [link concealing](#two-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to enabling this module if you wish to conceal links)
+    * `modules.conceal` (required if you wish to enable [link concealing](#two-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to leaving this module enabled [it is enabled by default] if you wish to conceal links)
     * `modules.cursor` (required for [jumping to links and headings](#jump-to-links-headings); [yanking anchor links](#create-customize-and-destroy-links))
     * `modules.folds` (required for [folding by section](#section-folding))
     * `modules.links` (required for [creating and destroying links](#create-customize-and-destroy-links) and [following links](#follow-links-and-citations))
