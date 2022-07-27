@@ -90,7 +90,7 @@ use({'jakewvincent/mkdnflow.nvim',
     * Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-like-table) config key for customization instructions.
 * `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
 * Create an anchor link if the visual selection starts with `#` 
-* 🆕 Tag visually selected spans of text (mapped to `<M-CR>` in visual mode) using the style specified in the [Pandoc `bracketed_spans` extension](https://pandoc.org/MANUAL.html#extension-bracketed_spans) (ID must be assigned with the ID selector---i.e. `#`): `[This is a span]{#important-span}`.
+* 🆕 Tag visually selected spans of text (mapped to `<M-CR>` in visual mode) using the style specified in the [Pandoc `bracketed_spans` extension](https://pandoc.org/MANUAL.html#extension-bracketed_spans) (ID must be assigned with the ID selector—i.e. `#`): `[This is a span]{#important-span}`.
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
 * `ya` on a heading (🆕 or bracketed span) to add a formatted anchor link for the heading to the default register (ready to paste in the current window)
     * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
