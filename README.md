@@ -334,7 +334,9 @@ require('mkdnflow').setup({
     },
     tables = {
         trim_whitespace = true,
-        format_on_move = true
+        format_on_move = true,
+        auto_extend_rows = false,
+        auto_extend_cols = false
     },
     mappings = {
         MkdnEnter = {{'n', 'v'}, '<CR>'},
@@ -466,6 +468,8 @@ end
 #### `tables` (dictionary-like table)
 * `tables.trim_whitespace` (boolean): Whether extra whitespace should be trimmed from the end of a table cell when a table is formatted (default: `true`)
 * `tables.format_on_move` (boolean): Whether tables should be formatted each time the cursor is moved via MkdnTable{Next/Prev}{Cell/Row} (default: `true`)
+* `tables.auto_extend_rows` (boolean): Whether calling `MkdnTableNextRow` when the cursor is in the last row should add another row instead of leaving the table (default: `false`)
+* `tables.auto_extend_cols` (boolean): Whether calling `MkdnTableNextCol` when the cursor is in the last cell should add another column instead of jumping to the first cell of the next row (default: `false`)
 
 Note: See [default mappings](#-commands-and-default-mappings)
 
@@ -573,6 +577,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 07/26/22: Add config option for automatically extending table (col-wise or row-wise) when attempting to jump to the next cell/row while in the last cell/row
 * 07/26/22: Command & mapping for creating bracketed spans (spans assigned an ID attribute)
 * 07/19/22: Update newly-converted (via `MkdnToggleToDo`/`<C-Space>`) to-do item's status if it has children
 * 07/13/22: Follow links to arbitrary spans
