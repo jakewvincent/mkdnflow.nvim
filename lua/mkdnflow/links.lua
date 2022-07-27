@@ -26,6 +26,40 @@ local utils = require('mkdnflow').utils
 -- Table for global functions
 local M = {}
 
+M.getLinkUnderCursor = function(col)
+    col = col or vim.api.nvim_win_get_cursor(0)[2]
+    local patterns = {
+        md_link = '%b[]%b()',
+        wiki_link = '%[%[.*%]%]',
+        ref_style_link = '%b[]%s?%b[]',
+        citation = '[^%a%d]-@[%a%d_%.%-\']+[%s%p%c]?'
+    }
+    local line = vim.api.nvim_get_current_line()
+    -- Iterate through the patterns to see if there's a matching link under the cursor
+    for type, pattern in pairs(patterns) do
+        local continue, init, iteration, match = true, 1, 1, nil
+        while continue do
+            local start, finish = string.find(line, pattern, init)
+            if start then -- There's a match
+                if iteration == 1 and col + 1 < start then -- If the first match is after the cursor, stop
+                    continue = false
+                elseif col + 1 >= start and col < finish then -- Cursor is between start and finish
+                    continue = false
+                    match = string.sub(line, start, finish)
+                else -- Cursor is outside of start and finish; 
+                    init = finish
+                end
+            else
+                continue = false
+            end
+            iteration = iteration + 1
+        end
+        if match then -- Return the match and type of link if there was a match
+            return match, type
+        end
+    end
+end
+
 --[[
 getLinkPart() extracts part of a markdown link, i.e. the part in [] or ().
 Returns a string--the string in the square brackets
