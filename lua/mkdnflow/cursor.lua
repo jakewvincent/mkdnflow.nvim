@@ -334,6 +334,7 @@ M.yankAsAnchorLink = function(full_path)
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
     -- See if the line starts with a hash
     local is_heading = string.find(line[1], '^#')
+    local is_bracketed_span = links.getBracketedSpanPart()
     if is_heading then
         -- Format the line as an anchor link
         local anchor_link = links.formatLink(line[1])
@@ -349,8 +350,21 @@ M.yankAsAnchorLink = function(full_path)
             -- Add to the unnamed register
             vim.cmd('let @"="'..anchor_link..'"')
         end
+    elseif is_bracketed_span then
+        local name = links.getBracketedSpanPart('name')
+        local attr = is_bracketed_span
+        local anchor_link
+        if name and attr then
+            if full_path then
+                local buffer = vim.api.nvim_buf_get_name(0)
+                anchor_link = '['..name..']'..'('..buffer..attr..')'
+            else
+                anchor_link = '['..name..']'..'('..attr..')'
+            end
+                vim.cmd('let @"="'..anchor_link..'"')
+        end
     else
-        local message = '⬇️  The current line is not a heading!'
+        local message = '⬇️  The current line is not a heading or bracketed span!'
         if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
     end
 end
