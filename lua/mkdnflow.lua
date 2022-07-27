@@ -68,7 +68,9 @@ local default_config = {
     },
     tables = {
         trim_whitespace = true,
-        format_on_move = true
+        format_on_move = true,
+        auto_extend_rows = false,
+        auto_extend_cols = false
     },
     mappings = {
         MkdnEnter = {{'n', 'v'}, '<CR>'},
