@@ -161,6 +161,67 @@ M.getLinkPart = function(part)
     end
 end
 
+M.getBracketedSpanPart = function(part)
+    -- Use 'attr' as part if no argument provided
+    part = part or 'attr'
+    -- Get current cursor position
+    local position = vim.api.nvim_win_get_cursor(0)
+    local row, col = position[1], position[2]
+    -- Get the indices of the bracketed spans in the line
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
+    local bracketed_span_pattern = '%b[](%b{})'
+    local indices, prev_last, continue = {}, 1, true
+    -- TODO: Move the check overlap bit, which is repeated twice, to a function
+    -- definition here, then call the function twice
+    while continue do
+        -- Get the indices of any match on the current line
+        local first, last = string.find(line[1], bracketed_span_pattern, prev_last)
+        -- Check if there's a match that begins after the last from the previous
+        -- iteration of the loop
+        if first and last then
+            -- If there is, check if the match overlaps with the cursor position
+            if first - 1 <= col and last - 1 >= col then
+                -- If it does overlap, save the indices of the match
+                indices = {first = first, last = last}
+                -- End the loop
+                continue = false
+            else
+                -- If it doesn't overlap, save the end index of the match so
+                -- we can look for a match following it on the next loop.
+                prev_last = last
+            end
+        else
+            continue = nil
+        end
+    end
+
+    -- Check if a bracketed span was found under the cursor
+    if continue == false then
+        -- If one was found, get correct part of the match
+        -- and return it
+        if part == 'name' then
+            local name_pattern = '(%b[])%b{}'
+            local span = string.sub(line[1], indices['first'], indices['last'])
+            local name = string.sub(string.match(span, name_pattern), 2, -2)
+            -- Return the name and the indices of the bracketed span
+            return name, indices['first'], indices['last'], row
+        elseif part == 'attr' then
+            local attr_pattern = '%b[](%b{})'
+            local attr = string.sub(
+                string.match(
+                    string.sub(line[1], indices['first'], indices['last']),
+                    attr_pattern
+                ), 2, -2
+            )
+            local attr_first, attr_last = line[1]:find('%]%{'..utils.luaEscape(attr), indices['first'])
+            attr_first = attr_first + 2
+            return attr, attr_first, attr_last, row
+        end
+    else
+        return(nil)
+    end
+end
+
 --[[
 hasUrl() determines whether a string is a URL
 Arguments: the string to lok for a url in; (optional) what should be returned--
