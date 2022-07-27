@@ -6,6 +6,15 @@
    <a href="#-features">Features</a> / <a href="#-installation">Installation</a> / <a href="#-starting-a-notebook">Starting a notebook</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
 </p>
 
+<div style="border: 1px solid black; border-radius: 4px;">
+<p align=center>
+    Latest feature
+</p>
+<p>
+    Test
+</p>
+</div>
+
 ## 📝 Description
 
 Mkdnflow is designed for the *fluent* navigation of documents and notebooks (AKA "wikis") written in [markdown](https://markdownguide.org). The plugin's [flexibility](#customizable-link-interpretation) and its prioritization of markdown also means it can become part of your webdev workflow if you use static site generators like Jekyll or Hugo, which can generate static sites from markdown documents.
