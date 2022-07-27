@@ -6,12 +6,17 @@
    <a href="#-features">Features</a> / <a href="#-installation">Installation</a> / <a href="#-starting-a-notebook">Starting a notebook</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
 </p>
 
-<div style="border: 1px solid black; border-radius: 4px;">
+<div style="margin-left: 5em; margin-right: 5em;">
 <p align=center>
-    Latest feature
+    🆕<strong>Latest features</strong>🆕
 </p>
+<ol>
+    <li><a href="#create-customize-and-destroy-links">Creating and jumping to bracketed spans</a></li>
+    <li><a href="#-disable-unused-modules">Individually disable modules you don't plan to use</a></li>
+    <li><a href="#section-folding">Intuitively fold sections defined by headings</li>
+</ol>
 <p>
-    Test
+See <a href="#-recent-changes">Recent changes</a> for a complete list of major and minor changes
 </p>
 </div>
 
