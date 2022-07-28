@@ -30,16 +30,23 @@ M.getLinkUnderCursor = function(col)
     col = col or vim.api.nvim_win_get_cursor(0)[2]
     local patterns = {
         md_link = '%b[]%b()',
-        wiki_link = '%[%[.*%]%]',
+        wiki_link = '%[%b[]%]',
         ref_style_link = '%b[]%s?%b[]',
-        citation = '[^%a%d]-@[%a%d_%.%-\']+[%s%p%c]?'
+        citation = '[^%a%d]-(@[%a%d_%.%-\']*[%a%d]+)[%s%p%c]?'
     }
     local line = vim.api.nvim_get_current_line()
     -- Iterate through the patterns to see if there's a matching link under the cursor
     for type, pattern in pairs(patterns) do
         local continue, init, iteration, match = true, 1, 1, nil
-        while continue do
-            local start, finish = string.find(line, pattern, init)
+        local counter = 1
+        while continue and counter < 100 do
+            counter = counter + 1
+            if counter == 100 then print("Infinite loop :(") end
+            local start, finish, capture = string.find(line, pattern, init)
+            if start and type == 'citation' then
+                capture = string.gsub(capture, "'s$", '') -- Remove Saxon genitive if it's on the end of the citekey
+                start, finish = string.find(line, capture, start, true) -- Get match for citekey w/o surrounding context
+            end
             if start then -- There's a match
                 if iteration == 1 and col + 1 < start then -- If the first match is after the cursor, stop
                     continue = false
@@ -55,9 +62,43 @@ M.getLinkUnderCursor = function(col)
             iteration = iteration + 1
         end
         if match then -- Return the match and type of link if there was a match
-            return match, type
+            return {match, type}
         end
     end
+end
+
+M.getLinkPartNew = function(link_table, part)
+    local text, type = table.unpack(link_table)
+    part = part or 'source'
+    local patterns = {
+        source = {
+            md_link = '%b[](%b())',
+            wiki_link = '%[%[(.-)%]%]',
+            ref_style_link = '%b[]%s?(%b[])',
+            citation = '[^%a%d]-(@[%a%d_%.%-\']+)[%s%p%c]?'
+        },
+        name = {
+            md_link = '(%b[])%b()',
+            wiki_link = '%[%[(.-)%]%]',
+            ref_style_link = '(%b[])%s?%b[]',
+            citation = '[^%a%d]-(@[%a%d_%.%-\']+)[%s%p%c]?'
+        }
+    }
+    local returns = {
+        md_link = function(part_)
+            return string.sub(string.match(text, patterns[part_]['md_link']), 2, -2)
+        end,
+        wiki_link = function(part_)
+            return string.match(text, patterns[part_]['wiki_link'])
+        end,
+        ref_style_link = function(part_)
+            return string.sub(string.match(text, patterns[part_]['ref_style_link']), 2, -2)
+        end,
+        citation = function()
+            return string.sub(text, 2)
+        end
+    }
+    return returns[type](part)
 end
 
 --[[
