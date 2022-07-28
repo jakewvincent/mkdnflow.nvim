@@ -339,7 +339,7 @@ M.handlePath = function(path, anchor)
         handle_external_file(path)
     elseif path_type == 'anchor' then
         -- Send cursor to matching heading
-        if not cursor.toId(path) then
+        if not cursor.toId(path, 1) then
             cursor.toHeading(path)
         end
     elseif path_type == 'citation' then
