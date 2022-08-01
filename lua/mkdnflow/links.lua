@@ -82,14 +82,14 @@ M.getLinkPart = function(link_table, part)
             wiki_link_no_bar = '%[%[(.-)%]%]',
             wiki_link_anchor_no_bar = '%[%[(.-)#.-%]%]',
             ref_style_link = '^%[(.*)%]%s?%[',
-            citation = '@(.*)'
+            citation = '(@.*)'
         },
         source = {
             md_link = '%]%((.*)%)',
             wiki_link = '%[%[(.-)|.-%]%]',
             wiki_link_no_bar = '%[%[(.-)%]%]',
             ref_style_link = '%]%s?%[(.*)%]',
-            citation = '@(.*)'
+            citation = '(@.*)'
         },
         anchor = {
             md_link = '%(.*(#.*)%)',
