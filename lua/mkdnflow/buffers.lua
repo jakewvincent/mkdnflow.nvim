@@ -43,7 +43,7 @@ there, and then pops the top element from the main stack.
 --]]
 M.goBack = function()
     local cur_bufnr = vim.api.nvim_win_get_buf(0)
-    if cur_bufnr > 1 then
+    if cur_bufnr > 1 and not vim.tbl_isempty(M.main) then
         -- Add current buffer number to history
         M.push(M.hist, cur_bufnr)
         -- Get previous buffer number
