@@ -73,48 +73,34 @@ Returns a string (or two strings if there is an anchor within the source)
 --]]
 M.getLinkPart = function(link_table, part)
     table.unpack = table.unpack or unpack
-    local text, type = table.unpack(link_table)
-    part = part or 'source'
-    local patterns = {
-        name = {
-            md_link = '%[(.*)%]',
-            wiki_link = '|(.-)%]',
-            wiki_link_no_bar = '%[%[(.-)%]%]',
-            wiki_link_anchor_no_bar = '%[%[(.-)#.-%]%]',
-            ref_style_link = '^%[(.*)%]%s?%[',
-            citation = '(@.*)'
-        },
-        source = {
-            md_link = '%]%((.*)%)',
-            wiki_link = '%[%[(.-)|.-%]%]',
-            wiki_link_no_bar = '%[%[(.-)%]%]',
-            ref_style_link = '%]%s?%[(.*)%]',
-            citation = '(@.*)'
-        },
-        anchor = {
-            md_link = '%(.*(#.*)%)',
-            wiki_link = '%[%[.-(#.-)|',
-            wiki_link_no_bar = '%[%[.-(#.-)%]%]'
+    if link_table then
+        local text, type = table.unpack(link_table)
+        part = part or 'source'
+        local patterns = {
+            name = {
+                md_link = '%[(.*)%]',
+                wiki_link = '|(.-)%]',
+                wiki_link_no_bar = '%[%[(.-)%]%]',
+                wiki_link_anchor_no_bar = '%[%[(.-)#.-%]%]',
+                ref_style_link = '^%[(.*)%]%s?%[',
+                citation = '(@.*)'
+            },
+            source = {
+                md_link = '%]%((.*)%)',
+                wiki_link = '%[%[(.-)|.-%]%]',
+                wiki_link_no_bar = '%[%[(.-)%]%]',
+                ref_style_link = '%]%s?%[(.*)%]',
+                citation = '(@.*)'
+            },
+            anchor = {
+                md_link = '%(.*(#.*)%)',
+                wiki_link = '%[%[.-(#.-)|',
+                wiki_link_no_bar = '%[%[.-(#.-)%]%]'
+            }
         }
-    }
-    local get_from = { -- Table of functions by link type
-        md_link = function(part_)
-            local match = string.match(text, patterns[part_]['md_link'])
-            if part_ == 'source' then
-                local start, finish, anchor = string.find(match, '(#.*)')
-                if start then
-                    match = string.sub(match, 1, start - 1)
-                    return match, anchor
-                else
-                    return match
-                end
-            else
-                return match
-            end
-        end,
-        wiki_link = function(part_)
-            local match = string.match(text, patterns[part_]['wiki_link'])
-            if match then
+        local get_from = { -- Table of functions by link type
+            md_link = function(part_)
+                local match = string.match(text, patterns[part_]['md_link'])
                 if part_ == 'source' then
                     local start, finish, anchor = string.find(match, '(#.*)')
                     if start then
@@ -126,31 +112,47 @@ M.getLinkPart = function(link_table, part)
                 else
                     return match
                 end
-            elseif part_ == 'name' and string.match(text, '#') then
-                return string.match(text, patterns[part_]['wiki_link_anchor_no_bar'])
-            else
-                match = string.match(text, patterns[part_]['wiki_link_no_bar'])
-                if part_ == 'source' then
-                    local start, finish, anchor = string.find(match, '(#.*)')
-                    if start then
-                        match = string.sub(match, 1, start - 1)
-                        return match, anchor
+            end,
+            wiki_link = function(part_)
+                local match = string.match(text, patterns[part_]['wiki_link'])
+                if match then
+                    if part_ == 'source' then
+                        local start, finish, anchor = string.find(match, '(#.*)')
+                        if start then
+                            match = string.sub(match, 1, start - 1)
+                            return match, anchor
+                        else
+                            return match
+                        end
                     else
                         return match
                     end
+                elseif part_ == 'name' and string.match(text, '#') then
+                    return string.match(text, patterns[part_]['wiki_link_anchor_no_bar'])
                 else
-                    return match
+                    match = string.match(text, patterns[part_]['wiki_link_no_bar'])
+                    if part_ == 'source' then
+                        local start, finish, anchor = string.find(match, '(#.*)')
+                        if start then
+                            match = string.sub(match, 1, start - 1)
+                            return match, anchor
+                        else
+                            return match
+                        end
+                    else
+                        return match
+                    end
                 end
+            end,
+            ref_style_link = function(part_)
+                return string.match(text, patterns[part_]['ref_style_link'])
+            end,
+            citation = function(part_)
+                return string.match(text, patterns[part_]['citation'])
             end
-        end,
-        ref_style_link = function(part_)
-            return string.match(text, patterns[part_]['ref_style_link'])
-        end,
-        citation = function(part_)
-            return string.match(text, patterns[part_]['citation'])
-        end
-    }
-    return get_from[type](part)
+        }
+        return get_from[type](part)
+    end
 end
 
 M.getBracketedSpanPart = function(part)
