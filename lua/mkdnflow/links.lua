@@ -72,6 +72,7 @@ getLinkPart() extracts part of a link
 Returns a string (or two strings if there is an anchor within the source)
 --]]
 M.getLinkPart = function(link_table, part)
+    table.unpack = table.unpack or unpack
     local text, type = table.unpack(link_table)
     part = part or 'source'
     local patterns = {
