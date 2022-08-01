@@ -67,150 +67,89 @@ M.getLinkUnderCursor = function(col)
     end
 end
 
-M.getLinkPartNew = function(link_table, part)
+--[[
+getLinkPart() extracts part of a link
+Returns a string (or two strings if there is an anchor within the source)
+--]]
+M.getLinkPart = function(link_table, part)
     local text, type = table.unpack(link_table)
     part = part or 'source'
     local patterns = {
-        source = {
-            md_link = '%b[](%b())',
-            wiki_link = '%[%[(.-)%]%]',
-            ref_style_link = '%b[]%s?(%b[])',
-            citation = '[^%a%d]-(@[%a%d_%.%-\']+)[%s%p%c]?'
-        },
         name = {
-            md_link = '(%b[])%b()',
-            wiki_link = '%[%[(.-)%]%]',
-            ref_style_link = '(%b[])%s?%b[]',
-            citation = '[^%a%d]-(@[%a%d_%.%-\']+)[%s%p%c]?'
+            md_link = '%[(.*)%]',
+            wiki_link = '|(.-)%]',
+            wiki_link_no_bar = '%[%[(.-)%]%]',
+            wiki_link_anchor_no_bar = '%[%[(.-)#.-%]%]',
+            ref_style_link = '^%[(.*)%]%s?%[',
+            citation = '@(.*)'
+        },
+        source = {
+            md_link = '%]%((.*)%)',
+            wiki_link = '%[%[(.-)|.-%]%]',
+            wiki_link_no_bar = '%[%[(.-)%]%]',
+            ref_style_link = '%]%s?%[(.*)%]',
+            citation = '@(.*)'
+        },
+        anchor = {
+            md_link = '%(.*(#.*)%)',
+            wiki_link = '%[%[.-(#.-)|',
+            wiki_link_no_bar = '%[%[.-(#.-)%]%]'
         }
     }
-    local returns = {
+    local get_from = { -- Table of functions by link type
         md_link = function(part_)
-            return string.sub(string.match(text, patterns[part_]['md_link']), 2, -2)
-        end,
-        wiki_link = function(part_)
-            return string.match(text, patterns[part_]['wiki_link'])
-        end,
-        ref_style_link = function(part_)
-            return string.sub(string.match(text, patterns[part_]['ref_style_link']), 2, -2)
-        end,
-        citation = function()
-            return string.sub(text, 2)
-        end
-    }
-    return returns[type](part)
-end
-
---[[
-getLinkPart() extracts part of a markdown link, i.e. the part in [] or ().
-Returns a string--the string in the square brackets
---]]
-M.getLinkPart = function(part)
-    -- Use 'path' as part if no argument provided
-    part = part or 'path'
-    -- Get current cursor position
-    local position = vim.api.nvim_win_get_cursor(0)
-    local row, col = position[1], position[2]
-    -- Get the indices of the links in the line
-    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false) -- Get the line text
-    local link_pattern = (link_style == 'wiki' and '%[(%[.*%])%]') or '%b[](%b())'
-    local bib_pattern = '[^%a%d]-(@[%a%d_%.%-\']+)[%s%p%c]?' -- Bib. citation pattern
-    local indices, prev_last, link_type, continue = {}, 1, nil, true
-    -- TODO: Move the check overlap bit, which is repeated twice, to a function definition here, then call the function twice
-    while continue do
-        -- Get the indices of any match on the current line
-        local first, last = string.find(line[1], link_pattern, prev_last)
-        -- Check if there's a match that begins after the last from the previous iteration of the loop
-        if first and last then
-            -- If there is, check if the match overlaps with the cursor position
-            if first - 1 <= col and last - 1 >= col then
-                -- If it does overlap, save the indices of the match, and the loop, and note the link type
-                indices, continue, link_type = {first = first, last = last}, false, 'address'
-            else -- If it doesn't overlap, save the end index of the match so we can look for a match following it on the next loop.
-                prev_last = last
-            end
-        else
-            continue = nil
-        end
-    end
-
-    -- Check if a link was found under the cursor
-    if continue == false then -- If one was found and it's an address, get correct part of the match and return it
-        if part == 'name' then
-            if link_type == 'address' then
-                local name_pattern
-                local link = string.sub(line[1], indices['first'], indices['last'])
-                if link_style == 'wiki' then
-                    if link:match('|') then
-                        name_pattern = '%[%[.*(|.*%])%]'
-                    else
-                        name_pattern = '%[(.*)%]'
-                    end
+            local match = string.match(text, patterns[part_]['md_link'])
+            if part_ == 'source' then
+                local start, finish, anchor = string.find(match, '(#.*)')
+                if start then
+                    match = string.sub(match, 1, start - 1)
+                    return match, anchor
                 else
-                    name_pattern = '(%b[])%b()'
-                end
-                local name = string.sub(string.match(link, name_pattern), 2, -2)
-                -- Return the name and the indices of the link
-                return name, indices['first'], indices['last'], row
-            end
-        elseif part == 'path' then
-            if link_type == 'address' then
-                local path_pattern = (link_style =='wiki' and '%[(%[.-[|%]]).*%]+') or '%b[](%b())'
-                local path = string.sub(
-                    string.match(
-                        string.sub(line[1], indices['first'], indices['last']),
-                        path_pattern
-                    ), 2, -2
-                )
-                local path_first, path_last = line[1]:find(link_style ~= 'wiki' and '%]%('..utils.luaEscape(path) or utils.luaEscape(path), indices['first'])
-                if link_style ~= 'wiki' then path_first = path_first + 2 end
-                local anchor
-                local path_type = require('mkdnflow.paths').pathType(path)
-                if path_type == 'filename' then
-                    anchor = path:match('%.md(#.+)') or path:match('.+(#.+)')
-                    if anchor then
-                        path = path:match('(.+%.md)#') or path:match('(.+)#')
-                    else
-                        anchor = ''
-                    end
-                end
-                return path, anchor, path_first, path_last, row
-            end
-        end
-    elseif config.modules.bib then -- If one wasn't found, perform another search, this time for citations
-        continue, prev_last = true, 1
-        while continue do
-            local first, last = string.find(line[1], bib_pattern, prev_last)
-            -- If there was a match, see if the cursor is inside it
-            if first and last then -- If there is, check if the match overlaps with the cursor position
-                if first - 1 <= col and last - 1 >= col then
-                    -- Check if there's a possessive marker
-                    local poss = string.match(string.sub(line[1], first, last), "('s[^%a]?)$")
-                    last = (poss and last - string.len(poss)) or last
-                    -- Save the indices of the match, end the loop, and note the link type
-                    indices, continue, link_type = {first = first, last = last}, false, 'citation'
-                else -- If it doesn't overlap, save the end index of the match so we can look for a match following it on the next loop.
-                    prev_last = last
+                    return match
                 end
             else
-                continue = nil
+                return match
             end
-        end
-        if continue == false then
-            if link_type == 'citation' then
-                local citation = string.match(
-                    string.sub(
-                        line[1], indices['first'], indices['last']
-                    ), bib_pattern
-                )
-                return(citation)
+        end,
+        wiki_link = function(part_)
+            local match = string.match(text, patterns[part_]['wiki_link'])
+            if match then
+                if part_ == 'source' then
+                    local start, finish, anchor = string.find(match, '(#.*)')
+                    if start then
+                        match = string.sub(match, 1, start - 1)
+                        return match, anchor
+                    else
+                        return match
+                    end
+                else
+                    return match
+                end
+            elseif part_ == 'name' and string.match(text, '#') then
+                return string.match(text, patterns[part_]['wiki_link_anchor_no_bar'])
+            else
+                match = string.match(text, patterns[part_]['wiki_link_no_bar'])
+                if part_ == 'source' then
+                    local start, finish, anchor = string.find(match, '(#.*)')
+                    if start then
+                        match = string.sub(match, 1, start - 1)
+                        return match, anchor
+                    else
+                        return match
+                    end
+                else
+                    return match
+                end
             end
-        else
-            return(nil)
+        end,
+        ref_style_link = function(part_)
+            return string.match(text, patterns[part_]['ref_style_link'])
+        end,
+        citation = function(part_)
+            return string.match(text, patterns[part_]['citation'])
         end
-    else
-        return(nil)
-    end
+    }
+    return get_from[type](part)
 end
 
 M.getBracketedSpanPart = function(part)
@@ -547,7 +486,7 @@ the name part of the link.
 --]]
 M.destroyLink = function()
     -- Get link name, indices, and row the cursor is currently on
-    local link_name, first, last, row = M.getLinkPart('name')
+    local link_name, first, last, row = M.getLinkPart(M.getLinkUnderCursor(), 'name')
     -- Replace the link with just the name
     vim.api.nvim_buf_set_text(0, row - 1, first - 1, row - 1, last, {link_name})
 end
@@ -562,7 +501,7 @@ M.followLink = function(path, anchor)
     if path or anchor then
         path, anchor = path, anchor
     else
-        path, anchor = M.getLinkPart('path')
+        path, anchor = M.getLinkPart(M.getLinkUnderCursor(), 'source')
     end
     if path then
         require('mkdnflow').paths.handlePath(path, anchor)
