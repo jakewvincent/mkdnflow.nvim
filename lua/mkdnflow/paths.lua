@@ -284,7 +284,7 @@ Returns a string:
      2. 'url' is the result of hasUrl(path) is true
      3. 'filename' if (1) and (2) aren't true
 --]]
-M.pathType = function(path)
+M.pathType = function(path, anchor)
     if not path then
         return(nil)
     elseif string.find(path, '^file:') then
@@ -293,7 +293,7 @@ M.pathType = function(path)
         return('url')
     elseif string.find(path, '^@') then
         return('citation')
-    elseif string.find(path, '^#') then
+    elseif path == '' and anchor then
         return('anchor')
     else
         return('filename')
@@ -327,7 +327,7 @@ Returns nothing
 M.handlePath = function(path, anchor)
     anchor = anchor or false
     path = M.transformPath(path)
-    local path_type = M.pathType(path)
+    local path_type = M.pathType(path, anchor)
     -- Handle according to path type
     if path_type == 'filename' then
         internal_open(path, anchor)
@@ -339,8 +339,8 @@ M.handlePath = function(path, anchor)
         handle_external_file(path)
     elseif path_type == 'anchor' then
         -- Send cursor to matching heading
-        if not cursor.toId(path, 1) then
-            cursor.toHeading(path)
+        if not cursor.toId(anchor, 1) then
+            cursor.toHeading(anchor)
         end
     elseif path_type == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
