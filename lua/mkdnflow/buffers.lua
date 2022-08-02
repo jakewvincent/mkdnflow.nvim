@@ -90,7 +90,7 @@ M.goForward = function()
         return(true)
     else
         -- Print out an error if there's nothing in the historical buffer stack
-        if not silent then vim.api.nvim_echo({{'⬇️  Can\'t go forward any further!', 'WarningMsg'}}, true, {}) end
+        if not silent then vim.api.nvim_echo({{"⬇️  Can't go forward any further!", 'WarningMsg'}}, true, {}) end
         -- Return a boolean if goForward failed (for users who want <Del> to do
         -- sth else if goForward isn't possible)
         return(false)
