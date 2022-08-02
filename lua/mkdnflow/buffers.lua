@@ -43,7 +43,7 @@ there, and then pops the top element from the main stack.
 --]]
 M.goBack = function()
     local cur_bufnr = vim.api.nvim_win_get_buf(0)
-    if cur_bufnr > 1 then
+    if cur_bufnr > 1 and #M.main > 0 then
         -- Add current buffer number to history
         M.push(M.hist, cur_bufnr)
         -- Get previous buffer number
@@ -90,7 +90,7 @@ M.goForward = function()
         return(true)
     else
         -- Print out an error if there's nothing in the historical buffer stack
-        if not silent then vim.api.nvim_echo({{'⬇️  Can\'t go forward any further!', 'WarningMsg'}}, true, {}) end
+        if not silent then vim.api.nvim_echo({{"⬇️  Can't go forward any further!", 'WarningMsg'}}, true, {}) end
         -- Return a boolean if goForward failed (for users who want <Del> to do
         -- sth else if goForward isn't possible)
         return(false)
