@@ -26,6 +26,11 @@ local utils = require('mkdnflow').utils
 -- Table for global functions
 local M = {}
 
+--[[
+getLinkUnderCursor() retrieves a link of any type that is beneath a given column
+number on the current line. The col number will be the cursor position by
+default, but that can be overridden by passing in a col number argument.
+--]]
 M.getLinkUnderCursor = function(col)
     col = col or vim.api.nvim_win_get_cursor(0)[2]
     local patterns = {
@@ -68,7 +73,7 @@ M.getLinkUnderCursor = function(col)
 end
 
 --[[
-getLinkPart() extracts part of a link
+getLinkPart() extracts a given part of a link (source, name, or anchor)
 Returns a string (or two strings if there is an anchor within the source)
 --]]
 M.getLinkPart = function(link_table, part)
@@ -155,6 +160,10 @@ M.getLinkPart = function(link_table, part)
     end
 end
 
+--[[
+getBracketedSpanPart() retrieves the given part of a bracketed span (either
+the attribute or the spanned text).
+--]]
 M.getBracketedSpanPart = function(part)
     -- Use 'attr' as part if no argument provided
     part = part or 'attr'
@@ -193,12 +202,12 @@ M.getBracketedSpanPart = function(part)
     if continue == false then
         -- If one was found, get correct part of the match
         -- and return it
-        if part == 'name' then
-            local name_pattern = '(%b[])%b{}'
+        if part == 'text' then
+            local text_pattern = '(%b[])%b{}'
             local span = string.sub(line[1], indices['first'], indices['last'])
-            local name = string.sub(string.match(span, name_pattern), 2, -2)
-            -- Return the name and the indices of the bracketed span
-            return name, indices['first'], indices['last'], row
+            local text = string.sub(string.match(span, text_pattern), 2, -2)
+            -- Return the text and the indices of the bracketed span
+            return text, indices['first'], indices['last'], row
         elseif part == 'attr' then
             local attr_pattern = '%b[](%b{})'
             local attr = string.sub(
