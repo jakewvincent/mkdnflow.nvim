@@ -346,6 +346,10 @@ M.hasUrl = function(string, to_return, col)
     end
 end
 
+--[[
+transformPath() transforms the text passed in according to the default or
+user-supplied explicit transformation function.
+--]]
 M.transformPath = function(text)
     if new_file_prefix then
         local prefix
@@ -504,7 +508,10 @@ M.destroyLink = function()
 end
 
 --[[
-followLink()
+followLink() passes a path and anchor (passed in or picked up from a link under
+the cursor) to handlePath from the paths module. If no path or anchor are passed
+in and there is no link under the cursor, createLink() is called to create a
+link from the word under the cursor or a visual selection (if there is one).
 --]]
 M.followLink = function(path, anchor)
     -- Path can be provided as an argument (this is currently only used when
@@ -522,6 +529,10 @@ M.followLink = function(path, anchor)
     end
 end
 
+--[[
+tagSpan() creates a bracketed span from a visual selection and formats the ID
+attribute.
+--]]
 M.tagSpan = function()
     -- Get mode & cursor position from vim
     local mode, position = vim.api.nvim_get_mode()['mode'], vim.api.nvim_win_get_cursor(0)
