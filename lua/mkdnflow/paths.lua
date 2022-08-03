@@ -71,6 +71,9 @@ end
 
 local M = {}
 
+--[[
+resolve_notebook_path() takes a link source and determines what its absolute reference is
+--]]
 local resolve_notebook_path = function(path, sub_home_var)
     sub_home_var = sub_home_var or false
     local derived_path = path
@@ -100,6 +103,10 @@ end
 
 local enter_internal_path = function() end
 
+--[[
+internal_open() takes a path to a notebook-internal file and (optionally) an
+anchor and opens it in nvim.
+--]]
 local internal_open = function(path, anchor)
     if this_os:match('Windows') then
         path = path:gsub('/', '\\')
@@ -151,6 +158,11 @@ local internal_open = function(path, anchor)
     end
 end
 
+--[[
+enter_internal_path() takes a path and opens a dialog in the command line that
+asks the user to complete the path. Called when the path goes to a directory
+in the notebook, rather than a file.
+--]]
 enter_internal_path = function(path)
     path = path:match(sep..'$') ~= nil and path or path..sep
     local input_opts = {
@@ -197,6 +209,9 @@ local open = function(path, type)
     end
 end
 
+--[[
+handle_external_file() takes a path to a non-notebook file and determines how to open it
+--]]
 local handle_external_file = function(path)
     -- Get what's after the file: tag
     local real_path = string.match(path, '^file:(.*)')
@@ -235,6 +250,10 @@ local handle_external_file = function(path)
     end
 end
 
+--[[
+updateDirs() updates the working directory after switching notebooks or notebook
+folders if nvim_wd_heel is true.
+--]]
 M.updateDirs = function()
     local wd
     -- See if the new file is in a different root directory
@@ -284,7 +303,7 @@ Returns a string:
      2. 'url' is the result of hasUrl(path) is true
      3. 'filename' if (1) and (2) aren't true
 --]]
-M.pathType = function(path)
+M.pathType = function(path, anchor)
     if not path then
         return(nil)
     elseif string.find(path, '^file:') then
@@ -293,7 +312,7 @@ M.pathType = function(path)
         return('url')
     elseif string.find(path, '^@') then
         return('citation')
-    elseif string.find(path, '^#') then
+    elseif path == '' and anchor then
         return('anchor')
     else
         return('filename')
@@ -327,7 +346,7 @@ Returns nothing
 M.handlePath = function(path, anchor)
     anchor = anchor or false
     path = M.transformPath(path)
-    local path_type = M.pathType(path)
+    local path_type = M.pathType(path, anchor)
     -- Handle according to path type
     if path_type == 'filename' then
         internal_open(path, anchor)
@@ -339,8 +358,8 @@ M.handlePath = function(path, anchor)
         handle_external_file(path)
     elseif path_type == 'anchor' then
         -- Send cursor to matching heading
-        if not cursor.toId(path, 1) then
-            cursor.toHeading(path)
+        if not cursor.toId(anchor, 1) then
+            cursor.toHeading(anchor)
         end
     elseif path_type == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
@@ -350,6 +369,10 @@ M.handlePath = function(path, anchor)
     end
 end
 
+--[[
+truncate_path() cuts out the middle of a path for improved presentation of long
+paths.
+--]]
 local truncate_path = function(oldpath, newpath)
     local difference = ''
     local last_slash = string.find(string.reverse(newpath), '/')
@@ -372,6 +395,10 @@ local truncate_path = function(oldpath, newpath)
     return difference
 end
 
+--[[
+moveSource() renames the source part of a link and simultaneously renames and/or
+moves the file the link refers to.
+--]]
 M.moveSource = function()
     local derive_path = function(source, type)
         if type == 'file' then
@@ -418,7 +445,7 @@ M.moveSource = function()
         )
     end
     -- Retrieve source from link
-    local source, anchor, first, last, path_row = links.getLinkPart('path')
+    local source, anchor, first, last, path_row = links.getLinkPart('source')
     -- Determine type of source
     local source_type = M.pathType(source)
     -- Modify source path in the same way as when links are interpreted

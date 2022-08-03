@@ -351,7 +351,7 @@ M.yankAsAnchorLink = function(full_path)
             vim.cmd('let @"="'..anchor_link..'"')
         end
     elseif is_bracketed_span then
-        local name = links.getBracketedSpanPart('name')
+        local name = links.getBracketedSpanPart('text')
         local attr = is_bracketed_span
         local anchor_link
         if name and attr then
