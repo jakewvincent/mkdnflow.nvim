@@ -226,21 +226,21 @@ shown for commands that have them.
     have MkdnSTab mapped, I recommend leaving this command unmapped.
 
 *:MkdnTableNewRowBelow*
-    `Default mapping: <leader>ir (Modes: normal, insert)`
+    `Default mapping: <leader>ir (Modes: normal)`
     Inserts a new empty table row beneath the row the cursor is currently on.
     The new row will have the same number of cells as the current row.
 
 *:MkdnTableNewRowAbove*
-    `Default mapping: <leader>iR (Modes: normal, insert)`
+    `Default mapping: <leader>iR (Modes: normal)`
     Inserts a new empty table row above the row the cursor is currently on.
     The new row will have the same number of cells as the current row.
 
 *:MkdnTableNewColAfter*
-    `Default mapping: <leader>ic (Modes: normal, insert)`
+    `Default mapping: <leader>ic (Modes: normal)`
     Inserts a new column following the column the cursor is currently on.
 
 *:MkdnTableNewColBefore*
-    `Default mapping: <leader>iC (Modes: normal, insert)`
+    `Default mapping: <leader>iC (Modes: normal)`
     Inserts a new column before the column the cursor is currently on.
 
 *:MkdnFoldSection*
@@ -662,10 +662,10 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
             MkdnTablePrevCell = {'i', '<S-Tab>'},
             MkdnTableNextRow = false,
             MkdnTablePrevRow = {'i', '<M-CR>'},
-            MkdnTableNewRowBelow = {{'n', 'i'}, '<leader>ir'},
-            MkdnTableNewRowAbove = {{'n', 'i'}, '<leader>iR'},
-            MkdnTableNewColAfter = {{'n', 'i'}, '<leader>ic'},
-            MkdnTableNewColBefore = {{'n', 'i'}, '<leader>iC'},
+            MkdnTableNewRowBelow = {'n', '<leader>ir'},
+            MkdnTableNewRowAbove = {'n', '<leader>iR'},
+            MkdnTableNewColAfter = {'n', '<leader>ic'},
+            MkdnTableNewColBefore = {'n', '<leader>iC'},
             MkdnFoldSection = {'n', '<leader>f'},
             MkdnUnfoldSection = {'n', '<leader>F'}
         }
