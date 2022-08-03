@@ -546,12 +546,12 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * [ ] Improve citation functionality
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 * [ ] Interpret reference-style links (spec: [Reference-style Links](https://www.markdownguide.org/basic-syntax#reference-style-links))
-* [ ] Overhaul help documents (i.e. `:h mkdnflow`)
-* [ ] Tables: add a config option to automatically expand a table (row-wise or col-wise) when attempting to jump to the next col/row and there is none
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Overhaul help documents (i.e. `:h mkdnflow`)
+* [X] Tables: add a config option to automatically expand a table (row-wise or col-wise) when attempting to jump to the next col/row and there is none
 * [X] Add a way to disable modules the user doesn't wish/plan to use
 * [X] Headings
     * [X] Easy folding & unfolding
