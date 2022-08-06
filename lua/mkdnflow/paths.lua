@@ -445,7 +445,7 @@ M.moveSource = function()
         )
     end
     -- Retrieve source from link
-    local source, anchor, first, last, path_row = links.getLinkPart('source')
+    local source, anchor, _, _, path_row, start, finish = links.getLinkPart(links.getLinkUnderCursor(), 'source')
     -- Determine type of source
     local source_type = M.pathType(source)
     -- Modify source path in the same way as when links are interpreted
@@ -500,10 +500,10 @@ M.moveSource = function()
                             vim.api.nvim_echo({{'⬇️  The goal directory doesn\'t exist. Set create_dirs to true for automatic directory creation.'}})
                         end
                     else
-                        confirm_and_execute(derived_source, source, derived_goal, anchor, location, path_row, first, last)
+                        confirm_and_execute(derived_source, source, derived_goal, anchor, location, path_row, start, finish)
                     end
                 else -- Move
-                    confirm_and_execute(derived_source, source, derived_goal, anchor, location, path_row, first, last)
+                    confirm_and_execute(derived_source, source, derived_goal, anchor, location, path_row, start, finish)
                 end
             else -- Otherwise, the file we're trying to move must not exist
                 -- Clear the prompt & send a warning

@@ -32,7 +32,8 @@ number on the current line. The col number will be the cursor position by
 default, but that can be overridden by passing in a col number argument.
 --]]
 M.getLinkUnderCursor = function(col)
-    col = col or vim.api.nvim_win_get_cursor(0)[2]
+    local position, start, finish, capture  = vim.api.nvim_win_get_cursor(0), nil, nil, nil
+    col = col or position[2]
     local patterns = {
         md_link = '%b[]%b()',
         wiki_link = '%[%b[]%]',
@@ -44,10 +45,9 @@ M.getLinkUnderCursor = function(col)
     for type, pattern in pairs(patterns) do
         local continue, init, iteration, match = true, 1, 1, nil
         local counter = 1
-        while continue and counter < 100 do
+        while continue do
             counter = counter + 1
-            if counter == 100 then print("Infinite loop :(") end
-            local start, finish, capture = string.find(line, pattern, init)
+            start, finish, capture = string.find(line, pattern, init)
             if start and type == 'citation' then
                 capture = string.gsub(capture, "'s$", '') -- Remove Saxon genitive if it's on the end of the citekey
                 start, finish = string.find(line, capture, start, true) -- Get match for citekey w/o surrounding context
@@ -67,7 +67,7 @@ M.getLinkUnderCursor = function(col)
             iteration = iteration + 1
         end
         if match then -- Return the match and type of link if there was a match
-            return {match, type}
+            return {match, type, start, finish, position[1]}
         end
     end
 end
@@ -79,7 +79,7 @@ Returns a string (or two strings if there is an anchor within the source)
 M.getLinkPart = function(link_table, part)
     table.unpack = table.unpack or unpack
     if link_table then
-        local text, type = table.unpack(link_table)
+        local text, type, link_start, link_finish, link_row = table.unpack(link_table)
         part = part or 'source'
         local patterns = {
             name = {
@@ -105,58 +105,62 @@ M.getLinkPart = function(link_table, part)
         }
         local get_from = { -- Table of functions by link type
             md_link = function(part_)
-                local match = string.match(text, patterns[part_]['md_link'])
+                local part_start, part_finish, match = string.find(text, patterns[part_]['md_link'])
                 if part_ == 'source' then
                     local start, finish, anchor = string.find(match, '(#.*)')
                     if start then
                         match = string.sub(match, 1, start - 1)
-                        return match, anchor
+                        return match, anchor, part_start, part_finish
                     else
-                        return match
+                        return match, '', part_start, part_finish
                     end
                 else
-                    return match
+                    return match, '', part_start, part_finish
                 end
             end,
             wiki_link = function(part_)
-                local match = string.match(text, patterns[part_]['wiki_link'])
+                local part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link'])
                 if match then
                     if part_ == 'source' then
                         local start, finish, anchor = string.find(match, '(#.*)')
                         if start then
                             match = string.sub(match, 1, start - 1)
-                            return match, anchor
+                            return match, anchor, part_start, part_finish
                         else
-                            return match
+                            return match, '', part_start, part_finish
                         end
                     else
-                        return match
+                        return match, '', part_start, part_finish
                     end
                 elseif part_ == 'name' and string.match(text, '#') then
-                    return string.match(text, patterns[part_]['wiki_link_anchor_no_bar'])
+                    part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link_anchor_no_bar'])
+                    return match, '', part_start, part_finish
                 else
-                    match = string.match(text, patterns[part_]['wiki_link_no_bar'])
+                    part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link_no_bar'])
                     if part_ == 'source' then
                         local start, finish, anchor = string.find(match, '(#.*)')
                         if start then
                             match = string.sub(match, 1, start - 1)
-                            return match, anchor
+                            return match, anchor, part_start, part_finish
                         else
-                            return match
+                            return match, '', part_start, part_finish
                         end
                     else
-                        return match
+                        return match, '', part_start, part_finish
                     end
                 end
             end,
             ref_style_link = function(part_)
-                return string.match(text, patterns[part_]['ref_style_link'])
+                local part_start, part_finish, match = string.find(text, patterns[part_]['ref_style_link'])
+                return match, '', part_start, part_finish
             end,
             citation = function(part_)
-                return string.match(text, patterns[part_]['citation'])
+                local part_start, part_finish, match = string.match(text, patterns[part_]['citation'])
+                return match, '', part_start, part_finish
             end
         }
-        return get_from[type](part)
+        local part_text, anchor, part_start, part_finish = get_from[type](part)
+        return part_text, anchor, link_start, link_finish, link_row, part_start, part_finish
     end
 end
 
@@ -502,7 +506,7 @@ the name part of the link.
 --]]
 M.destroyLink = function()
     -- Get link name, indices, and row the cursor is currently on
-    local link_name, first, last, row = M.getLinkPart(M.getLinkUnderCursor(), 'name')
+    local link_name, _, first, last, row = M.getLinkPart(M.getLinkUnderCursor(), 'name')
     -- Replace the link with just the name
     vim.api.nvim_buf_set_text(0, row - 1, first - 1, row - 1, last, {link_name})
 end
