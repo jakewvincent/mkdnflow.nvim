@@ -91,22 +91,25 @@ M.getLinkPart = function(link_table, part)
                 citation = '(@.*)'
             },
             source = {
-                md_link = '%]%((.*)%)',
-                wiki_link = '%[%[(.-)|.-%]%]',
-                wiki_link_no_bar = '%[%[(.-)%]%]',
-                ref_style_link = '%]%s?%[(.*)%]',
-                citation = '(@.*)'
+                md_link = '%]%((.*)%)', -- 3 thru length of match
+                wiki_link = '%[%[(.-)|.-%]%]', -- 3 thru length of match
+                wiki_link_no_bar = '%[%[(.-)%]%]', -- 3 thru length of match
+                ref_style_link = '%]%s?%[(.*)%]', -- 3 or 4 thru length of match
+                citation = '(@.*)' -- find indices will work
             },
             anchor = {
-                md_link = '%(.*(#.*)%)',
-                wiki_link = '%[%[.-(#.-)|',
-                wiki_link_no_bar = '%[%[.-(#.-)%]%]'
+                md_link = '(#.-)%)', -- ?
+                wiki_link = '(#.-)|', -- ?
+                wiki_link_no_bar = '(#.-)%]%]' -- ?
             }
         }
         local get_from = { -- Table of functions by link type
             md_link = function(part_)
                 local part_start, part_finish, match = string.find(text, patterns[part_]['md_link'])
                 if part_ == 'source' then
+                    -- Make part start and finish relative to line start, not link start
+                    part_start = link_start + part_start + 1
+                    part_finish = part_start + #match - 1
                     local start, finish, anchor = string.find(match, '(#.*)')
                     if start then
                         match = string.sub(match, 1, start - 1)
@@ -114,7 +117,12 @@ M.getLinkPart = function(link_table, part)
                     else
                         return match, '', part_start, part_finish
                     end
+                elseif part_ == 'name' then
+                    part_start = link_start + part_start - 1
+                    part_finish = part_start + #match - 1
+                    return match, '', part_start, part_finish
                 else
+                    part_start, part_finish = link_start + part_start - 1, link_start + part_finish - 1
                     return match, '', part_start, part_finish
                 end
             end,
@@ -122,6 +130,9 @@ M.getLinkPart = function(link_table, part)
                 local part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link'])
                 if match then
                     if part_ == 'source' then
+                        -- Make part start and finish relative to line start, not link start
+                        part_start = link_start + part_start + 1
+                        part_finish = part_start + #match - 1
                         local start, finish, anchor = string.find(match, '(#.*)')
                         if start then
                             match = string.sub(match, 1, start - 1)
@@ -129,15 +140,22 @@ M.getLinkPart = function(link_table, part)
                         else
                             return match, '', part_start, part_finish
                         end
+                    elseif part_ == 'name' then
+                        part_start = link_start + part_start
+                        part_finish = part_start + #match - 1
+                        return match, '', part_start, part_finish
                     else
+                        part_start, part_finish = link_start + part_start, link_start + part_finish
                         return match, '', part_start, part_finish
                     end
-                elseif part_ == 'name' and string.match(text, '#') then
+                elseif part_ == 'name' and string.match(text, '#') then -- If there was no match, we have a link w/ no bar
                     part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link_anchor_no_bar'])
                     return match, '', part_start, part_finish
                 else
                     part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link_no_bar'])
                     if part_ == 'source' then
+                        part_start = link_start + part_start + 1
+                        part_finish = part_start + #match - 1
                         local start, finish, anchor = string.find(match, '(#.*)')
                         if start then
                             match = string.sub(match, 1, start - 1)
@@ -145,7 +163,13 @@ M.getLinkPart = function(link_table, part)
                         else
                             return match, '', part_start, part_finish
                         end
+                    elseif part_ == 'name' then
+                        part_start = link_start + part_start + 1
+                        part_finish = part_start + #match - 1
+                        return match, '', part_start, part_finish
                     else
+                        part_start = link_start + part_start
+                        part_finish = part_start + #match - 1
                         return match, '', part_start, part_finish
                     end
                 end
