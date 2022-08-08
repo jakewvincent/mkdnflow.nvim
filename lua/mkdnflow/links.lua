@@ -213,7 +213,7 @@ M.getLinkPart = function(link_table, part)
                                 start = start + 1 -- Add 1 if the source is surrounded by < ... >
                                 source = ref_source
                             end
-                            part_start = source_start + start
+                            part_start = source_start + start - 1
                             part_finish = part_start + #source - 1
                         else
                             local start, ref_source
@@ -225,7 +225,7 @@ M.getLinkPart = function(link_table, part)
                                 start = start + 1
                                 source = ref_source
                             end
-                            part_start = source_start + start
+                            part_start = source_start + start - 1
                             part_finish = part_start + #source - 1
                         end
                         -- Check for an anchor
@@ -609,6 +609,7 @@ M.followLink = function(path, anchor)
     -- Path can be provided as an argument (this is currently only used when
     -- this function retrieves a path from the citation handler). If no path
     -- is provided as an arg, get the path under the cursor via getLinkPart().
+    local link_type
     if path or anchor then
         path, anchor = path, anchor
     else
@@ -616,7 +617,7 @@ M.followLink = function(path, anchor)
     end
     if path then
         require('mkdnflow').paths.handlePath(path, anchor)
-    elseif link_type == 'ref_style_link' then
+    elseif link_type == 'ref_style_link' then -- If this condition is met, no reference was found
         vim.api.nvim_echo({{"⬇️  Couldn't find a matching reference label!", 'WarningMsg'}}, true, {})
     else
         M.createLink()
