@@ -52,8 +52,7 @@ go_to() sends the cursor to the beginning of the next instance of a pattern. If
 local go_to = function(pattern, reverse)
     -- Get current position of cursor
     local position = vim.api.nvim_win_get_cursor(0)
-    local row = position[1]
-    local col = position[2]
+    local row, col = position[1], position[2]
     local line, rev_col, left, right, left_, right_
     local already_wrapped = false
 
@@ -291,7 +290,7 @@ M.toNextLink = function(pattern)
         pattern = pattern or '%[%[.*%]%]'
     else
         -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)
-        pattern = pattern or '%b[]%b()'
+        pattern = pattern or '%b[] ?[%(%[][^%[%(]-[%]%)]'
     end
     go_to(pattern)
 end
@@ -305,7 +304,7 @@ M.toPrevLink = function(pattern)
     if link_style == 'wiki' then
         pattern = pattern or '%]%].*%[%['
     else
-        pattern = pattern or '%b)(%b]['
+        pattern = pattern or '[%]%)][^%[%(]-[%[%(] ?%b]['
     end
     -- Leave
     go_to(pattern, true)
