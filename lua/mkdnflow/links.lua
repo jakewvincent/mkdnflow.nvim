@@ -40,7 +40,8 @@ M.getLinkUnderCursor = function(col)
         ref_style_link = '%b[]%s?%b[]',
         citation = '[^%a%d]-(@[%a%d_%.%-\']*[%a%d]+)[%s%p%c]?'
     }
-    local line = vim.api.nvim_get_current_line()
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     -- Iterate through the patterns to see if there's a matching link under the cursor
     for type, pattern in pairs(patterns) do
         local continue, init, iteration, match = true, 1, 1, nil
@@ -68,6 +69,26 @@ M.getLinkUnderCursor = function(col)
         end
         if match then -- Return the match and type of link if there was a match
             return {match, type, start, finish, position[1]}
+        end
+    end
+end
+
+--[[
+get_ref()
+--]]
+local get_ref = function(refnr, start_row)
+    start_row = start_row or vim.api.nvim_win_get_cursor(0)[1]
+    local row = start_row + 1
+    local line_count, continue = vim.api.nvim_buf_line_count(0), true
+    -- Look for reference
+    while continue and row <= line_count do
+        local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+        local match = string.match(line, '^%['..refnr..'%]: (.*)')
+        if match then
+            continue = false
+            return match
+        else
+            row = row + 1
         end
     end
 end
@@ -176,7 +197,22 @@ M.getLinkPart = function(link_table, part)
             end,
             ref_style_link = function(part_)
                 local part_start, part_finish, match = string.find(text, patterns[part_]['ref_style_link'])
-                return match, '', part_start, part_finish
+                if part_ == 'source' then
+                    local refnr = string.match(text, patterns[part_]['ref_style_link'])
+                    local source = get_ref(refnr, row)
+                    local title = string.match(source, '.* (["\'%(%[].*["\'%)%]])')
+                    if title then
+                        source = string.gsub(
+                            string.gsub(
+                                string.match(source, '^(.*) ["\'%(%[].*["\'%)%]]'),
+                                '^<', ''),
+                            '>$', ''
+                        )
+                    end
+                    return match, '', part_start, part_finish
+                else
+                    return match, '', part_start, part_finish
+                end
             end,
             citation = function(part_)
                 local part_start, part_finish, match = string.match(text, patterns[part_]['citation'])
