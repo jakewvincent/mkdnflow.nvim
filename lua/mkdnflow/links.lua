@@ -32,7 +32,7 @@ number on the current line. The col number will be the cursor position by
 default, but that can be overridden by passing in a col number argument.
 --]]
 M.getLinkUnderCursor = function(col)
-    local position, start, finish, capture  = vim.api.nvim_win_get_cursor(0), nil, nil, nil
+    local position, link_start, link_finish, capture  = vim.api.nvim_win_get_cursor(0), nil, nil, nil
     col = col or position[2]
     local patterns = {
         md_link = '%b[]%b()',
@@ -48,19 +48,19 @@ M.getLinkUnderCursor = function(col)
         local counter = 1
         while continue do
             counter = counter + 1
-            start, finish, capture = string.find(line, pattern, init)
-            if start and type == 'citation' then
+            link_start, link_finish, capture = string.find(line, pattern, init)
+            if link_start and type == 'citation' then
                 capture = string.gsub(capture, "'s$", '') -- Remove Saxon genitive if it's on the end of the citekey
-                start, finish = string.find(line, capture, start, true) -- Get match for citekey w/o surrounding context
+                link_start, link_finish = string.find(line, capture, link_start, true) -- Get match for citekey w/o surrounding context
             end
-            if start then -- There's a match
-                if iteration == 1 and col + 1 < start then -- If the first match is after the cursor, stop
+            if link_start then -- There's a match
+                if iteration == 1 and col + 1 < link_start then -- If the first match is after the cursor, stop
                     continue = false
-                elseif col + 1 >= start and col < finish then -- Cursor is between start and finish
+                elseif col + 1 >= link_start and col < link_finish then -- Cursor is between start and finish
                     continue = false
-                    match = string.sub(line, start, finish)
+                    match = string.sub(line, link_start, link_finish)
                 else -- Cursor is outside of start and finish; 
-                    init = finish
+                    init = link_finish
                 end
             else
                 continue = false
@@ -68,7 +68,7 @@ M.getLinkUnderCursor = function(col)
             iteration = iteration + 1
         end
         if match then -- Return the match and type of link if there was a match
-            return {match, type, start, finish, position[1]}
+            return {match, type, link_start, link_finish, position[1]}
         end
     end
 end
@@ -86,7 +86,7 @@ local get_ref = function(refnr, start_row)
         local match = string.match(line, '^%['..refnr..'%]: (.*)')
         if match then
             continue = false
-            return match
+            return match, row
         else
             row = row + 1
         end
@@ -131,7 +131,7 @@ M.getLinkPart = function(link_table, part)
                     -- Make part start and finish relative to line start, not link start
                     part_start = link_start + part_start + 1
                     part_finish = part_start + #match - 1
-                    local start, finish, anchor = string.find(match, '(#.*)')
+                    local start, _, anchor = string.find(match, '(#.*)')
                     if start then
                         match = string.sub(match, 1, start - 1)
                         return match, anchor, part_start, part_finish
@@ -154,7 +154,7 @@ M.getLinkPart = function(link_table, part)
                         -- Make part start and finish relative to line start, not link start
                         part_start = link_start + part_start + 1
                         part_finish = part_start + #match - 1
-                        local start, finish, anchor = string.find(match, '(#.*)')
+                        local start, _, anchor = string.find(match, '(#.*)')
                         if start then
                             match = string.sub(match, 1, start - 1)
                             return match, anchor, part_start, part_finish
@@ -177,7 +177,7 @@ M.getLinkPart = function(link_table, part)
                     if part_ == 'source' then
                         part_start = link_start + part_start + 1
                         part_finish = part_start + #match - 1
-                        local start, finish, anchor = string.find(match, '(#.*)')
+                        local start, _, anchor = string.find(match, '(#.*)')
                         if start then
                             match = string.sub(match, 1, start - 1)
                             return match, anchor, part_start, part_finish
@@ -199,7 +199,7 @@ M.getLinkPart = function(link_table, part)
                 local part_start, part_finish, match = string.find(text, patterns[part_]['ref_style_link'])
                 if part_ == 'source' then
                     local refnr = string.match(text, patterns[part_]['ref_style_link'])
-                    local source = get_ref(refnr, row)
+                    local source, source_row = get_ref(refnr, link_row)
                     local title = string.match(source, '.* (["\'%(%[].*["\'%)%]])')
                     if title then
                         source = string.gsub(
@@ -209,7 +209,7 @@ M.getLinkPart = function(link_table, part)
                             '>$', ''
                         )
                     end
-                    return match, '', part_start, part_finish
+                    return source, '', part_start, part_finish, source_row
                 else
                     return match, '', part_start, part_finish
                 end
@@ -219,8 +219,9 @@ M.getLinkPart = function(link_table, part)
                 return match, '', part_start, part_finish
             end
         }
-        local part_text, anchor, part_start, part_finish = get_from[type](part)
-        return part_text, anchor, link_start, link_finish, link_row, part_start, part_finish
+        local part_text, anchor, part_start, part_finish, source_row = get_from[type](part)
+        source_row = source_row or link_row
+        return part_text, anchor, link_start, link_finish, link_row, source_row, part_start, part_finish
     end
 end
 
@@ -585,6 +586,7 @@ M.followLink = function(path, anchor)
         path, anchor = path, anchor
     else
         path, anchor = M.getLinkPart(M.getLinkUnderCursor(), 'source')
+        print(path, anchor)
     end
     if path then
         require('mkdnflow').paths.handlePath(path, anchor)
