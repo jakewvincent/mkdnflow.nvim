@@ -445,7 +445,9 @@ M.moveSource = function()
         )
     end
     -- Retrieve source from link
-    local source, anchor, _, _, _, path_row, src_row, src_start, src_finish = links.getLinkPart(links.getLinkUnderCursor(), 'source')
+    local source, anchor, link_type, _, _, path_row, src_row, src_start, src_finish = links.getLinkPart(links.getLinkUnderCursor(), 'source')
+    -- Use source row for path row if link type is ref-style
+    path_row = link_type == 'ref_style_link' and src_row
     -- Determine type of source
     local source_type = M.pathType(source)
     -- Modify source path in the same way as when links are interpreted
