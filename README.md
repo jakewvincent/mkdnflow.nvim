@@ -8,9 +8,9 @@
 
 ### 🆕 Top three [latest features](#-recent-changes)
 
-1. [Create Pandoc-flavored bracketed spans w/ ID attributes & jump to them with anchor links](#create-customize-and-destroy-links)
-2. [Individually disable modules you don't plan to use](#-disable-unused-modules)
-3. [Intuitively fold sections defined by headings](#section-folding)
+1. [Follow jump to, and rename reference-style links](#markdown-or-wiki-link-styles)
+2. [Create Pandoc-flavored bracketed spans w/ ID attributes & jump to them with anchor links](#create-customize-and-destroy-links)
+3. [Individually disable modules you don't plan to use](#-disable-unused-modules)
 
 ## 📝 Description
 
@@ -49,9 +49,18 @@ use({'jakewvincent/mkdnflow.nvim',
 <a href="https://user-images.githubusercontent.com/45184202/166573700-62cdec3b-a13f-4f9e-9d72-ab2650205042.mp4"><img src="assets/demo/demo.mp4.png" width="75%"></a>
 </p>
 
-### Two link styles
-* Use either markdown or wiki-link link styles by setting a [config option](#link_style-string).
-* 🆕 Conceal link sources for either link type by enabling conceal in [your config](#-configuration)
+### Markdown or wiki link styles
+* See [links config](#links-dictionary-like-table)
+* Markdown link formats recognized:
+    * Standard style: `[name](source)`
+    * 🆕 [Reference style](https://www.markdownguide.org/basic-syntax#reference-style-links):
+        * `[name][label]` followed anywhere in the file by `[label]: source`
+        * `source` can optionally be surrounded by `<` and `>`
+        * `source` can optionally be followed by a title, following any of the formats specified [here](https://www.markdownguide.org/basic-syntax#reference-style-links)
+* Wiki link formats recognized:
+    * Source-only wiki links: `[[source]]`
+    * Source-left, name-right wiki links: `[[source|name]]`
+* Conceal link sources for either link type by enabling conceal in [your config](#-configuration)
     * Markdown-style links are shortened from `[Link](source.md)` to `Link`
     * Wiki-style links are shortened from `[[source|Link]]` to `Link` or from `[[source]]` to `source`
     * NOTE: If you are using the [recently split treesitter parsers for markdown](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages), you do not need to enable conceal through mkdnflow--if you are using markdown-style links. Just make sure you have `markdown` and `markdown_inline` installed and enabled in markdown filetypes, and in your `.vimrc` or `init.lua`, enable conceal (`set conceallevel=2` or `vim.wo.conceallevel = 2`).
@@ -112,7 +121,7 @@ require('mkdnflow').setup({
 ```
 
 ### Jump to links, headings
-* `<Tab>` and `<S-Tab>` jump to the next and previous links in the file
+* `<Tab>` and `<S-Tab>` jump to the next and previous links in the file 
 * `]]` and `[[` jump to the next and previous headings in the file
 * "Wrap" back to the beginning/end of the file when jumping with a [config setting](#wrap-boolean)
 
@@ -123,6 +132,7 @@ require('mkdnflow').setup({
 * Use built-in dialog triggered by `MkdnMoveSource` (mapped to `<F2>` by default) to rename a link's source *and rename/move the linked file* simultaneously
     * [Perspective](#customizable-link-interpretation), [implicit extensions](#links-dictionary-like-table), and custom [implicit transformations](#links-dictionary-like-table) are all taken into account when moving the linked file
     * The dialog will confirm the details of the changes for you to approve/reject before taking any action
+    * 🆕 When a reference-style link is renamed, the reference line will be found and renamed accordingly without moving the cursor
 
 ### Backward and forward navigation through buffers
 * `<BS>` to go **backward** (to the previous file/buffer opened in the current window, like clicking the back button in a web browser)
@@ -382,7 +392,7 @@ require('mkdnflow').setup({
 * All modules are enabled by default:
     * `modules.bib` (required for [parsing bib files](#follow-links-and-citations) and [following citations](#follow-links-and-citations))
     * `modules.buffers` (required for [backward and forward navigation through buffers](#backward-and-forward-navigation-through-buffers))
-    * `modules.conceal` (required if you wish to enable [link concealing](#two-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to leaving this module enabled [it is enabled by default] if you wish to conceal links)
+    * `modules.conceal` (required if you wish to enable [link concealing](#markdown-or-wiki-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to leaving this module enabled [it is enabled by default] if you wish to conceal links)
     * `modules.cursor` (required for [jumping to links and headings](#jump-to-links-headings); [yanking anchor links](#create-customize-and-destroy-links))
     * `modules.folds` (required for [folding by section](#section-folding))
     * `modules.links` (required for [creating and destroying links](#create-customize-and-destroy-links) and [following links](#follow-links-and-citations))
@@ -545,11 +555,11 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 ## ☑️ To do
 * [ ] Improve citation functionality
     * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
-* [ ] Interpret reference-style links (spec: [Reference-style Links](https://www.markdownguide.org/basic-syntax#reference-style-links))
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Interpret reference-style links (spec: [Reference-style Links](https://www.markdownguide.org/basic-syntax#reference-style-links))
 * [X] Overhaul help documents (i.e. `:h mkdnflow`)
 * [X] Tables: add a config option to automatically expand a table (row-wise or col-wise) when attempting to jump to the next col/row and there is none
 * [X] Add a way to disable modules the user doesn't wish/plan to use
@@ -578,21 +588,22 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 08/07/22: Extend link-following, link-jumping, and source editing/moving functionality to reference-style links
 * 07/26/22: Add config option for automatically extending table (col-wise or row-wise) when attempting to jump to the next cell/row while in the last cell/row
 * 07/26/22: Command & mapping for creating bracketed spans (spans assigned an ID attribute)
 * 07/19/22: Update newly-converted (via `MkdnToggleToDo`/`<C-Space>`) to-do item's status if it has children
 * 07/13/22: Follow links to arbitrary spans
 * 07/13/22: Individually disable modules
 * 07/09/22: Added folding functionality; replaced default normal/visual-mode mapping with mapping to wrapper function that will fold/open sections
+
+<details>
+<summary>Older changes (> 1 month ago)</summary><p>
+
 * 07/01/22: Properly handle alignment markers in tables
 * 07/01/22: Add option not to format table when moving the cursor to a different cell
 * 06/29/22: Conceal links
 * 06/27/22: Added wrapper functions so `<Tab>` and `<S-Tab>` can be used in both tables and lists
 * 06/27/22: Added functionality to add new rows and columns
-
-<details>
-<summary>Older changes (> 1 month ago)</summary><p>
-
 * 06/17/22: Added functionality to jump rows in tables
 * 06/16/22: Added functionality to format tables and jump cells in tables
 * 06/11/22: Added function and command to insert tables
@@ -646,6 +657,7 @@ end
 ## 🔗 Links
 * [Awesome Neovim's list of (markdown) plugins](https://github.com/rockerBOO/awesome-neovim#markdown)
 * [A more granular list of Neovim plugins](https://github.com/yutkat/my-neovim-pluginlist)
+
 ### To complement mkdnflow
 * [clipboard-image.nvim](https://github.com/ekickx/clipboard-image.nvim) (Paste links to images in markdown syntax)
 * [mdeval.nvim](https://github.com/jubnzv/mdeval.nvim) (Evaluate code blocks inside markdown documents)
@@ -654,6 +666,7 @@ end
     * [nvim-markdown-preview](https://github.com/davidgranstrom/nvim-markdown-preview) ("Markdown preview in the browser using pandoc and live-server through Neovim's job-control API")
     * [glow.nvim](https://github.com/npxbr/glow.nvim) (Markdown preview using [glow](https://github.com/charmbracelet/glow)—render markdown in Neovim, with *pizzazz*!)
     * [auto-pandoc.nvim](https://github.com/jghauser/auto-pandoc.nvim) ("[...] allows you to easily convert your markdown files using pandoc.")
+
 ### Alternatives to mkdnflow
 * [Vimwiki](https://github.com/vimwiki/vimwiki) (Full-featured wiki navigation/maintenance and filetype plugin, written in Vimscript)
 * [wiki.vim](https://github.com/lervag/wiki.vim/) (A lighter-weight alternative to Vimwiki, written in Vimscript)
