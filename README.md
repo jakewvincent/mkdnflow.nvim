@@ -54,7 +54,7 @@ use({'jakewvincent/mkdnflow.nvim',
 * Markdown link formats recognized:
     * Standard style: `[name](source)`
     * 🆕 [Reference style](https://www.markdownguide.org/basic-syntax#reference-style-links):
-        * `[name][label]` followed anywhere in the file by `[label]: source`
+        * `[name][label]` followed anywhere in the file by `[label]: source`, where `label` is an integer
         * `source` can optionally be surrounded by `<` and `>`
         * `source` can optionally be followed by a title, following any of the formats specified [here](https://www.markdownguide.org/basic-syntax#reference-style-links)
 * Wiki link formats recognized:
