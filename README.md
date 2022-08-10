@@ -3,7 +3,7 @@
 </p>
 <p align=center><img src="https://camo.githubusercontent.com/dba3dd4ec5c0640974a4dad6acdef2e5fe9ef9eee3160ff309aa40dcb091b956/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f6c75612d2532333243324437322e7376673f267374796c653d666c6174266c6f676f3d6c7561266c6f676f436f6c6f723d7768697465"></p>
 <p align=center>
-   <a href="#-features">Features</a> / <a href="#-installation">Installation</a> / <a href="#-starting-a-notebook">Starting a notebook</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
+   <a href="#-features">Features</a> / <a href="#-installation-and-usage">Installation</a> / <a href="#-starting-a-notebook">Starting a notebook</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
 </p>
 
 ### 🆕 Top three [latest features](#-recent-changes)
@@ -114,7 +114,7 @@ require('mkdnflow').setup({
     links = {
         transform_explicit = function(text)
             -- Make lowercase, remove spaces, and reverse the string
-            return string.lower(text:gsub(' ', '')
+            return string.lower(text:gsub(' ', ''))
         end
     }
 })
