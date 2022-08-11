@@ -398,22 +398,29 @@ M.toggleToDo = function(row, status, meta)
     end
 end
 
-M.newListItem = function(fanciness, line)
-    fanciness = fanciness or 'fancy'
+M.newListItem = function(carry, above, cursor_moves, mode_after, alt, line)
+    carry = (carry == nil and true) or (carry ~= nil and carry)
+    above = above and true
+    local current_mode = mode_after or vim.api.nvim_get_mode()['mode']
+    mode_after = mode_after or current_mode
+    if mode_after ~= 'i' and mode_after ~= 'n' then
+        mode_after = 'i'
+    end
     -- Get the line
     line = line or vim.api.nvim_get_current_line()
     -- Get the list type
     local li_type = M.hasListType(line)
     -- If the line has an item, do some stuff
     if li_type then
-        local has_contents = fanciness == 'simple' or utf8.match(line, M.patterns[li_type].content)
+        local has_contents = carry == false or utf8.match(line, M.patterns[li_type].content)
         local row, col = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_win_get_cursor(0)[2]
+        row = (above and row - 1) or row
         local indentation = utf8.match(line, M.patterns[li_type].indentation)
         if has_contents then
             local next_line = indentation
             local next_number
             -- If the current line ends in a colon, indent the next line
-            if line:sub(#line, #line) == ':' then
+            if (not above) and line:sub(#line, #line) == ':' then
                 next_line = next_line .. vim_indent
                 if li_type == 'ol' or li_type == 'oltd' then
                     next_number = 1
@@ -421,7 +428,8 @@ M.newListItem = function(fanciness, line)
                 end
             else
                 if li_type == 'ol' or li_type == 'oltd' then
-                    next_number = utf8.match(line, M.patterns[li_type].number) + 1
+                    local current_number = utf8.match(line, M.patterns[li_type].number)
+                    next_number = (above and current_number) or current_number + 1
                     next_line = next_line .. next_number
                 end
             end
@@ -434,7 +442,7 @@ M.newListItem = function(fanciness, line)
             -- The current length is where we want the cursor to go
             local next_col = #next_line
             -- Add material from the current line if the cursor isn't @ end of line
-            if fanciness == 'fancy' and col ~= #line then
+            if (not above) and carry and col ~= #line then
                 -- Get the material following the cursor for the next line
                 next_line = next_line .. line:sub(col + 1, #line)
                 -- Rid the current line of the material following the cursor
@@ -442,10 +450,24 @@ M.newListItem = function(fanciness, line)
             end
             -- Set the next line and move the cursor
             vim.api.nvim_buf_set_lines(0, row, row, false, {next_line})
-            vim.api.nvim_win_set_cursor(0, {row + 1, (next_col)})
+            if cursor_moves then
+                vim.api.nvim_win_set_cursor(0, {row + 1, (next_col)})
+            end
             -- Update the numbering
             if li_type == 'ol' or li_type == 'oltd' then
-                update_numbering(row, indentation, li_type, false)
+                if above then
+                    update_numbering(row + 1, indentation, li_type, false)
+                else
+                    update_numbering(row, indentation, li_type, false)
+                end
+            end
+            if mode_after == 'i' then
+                vim.cmd('startinsert')
+                if cursor_moves and current_mode ~= mode_after then
+                    vim.api.nvim_win_set_cursor(0, {row + 1, (next_col + 1)})
+                end
+            elseif mode_after == 'n' then
+                vim.cmd('stopinsert')
             end
         else
             -- If the line is indented, demote by removing the indentation
@@ -470,9 +492,8 @@ M.newListItem = function(fanciness, line)
                 end
             end
         end
-    else
-        -- Otherwise, just do the normal version of whatever the mapping for MkdnNewListItem is
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
+    elseif alt then -- Feed the requested keys
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(alt, true, false, true), 'n', true)
     end
 end
 

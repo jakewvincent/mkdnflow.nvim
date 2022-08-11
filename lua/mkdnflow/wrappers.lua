@@ -22,7 +22,7 @@ M.newListItemOrNextTableRow = function()
     -- Get the current line
     local line = vim.api.nvim_get_current_line()
     if require('mkdnflow').lists.hasListType(line) then
-        require('mkdnflow').lists.newListItem('fancy', line)
+        require('mkdnflow').lists.newListItem(true, false, true, 'i', '<CR>', line)
     elseif require('mkdnflow').tables.isPartOfTable(line) then
         require('mkdnflow').tables.moveToCell(1, 0)
     else
