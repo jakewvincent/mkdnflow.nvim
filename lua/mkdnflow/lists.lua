@@ -401,17 +401,15 @@ end
 M.newListItem = function(carry, above, cursor_moves, mode_after, alt, line)
     carry = (carry == nil and true) or (carry ~= nil and carry)
     above = above and true
-    local current_mode = mode_after or vim.api.nvim_get_mode()['mode']
+    local current_mode = vim.api.nvim_get_mode()['mode']
     mode_after = mode_after or current_mode
     if mode_after ~= 'i' and mode_after ~= 'n' then
         mode_after = 'i'
     end
-    -- Get the line
+    -- Get the line and list type
     line = line or vim.api.nvim_get_current_line()
-    -- Get the list type
     local li_type = M.hasListType(line)
-    -- If the line has an item, do some stuff
-    if li_type then
+    if li_type then -- If the line has an item, do some stuff
         local has_contents = carry == false or utf8.match(line, M.patterns[li_type].content)
         local row, col = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_win_get_cursor(0)[2]
         row = (above and row - 1) or row
@@ -419,8 +417,7 @@ M.newListItem = function(carry, above, cursor_moves, mode_after, alt, line)
         if has_contents then
             local next_line = indentation
             local next_number
-            -- If the current line ends in a colon, indent the next line
-            if (not above) and line:sub(#line, #line) == ':' then
+            if (not above) and line:sub(#line, #line) == ':' then -- If the current line ends in a colon, indent the next line
                 next_line = next_line .. vim_indent
                 if li_type == 'ol' or li_type == 'oltd' then
                     next_number = 1
@@ -435,14 +432,12 @@ M.newListItem = function(carry, above, cursor_moves, mode_after, alt, line)
             end
             -- Add the marker
             next_line = next_line .. utf8.match(line, M.patterns[li_type].marker)
-            -- Make to-do items not started
-            if li_type == 'oltd' or li_type == 'ultd' then
+            if li_type == 'oltd' or li_type == 'ultd' then -- Make sure new to-do items have not_started status
                 next_line = next_line .. '[' .. to_do_not_started .. '] '
             end
             -- The current length is where we want the cursor to go
             local next_col = #next_line
-            -- Add material from the current line if the cursor isn't @ end of line
-            if (not above) and carry and col ~= #line then
+            if (not above) and carry and col ~= #line then -- Add material from the current line if the cursor isn't @ end of line
                 -- Get the material following the cursor for the next line
                 next_line = next_line .. line:sub(col + 1, #line)
                 -- Rid the current line of the material following the cursor
@@ -453,8 +448,7 @@ M.newListItem = function(carry, above, cursor_moves, mode_after, alt, line)
             if cursor_moves then
                 vim.api.nvim_win_set_cursor(0, {row + 1, (next_col)})
             end
-            -- Update the numbering
-            if li_type == 'ol' or li_type == 'oltd' then
+            if li_type == 'ol' or li_type == 'oltd' then -- Update the numbering
                 if above then
                     update_numbering(row + 1, indentation, li_type, false)
                 else
@@ -463,15 +457,14 @@ M.newListItem = function(carry, above, cursor_moves, mode_after, alt, line)
             end
             if mode_after == 'i' then
                 vim.cmd('startinsert')
-                if cursor_moves and current_mode ~= mode_after then
+                if cursor_moves and current_mode == 'n' then
                     vim.api.nvim_win_set_cursor(0, {row + 1, (next_col + 1)})
                 end
             elseif mode_after == 'n' then
                 vim.cmd('stopinsert')
             end
         else
-            -- If the line is indented, demote by removing the indentation
-            if line:match('^'..vim_indent) then
+            if line:match('^'..vim_indent) then -- If the line is indented, demote by removing the indentation
                 local replacement = line:gsub('^' .. vim_indent, '')
                 local new_indentation = replacement:match(M.patterns[li_type].indentation)
                 vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, #line, {replacement})
@@ -479,8 +472,7 @@ M.newListItem = function(carry, above, cursor_moves, mode_after, alt, line)
                 update_numbering(row, new_indentation, li_type)
                 -- Update any adopted children
                 update_numbering(row + 1, new_indentation..vim_indent, li_type, false, 1)
-            -- Otherwise, demote using the canonical demotion
-            else
+            else -- Otherwise, demote using the canonical demotion
                 -- Make a new line with the demotion
                 local demotion = utf8.match(line, M.patterns[li_type].demotion)
                 vim.api.nvim_buf_set_lines(0, row - 1, row, false, {demotion})
