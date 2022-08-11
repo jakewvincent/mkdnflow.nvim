@@ -242,7 +242,7 @@ M.getLinkPart = function(link_table, part)
                 end
             end,
             citation = function(part_)
-                local part_start, part_finish, match = string.match(text, patterns[part_]['citation'])
+                local part_start, part_finish, match = string.find(text, patterns[part_]['citation'])
                 return match, '', part_start, part_finish
             end
         }
