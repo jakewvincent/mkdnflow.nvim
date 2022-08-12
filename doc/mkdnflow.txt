@@ -183,6 +183,17 @@ shown for commands that have them.
     NOTE: |:MkdnEnter| provides a superset of this command's functionality; if
     you have that command mapped, I recommend not mapping this one.
 
+*:MkdnNewListItemBelowInsert*
+    `Default mapping: o (Modes: normal)`
+    Adds a new list item (or a new line) below the current line and starts
+    insert mode. The new list item will be of the same type as the line the
+    cursor is currently on.
+
+*:MkdnNewListItemAboveInsert*
+    `Default mapping: O (Modes: normal)`
+    Adds a new list item (or a new line) above the current line. The new list
+    item will be of the same type as the line the cursor is currently on.
+
 *:MkdnExtendList*
     `Default mapping: none`
     Adds a new list item below the current line. This is like
@@ -451,11 +462,7 @@ LISTS                                                         *Mkdnflow-lists*
 - Update numbering for the list the cursor is currently on
     - `<leader>nn` (default mapping) or `:MkdnUpdateNumbering 0<CR>`, e.g., if
       you want to start numbering at 0
-- Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by
-  default. See below.)
-    - NOTE: The following functionality is disabled by default in case some
-      find it intrusive. To enable the functionality, remap `<CR>` in insert
-      mode (see the following code block).
+- Smart(er) behavior when `<CR>`ing in lists
     - In unordered lists: Add another bullet on the next line, unless the
       current list item is empty, in which case it will be erased
     - In ordered lists: Add another item on the next line (keeping numbering
@@ -468,13 +475,10 @@ LISTS                                                         *Mkdnflow-lists*
     - Demote empty indented list items by reducing the indentation by one level
 - Add new list items using the list type of the current line without any of
   the fancy stuff listed above (see |:MkdnExtendList|)
->
-    require('mkdnflow').setup({
-        mappings = {
-            MkdnNewListItem = {'i', '<CR>'}
-        }
-    })
-<
+- Use |:MkdnNewListItemBelowInsert| and |:MkdnNewListItemAboveInsert| (mapped
+  to `o` and `O` by default, respectively) to insert new list items (or new
+  lines if not in a list) and begin insert mode
+
 TABLES                                                       *Mkdnflow-tables*
 - Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`.
   Table headers are added automatically; to exclude headers, use
@@ -570,6 +574,20 @@ require("mkdnflow").cursor.changeHeadingLevel("decrease")~
 require("mkdnflow").lists.toggleToDo()~
     Toggle a to-do list item's completion status
 
+require("mkdnflow").lists.newListItem(~
+    carry, above, cursor_moves, mode_after, alt~
+)~
+    Insert a new list item. Parameters this function accepts:
+    {carry} (boolean): whether material following the cursor on the current
+    line should be brought to the new line
+    {above} (boolean): whether the new line should be inserted above the
+    current line
+    {cursor_moves} (boolean): whether the cursor should move to the new line
+    {mode_after} (string): which mode the editor should be in after the line
+    is created and the cursor is moved (`'i'` or `'n'`)
+    {alt} (string): keys to feed if the function is called when the current
+    line is not part of a list (e.g. `'<CR>'` or `'o'`)
+
 ==============================================================================
 CONFIGURATION                                         *Mkdnflow-configuration*
                                                       *Mkdnflow-config*
@@ -656,6 +674,8 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
             MkdnDecreaseHeading = {'n', '-'},
             MkdnToggleToDo = {{'n', 'v'}, '<C-Space>'},
             MkdnNewListItem = false,
+            MkdnNewListItemBelowInsert = {'n', 'o'},
+            MkdnNewListItemAboveInsert = {'n', 'O'},
             MkdnExtendList = false,
             MkdnUpdateNumbering = {'n', '<leader>nn'},
             MkdnTableNextCell = {'i', '<Tab>'},
@@ -900,14 +920,25 @@ NOTE: `<name of command>` should be the name of a commands defined in
 ==============================================================================
 RECOMMENDED VIM SETTINGS                   *Mkdnflow-recommended-vim-settings*
 
-I recommend turning on `autowriteall` for markdown documents. This will ensure
-that changes to buffers are saved when you navigate away from that buffer, e.g.
-by following a link to another file. See `:h awa`.
+I recommended turning on `autowriteall` in Neovim *for markdown filetypes*.
+This will ensure that changes to buffers are saved when you navigate away from
+that buffer, e.g. by following a link to another file. See `:h awa`. If you
+have `hidden` enabled or if a buffer is hidden by `bufhidden`, you may need to
+use the second option (thanks, @vandalt).
 
-One way to do this would be to use an autocmd, such as below:
+One way to do this would be to use an autocmd, such as below (in a Lua file):
 >
-    vim.cmd('autocmd FileType markdown set autowriteall') 
+    vim.api.nvim_create_autocmd("FileType", {pattern = "markdown", command = "set awa"})
+    -- Use the following if your buffer is set to become hidden
+    --vim.api.nvim_create_autocmd("BufLeave", {pattern = "*.md", command = "silent! wall"})
 <
+Or the following (in a Vimscript file):
+>
+    autocmd FileType markdown set autowriteall
+    " Use the following if your buffer is set to become hidden
+    " autocmd BufLeave *.md silent! wall
+>
+
 ==============================================================================
 CREDITS                                                     *Mkdnflow-credits*
 

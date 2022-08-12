@@ -371,6 +371,8 @@ require('mkdnflow').setup({
         MkdnDecreaseHeading = {'n', '-'},
         MkdnToggleToDo = {{'n', 'v'}, '<C-Space>'},
         MkdnNewListItem = false,
+        MkdnNewListItemBelowInsert = {'n', 'o'},
+        MkdnNewListItemAboveInsert = {'n', 'O'},
         MkdnExtendList = false,
         MkdnUpdateNumbering = {'n', '<leader>nn'},
         MkdnTableNextCell = {'i', '<Tab>'},

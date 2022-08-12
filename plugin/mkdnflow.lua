@@ -47,6 +47,8 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     user_command('MkdnDecreaseHeading', function(opts) mkdnflow.cursor.changeHeadingLevel('decrease') end, {})
     user_command('MkdnToggleToDo', function(opts) mkdnflow.lists.toggleToDo(false, false, {}) end, {})
     user_command('MkdnNewListItem', function(opts) mkdnflow.lists.newListItem(true, false, true, 'i', '<CR>') end, {})
+    user_command('MkdnNewListItemBelowInsert', function(opts) mkdnflow.lists.newListItem(false, false, true, 'i', 'o') end, {})
+    user_command('MkdnNewListItemAboveInsert', function(opts) mkdnflow.lists.newListItem(false, true, true, 'i', 'O') end, {})
     user_command('MkdnExtendList', function(opts) mkdnflow.lists.newListItem(false, 'n') end, {})
     user_command('MkdnUpdateNumbering', function(opts) mkdnflow.lists.updateNumbering(opts.fargs) end, {nargs = '*'})
     user_command('MkdnTable', function(opts) mkdnflow.tables.newTable(opts.fargs) end, {nargs = '*'})
