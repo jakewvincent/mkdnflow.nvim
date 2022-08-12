@@ -494,16 +494,20 @@ Note: `<name of command>` should be the name of a commands defined in `mkdnflow.
 
 ### 👍 Recommended vim settings
 
-I recommended turning on `autowriteall` in Neovim *for markdown filetypes*. This will ensure that changes to buffers are saved when you navigate away from that buffer, e.g. by following a link to another file. See `:h awa`.
+I recommended turning on `autowriteall` in Neovim *for markdown filetypes*. This will ensure that changes to buffers are saved when you navigate away from that buffer, e.g. by following a link to another file. See `:h awa`. If you have `hidden` enabled or if a buffer is hidden by `bufhidden`, you may need to use the second option (thanks, @vandalt).
 
 ```lua
 -- If you have an init.lua
-vim.cmd('autocmd FileType markdown set autowriteall')
+vim.api.nvim_create_autocmd("FileType", {pattern = "markdown", command = "set awa"})
+-- Use the following if your buffer is set to become hidden
+--vim.api.nvim_create_autocmd("BufLeave", {pattern = "*.md", command = "silent! wall"})
 ```
 
 ```vim
 " If you have an init.vim
 autocmd FileType markdown set autowriteall
+" Use the following if your buffer is set to become hidden
+autocmd BufLeave *.md silent! wall
 ```
 
 ### ❕ Commands and default mappings
