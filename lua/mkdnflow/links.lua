@@ -37,7 +37,7 @@ M.getLinkUnderCursor = function(col)
     local patterns = {
         md_link = '%b[]%b()',
         wiki_link = '%[%b[]%]',
-        ref_style_link = '%b[]%s?%b[]',
+        ref_style_link = '%b[]%b[]',
         citation = '[^%a%d]-(@[%a%d_%.%-\']*[%a%d]+)[%s%p%c]?'
     }
     local row = vim.api.nvim_win_get_cursor(0)[1]
@@ -109,14 +109,14 @@ M.getLinkPart = function(link_table, part)
                 wiki_link = '|(.-)%]',
                 wiki_link_no_bar = '%[%[(.-)%]%]',
                 wiki_link_anchor_no_bar = '%[%[(.-)#.-%]%]',
-                ref_style_link = '^%[(.*)%]%s?%[',
+                ref_style_link = '^%[(.*)%]%[',
                 citation = '(@.*)'
             },
             source = {
                 md_link = '%]%((.*)%)', -- 3 thru length of match
                 wiki_link = '%[%[(.-)|.-%]%]', -- 3 thru length of match
                 wiki_link_no_bar = '%[%[(.-)%]%]', -- 3 thru length of match
-                ref_style_link = '%]%s?%[(.*)%]', -- 3 or 4 thru length of match
+                ref_style_link = '%]%[(.*)%]', -- 3 or 4 thru length of match
                 citation = '(@.*)' -- find indices will work
             },
             anchor = {
