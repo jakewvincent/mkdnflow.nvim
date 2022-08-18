@@ -26,7 +26,8 @@ local default_config = {
         lists = true,
         maps = true,
         paths = true,
-        tables = true
+        tables = true,
+        yaml = false
     },
     create_dirs = true,
     perspective = {
@@ -44,7 +45,7 @@ local default_config = {
     wrap = false,
     bib = {
         default_path = nil,
-        find_in_root = true
+        find_in_root = true,
     },
     silent = false,
     links = {
@@ -71,6 +72,9 @@ local default_config = {
         format_on_move = true,
         auto_extend_rows = false,
         auto_extend_cols = false
+    },
+    yaml = {
+        bib = {override = false}
     },
     mappings = {
         MkdnEnter = {{'n', 'v'}, '<CR>'},
