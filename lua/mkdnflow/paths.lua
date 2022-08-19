@@ -363,7 +363,7 @@ M.handlePath = function(path, anchor)
         end
     elseif path_type == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
-        local field = bib.citationHandler(utils.luaEscape(path))
+        local field = bib.handleCitation(utils.luaEscape(path))
         -- Use this function to do sth with the information returned (if any)
         if field then M.handlePath(field) end
     end
