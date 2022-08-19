@@ -7,10 +7,9 @@
 </p>
 
 ### 🆕 Top three [latest features](#-recent-changes)
-
-1. [Follow jump to, and rename reference-style links](#markdown-or-wiki-link-styles)
-2. [Create Pandoc-flavored bracketed spans w/ ID attributes & jump to them with anchor links](#create-customize-and-destroy-links)
-3. [Individually disable modules you don't plan to use](#-disable-unused-modules)
+1. [Stipulate bib sources for a document in yaml block](#-yaml-block-parsing)
+2. [Follow jump to, and rename reference-style links](#markdown-or-wiki-link-styles)
+3. [Create Pandoc-flavored bracketed spans w/ ID attributes & jump to them with anchor links](#create-customize-and-destroy-links)
 
 ## 📝 Description
 
@@ -39,7 +38,7 @@ use({'jakewvincent/mkdnflow.nvim',
 
 * Vimwiki doesn't use markdown by default; mkdnflow only works for markdown
 * I'm intending mkdnflow to be a little lighter weight/less involved than Vimwiki. Mkdnflow doesn't and won't provide syntax highlighting and won't create new filetypes (although it now optionally provides link concealing, since this was a requested feature).
-* Mkdnflow allows you to [prevent modules from being loaded](#modules-dictionary-like-table) that provide features you don't want or don't expect to use (all are enabled by default)
+* Mkdnflow allows you to [prevent modules from being loaded](#modules-dictionary-like-table) that provide features you don't want or don't expect to use (all are enabled by default except `yaml`)
     * Mappings to user commands associated with these modules will not be defined if the command depends on a module that is not loaded
 * Written in Lua
 
@@ -203,6 +202,27 @@ require('mkdnflow').setup({
     * Prevents the module from being loaded (rather than simply disabling the functionality the module provides)
     * Disabling a module prevents mappings to commands that are dependent on that module from being defined
 
+### 🆕 YAML block parsing
+* Use YAML blocks at the very top of a markdown document to specify certain settings on a by-file basis:
+    * Paths to bib files (must be absolute paths):
+        * Specify as a string or a list (see examples of each below)
+
+Specify one bib source:
+```markdown
+---
+bib: /home/user/Documents/Library/library.bib
+---
+```
+
+Specify multiple bib sources:
+```markdown
+---
+bib:
+  - /home/user/Documents/Library/library.bib
+  - /home/user/Projects/special_project/refs.bib
+---
+```
+
 ## 📦 Installation and usage
 
 ### init.lua
@@ -310,7 +330,8 @@ require('mkdnflow').setup({
         lists = true,
         maps = true,
         paths = true,
-        tables = true
+        tables = true,
+        yaml = false
     },
     filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,             
@@ -350,6 +371,9 @@ require('mkdnflow').setup({
         format_on_move = true,
         auto_extend_rows = false,
         auto_extend_cols = false
+    },
+    yaml = {
+        bib = { override = false }
     },
     mappings = {
         MkdnEnter = {{'n', 'v'}, '<CR>'},
@@ -391,7 +415,7 @@ require('mkdnflow').setup({
 
 ### Config descriptions
 #### `modules` (dictionary-like table)
-* All modules are enabled by default:
+* Most modules are enabled by default:
     * `modules.bib` (required for [parsing bib files](#follow-links-and-citations) and [following citations](#follow-links-and-citations))
     * `modules.buffers` (required for [backward and forward navigation through buffers](#backward-and-forward-navigation-through-buffers))
     * `modules.conceal` (required if you wish to enable [link concealing](#markdown-or-wiki-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to leaving this module enabled [it is enabled by default] if you wish to conceal links)
@@ -402,6 +426,8 @@ require('mkdnflow').setup({
     * `modules.maps` (required for [setting mappings via the mappings table](#keybindings); set to `false` if you wish to set mappings outside of the plugin)
     * `modules.paths` (required for [link interpretation](#customizable-link-interpretation) and [following links](#follow-links-and-citations))
     * `modules.tables` (required for [table navigation and formatting](#tables))
+* Modules not enabled by default:
+    * `modules.yaml` (required for parsing yaml blocks)
 
 #### `create_dirs` (boolean)
 * `true`: Directories referenced in a link will be (recursively) created if they do not exist
@@ -486,6 +512,10 @@ end
 * `tables.auto_extend_rows` (boolean): Whether calling `MkdnTableNextRow` when the cursor is in the last row should add another row instead of leaving the table (default: `false`)
 * `tables.auto_extend_cols` (boolean): Whether calling `MkdnTableNextCol` when the cursor is in the last cell should add another column instead of jumping to the first cell of the next row (default: `false`)
 
+#### `yaml` (dictionary-like table)
+* `yaml.bib` (dictionary-like table)
+    * `yaml.bib.override` (boolean): Whether or not a bib path specified in a yaml block should be the only source considered for bib references in that file (default: `false`)
+
 #### `mappings` (dictionary-like table)
 * `mappings.<name of command>` (array-like table or `false`)
     * `mappings.<name of command>[1]` string or array table representing the mode (or array of modes) that the mapping should apply in (`'n'`, `'v'`, etc.)
@@ -561,12 +591,12 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (e.g. nvim-autopairs allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
-* [ ] Improve citation functionality
-    * [ ] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 
 <details>
 <summary>Completed to-dos</summary><p>
 
+* [X] Improve citation functionality
+    * [X] Add ability to stipulate a .bib file in a yaml block at the top of a markdown file
 * [X] Interpret reference-style links (spec: [Reference-style Links](https://www.markdownguide.org/basic-syntax#reference-style-links))
 * [X] Overhaul help documents (i.e. `:h mkdnflow`)
 * [X] Tables: add a config option to automatically expand a table (row-wise or col-wise) when attempting to jump to the next col/row and there is none
@@ -596,6 +626,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 08/19/22: Add yaml parsing and yaml config options; add bib paths found in parsed yaml block to bib sources
 * 08/11/22: Add two new commands (`:MkdnNewListItemBelowInsert` and `:MkdnNewListItemAboveInsert`) mapped to `o` and `O` by default
 * 08/07/22: Extend link-following, link-jumping, and source editing/moving functionality to reference-style links
 * 07/26/22: Add config option for automatically extending table (col-wise or row-wise) when attempting to jump to the next cell/row while in the last cell/row

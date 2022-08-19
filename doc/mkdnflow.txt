@@ -616,7 +616,8 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
             lists = true,
             maps = true,
             paths = true,
-            tables = true
+            tables = true,
+            yaml = false
         },
         filetypes = {md = true, rmd = true, markdown = true},
         create_dirs = true,             
@@ -654,6 +655,9 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
         tables = {
             trim_whitespace = true,
             format_on_move = true
+        },
+        yaml = {
+            bib = { override = false }
         },
         mappings = {
             MkdnEnter = {{'n', 'v', 'i'}, '<CR>'},
@@ -695,7 +699,7 @@ CONFIG DESCRIPTIONS                                *Mkdnflow-config-details*
 
 `modules` (dictionary-like table)~
                                                      *Mkdnflow-config-modules*
-- All modules are enabled by default:
+- Most modules are enabled by default:
                                                  *Mkdnflow-config-modules-bib*
     - `modules.bib` (required for parsing bib files and following citations)
                                              *Mkdnflow-config-modules-buffers*
@@ -723,6 +727,9 @@ CONFIG DESCRIPTIONS                                *Mkdnflow-config-details*
     - `modules.paths` (required for link interpretation and following links)
                                               *Mkdnflow-config-modules-tables*
     - `modules.tables` (required for table navigation and formatting)
+- Modules not enabled by default:
+                                                *Mkdnflow-config-modules-yaml*
+    - `modules.yaml` (required for parsing yaml blocks)
 
 `create_dirs` (boolean)~
                                                  *Mkdnflow-config-create_dirs*
@@ -899,6 +906,15 @@ it in the list.
 - `tables.format_on_move` (boolean): Whether tables should be formatted each
   time the cursor is moved via MkdnTableNext/PrevCell or
   MkdnTableNext/Prev/Row (default: `true`)
+
+`yaml (dictionary-like table)`~
+                                                        *Mkdnflow-config-yaml*
+- `yaml.bib` (dictionary-like table):
+                                                    *Mkdnflow-config-yaml-bib*
+                                           *Mkdnflow-config-yaml-bib-override*
+    - `yaml.bib.override` (boolean): Whether or not a bib path specified in a
+      yaml block should be the only source considered for bib references in
+      that file (default: `false`)
 
 NOTE: See |Mkdnflow-mappings|
 
