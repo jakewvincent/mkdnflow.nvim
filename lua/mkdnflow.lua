@@ -235,15 +235,17 @@ init.setup = function(user_config)
             end
         end
         -- Load modules
-        for k, v in pairs(init.config.modules) do
-            if init.config.modules[k] then
-                if k == 'conceal' and v and init.config.links.conceal then
-                    init.conceal = require('mkdnflow.'..k)
-                elseif k ~= 'conceal' then
-                    init[k] = require('mkdnflow.'..k)
-                end
-            end
-        end
+        init.conceal = init.config.links.conceal and require('mkdnflow.conceal')
+        init.bib = init.config.modules.bib and require('mkdnflow.bib')
+        init.buffers = init.config.modules.buffers and require('mkdnflow.buffers')
+        init.cursor = init.config.modules.cursor and require('mkdnflow.cursor')
+        init.folds = init.config.modules.folds and require('mkdnflow.folds')
+        init.links = init.config.modules.links and require('mkdnflow.links')
+        init.lists = init.config.modules.lists and require('mkdnflow.lists')
+        init.maps = init.config.modules.maps and require('mkdnflow.maps')
+        init.paths = init.config.modules.paths and require('mkdnflow.paths')
+        init.tables = init.config.modules.tables and require('mkdnflow.tables')
+        init.yaml = init.config.modules.yaml and require('mkdnflow.yaml')
         -- Record load status (i.e. loaded)
         init.loaded = true
     else
