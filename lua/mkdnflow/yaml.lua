@@ -14,8 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local M = {}
-
+local bib = require('mkdnflow').bib
 local filetypes = require('mkdnflow').config.filetypes
 local patterns = {}
 for ext, value in pairs(filetypes) do
@@ -24,13 +23,16 @@ for ext, value in pairs(filetypes) do
     end
 end
 
+local M = {}
+
 vim.api.nvim_create_autocmd("BufWinEnter", {
     pattern = patterns,
     callback = function()
+        bib.bib_paths.yaml = {}
         local start, finish = M.hasYaml()
         if start then
             local yaml = M.ingestYamlBlock(start, finish)
-            vim.pretty_print(yaml)
+            bib.bib_paths.yaml = yaml.bib
         end
     end
 })
@@ -62,7 +64,7 @@ M.ingestYamlBlock = function(start, finish)
             local item = line:match('^  %- (.*)')
             if item then print(item) end
             if key and value then
-                yaml[key] = value
+                yaml[key] = {value}
             elseif key and not item then
                 last_key = key
                 yaml[key] = {}
