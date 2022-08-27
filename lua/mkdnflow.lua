@@ -58,7 +58,8 @@ local default_config = {
             text = text:lower()
             text = os.date('%Y-%m-%d_')..text
             return(text)
-        end
+        end,
+        context = 0,
     },
     to_do = {
         symbols = {' ', '-', 'X'},
@@ -238,9 +239,9 @@ init.setup = function(user_config)
         init.conceal = init.config.links.conceal and require('mkdnflow.conceal')
         init.bib = init.config.modules.bib and require('mkdnflow.bib')
         init.buffers = init.config.modules.buffers and require('mkdnflow.buffers')
-        init.cursor = init.config.modules.cursor and require('mkdnflow.cursor')
         init.folds = init.config.modules.folds and require('mkdnflow.folds')
         init.links = init.config.modules.links and require('mkdnflow.links')
+        init.cursor = init.config.modules.cursor and require('mkdnflow.cursor')
         init.lists = init.config.modules.lists and require('mkdnflow.lists')
         init.maps = init.config.modules.maps and require('mkdnflow.maps')
         init.paths = init.config.modules.paths and require('mkdnflow.paths')
