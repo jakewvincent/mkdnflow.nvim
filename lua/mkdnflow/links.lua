@@ -42,6 +42,18 @@ M.getLinkUnderCursor = function(col)
     }
     local row = vim.api.nvim_win_get_cursor(0)[1]
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+    -- If the user wants to check the context around the lines, concatenate those and update the cursor position
+    if config.links.context > 0 then
+        local line_count, col_diff = vim.api.nvim_buf_line_count(0), 0
+        for i = 1, config.links.context, 1 do
+            local preceding_line = vim.api.nvim_buf_get_lines(0, row - 1 - i, row - 1, false)[1]
+            line = (preceding_line and preceding_line..' '..line) or line
+            col_diff = preceding_line and (col_diff + #preceding_line)
+            local following_line = vim.api.nvim_buf_get_lines(0, row, row + i, false)[1]
+            line = (following_line and line..' '..following_line) or line
+        end
+        col = (col_diff and col + col_diff + 1) or col
+    end
     -- Iterate through the patterns to see if there's a matching link under the cursor
     for link_type, pattern in pairs(patterns) do
         local continue, init, iteration, match = true, 1, 1, nil
@@ -603,6 +615,7 @@ M.followLink = function(path, anchor)
     if path or anchor then
         path, anchor = path, anchor
     else
+        vim.pretty_print(M.getLinkUnderCursor())
         path, anchor, link_type = M.getLinkPart(M.getLinkUnderCursor(), 'source')
     end
     if path then
