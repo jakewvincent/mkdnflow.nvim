@@ -654,7 +654,9 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
         },
         tables = {
             trim_whitespace = true,
-            format_on_move = true
+            format_on_move = true,
+            auto_extend_rows = false,
+            auto_extend_cols = false
         },
         yaml = {
             bib = { override = false }
@@ -906,6 +908,17 @@ it in the list.
 - `tables.format_on_move` (boolean): Whether tables should be formatted each
   time the cursor is moved via MkdnTableNext/PrevCell or
   MkdnTableNext/Prev/Row (default: `true`)
+                                     *Mkdnflow-config-tables-auto_extend_rows*
+                                     *Mkdnflow-config-tables-auto_extend_cols*
+- tables.auto_extend_rows (boolean): Whether a new row should automatically be
+  added to a table when `:MkdnTableNextRow` is triggered when the cursor is in
+  the final row of the table. If `false`, the cursor will simply leave the
+  table for the next line. (default: `false`)
+- tables.auto_extend_cols (boolean): Whether a new column should automatically
+  be added to a table when `:MkdnTableNextCell` is triggered when the cursor
+  is in the final column of the table. If false, the cursor will jump to the
+  first cell of the next row, unless the cursor is already in the last row, in
+  which case nothing will happen. (default: `false`)
 
 `yaml (dictionary-like table)`~
                                                         *Mkdnflow-config-yaml*
