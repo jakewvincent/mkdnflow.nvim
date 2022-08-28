@@ -65,7 +65,7 @@ local go_to = function(pattern, reverse)
         if context > 0 and line_len > 0 then
             for i = 1, context, 1 do
                 local following_line = rev_get_line(0, row, row + 1, false)[1]
-                line = (following_line and following_line..' '..line) or line
+                line = (following_line and following_line..line) or line
                 rev_col = (following_line and rev_col + #following_line) or rev_col
             end
         end
@@ -79,7 +79,7 @@ local go_to = function(pattern, reverse)
         if context > 0 and line_len > 0 then
             for i = 1, context, 1 do
                 local following_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-                line = (following_line and line..' '..following_line) or line
+                line = (following_line and line..following_line) or line
             end
         end
         -- Get start & end indices of match (if any)
@@ -127,7 +127,7 @@ local go_to = function(pattern, reverse)
                 if line and context > 0 and line_len > 0 then
                     for i = 1, context, 1 do
                         local following_line = rev_get_line(0, row, row + 1, false)[1]
-                        line = (following_line and following_line..' '..line) or line
+                        line = (following_line and following_line..line) or line
                     end
                 end
             else
@@ -136,7 +136,7 @@ local go_to = function(pattern, reverse)
                 if line and context > 0 and line_len > 0 then
                     for i = 1, context, 1 do
                         local following_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-                        line = (following_line and line..' '..following_line) or line
+                        line = (following_line and line..following_line) or line
                     end
                 end
             end
