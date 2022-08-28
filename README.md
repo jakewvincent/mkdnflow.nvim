@@ -350,6 +350,7 @@ require('mkdnflow').setup({
     links = {
         style = 'markdown',
         conceal = false,
+        context = 0,
         implicit_extension = nil,
         transform_implicit = false,
         transform_explicit = function(text)
@@ -473,6 +474,9 @@ Note: This functionality references the file's extension. It does not rely on Ne
 * `links.conceal` (boolean)
     * `true`: Link sources and delimiters will be concealed (depending on which link style is selected)
     * `false`: Link sources and delimiters will not be concealed by mkdnflow
+* `links.context` (number)
+    * `0` (default): When following or jumping to links, assume no link will be split over multiple lines
+    * `n` : When following or jumping to links, consider `n` lines before and after a given line (useful if you ever permit links to be interrupted by a hard line break)
 * `links.implicit_extension` (string)
     * `<any extension>`: A string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) that new links should be created without an explicit extension
 * `links.transform_explicit` (function or `false`): A function that transforms the text to be inserted as the source/path of a link when a link is created. Anchor links are not currently customizable. If you want all link paths to be explicitly prefixed with the year, for instance, and for the path to be converted to uppercase, you could provide the following function under this key. (FYI: The previous functionality specified under the `prefix` key has been migrated here to provide greater flexibility.)

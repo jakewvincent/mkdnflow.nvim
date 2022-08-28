@@ -636,6 +636,7 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
         links = {
             style = 'markdown',
             conceal = false,
+            context = 0,
             implicit_extension = nil,
             transform_implicit = false,
             transform_explicit = function(text)
@@ -826,6 +827,13 @@ it in the list.
     - `true`: Link sources and delimiters will be concealed (depending on
       which link style is selected)
     - `false`: Link sources and delimiters will not be concealed by mkdnflow
+                                               *Mkdnflow-config-links-context*
+- `links.context` (number)
+    - `0` (default): When following or jumping to links, assume that no link
+      will be split over multiple lines
+    - `n`: When following or jumping to links, consider `n` lines before and
+      after a given line (useful if you ever permit links to be interrupted by
+      a hard line break)
                                     *Mkdnflow-config-links-implicit_extension*
 - `links.implicit_extension` (string)
     - `<any extension>`: A string that instructs the plugin (a) how to
