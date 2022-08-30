@@ -528,8 +528,12 @@ M.createLink = function()
             -- Make sure it's not a duplicate of the word under the cursor, and if it
             -- is, perform the search until a match is found whose right edge follows
             -- the cursor position
-            while right < col do
-                left, right = string.find(line, cursor_word, right, true)
+            if cursor_word ~= '' then
+                while right < col do
+                    left, right = string.find(line, cursor_word, right, true)
+                end
+            else
+                left, right = col + 1, col + 1
             end
             -- Replace the word under the cursor w/ the formatted link replacement
             vim.api.nvim_buf_set_text(0, row - 1, left - 1, row - 1, right, replacement)
