@@ -533,7 +533,7 @@ M.createLink = function()
                     left, right = string.find(line, cursor_word, right, true)
                 end
             else
-                left, right = col + 1, col + 1
+                left, right = col + 1, col
             end
             -- Replace the word under the cursor w/ the formatted link replacement
             vim.api.nvim_buf_set_text(0, row - 1, left - 1, row - 1, right, replacement)
