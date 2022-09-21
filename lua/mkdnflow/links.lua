@@ -19,6 +19,7 @@ local config = require('mkdnflow').config
 local new_file_prefix = config.prefix ~= nil and config.prefix.string
 local evaluate_prefix = config.prefix ~= nil and config.prefix.evaluate
 local link_style = config.links.style
+local name_is_source = config.links.name_is_source
 local implicit_extension = config.links.implicit_extension
 local transform_path = config.links.transform_explicit
 local utils = require('mkdnflow').utils
@@ -492,7 +493,7 @@ M.formatLink = function(text, part)
     end
     -- Format the replacement depending on the user's link style preference
     if link_style == 'wiki' then
-        replacement = {'[['..path_text..'|'..text..']]'}
+        replacement = (name_is_source and {'[['..text..']]'}) or {'[['..path_text..'|'..text..']]'}
     else
         replacement = {'['..text..']'..'('..path_text..')'}
     end
