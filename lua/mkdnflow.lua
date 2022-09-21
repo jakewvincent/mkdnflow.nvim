@@ -50,6 +50,7 @@ local default_config = {
     silent = false,
     links = {
         style = 'markdown',
+        name_is_source = false,
         conceal = false,
         implicit_extension = nil,
         transform_implicit = false,

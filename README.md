@@ -349,6 +349,7 @@ require('mkdnflow').setup({
     silent = false,
     links = {
         style = 'markdown',
+        name_is_source = false,
         conceal = false,
         context = 0,
         implicit_extension = nil,
@@ -471,6 +472,9 @@ Note: This functionality references the file's extension. It does not rely on Ne
 * `links.style` (string)
     * `'markdown'`: Links will be expected in the standard markdown format: `[<title>](<source>)`
     * `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
+* `links.name_is_source` (boolean)
+    * `true`: Wiki-style links will be created with separate name and source (e.g. `[[link-to-source|Link]]` will display as "Link" and go to a file named "link-to-source.md")
+    * `false`: Wiki-style links will be created with the source and name being the same (e.g. `[[Link]]` will display as "Link" and go to a file named "Link.md")
 * `links.conceal` (boolean)
     * `true`: Link sources and delimiters will be concealed (depending on which link style is selected)
     * `false`: Link sources and delimiters will not be concealed by mkdnflow
@@ -630,8 +634,15 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 09/21/22: Add compact option for wiki-link creation
+* 09/21/22: Add support for angle brackets in link sources
+* 09/20/22: Ignore escaped vertical bars when formatting tables
 * 08/19/22: Add yaml parsing and yaml config options; add bib paths found in parsed yaml block to bib sources
 * 08/11/22: Add two new commands (`:MkdnNewListItemBelowInsert` and `:MkdnNewListItemAboveInsert`) mapped to `o` and `O` by default
+
+<details>
+<summary>Older changes (> 1 month ago)</summary><p>
+
 * 08/07/22: Extend link-following, link-jumping, and source editing/moving functionality to reference-style links
 * 07/26/22: Add config option for automatically extending table (col-wise or row-wise) when attempting to jump to the next cell/row while in the last cell/row
 * 07/26/22: Command & mapping for creating bracketed spans (spans assigned an ID attribute)
@@ -639,10 +650,6 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 07/13/22: Follow links to arbitrary spans
 * 07/13/22: Individually disable modules
 * 07/09/22: Added folding functionality; replaced default normal/visual-mode mapping with mapping to wrapper function that will fold/open sections
-
-<details>
-<summary>Older changes (> 1 month ago)</summary><p>
-
 * 07/01/22: Properly handle alignment markers in tables
 * 07/01/22: Add option not to format table when moving the cursor to a different cell
 * 06/29/22: Conceal links

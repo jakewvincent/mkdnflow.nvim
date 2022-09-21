@@ -19,6 +19,7 @@ local config = require('mkdnflow').config
 local new_file_prefix = config.prefix ~= nil and config.prefix.string
 local evaluate_prefix = config.prefix ~= nil and config.prefix.evaluate
 local link_style = config.links.style
+local name_is_source = config.links.name_is_source
 local implicit_extension = config.links.implicit_extension
 local transform_path = config.links.transform_explicit
 local utils = require('mkdnflow').utils
@@ -141,6 +142,13 @@ M.getLinkPart = function(link_table, part)
             md_link = function(part_)
                 local part_start, part_finish, match = string.find(text, patterns[part_]['md_link'])
                 if part_ == 'source' then
+                    -- Check for angle brackets
+                    local start, _, rematch = string.find(match, '^<(.*)>$')
+                    if start then
+                        match = rematch
+                        part_start = part_start + 1
+                        part_finish = part_finish - 1
+                    end
                     -- Make part start and finish relative to line start, not link start
                     part_start = link_start + part_start + 1
                     part_finish = part_start + #match - 1
@@ -164,6 +172,13 @@ M.getLinkPart = function(link_table, part)
                 local part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link'])
                 if match then
                     if part_ == 'source' then
+                        -- Check for angle brackets
+                        local start, _, rematch = string.find(match, '^<(.*)>$')
+                        if start then
+                            match = rematch
+                            part_start = part_start + 1
+                            part_finish = part_finish - 1
+                        end
                         -- Make part start and finish relative to line start, not link start
                         part_start = link_start + part_start + 1
                         part_finish = part_start + #match - 1
@@ -490,7 +505,7 @@ M.formatLink = function(text, part)
     end
     -- Format the replacement depending on the user's link style preference
     if link_style == 'wiki' then
-        replacement = {'[['..path_text..'|'..text..']]'}
+        replacement = (name_is_source and {'[['..text..']]'}) or {'[['..path_text..'|'..text..']]'}
     else
         replacement = {'['..text..']'..'('..path_text..')'}
     end

@@ -28,12 +28,13 @@ local width = function(string)
 end
 
 local extract_cell_data = function(text)
+    local bars_escaped = text:gsub('\\|', '##')
     local cells, complete, first, last = {}, false, nil, 1
     while not complete do
-        first, last = text:find('|.-|', last - 1)
+        first, last = bars_escaped:find('|.-|', last - 1)
         if first and last then
             local content = text:sub(first + 1, last - 1)
-            local trimmed_content = content:match('(.- ) *$') or content:match('(.-) *$')
+            local trimmed_content = content:match('^%s*( .- )%s*$') or content:match('^%s*(.-)%s*$')
             cells[#cells + 1] = {
                 content = content,
                 trimmed_content = trimmed_content,
@@ -309,6 +310,7 @@ M.addRow = function(offset)
     local row = cursor[1] + offset
     local line = vim.api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1]
     if M.isPartOfTable(line) then
+        line = line:gsub('\\|', '  ')
         if utf8_available then
             local utf8 = require('lua-utf8')
             local newline = ''
