@@ -742,11 +742,17 @@ CONFIG DESCRIPTIONS                                *Mkdnflow-config-details*
     - `'current'`: Links will be interpreted relative to the current file
     - `'root'`: Links will be interpreted relative to the root directory of
       the current notebook (requires `perspective.root_tell` to be specified)
-    - `'nvim_wd_heel'`: Changes in perspective will be reflected in the nvim
-      working directory. (In other words, the working directory will "heel" to
-      the plugin's perspective.) This helps ensure (at least) that path
+
+                                                *Mkdnflow-config-nvim_wd_heel*
+- `'nvim_wd_heel'` (boolean): Specifies whether changes in perspective will
+  result in corresponding changes to Neovim's working directory
+    - `true`: Changes in perspective will be reflected in the nvim
+      working directory. (In other words, the working directory will "heel"
+      to the plugin's perspective.) This helps ensure (at least) that path
       completions (if using a completion plugin with support for paths) will
       be accurate and usable.
+    - `false`: Neovim's working directory will not be affected by Mkdnflow
+
                                         *Mkdnflow-config-perspective-fallback*
 - `perspective.fallback` (string): Specifies the backup perspective to take if
   priority isn't possible (e.g. if it is `'root'` but no root directory is
