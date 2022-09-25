@@ -16,12 +16,7 @@
 
 -- Modules and variables
 local config = require('mkdnflow').config
-local new_file_prefix = config.prefix ~= nil and config.prefix.string
-local evaluate_prefix = config.prefix ~= nil and config.prefix.evaluate
-local link_style = config.links.style
-local name_is_source = config.links.name_is_source
-local implicit_extension = config.links.implicit_extension
-local transform_path = config.links.transform_explicit
+local links = config.links
 local utils = require('mkdnflow').utils
 
 -- Table for global functions
@@ -448,24 +443,10 @@ transformPath() transforms the text passed in according to the default or
 user-supplied explicit transformation function.
 --]]
 M.transformPath = function(text)
-    if new_file_prefix then
-        local prefix
-        -- If user wants the prefix evaluated, do it now
-        if evaluate_prefix then
-            prefix = loadstring("return "..new_file_prefix)()
-        -- Otherwise, use the string provided by the user as the prefix
-        else
-            prefix = new_file_prefix
-        end
-        -- Set up the replacement
-        text = string.gsub(text, " ", "-")
-        -- Add prefix and make lowercase
-        text = prefix..string.lower(text)
-        return(text)
-    elseif type(transform_path) ~= 'function' or not transform_path then
+    if type(links.transform_explicit) ~= 'function' or not links.transform_explicit then
         return(text)
     else
-        return(transform_path(text))
+        return(links.transform_explicit(text))
     end
 end
 
@@ -487,13 +468,13 @@ M.formatLink = function(text, part)
         path_text = '#'..string.lower(path_text)
     else
         path_text = M.transformPath(text)
-        if not implicit_extension then
+        if not links.implicit_extension then
             path_text = path_text..'.md'
         end
     end
     -- Format the replacement depending on the user's link style preference
-    if link_style == 'wiki' then
-        replacement = (name_is_source and {'[['..text..']]'}) or {'[['..path_text..'|'..text..']]'}
+    if links.style == 'wiki' then
+        replacement = (links.name_is_source and {'[['..text..']]'}) or {'[['..path_text..'|'..text..']]'}
     else
         replacement = {'['..text..']'..'('..path_text..')'}
     end
@@ -527,7 +508,7 @@ M.createLink = function()
         if url_start and url_end then
             -- Prepare the replacement
             local url = line:sub(url_start, url_end - 1)
-            local replacement = (link_style == 'wiki' and {'[['..url..'|]]'}) or {'[]'..'('..url..')'}
+            local replacement = (links.style == 'wiki' and {'[['..url..'|]]'}) or {'[]'..'('..url..')'}
             -- Replace
             vim.api.nvim_buf_set_text(0, row - 1, url_start - 1, row - 1, url_end - 1, replacement)
             -- Move the cursor to the name part of the link and change mode
