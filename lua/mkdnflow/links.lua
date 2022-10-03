@@ -25,11 +25,11 @@ local M = {}
 local contains = function(start_row, start_col, end_row, end_col, cur_row, cur_col)
     local contained = cur_row > start_row and cur_row < end_row
     if cur_row == start_row and start_row == end_row then
-        contained = cur_col >= start_col - 1 and cur_col < end_col
+        contained = cur_col > start_col - 1 and cur_col <= end_col
     elseif cur_row == start_row then
-        contained = cur_col >= start_col - 1
+        contained = cur_col > start_col - 1
     elseif cur_row == end_row then
-        contained = cur_col < end_col
+        contained = cur_col <= end_col
     end
     return contained
 end
