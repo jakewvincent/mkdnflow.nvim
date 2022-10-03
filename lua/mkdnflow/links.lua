@@ -578,9 +578,13 @@ the name part of the link.
 M.destroyLink = function()
     -- Get link name, indices, and row the cursor is currently on
     local link = M.getLinkUnderCursor()
-    local link_name = M.getLinkPart(link, 'name')
-    -- Replace the link with just the name
-    vim.api.nvim_buf_set_text(0, link[4] - 1, link[5] - 1, link[6] - 1, link[7], {link_name})
+    if link then
+        local link_name = M.getLinkPart(link, 'name')
+        -- Replace the link with just the name
+        vim.api.nvim_buf_set_text(0, link[4] - 1, link[5] - 1, link[6] - 1, link[7], {link_name})
+    else
+        vim.api.nvim_echo({{"⬇️  Couldn't find a link under the cursor to destroy!", 'WarningMsg'}}, true, {})
+    end
 end
 
 --[[
