@@ -51,6 +51,7 @@ local default_config = {
         style = 'markdown',
         name_is_source = false,
         conceal = false,
+        context = 0,
         implicit_extension = nil,
         transform_implicit = false,
         transform_explicit = function(text)

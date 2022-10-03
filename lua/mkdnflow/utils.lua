@@ -148,4 +148,40 @@ M.escapeChars = function(string)
     return(escaped)
 end
 
+M.mFind = function(tbl, str, start_row, init_row, init_col, plain)
+    init_row = init_row or 1
+    init_col = init_col or 1
+    plain = plain or false
+    local init, match_lines = init_col, {}
+    -- Derive the init point for the concatenated lines
+    if start_row < init_row then
+        local diff = init_row - start_row
+        for i = 1, diff, 1 do
+            init = init + #tbl[i]
+        end
+    end
+    local catlines = table.concat(tbl)
+    local start, finish, capture = string.find(catlines, str, init, plain)
+    if capture then
+        start, finish = string.find(catlines, capture, start, true)
+    end
+    local chars, match_start_row, match_start_col, match_end_row, match_end_col = 0, nil, nil, nil, nil
+    if start and finish then
+        for i, line in ipairs(tbl) do
+            if match_start_row and not match_end_row then -- If we have the start row but not the end row...
+                table.insert(match_lines, line)
+            end
+            if (not match_start_row) and start <= (#line + chars) then -- If we don't have the start row yet, and the match we've found starts before the end of the current line...
+                match_start_row, match_start_col = start_row + i - 1, start - chars
+                table.insert(match_lines, line)
+            end
+            if (not match_end_row) and finish <= (#line + chars) then -- If we don't have the end row yet, and the match we've found ends before the current line...
+                match_end_row, match_end_col = start_row + i - 1, finish - chars
+            end
+            chars = chars + #line
+        end
+    end
+    return match_start_row, match_start_col, match_end_row, match_end_col, capture, match_lines
+end
+
 return M
