@@ -88,6 +88,15 @@ local search_bib_file = function(path, citekey)
             end
         end
         bib_file:close()
+    else
+        local bib_path_name
+        if bib_path == nil then
+            bib_path_name = '<nil>'
+        else
+            bib_path_name = '"'..bib_path..'"'
+        end
+        if not silent then vim.api.nvim_echo({{'⬇️  Could not find a bib file. The default bib path is currently '..bib_path_name..'. Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.', 'ErrorMsg'}}, true, {}) end
+        -- TODO: Make this section a little smarter. Change message depending on both bib_path and find_in_root.
     end
 end
 

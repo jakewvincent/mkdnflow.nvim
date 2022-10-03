@@ -16,16 +16,23 @@
 
 -- Modules and variables
 local config = require('mkdnflow').config
-local new_file_prefix = config.prefix ~= nil and config.prefix.string
-local evaluate_prefix = config.prefix ~= nil and config.prefix.evaluate
-local link_style = config.links.style
-local name_is_source = config.links.name_is_source
-local implicit_extension = config.links.implicit_extension
-local transform_path = config.links.transform_explicit
+local links = config.links
 local utils = require('mkdnflow').utils
 
 -- Table for global functions
 local M = {}
+
+local contains = function(start_row, start_col, end_row, end_col, cur_row, cur_col)
+    local contained = cur_row > start_row and cur_row < end_row
+    if cur_row == start_row and start_row == end_row then
+        contained = cur_col > start_col - 1 and cur_col <= end_col
+    elseif cur_row == start_row then
+        contained = cur_col > start_col - 1
+    elseif cur_row == end_row then
+        contained = cur_col <= end_col
+    end
+    return contained
+end
 
 --[[
 getLinkUnderCursor() retrieves a link of any type that is beneath a given column
@@ -33,55 +40,47 @@ number on the current line. The col number will be the cursor position by
 default, but that can be overridden by passing in a col number argument.
 --]]
 M.getLinkUnderCursor = function(col)
-    local position, link_start, link_finish, capture  = vim.api.nvim_win_get_cursor(0), nil, nil, nil
+    local position = vim.api.nvim_win_get_cursor(0)
+    local capture, start_row, start_col, end_row, end_col, match, match_lines
     col = col or position[2]
     local patterns = {
-        md_link = '%b[]%b()',
-        wiki_link = '%[%b[]%]',
-        ref_style_link = '%b[]%b[]',
+        md_link = '(%b[]%b())',
+        wiki_link = '(%[%b[]%])',
+        ref_style_link = '(%b[]%s?%b[])',
         citation = '[^%a%d]-(@[%a%d_%.%-\']*[%a%d]+)[%s%p%c]?'
     }
-    local row = vim.api.nvim_win_get_cursor(0)[1]
-    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-    -- If the user wants to check the context around the lines, concatenate those and update the cursor position
-    if config.links.context > 0 then
-        local line_count, col_diff = vim.api.nvim_buf_line_count(0), 0
-        for i = 1, config.links.context, 1 do
-            local preceding_line = vim.api.nvim_buf_get_lines(0, row - 1 - i, row - 1, false)[1]
-            line = (preceding_line and preceding_line..line) or line
-            col_diff = preceding_line and (col_diff + #preceding_line)
-            local following_line = vim.api.nvim_buf_get_lines(0, row, row + i, false)[1]
-            line = (following_line and line..following_line) or line
-        end
-        col = (col_diff and col + col_diff) or col
-    end
+    local row = position[1]
+    local lines = vim.api.nvim_buf_get_lines(0, row - 1 - links.context, row + links.context, false)
     -- Iterate through the patterns to see if there's a matching link under the cursor
     for link_type, pattern in pairs(patterns) do
-        local continue, init, iteration, match = true, 1, 1, nil
-        local counter = 1
+        local init_row, init_col = 1, 1
+        local continue = true
         while continue do
-            counter = counter + 1
-            link_start, link_finish, capture = string.find(line, pattern, init)
-            if link_start and link_type == 'citation' then
-                capture = string.gsub(capture, "'s$", '') -- Remove Saxon genitive if it's on the end of the citekey
-                link_start, link_finish = string.find(line, capture, link_start, true) -- Get match for citekey w/o surrounding context
+            -- Look for the pattern in the line(s)
+            --link_start, link_finish, capture = string.find(lines, pattern, init)
+            start_row, start_col, end_row, end_col, capture, match_lines = utils.mFind(lines, pattern, row - links.context, init_row, init_col)
+            if start_row and link_type == 'citation' then
+                local possessor = string.gsub(capture, "'s$", '') -- Remove Saxon genitive if it's on the end of the citekey
+                if #capture > #possessor then
+                    capture = possessor
+                    end_col = end_col - 2
+                end
             end
-            if link_start then -- There's a match
-                if iteration == 1 and col + 1 < link_start then -- If the first match is after the cursor, stop
+            -- Check for overlap w/ cursor
+            if start_row then -- There's a match
+                local overlaps = contains(start_row, start_col, end_row, end_col, position[1], position[2] + 1)
+                if overlaps then
+                    match = capture
                     continue = false
-                elseif col + 1 >= link_start and col < link_finish then -- Cursor is between start and finish
-                    continue = false
-                    match = string.sub(line, link_start, link_finish)
-                else -- Cursor is outside of start and finish; 
-                    init = link_finish
+                else
+                    init_row, init_col = end_row, end_col
                 end
             else
                 continue = false
             end
-            iteration = iteration + 1
         end
         if match then -- Return the match and type of link if there was a match
-            return {match, link_type, link_start, link_finish, position[1]}
+            return {match, match_lines, link_type, start_row, start_col, end_row, end_col}
         end
     end
 end
@@ -114,7 +113,7 @@ Returns a string (or two strings if there is an anchor within the source)
 M.getLinkPart = function(link_table, part)
     table.unpack = table.unpack or unpack
     if link_table then
-        local text, link_type, link_start, link_finish, link_row = table.unpack(link_table)
+        local text, match_lines, link_type, start_row, start_col, end_row, end_col = table.unpack(link_table)
         part = part or 'source'
         local patterns = {
             name = {
@@ -122,7 +121,7 @@ M.getLinkPart = function(link_table, part)
                 wiki_link = '|(.-)%]',
                 wiki_link_no_bar = '%[%[(.-)%]%]',
                 wiki_link_anchor_no_bar = '%[%[(.-)#.-%]%]',
-                ref_style_link = '^%[(.*)%]%[',
+                ref_style_link = '%[(.*)%]%s?%[',
                 citation = '(@.*)'
             },
             source = {
@@ -140,96 +139,72 @@ M.getLinkPart = function(link_table, part)
         }
         local get_from = { -- Table of functions by link type
             md_link = function(part_)
-                local part_start, part_finish, match = string.find(text, patterns[part_]['md_link'])
+                local part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['md_link'], start_row)
                 if part_ == 'source' then
                     -- Check for angle brackets
-                    local start, _, rematch = string.find(match, '^<(.*)>$')
-                    if start then
-                        match = rematch
-                        part_start = part_start + 1
-                        part_finish = part_finish - 1
+                    if match:find('^<.*>$') then
+                        part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, '%(<(.*)>%)', part_start_row)
                     end
                     -- Make part start and finish relative to line start, not link start
-                    part_start = link_start + part_start + 1
-                    part_finish = part_start + #match - 1
                     local anchor_start, _, anchor = string.find(match, '(#.*)')
                     if anchor_start then
                         match = string.sub(match, 1, anchor_start - 1)
-                        return match, anchor, part_start, part_finish
                     else
-                        return match, '', part_start, part_finish
+                        anchor = ''
                     end
-                elseif part_ == 'name' then
-                    part_start = link_start + part_start - 1
-                    part_finish = part_start + #match - 1
-                    return match, '', part_start, part_finish
+                    return match, anchor, part_start_row, part_start_col, part_end_row, part_end_col
                 else
-                    part_start, part_finish = link_start + part_start - 1, link_start + part_finish - 1
-                    return match, '', part_start, part_finish
+                    return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                 end
             end,
             wiki_link = function(part_)
-                local part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link'])
+                local part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['wiki_link'], start_row)
                 if match then
                     if part_ == 'source' then
                         -- Check for angle brackets
-                        local start, _, rematch = string.find(match, '^<(.*)>$')
-                        if start then
-                            match = rematch
-                            part_start = part_start + 1
-                            part_finish = part_finish - 1
+                        if match:find('^<.*>$') then
+                            part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, '%[<(.*)>|', part_start_row)
                         end
                         -- Make part start and finish relative to line start, not link start
-                        part_start = link_start + part_start + 1
-                        part_finish = part_start + #match - 1
                         local anchor_start, _, anchor = string.find(match, '(#.*)')
                         if anchor_start then
                             match = string.sub(match, 1, anchor_start - 1)
-                            return match, anchor, part_start, part_finish
                         else
-                            return match, '', part_start, part_finish
+                            anchor = ''
                         end
-                    elseif part_ == 'name' then
-                        part_start = link_start + part_start
-                        part_finish = part_start + #match - 1
-                        return match, '', part_start, part_finish
+                        return match, anchor, part_start_row, part_start_col, part_end_row, part_end_col
                     else
-                        part_start, part_finish = link_start + part_start, link_start + part_finish
-                        return match, '', part_start, part_finish
+                        return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                     end
-                elseif part_ == 'name' and string.match(text, '#') then -- If there was no match, we have a link w/ no bar
-                    part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link_anchor_no_bar'])
-                    return match, '', part_start, part_finish
+                elseif part_ == 'name' and string.match(match, '#') then -- If there was no match, we have a link w/ no bar; check for an anchor first
+                    part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['wiki_link_anchor_no_bar'], start_row)
+                    return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                 else
-                    part_start, part_finish, match = string.find(text, patterns[part_]['wiki_link_no_bar'])
+                    part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['wiki_link_no_bar'], start_row)
                     if part_ == 'source' then
-                        part_start = link_start + part_start + 1
-                        part_finish = part_start + #match - 1
+                        -- Check for angle brackets
+                        if match:find('^<.*>$') then
+                            part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, '%[<(.*)>]', part_start_row)
+                        end
+                        -- Make part start and finish relative to line start, not link start
                         local anchor_start, _, anchor = string.find(match, '(#.*)')
                         if anchor_start then
                             match = string.sub(match, 1, anchor_start - 1)
-                            return match, anchor, part_start, part_finish
                         else
-                            return match, '', part_start, part_finish
+                            anchor = ''
                         end
-                    elseif part_ == 'name' then
-                        part_start = link_start + part_start + 1
-                        part_finish = part_start + #match - 1
-                        return match, '', part_start, part_finish
+                        return match, anchor, part_start_row, part_start_col, part_end_row, part_end_col
                     else
-                        part_start = link_start + part_start
-                        part_finish = part_start + #match - 1
-                        return match, '', part_start, part_finish
+                        return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                     end
                 end
             end,
             ref_style_link = function(part_)
-                local part_start, part_finish, match = string.find(text, patterns[part_]['ref_style_link'])
+                local part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['ref_style_link'], start_row)
                 if part_ == 'source' then
-                    local refnr = string.match(text, patterns[part_]['ref_style_link'])
-                    local source, source_row, source_start, _ = get_ref(refnr, link_row)
-                    if source then
-                        local title = string.match(source, '.* (["\'%(%[].*["\'%)%]])')
+                    local source, source_row, source_start, _ = get_ref(match, part_start_row)
+                    if source then -- If a source was found, extract the relevant information from the source line
+                        local title = string.match(source, '.* (["\'%(%[].*["\'%)%]])') -- Check for a title on the source line
                         if title then
                             local start, ref_source
                             -- Check first for sources surrounded by < ... >
@@ -240,8 +215,8 @@ M.getLinkPart = function(link_table, part)
                                 start = start + 1 -- Add 1 if the source is surrounded by < ... >
                                 source = ref_source
                             end
-                            part_start = source_start + start - 1
-                            part_finish = part_start + #source - 1
+                            part_start_col = source_start + start - 1
+                            part_end_col = part_start_col + #source - 1
                         else
                             local start, ref_source
                             -- Check first for sources surrounded by < ... >
@@ -252,30 +227,31 @@ M.getLinkPart = function(link_table, part)
                                 start = start + 1
                                 source = ref_source
                             end
-                            part_start = source_start + start - 1
-                            part_finish = part_start + #source - 1
+                            part_start_col = source_start + start - 1
+                            part_end_col = part_start_col + #source - 1
                         end
                         -- Check for an anchor
                         local anchor_start, _, anchor = string.find(source, '(#.*)')
                         if anchor_start then
                             source = string.sub(source, 1, anchor_start - 1)
-                            return source, anchor, part_start, part_finish, source_row
+                            --return source, anchor, part_start, part_finish, source_row
+                            return source, anchor, source_row, part_start_col, source_row, part_end_col
                         else
-                            return source, '', part_start, part_finish, source_row
+                            return source, '', source_row, part_start_col, source_row, part_end_col
                         end
                     end
                 else
-                    return match, '', part_start, part_finish
+                    return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                 end
             end,
             citation = function(part_)
-                local part_start, part_finish, match = string.find(text, patterns[part_]['citation'])
-                return match, '', part_start, part_finish
+                local part_start_col, part_end_col, match = string.find(text, patterns[part_]['citation'])
+                return match, '', start_row, part_start_col, end_row, part_end_col
             end
         }
-        local part_text, anchor, part_start, part_finish, source_row = get_from[link_type](part)
-        source_row = source_row or link_row
-        return part_text, anchor, link_type, link_start, link_finish, link_row, source_row, part_start, part_finish
+        local part_text, anchor
+        part_text, anchor, start_row, start_col, end_row, end_col = get_from[link_type](part)
+        return part_text, anchor, link_type, start_row, start_col, end_row, end_col
     end
 end
 
@@ -460,24 +436,10 @@ transformPath() transforms the text passed in according to the default or
 user-supplied explicit transformation function.
 --]]
 M.transformPath = function(text)
-    if new_file_prefix then
-        local prefix
-        -- If user wants the prefix evaluated, do it now
-        if evaluate_prefix then
-            prefix = loadstring("return "..new_file_prefix)()
-        -- Otherwise, use the string provided by the user as the prefix
-        else
-            prefix = new_file_prefix
-        end
-        -- Set up the replacement
-        text = string.gsub(text, " ", "-")
-        -- Add prefix and make lowercase
-        text = prefix..string.lower(text)
-        return(text)
-    elseif type(transform_path) ~= 'function' or not transform_path then
+    if type(links.transform_explicit) ~= 'function' or not links.transform_explicit then
         return(text)
     else
-        return(transform_path(text))
+        return(links.transform_explicit(text))
     end
 end
 
@@ -499,13 +461,13 @@ M.formatLink = function(text, part)
         path_text = '#'..string.lower(path_text)
     else
         path_text = M.transformPath(text)
-        if not implicit_extension then
+        if not links.implicit_extension then
             path_text = path_text..'.md'
         end
     end
     -- Format the replacement depending on the user's link style preference
-    if link_style == 'wiki' then
-        replacement = (name_is_source and {'[['..text..']]'}) or {'[['..path_text..'|'..text..']]'}
+    if links.style == 'wiki' then
+        replacement = (links.name_is_source and {'[['..text..']]'}) or {'[['..path_text..'|'..text..']]'}
     else
         replacement = {'['..text..']'..'('..path_text..')'}
     end
@@ -539,7 +501,7 @@ M.createLink = function()
         if url_start and url_end then
             -- Prepare the replacement
             local url = line:sub(url_start, url_end - 1)
-            local replacement = (link_style == 'wiki' and {'[['..url..'|]]'}) or {'[]'..'('..url..')'}
+            local replacement = (links.style == 'wiki' and {'[['..url..'|]]'}) or {'[]'..'('..url..')'}
             -- Replace
             vim.api.nvim_buf_set_text(0, row - 1, url_start - 1, row - 1, url_end - 1, replacement)
             -- Move the cursor to the name part of the link and change mode
@@ -615,9 +577,14 @@ the name part of the link.
 --]]
 M.destroyLink = function()
     -- Get link name, indices, and row the cursor is currently on
-    local link_name, _, _, first, last, row = M.getLinkPart(M.getLinkUnderCursor(), 'name')
-    -- Replace the link with just the name
-    vim.api.nvim_buf_set_text(0, row - 1, first - 1, row - 1, last, {link_name})
+    local link = M.getLinkUnderCursor()
+    if link then
+        local link_name = M.getLinkPart(link, 'name')
+        -- Replace the link with just the name
+        vim.api.nvim_buf_set_text(0, link[4] - 1, link[5] - 1, link[6] - 1, link[7], {link_name})
+    else
+        vim.api.nvim_echo({{"⬇️  Couldn't find a link under the cursor to destroy!", 'WarningMsg'}}, true, {})
+    end
 end
 
 --[[
