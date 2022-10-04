@@ -425,7 +425,7 @@ M.moveSource = function()
                     if this_os:match('Windows') then
                         os.execute('move "'..derived_source..'" "'..derived_goal..'"')
                     else
-                        os.execute('mv '..derived_source..' '..derived_goal)
+                        os.execute('mv '..utils.escapeChars(derived_source)..' '..utils.escapeChars(derived_goal))
                     end
                     -- Change the link content
                     vim.api.nvim_buf_set_text(0, start_row - 1, start_col - 1, end_row - 1, end_col, {location..anchor})
