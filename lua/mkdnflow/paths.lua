@@ -79,6 +79,9 @@ local resolve_notebook_path = function(path, sub_home_var)
     local derived_path = path
     if this_os:match('Windows') then
         derived_path = derived_path:gsub('/', '\\')
+        if derived_path:match('^~\\') then
+            derived_path = string.gsub(derived_path, '^~\\', vim.loop.os_homedir()..'\\')
+        end
     end
     -- Decide what to pass to internal_open function
     if derived_path:match('^~/') or derived_path:match('^/') or derived_path:match('^%u:\\') then
@@ -216,6 +219,12 @@ local handle_external_file = function(path)
     -- Get what's after the file: tag
     local real_path = string.match(path, '^file:(.*)')
     local escaped_path
+    if this_os:match('Windows') then
+        real_path = real_path:gsub('/', '\\')
+        if real_path:match('^~\\') then
+            real_path = string.gsub(real_path, '^~\\', vim.loop.os_homedir()..'\\')
+        end
+    end
     -- Check if path provided is absolute or relative to $HOME
     if real_path:match('^~/') or real_path:match('^/') or real_path:match('^%u:\\') then
         if this_os:match('Windows') then
