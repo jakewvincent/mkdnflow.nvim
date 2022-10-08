@@ -34,8 +34,8 @@ local default_config = {
         priority = 'first',
         fallback = 'current',
         root_tell = false,
-        update = true,
-        nvim_wd_heel = true
+        nvim_wd_heel = false,
+        update = true
     },
     filetypes = {
         md = true,

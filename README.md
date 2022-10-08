@@ -339,7 +339,8 @@ require('mkdnflow').setup({
         priority = 'first',
         fallback = 'current',
         root_tell = false,
-        nvim_wd_heel = true
+        nvim_wd_heel = false,
+        update = false
     },    
     wrap = false,
     bib = {
@@ -432,23 +433,26 @@ require('mkdnflow').setup({
     * `modules.yaml` (required for parsing yaml blocks)
 
 #### `create_dirs` (boolean)
-* `true`: Directories referenced in a link will be (recursively) created if they do not exist
+* `true` (default): Directories referenced in a link will be (recursively) created if they do not exist
 * `false` No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
 
 #### `perspective` (dictionary-like table)
 * `perspective.priority` (string): Specifies the priority perspective to take when interpreting link paths
-    * `'first'`: Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)
+    * `'first'` (default): Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)
     * `'current'`: Links will be interpreted relative to the current file
     * `'root'`: Links will be interpreted relative to the root directory of the current notebook (requires `perspective.root_tell` to be specified)
-* `perspective.nvim_wd_heel` (boolean): Specifies whether changes in perspective will result in corresponding changes to Neovim's working directory
-    * `true`: Changes in perspective will be reflected in the nvim working directory. (In other words, the working directory will "heel" to the plugin's perspective.) This helps ensure (at least) that path completions (if using a completion plugin with support for paths) will be accurate and usable.
-    * `false`: Neovim's working directory will not be affected by Mkdnflow
-* `perspective.fallback` (string): Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)
-    * `'first'`: (see above)
-    * `'current'`: (see above)
-    * `'root'`: (see above)
 * `perspective.root_tell` (string or boolean)
     * `'<any file name>'`: Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`.
+* `perspective.fallback` (string): Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)
+    * `'first'`: (see above)
+    * `'current'` (default): (see above)
+    * `'root'`: (see above)
+* `perspective.nvim_wd_heel` (boolean): Specifies whether changes in perspective will result in corresponding changes to Neovim's working directory
+    * `true`: Changes in perspective will be reflected in the nvim working directory. (In other words, the working directory will "heel" to the plugin's perspective.) This helps ensure (at least) that path completions (if using a completion plugin with support for paths) will be accurate and usable.
+    * `false` (default): Neovim's working directory will not be affected by Mkdnflow.
+* `perspective.update` (boolean): Determines whether the plugin looks to determine if a followed link is in a different notebook/wiki than before. If it is, the perspective will be updated. Requires `root_tell` to be defined and `priority` to be `root`.
+    * `true` (default): Perspective will be updated when following a link to a file in a separate notebook/wiki (or navigating backwards to a file in another notebook/wiki).
+    * `false`: Perspective will be not updated when following a link to a file in a separate notebook/wiki. Under the hood, links in the file in the separate notebook/wiki will be interpreted relative to the original notebook/wiki.
 
 #### `filetypes` (dictionary-like table)
 * `<any arbitrary filetype extension>` (boolean value)
@@ -458,33 +462,34 @@ Note: This functionality references the file's extension. It does not rely on Ne
 
 #### `wrap` (boolean)
 * `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
-* `false`: When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
+* `false` (default): When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
 
 #### `bib` (dictionary-like table)
 * `bib.default_path` (string or `nil`): Specifies a path to a default .bib file to look for citation keys in (need not be in root directory of notebook)
 * `bib.find_in_root` (boolean)
-    * `true`: When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.
+    * `true` (default): When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.
     * `false`: The notebook's root directory will not be searched for bib files.
 
 #### `silent` (boolean)
 * `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
-* `false`: The plugin will display messages to the console (all messages from the plugin start with ⬇️ )
+* `false` (default): The plugin will display messages to the console (all messages from the plugin start with ⬇️ )
 
 #### `links` (dictionary-like table)
 * `links.style` (string)
-    * `'markdown'`: Links will be expected in the standard markdown format: `[<title>](<source>)`
+    * `'markdown'` (default): Links will be expected in the standard markdown format: `[<title>](<source>)`
     * `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
 * `links.name_is_source` (boolean)
     * `true`: Wiki-style links will be created with separate name and source (e.g. `[[link-to-source|Link]]` will display as "Link" and go to a file named "link-to-source.md")
-    * `false`: Wiki-style links will be created with the source and name being the same (e.g. `[[Link]]` will display as "Link" and go to a file named "Link.md")
+    * `false` (default): Wiki-style links will be created with the source and name being the same (e.g. `[[Link]]` will display as "Link" and go to a file named "Link.md")
 * `links.conceal` (boolean)
     * `true`: Link sources and delimiters will be concealed (depending on which link style is selected)
-    * `false`: Link sources and delimiters will not be concealed by mkdnflow
+    * `false` (default): Link sources and delimiters will not be concealed by mkdnflow
 * `links.context` (number)
     * `0` (default): When following or jumping to links, assume no link will be split over multiple lines
-    * `n` : When following or jumping to links, consider `n` lines before and after a given line (useful if you ever permit links to be interrupted by a hard line break)
-* `links.implicit_extension` (string)
-    * `<any extension>`: A string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) that new links should be created without an explicit extension
+    * `n` (an integer): When following or jumping to links, consider `n` lines before and after a given line (useful if you ever permit links to be interrupted by a hard line break)
+* `links.implicit_extension` (string) A string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) how to create new links from the word under cursor or text selection.
+    * `nil` (default): Extensions will be explicit when a link is created and must be explicit in any notebook link.
+    * `<any extension>` (e.g. `'md'`): Links without an extension (e.g. `[Homepage](index)`) will be interpreted with the implicit extension (e.g. `index.md`), and new links will be created without an extension.
 * `links.transform_explicit` (function or `false`): A function that transforms the text to be inserted as the source/path of a link when a link is created. Anchor links are not currently customizable. If you want all link paths to be explicitly prefixed with the year, for instance, and for the path to be converted to uppercase, you could provide the following function under this key. (FYI: The previous functionality specified under the `prefix` key has been migrated here to provide greater flexibility.)
 
 ```lua
@@ -512,9 +517,9 @@ end
     * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
     * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
 * The following entries can be used to stipulate which symbols shall be used when updating a parent to-do's status when a child to-do's status is changed. These are **not required**: if `to_do.symbols` is customized but these options are not provided, the plugin will attempt to infer what the meanings of the symbols in your list are by their order. For example, if you set `to_do.symbols` as `{' ', '⧖', '✓'}`, `' '` will be assiged to `to_do.not_started`, '⧖' will be assigned to `to_do.in_progress`, etc. If more than three symbols are specified, the first will be used as `not_started`, the second will be used as `in_progress`, and the last will be used as `complete`. If two symbols are provided (e.g. `' ', '✓'`), the first will be used as both `not_started` and `in_progress`, and the second will be used as `complete`.
-    * `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do
-    * `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do
-    * `to_do.complete` (string):  Stipulates which symbol represents a complete to-do
+    * `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do (default: `' '`)
+    * `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do (default: `'-'`)
+    * `to_do.complete` (string):  Stipulates which symbol represents a complete to-do (default: `'X'`)
 
 #### `tables` (dictionary-like table)
 * `tables.trim_whitespace` (boolean): Whether extra whitespace should be trimmed from the end of a table cell when a table is formatted (default: `true`)
@@ -636,6 +641,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 10/02/22: Add ability to consider n lines of context around the cursor when following, renaming, or removing links
 * 09/21/22: Add compact option for wiki-link creation
 * 09/21/22: Add support for angle brackets in link sources
 * 09/20/22: Ignore escaped vertical bars when formatting tables
