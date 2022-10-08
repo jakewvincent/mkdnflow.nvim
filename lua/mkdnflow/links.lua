@@ -449,21 +449,23 @@ Returns a string:
      1. '[string of text](<prefix>_string-of-text.md)' in most cases
      2. '[anchor link](#anchor-link)' if the text starts with a hash (#)
 --]]
-M.formatLink = function(text, part)
+M.formatLink = function(text, source, part)
     local replacement, path_text
     -- If the text starts with a hash, format the link as an anchor link
-    if string.sub(text, 0, 1) == '#' then
+    if string.sub(text, 0, 1) == '#' and not source then
         path_text = string.gsub(text, '[^%a%s%d%-_]', '')
         text = string.gsub(text, '^#* *', '')
         path_text = string.gsub(path_text, '^ ', '')
         path_text = string.gsub(path_text, ' ', '-')
         path_text = string.gsub(path_text, '%-%-', '-')
         path_text = '#'..string.lower(path_text)
-    else
+    elseif not source then
         path_text = M.transformPath(text)
         if not links.implicit_extension then
             path_text = path_text..'.md'
         end
+    else
+        path_text = source
     end
     -- Format the replacement depending on the user's link style preference
     if links.style == 'wiki' then
@@ -486,7 +488,8 @@ createLink() makes a link from the word under the cursor--or, if no word is
 under the cursor, produces the syntax for a md link: [](YYYY-MM-DD_.md)
 Returns nothing via stdout, but does insert text into the vim buffer
 --]]
-M.createLink = function()
+M.createLink = function(from_clipboard)
+    from_clipboard = from_clipboard or false
     -- Get mode from vim
     local mode = vim.api.nvim_get_mode()['mode']
     -- Get the cursor position
@@ -511,7 +514,12 @@ M.createLink = function()
             -- Get the word under the cursor
             local cursor_word = vim.fn.expand('<cword>')
             -- Make a markdown link out of the date and cursor
-            local replacement = M.formatLink(cursor_word)
+            local replacement
+            if from_clipboard then
+                replacement = M.formatLink(cursor_word, vim.fn.getreg("+"))
+            else
+                replacement = M.formatLink(cursor_word)
+            end
             -- Find the (first) position of the matched word in the line
             local left, right = string.find(line, cursor_word, nil, true)
             -- Make sure it's not a duplicate of the word under the cursor, and if it
@@ -561,7 +569,12 @@ M.createLink = function()
         end
         -- Save the text selection & replace spaces with dashes
         local text = table.concat(lines)
-        local replacement = M.formatLink(text)
+        local replacement
+        if from_clipboard then
+            replacement = M.formatLink(text, vim.fn.getreg("+"))
+        else
+            replacement = M.formatLink(text)
+        end
         -- Replace the visual selection w/ the formatted link replacement
         vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, replacement)
         -- Leave visual mode
@@ -653,7 +666,7 @@ M.tagSpan = function()
         end
         -- Save the text selection & replace spaces with dashes
         local text = table.concat(lines)
-        local replacement = '['..text..']'..'{'..M.formatLink('#'..text, 2)..'}'
+        local replacement = '['..text..']'..'{'..M.formatLink('#'..text, nil, 2)..'}'
         -- Replace the visual selection w/ the formatted link replacement
         vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, {replacement})
         -- Leave visual mode

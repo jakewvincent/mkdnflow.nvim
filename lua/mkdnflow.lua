@@ -113,7 +113,8 @@ local default_config = {
         MkdnUnfoldSection = {'n', '<leader>F'},
         MkdnTab = false,
         MkdnSTab = false,
-        MkdnCreateLink = false
+        MkdnCreateLink = false,
+        MkdnCreateLinkFromClipboard = {{'n', 'v'}, '<leader>p'}
     }
 }
 
@@ -130,6 +131,7 @@ init.command_deps = {
     MkdnNextLink = {'links', 'cursor'},
     MkdnPrevLink = {'links', 'cursor'},
     MkdnCreateLink = {'links'},
+    MkdnCreateLinkFromClipboard = {'links'},
     MkdnTagSpan = {'links'},
     MkdnFollowLink = {'links', 'paths'},
     MkdnDestroyLink = {'links'},
