@@ -16,6 +16,12 @@
 local config = require('mkdnflow').config
 local utils = require('mkdnflow').utils
 local utf8_available = utils.moduleAvailable('lua-utf8')
+local vim_indent
+if vim.api.nvim_buf_get_option(0, 'expandtab') == true then
+    vim_indent = string.rep(' ', vim.api.nvim_buf_get_option(0, 'shiftwidth'))
+else
+    vim_indent = '	'
+end
 
 local M = {}
 
@@ -283,7 +289,11 @@ M.moveToCell = function(row_offset, cell_offset)
         end
     else
         if position[1] == row then
-            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-I>", true, false, true), 'i', true)
+            if cell_offset > 0 then
+                vim.api.nvim_put({vim_indent}, "b", true, true)
+            else
+                vim.api.nvim_put({vim_indent}, "b", false, false)
+            end
         elseif row_offset == 1 and cell_offset == 0 then -- If moving to the next row
             if config.tables.auto_extend_rows then
                 M.addRow()
