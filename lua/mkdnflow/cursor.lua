@@ -287,7 +287,7 @@ pattern.
 --]]
 M.toNextLink = function(pattern)
     if link_style == 'wiki' then
-        pattern = pattern or '%[%[.*%]%]'
+        pattern = pattern or '%[%[[^[]-%]%]'
     else
         -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)
         pattern = pattern or '%b[] ?[%(%[][^%[%(]-[%]%)]'
@@ -302,7 +302,7 @@ link pattern.
 --]]
 M.toPrevLink = function(pattern)
     if link_style == 'wiki' then
-        pattern = pattern or '%]%].*%[%['
+        pattern = pattern or '%]%][^]]-%[%['
     else
         pattern = pattern or '[%]%)][^%[%(]-[%[%(] ?%b]['
     end
