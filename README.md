@@ -448,8 +448,8 @@ Note: This functionality references the file's extension. It does not rely on Ne
     * `'markdown'`: Links will be expected in the standard markdown format: `[<title>](<source>)`
     * `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
 * `links.name_is_source` (boolean)
-    * `true`: Wiki-style links will be created with separate name and source (e.g. `[[link-to-source|Link]]` will display as "Link" and go to a file named "link-to-source.md")
-    * `false`: Wiki-style links will be created with the source and name being the same (e.g. `[[Link]]` will display as "Link" and go to a file named "Link.md")
+    * `true`: Wiki-style links will be created with the source and name being the same (e.g. `[[Link]]` will display as "Link" and go to a file named "Link.md")
+    * `false`: Wiki-style links will be created with separate name and source (e.g. `[[link-to-source|Link]]` will display as "Link" and go to a file named "link-to-source.md")
 * `links.conceal` (boolean)
     * `true`: Link sources and delimiters will be concealed (depending on which link style is selected)
     * `false`: Link sources and delimiters will not be concealed by mkdnflow
