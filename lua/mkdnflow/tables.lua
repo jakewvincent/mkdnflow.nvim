@@ -37,7 +37,7 @@ local extract_cell_data = function(text)
     local bars_escaped = text:gsub('\\|', '##')
     local cells, complete, first, last = {}, false, nil, 1
     while not complete do
-        first, last = bars_escaped:find('|.-|', last - 1)
+        first, last = bars_escaped:find('|.-|', last)
         if first and last then
             local content = text:sub(first + 1, last - 1)
             local trimmed_content = content:match('^%s*( .- )%s*$') or content:match('^%s*(.-)%s*$')
