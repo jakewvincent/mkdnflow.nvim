@@ -7,9 +7,9 @@
 </p>
 
 ### 🆕 Top three [latest features](#-recent-changes)
-1. [Create links using the system clipboard's content as the link source](#create-customize-and-destroy-links)
-2. [Follow jump to, and rename reference-style links](#markdown-or-wiki-link-styles)
-3. [Create Pandoc-flavored bracketed spans w/ ID attributes & jump to them with anchor links](#create-customize-and-destroy-links)
+1. [Follow automatic links](#follow-links-and-citations)
+2. [Create links using the system clipboard's content as the link source](#create-customize-and-destroy-links)
+3. [Follow jump to, and rename reference-style links](#markdown-or-wiki-link-styles)
 
 ## 📝 Description
 
@@ -70,13 +70,14 @@ use({'jakewvincent/mkdnflow.nvim',
     * Absolute links or `.md` links relative to home open in the current window but are interpreted with absolute perspective (e.g. `[File](/home/user/file.md)`/`[File](C:\Users\user\file.md)` on Windows, or `[File](~/Documents/file.md)`)
     * Links to a file prefixed with `file:` (e.g. `[My Xournal notes](file:notes.xopp)`) open with the system's default program for that filetype
     * Links to URLs are opened in the default browser
-    * Anchor links to headings (🆕 or bracketed spans) in the current file will trigger a jump to that heading or bracketed span.
+    * Anchor links to headings (or bracketed spans) in the current file will trigger a jump to that heading or bracketed span.
         * Bracketed spans can have arbitrary ID attributes; if multiple bracketed spans in a file have the same ID attribute, the first will be jumped to. If a bracketed span's ID attribute is identical to that of a heading, the bracketed span will be prioritized since it is explicitly labeled.
         * Headings must start with a hash, and the source part of the anchor link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
             * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
             * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
     * Links to markdown files that include an anchor (e.g. `[Link](grocery_list.md#produce)`) will open the file in the current window and jump to a bracketed span or heading matching the `#` attribute
     * Following a link to a directory (e.g. another notebook) will open a dialogue for you to select which file in the directory to open in the current window
+    * 🆕 [Automatic links](https://pandoc.org/MANUAL.html#automatic-links) (URLs enclosed in angle brackets, e.g. `<https://example.org>`) are followed directly
 * `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
     * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_path-string)—or if `perspective.priority` is `root`, simply place your bib files to be searched in your notebook's root directory.
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
@@ -645,6 +646,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 01/02/23: Automatic links (URLs enclosed in `<` + `>` and lacking the usual markdown link syntax that are automatically rendered as links when compiled into HTML) will now be followed
 * 10/08/22: Create links using the system clipboard content as the link's source
 * 10/02/22: Add ability to consider n lines of context around the cursor when following, renaming, or removing links
 * 09/21/22: Add compact option for wiki-link creation
