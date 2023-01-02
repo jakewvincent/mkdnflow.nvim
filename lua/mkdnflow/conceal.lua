@@ -25,6 +25,9 @@ if link_style == 'markdown' then
         call matchadd('Conceal', '\[[^[]\{-}\]\zs\%[ ]\[[^[]\{-}\]\ze\%[ ]\v([^(]|$)', 0, 17, {'conceal': ''})
         call matchadd('Conceal', '\zs\[\ze[^[]\{-}\]\%[ ]\[[^[]\{-}\]\%[ ]\v([^(]|$)', 0, 18, {'conceal': ''})
         call matchadd('Conceal', '\[[^[]\{-}\zs\]\ze\%[ ]\[[^[]\{-}\]\%[ ]\v([^(]|$)', 0, 19, {'conceal': ''})
+        call matchadd('Conceal', '\[[^[]\{-}\]\zs\%[ ]\[[^[]\{-}\]\ze\n', 0, 20, {'conceal': ''})
+        call matchadd('Conceal', '\zs\[\ze[^[]\{-}\]\%[ ]\[[^[]\{-}\]\n', 0, 21, {'conceal': ''})
+        call matchadd('Conceal', '\[[^[]\{-}\zs\]\ze\%[ ]\[[^[]\{-}\]\n', 0, 22, {'conceal': ''})
     ]], false)
 elseif link_style == 'wiki' then
     vim.api.nvim_exec([[

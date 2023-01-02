@@ -128,8 +128,16 @@ shown for commands that have them.
 
 *:MkdnCreateLink*
     `Default mapping: none`
-    Replace the word under the cursor with a link in which the word under the
-    cursor is the name of the link.
+    Replace the word under the cursor or visual selection with a link in which
+    the word under cursor/visual selection is the name of the link, and the
+    source of the link is a transformed version of the name (as determined by
+    the `links.transform_explicit` config function).
+
+*:MkdnCreateLinkFromClipboard*
+    `Default mapping: <leader>p`
+    Replace the word under the cursor or visual selection with a link in which
+    the word under cursor/visual selection is the link name, and the link
+    source is whatever is on the system clipboard.
 
 *:MkdnDestroyLink*
     `Default mapping: <M-CR> (alt-enter) (Modes: normal)`
@@ -353,13 +361,15 @@ CUSTOMIZABLE LINK INTERPRETATION                        *Mkdnflow-perspective*
   |Mkdnflow-config|).
 
 CREATE OR CUSTOMIZE OR DESTROY LINKS
-- `<CR>` on word under cursor or visual selection to create a notebook-
+- `<CR>` on the word under cursor or visual selection to create a notebook-
   internal link
     - Customizable path text transformations (by default, text is converted to
       lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD
       format is prefixed to the filename, separated by an underscore). See the
       description of the [`links`](#links-dictionary-like-table) config key
       for customization instructions.
+- `<leader>p` on the word under cursor or visual selection to create a link
+  using the system clipboard's content as the source
 - `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it
   (replace it with the text in [...])
 - Create an anchor link if the visual selection starts with `#` 
@@ -539,11 +549,13 @@ require("mkdnflow").forceStart()~
     table), regardless of what the current filetype is. Providing an empty
     table initializes the plugin using the defaults.
 
-require("mkdnflow").links.createLink()~
+require("mkdnflow").links.createLink(from_clipboard)~
     Makes a link from the word under the cursor--or, if no word is under the
     cursor, produces the syntax for a md link: `[](<prefix->.md)`. If there's
     a URL under the cursor, the whole URL is made into a link. Returns nothing
-    via std out, but inserts text into the vim buffer.
+    via std out, but inserts text into the vim buffer. If `from_clipboard` is
+    `true`, the link is created using the system clipboard's content as the
+    link source.
 
 require("mkdnflow").links.followLink()~
     Does something with the path in the link under the cursor. If the path is
@@ -616,7 +628,8 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
             lists = true,
             maps = true,
             paths = true,
-            tables = true
+            tables = true,
+            yaml = false
         },
         filetypes = {md = true, rmd = true, markdown = true},
         create_dirs = true,             
@@ -624,7 +637,8 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
             priority = 'first',
             fallback = 'current',
             root_tell = false,
-            nvim_wd_heel = true
+            nvim_wd_heel = false,
+            update = true
         },    
         wrap = false,
         bib = {
@@ -635,6 +649,7 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
         links = {
             style = 'markdown',
             conceal = false,
+            context = 0,
             implicit_extension = nil,
             transform_implicit = false,
             transform_explicit = function(text)
@@ -653,7 +668,12 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
         },
         tables = {
             trim_whitespace = true,
-            format_on_move = true
+            format_on_move = true,
+            auto_extend_rows = false,
+            auto_extend_cols = false
+        },
+        yaml = {
+            bib = { override = false }
         },
         mappings = {
             MkdnEnter = {{'n', 'v', 'i'}, '<CR>'},
@@ -666,6 +686,8 @@ SAMPLE CONFIG (DEFAULTS)                             *Mkdnflow-default-config*
             MkdnGoBack = {'n', '<BS>'},
             MkdnGoForward = {'n', '<Del>'},
             MkdnFollowLink = false, -- see MkdnEnter
+            MkdnCreateLink = false, -- see MkdnEnter
+            MkdnCreateLinkFromClipboard = {{'n', 'v'}, '<leader>p'}, -- see MkdnEnter
             MkdnDestroyLink = {'n', '<M-CR>'},
             MkdnMoveSource = {'n', '<F2>'},
             MkdnYankAnchorLink = {'n', 'ya'},
@@ -695,7 +717,7 @@ CONFIG DESCRIPTIONS                                *Mkdnflow-config-details*
 
 `modules` (dictionary-like table)~
                                                      *Mkdnflow-config-modules*
-- All modules are enabled by default:
+- Most modules are enabled by default:
                                                  *Mkdnflow-config-modules-bib*
     - `modules.bib` (required for parsing bib files and following citations)
                                              *Mkdnflow-config-modules-buffers*
@@ -723,6 +745,9 @@ CONFIG DESCRIPTIONS                                *Mkdnflow-config-details*
     - `modules.paths` (required for link interpretation and following links)
                                               *Mkdnflow-config-modules-tables*
     - `modules.tables` (required for table navigation and formatting)
+- Modules not enabled by default:
+                                                *Mkdnflow-config-modules-yaml*
+    - `modules.yaml` (required for parsing yaml blocks)
 
 `create_dirs` (boolean)~
                                                  *Mkdnflow-config-create_dirs*
@@ -737,7 +762,7 @@ CONFIG DESCRIPTIONS                                *Mkdnflow-config-details*
                                         *Mkdnflow-config-perspective-priority*
 - `perspective.priority` (string): Specifies the priority perspective to take
   when interpreting link paths
-    - `'first'`: Links will be interpreted relative to the first-opened file
+    - `'first'` (default): Links will be interpreted relative to the first-opened file
       (when the current instance of Neovim was started)
     - `'current'`: Links will be interpreted relative to the current file
     - `'root'`: Links will be interpreted relative to the root directory of
@@ -751,14 +776,14 @@ CONFIG DESCRIPTIONS                                *Mkdnflow-config-details*
       to the plugin's perspective.) This helps ensure (at least) that path
       completions (if using a completion plugin with support for paths) will
       be accurate and usable.
-    - `false`: Neovim's working directory will not be affected by Mkdnflow
+    - `false` (default): Neovim's working directory will not be affected by Mkdnflow
 
                                         *Mkdnflow-config-perspective-fallback*
 - `perspective.fallback` (string): Specifies the backup perspective to take if
   priority isn't possible (e.g. if it is `'root'` but no root directory is
   found)
     - `'first'`: (see above)
-    - `'current'`: (see above)
+    - `'current'` (default): (see above)
     - `'root'`: (see above)
                                        *Mkdnflow-config-perspective-root_tell*
 - `perspective.root_tell` (string or boolean)
@@ -823,6 +848,13 @@ it in the list.
     - `true`: Link sources and delimiters will be concealed (depending on
       which link style is selected)
     - `false`: Link sources and delimiters will not be concealed by mkdnflow
+                                               *Mkdnflow-config-links-context*
+- `links.context` (number)
+    - `0` (default): When following or jumping to links, assume that no link
+      will be split over multiple lines
+    - `n`: When following or jumping to links, consider `n` lines before and
+      after a given line (useful if you ever permit links to be interrupted by
+      a hard line break)
                                     *Mkdnflow-config-links-implicit_extension*
 - `links.implicit_extension` (string)
     - `<any extension>`: A string that instructs the plugin (a) how to
@@ -905,6 +937,26 @@ it in the list.
 - `tables.format_on_move` (boolean): Whether tables should be formatted each
   time the cursor is moved via MkdnTableNext/PrevCell or
   MkdnTableNext/Prev/Row (default: `true`)
+                                     *Mkdnflow-config-tables-auto_extend_rows*
+                                     *Mkdnflow-config-tables-auto_extend_cols*
+- tables.auto_extend_rows (boolean): Whether a new row should automatically be
+  added to a table when `:MkdnTableNextRow` is triggered when the cursor is in
+  the final row of the table. If `false`, the cursor will simply leave the
+  table for the next line. (default: `false`)
+- tables.auto_extend_cols (boolean): Whether a new column should automatically
+  be added to a table when `:MkdnTableNextCell` is triggered when the cursor
+  is in the final column of the table. If false, the cursor will jump to the
+  first cell of the next row, unless the cursor is already in the last row, in
+  which case nothing will happen. (default: `false`)
+
+`yaml (dictionary-like table)`~
+                                                        *Mkdnflow-config-yaml*
+- `yaml.bib` (dictionary-like table):
+                                                    *Mkdnflow-config-yaml-bib*
+                                           *Mkdnflow-config-yaml-bib-override*
+    - `yaml.bib.override` (boolean): Whether or not a bib path specified in a
+      yaml block should be the only source considered for bib references in
+      that file (default: `false`)
 
 NOTE: See |Mkdnflow-mappings|
 

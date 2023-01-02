@@ -26,15 +26,16 @@ local default_config = {
         lists = true,
         maps = true,
         paths = true,
-        tables = true
+        tables = true,
+        yaml = false
     },
     create_dirs = true,
     perspective = {
         priority = 'first',
         fallback = 'current',
         root_tell = false,
-        update = true,
-        nvim_wd_heel = true
+        nvim_wd_heel = false,
+        update = true
     },
     filetypes = {
         md = true,
@@ -44,13 +45,14 @@ local default_config = {
     wrap = false,
     bib = {
         default_path = nil,
-        find_in_root = true
+        find_in_root = true,
     },
     silent = false,
     links = {
         style = 'markdown',
         name_is_source = false,
         conceal = false,
+        context = 0,
         implicit_extension = nil,
         transform_implicit = false,
         transform_explicit = function(text)
@@ -58,7 +60,8 @@ local default_config = {
             text = text:lower()
             text = os.date('%Y-%m-%d_')..text
             return(text)
-        end
+        end,
+        context = 0,
     },
     to_do = {
         symbols = {' ', '-', 'X'},
@@ -72,6 +75,9 @@ local default_config = {
         format_on_move = true,
         auto_extend_rows = false,
         auto_extend_cols = false
+    },
+    yaml = {
+        bib = {override = false}
     },
     mappings = {
         MkdnEnter = {{'n', 'v'}, '<CR>'},
@@ -107,7 +113,8 @@ local default_config = {
         MkdnUnfoldSection = {'n', '<leader>F'},
         MkdnTab = false,
         MkdnSTab = false,
-        MkdnCreateLink = false
+        MkdnCreateLink = false,
+        MkdnCreateLinkFromClipboard = {{'n', 'v'}, '<leader>p'}
     }
 }
 
@@ -124,6 +131,7 @@ init.command_deps = {
     MkdnNextLink = {'links', 'cursor'},
     MkdnPrevLink = {'links', 'cursor'},
     MkdnCreateLink = {'links'},
+    MkdnCreateLinkFromClipboard = {'links'},
     MkdnTagSpan = {'links'},
     MkdnFollowLink = {'links', 'paths'},
     MkdnDestroyLink = {'links'},
@@ -232,15 +240,17 @@ init.setup = function(user_config)
             end
         end
         -- Load modules
-        for k, v in pairs(init.config.modules) do
-            if init.config.modules[k] then
-                if k == 'conceal' and v and init.config.links.conceal then
-                    init.conceal = require('mkdnflow.'..k)
-                elseif k ~= 'conceal' then
-                    init[k] = require('mkdnflow.'..k)
-                end
-            end
-        end
+        init.conceal = init.config.links.conceal and require('mkdnflow.conceal')
+        init.bib = init.config.modules.bib and require('mkdnflow.bib')
+        init.buffers = init.config.modules.buffers and require('mkdnflow.buffers')
+        init.folds = init.config.modules.folds and require('mkdnflow.folds')
+        init.links = init.config.modules.links and require('mkdnflow.links')
+        init.cursor = init.config.modules.cursor and require('mkdnflow.cursor')
+        init.lists = init.config.modules.lists and require('mkdnflow.lists')
+        init.maps = init.config.modules.maps and require('mkdnflow.maps')
+        init.paths = init.config.modules.paths and require('mkdnflow.paths')
+        init.tables = init.config.modules.tables and require('mkdnflow.tables')
+        init.yaml = init.config.modules.yaml and require('mkdnflow.yaml')
         -- Record load status (i.e. loaded)
         init.loaded = true
     else

@@ -54,7 +54,7 @@ local exists = function(path, type)
     else
         -- Use the shell to determine if the path exists
         handle = io.popen(
-            'if [ -'..type..' '..path..' ]; then echo true; else echo false; fi'
+            'if [ -'..type..' '..utils.escapeChars(path)..' ]; then echo true; else echo false; fi'
         )
     end
     local output = handle:read('*l')
@@ -79,6 +79,9 @@ local resolve_notebook_path = function(path, sub_home_var)
     local derived_path = path
     if this_os:match('Windows') then
         derived_path = derived_path:gsub('/', '\\')
+        if derived_path:match('^~\\') then
+            derived_path = string.gsub(derived_path, '^~\\', vim.loop.os_homedir()..'\\')
+        end
     end
     -- Decide what to pass to internal_open function
     if derived_path:match('^~/') or derived_path:match('^/') or derived_path:match('^%u:\\') then
@@ -216,6 +219,12 @@ local handle_external_file = function(path)
     -- Get what's after the file: tag
     local real_path = string.match(path, '^file:(.*)')
     local escaped_path
+    if this_os:match('Windows') then
+        real_path = real_path:gsub('/', '\\')
+        if real_path:match('^~\\') then
+            real_path = string.gsub(real_path, '^~\\', vim.loop.os_homedir()..'\\')
+        end
+    end
     -- Check if path provided is absolute or relative to $HOME
     if real_path:match('^~/') or real_path:match('^/') or real_path:match('^%u:\\') then
         if this_os:match('Windows') then
@@ -363,7 +372,7 @@ M.handlePath = function(path, anchor)
         end
     elseif path_type == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
-        local field = bib.citationHandler(utils.luaEscape(path))
+        local field = bib.handleCitation(utils.luaEscape(path))
         -- Use this function to do sth with the information returned (if any)
         if field then M.handlePath(field) end
     end
@@ -406,7 +415,7 @@ M.moveSource = function()
         end
         return resolve_notebook_path(source, true)
     end
-    local confirm_and_execute = function(derived_source, source, derived_goal, anchor, location, path_row, src_start, src_finish)
+    local confirm_and_execute = function(derived_source, source, derived_goal, anchor, location, start_row, start_col, end_row, end_col)
         local truncated_goal = '...'..truncate_path(derived_source, derived_goal)
         local prompt = "⬇️  Move '"..derived_source.."' ("..source..") to '"..truncated_goal.."' ("..location..")? [y/n] "
         local cmdheight = vim.api.nvim_get_option('cmdheight')
@@ -425,10 +434,10 @@ M.moveSource = function()
                     if this_os:match('Windows') then
                         os.execute('move "'..derived_source..'" "'..derived_goal..'"')
                     else
-                        os.execute('mv '..derived_source..' '..derived_goal)
+                        os.execute('mv '..utils.escapeChars(derived_source)..' '..utils.escapeChars(derived_goal))
                     end
                     -- Change the link content
-                    vim.api.nvim_buf_set_text(0, path_row - 1, src_start - 1, path_row - 1, src_finish, {location..anchor})
+                    vim.api.nvim_buf_set_text(0, start_row - 1, start_col - 1, end_row - 1, end_col, {location..anchor})
                     -- Clear the prompt & print sth
                     -- Reset cmdheight value
                     vim.api.nvim_command("normal! :")
@@ -445,9 +454,7 @@ M.moveSource = function()
         )
     end
     -- Retrieve source from link
-    local source, anchor, link_type, _, _, path_row, src_row, src_start, src_finish = links.getLinkPart(links.getLinkUnderCursor(), 'source')
-    -- Use source row for path row if link type is ref-style
-    path_row = (link_type == 'ref_style_link' and src_row) or path_row
+    local source, anchor, link_type, start_row, start_col, end_row, end_col = links.getLinkPart(links.getLinkUnderCursor(), 'source')
     -- Determine type of source
     local source_type = M.pathType(source)
     -- Modify source path in the same way as when links are interpreted
@@ -502,10 +509,10 @@ M.moveSource = function()
                             vim.api.nvim_echo({{'⬇️  The goal directory doesn\'t exist. Set create_dirs to true for automatic directory creation.'}})
                         end
                     else
-                        confirm_and_execute(derived_source, source, derived_goal, anchor, location, path_row, src_start, src_finish)
+                        confirm_and_execute(derived_source, source, derived_goal, anchor, location, start_row, start_col, end_row, end_col)
                     end
                 else -- Move
-                    confirm_and_execute(derived_source, source, derived_goal, anchor, location, path_row, src_start, src_finish)
+                    confirm_and_execute(derived_source, source, derived_goal, anchor, location, start_row, start_col, end_row, end_col)
                 end
             else -- Otherwise, the file we're trying to move must not exist
                 -- Clear the prompt & send a warning

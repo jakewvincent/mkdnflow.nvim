@@ -85,25 +85,6 @@ M.userConfigCheck = function(user_config)
         end
     end
 
-    -- Look for oldest prefix settings
-    if user_config.evaluate_prefix or user_config.new_file_prefix then
-        user_config.prefix = {
-            evaluate = user_config.evaluate_prefix,
-            string = user_config.new_file_prefix
-        }
-    end
-
-    -- Look for old prefix settings
-    if user_config.prefix then
-        if user_config.prefix.evaluate == nil then
-            user_config.prefix.evaluate = true
-        end
-        if user_config.prefix.string == nil then
-            user_config.prefix.string = [[os.date('%Y-%m-%d_')]]
-        end
-        warn('⬇️  The prefix key has now been migrated into the links key under the transform_explicit option. Please update your config. See :h mkdnflow-changes, commit f054440...')
-    end
-
     -- Look for links_relative_to
     if user_config.links_relative_to then
         user_config.perspective = user_config.links_relative_to
