@@ -47,6 +47,7 @@ M.getLinkUnderCursor = function(col)
         md_link = '(%b[]%b())',
         wiki_link = '(%[%b[]%])',
         ref_style_link = '(%b[]%s?%b[])',
+		auto_link = '(%b<>)',
         citation = '[^%a%d]-(@[%a%d_%.%-\']*[%a%d]+)[%s%p%c]?'
     }
     local row = position[1]
@@ -129,12 +130,14 @@ M.getLinkPart = function(link_table, part)
                 wiki_link = '%[%[(.-)|.-%]%]', -- 3 thru length of match
                 wiki_link_no_bar = '%[%[(.-)%]%]', -- 3 thru length of match
                 ref_style_link = '%]%[(.*)%]', -- 3 or 4 thru length of match
+				auto_link = '<(.-)>',
                 citation = '(@.*)' -- find indices will work
             },
             anchor = {
                 md_link = '(#.-)%)', -- ?
                 wiki_link = '(#.-)|', -- ?
-                wiki_link_no_bar = '(#.-)%]%]' -- ?
+                wiki_link_no_bar = '(#.-)%]%]', -- ?
+				auto_link = '<.-(#.-)>'
             }
         }
         local get_from = { -- Table of functions by link type
@@ -244,6 +247,18 @@ M.getLinkPart = function(link_table, part)
                     return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                 end
             end,
+			auto_link = function(part_)
+                local part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['auto_link'], start_row)
+				if part_ == 'source' then
+					local anchor_start, _, anchor = string.find(match, '(#.*)')
+					if anchor_start then
+						match = string.sub(match, 1, anchor_start - 1)
+					else
+						anchor = ''
+					end
+					return match, anchor, part_start_row, part_start_col, part_end_row, part_end_col
+				end
+			end,
             citation = function(part_)
                 local part_start_col, part_end_col, match = string.find(text, patterns[part_]['citation'])
                 return match, '', start_row, part_start_col, end_row, part_end_col
