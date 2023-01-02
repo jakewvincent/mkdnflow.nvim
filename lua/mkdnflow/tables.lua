@@ -135,7 +135,7 @@ local get_max_lengths = function(table_data)
 end
 
 M.isPartOfTable = function(text)
-    if text and text:match('^|.+|.-$') then
+    if text and text:match('^%s*|.+|.-$') then
         return true
     else
         return false
