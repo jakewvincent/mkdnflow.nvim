@@ -153,6 +153,7 @@ require('mkdnflow').setup({
 * 🆕 Fold the section the cursor is currently in—even if the cursor is not on the heading—using `<leader>f`
 
 ### Lists
+* List markers recognized: `-`, `*`, and `+`
 * Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table) (make sure to use the [luautf8 luarock dependency](#if-you-wish-to-use-custom-utf-8-to-do-symbols-add-the-luautf8-luarock-dependency) if you want to use utf8 to-do symbols).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
@@ -646,6 +647,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 01/05/23: Added `+` as a valid unordered list or unordered to-do list marker (requested in [issue #112](https://github.com/jakewvincent/mkdnflow.nvim/issues/112))
 * 01/02/23: Automatic links (URLs enclosed in `<` + `>` and lacking the usual markdown link syntax that are automatically rendered as links when compiled into HTML) will now be followed
 * 10/08/22: Create links using the system clipboard content as the link's source
 * 10/02/22: Add ability to consider n lines of context around the cursor when following, renaming, or removing links
