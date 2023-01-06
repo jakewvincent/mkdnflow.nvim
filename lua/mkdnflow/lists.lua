@@ -40,12 +40,12 @@ local M = {}
 M.patterns = {
     ultd = {
         li_type = 'ultd',
-        main = '^%s*[*-+]%s+%[.%]%s+',
-        indentation = '^(%s*)[*+-]%s+%[.%]',
-        marker = '^%s*([*-+]%s+)%[.%]%s+',
-        content = '^%s*[*-+]%s+%[.%]%s+(.+)',
-        demotion = '^%s*[*-+]%s+',
-        empty = '^%s*[*-+]%s+%[.%]%s+$'
+        main = '^%s*[+*-]%s+%[.%]%s+',
+        indentation = '^(%s*)[+*-]%s+%[.%]',
+        marker = '^%s*([+*-]%s+)%[.%]%s+',
+        content = '^%s*[+*-]%s+%[.%]%s+(.+)',
+        demotion = '^%s*[+*-]%s+',
+        empty = '^%s*[+*-]%s+%[.%]%s+$'
     },
     oltd = {
         li_type = 'oltd',
@@ -170,7 +170,7 @@ local get_status = function(line)
     if line then
         for _, v in ipairs(to_do_symbols) do
             v = utils.luaEscape(v)
-            local ul = "^%s*[*-+]%s+%[" .. v .. "%]%s+"
+            local ul = "^%s*[+*-]%s+%[" .. v .. "%]%s+"
             local ol = "^%s*%d+%.%s+%[" .. v .. "%]%s+"
             local match = line:match(ul, nil) or line:match(ol, nil)
             if match then todo = v end
