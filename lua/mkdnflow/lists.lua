@@ -188,7 +188,7 @@ local same_siblings = function(indentation, row, status)
         local prev_line = vim.api.nvim_buf_get_lines(0, start, start + 1, false)
         local has_status = get_status(prev_line[1])
         if has_status then
-            local sib_indentation = prev_line[1]:match('(%s*)[-*%d]+%.*')
+            local sib_indentation = prev_line[1]:match('(%s*)[-*+%d]+%.*')
             if #sib_indentation == #indentation then
                 table.insert(sib_statuses, has_status)
                 start = start - 1
@@ -209,7 +209,7 @@ local same_siblings = function(indentation, row, status)
         local next_line = vim.api.nvim_buf_get_lines(0, start, start + 1, false)
         local has_status = get_status(next_line[1])
         if has_status then
-            local sib_indentation = next_line[1]:match('(%s*)[-*%d]+%.*')
+            local sib_indentation = next_line[1]:match('(%s*)[-*+%d]+%.*')
             if #sib_indentation == #indentation then
                 table.insert(sib_statuses, has_status)
                 start = start + 1
@@ -249,7 +249,7 @@ local update_parent_to_do = function() end
 
 update_parent_to_do = function(line, row, symbol)
     -- See if there's any whitespace before the bullet
-    local is_indented = line:match('^(%s+)[-*%d]+%.*')
+    local is_indented = line:match('^(%s+)[-*+%d]+%.*')
     -- If the current to-do is indented, it may have a parent to-do
     if is_indented then
         local start = row - 2
@@ -262,7 +262,7 @@ update_parent_to_do = function(line, row, symbol)
             -- If there's a to-do on the prev line, see if it's less indented
             local has_to_do = get_status(prev_line[1])
             if has_to_do then
-                local indentation = prev_line[1]:match('^(%s*)[-*%d]+%.*')
+                local indentation = prev_line[1]:match('^(%s*)[-*+%d]+%.*')
                 parent = #indentation < #is_indented
             else
                 parent = nil
