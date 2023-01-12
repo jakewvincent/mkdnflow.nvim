@@ -126,7 +126,7 @@ M.getLinkPart = function(link_table, part)
                 citation = '(@.*)'
             },
             source = {
-                md_link = '%]%((.*)%)', -- 3 thru length of match
+                md_link = '%]%((.-)%)', -- 3 thru length of match
                 wiki_link = '%[%[(.-)|.-%]%]', -- 3 thru length of match
                 wiki_link_no_bar = '%[%[(.-)%]%]', -- 3 thru length of match
                 ref_style_link = '%]%[(.*)%]', -- 3 or 4 thru length of match
@@ -142,11 +142,11 @@ M.getLinkPart = function(link_table, part)
         }
         local get_from = { -- Table of functions by link type
             md_link = function(part_)
-                local part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['md_link'], start_row)
+                local part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines = utils.mFind(match_lines, patterns[part_]['md_link'], start_row, nil, start_col)
                 if part_ == 'source' then
                     -- Check for angle brackets
                     if match:find('^<.*>$') then
-                        part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, '%(<(.*)>%)', part_start_row)
+                        part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines = utils.mFind(match_lines, '%(<(.*)>%)', part_start_row)
                     end
                     -- Make part start and finish relative to line start, not link start
                     local anchor_start, _, anchor = string.find(match, '(#.*)')
@@ -161,12 +161,12 @@ M.getLinkPart = function(link_table, part)
                 end
             end,
             wiki_link = function(part_)
-                local part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['wiki_link'], start_row)
+                local part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines = utils.mFind(match_lines, patterns[part_]['wiki_link'], start_row, nil, start_col)
                 if match then
                     if part_ == 'source' then
                         -- Check for angle brackets
                         if match:find('^<.*>$') then
-                            part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, '%[<(.*)>|', part_start_row)
+                            part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines = utils.mFind(match_lines, '%[<(.*)>|', part_start_row)
                         end
                         -- Make part start and finish relative to line start, not link start
                         local anchor_start, _, anchor = string.find(match, '(#.*)')
@@ -180,14 +180,14 @@ M.getLinkPart = function(link_table, part)
                         return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                     end
                 elseif part_ == 'name' and string.match(match, '#') then -- If there was no match, we have a link w/ no bar; check for an anchor first
-                    part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['wiki_link_anchor_no_bar'], start_row)
+                    part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines = utils.mFind(match_lines, patterns[part_]['wiki_link_anchor_no_bar'], start_row, nil, start_col)
                     return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                 else
-                    part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['wiki_link_no_bar'], start_row)
+                    part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines = utils.mFind(match_lines, patterns[part_]['wiki_link_no_bar'], start_row, nil, start_col)
                     if part_ == 'source' then
                         -- Check for angle brackets
                         if match:find('^<.*>$') then
-                            part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, '%[<(.*)>]', part_start_row)
+                            part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines = utils.mFind(match_lines, '%[<(.*)>]', part_start_row)
                         end
                         -- Make part start and finish relative to line start, not link start
                         local anchor_start, _, anchor = string.find(match, '(#.*)')
@@ -203,7 +203,7 @@ M.getLinkPart = function(link_table, part)
                 end
             end,
             ref_style_link = function(part_)
-                local part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['ref_style_link'], start_row)
+                local part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines = utils.mFind(match_lines, patterns[part_]['ref_style_link'], start_row)
                 if part_ == 'source' then
                     local source, source_row, source_start, _ = get_ref(match, part_start_row)
                     if source then -- If a source was found, extract the relevant information from the source line
@@ -248,7 +248,7 @@ M.getLinkPart = function(link_table, part)
                 end
             end,
 			auto_link = function(part_)
-                local part_start_row, part_start_col, part_end_row, part_end_col, match, match_lines = utils.mFind(match_lines, patterns[part_]['auto_link'], start_row)
+                local part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines = utils.mFind(match_lines, patterns[part_]['auto_link'], start_row)
 				if part_ == 'source' then
 					local anchor_start, _, anchor = string.find(match, '(#.*)')
 					if anchor_start then
