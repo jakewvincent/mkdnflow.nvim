@@ -149,8 +149,8 @@ M.escapeChars = function(string)
 end
 
 M.mFind = function(tbl, str, start_row, init_row, init_col, plain)
-    init_row = init_row or 1
-    init_col = init_col or 1
+    init_row = init_row or 1 -- Line where the cursor is (start_row is first line in table, including user-configurable context)
+    init_col = init_col or 1 -- Where to start the search from in the line
     plain = plain or false
     local init, match_lines = init_col, {}
     -- Derive the init point for the concatenated lines
