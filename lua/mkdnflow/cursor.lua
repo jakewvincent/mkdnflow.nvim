@@ -187,7 +187,7 @@ local go_to_heading = function(anchor_text, reverse)
                     continue = false
                 else
                     -- Format current heading to see if it matches our search term
-                    local heading_as_anchor = links.formatLink(line[1], 2)
+                    local heading_as_anchor = links.formatLink(line[1], nil, 2)
                     if anchor_text == heading_as_anchor then
                         -- Set a mark
                         vim.api.nvim_buf_set_mark(0, '`', position[1], position[2], {})
