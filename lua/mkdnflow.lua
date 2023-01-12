@@ -61,7 +61,6 @@ local default_config = {
             text = os.date('%Y-%m-%d_')..text
             return(text)
         end,
-        context = 0,
     },
     to_do = {
         symbols = {' ', '-', 'X'},
