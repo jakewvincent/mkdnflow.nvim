@@ -110,6 +110,12 @@ M.moduleAvailable = function(name)
   end
 end
 
+if M.moduleAvailable('lua-utf8') then
+    utf8 = require('lua-utf8')
+else
+    utf8 = string
+end
+
 M.luaEscape = function(string)
     -- Which characters to match
     local chars = "[-.'\"+?%%]"
@@ -161,9 +167,9 @@ M.mFind = function(tbl, str, start_row, init_row, init_col, plain)
         end
     end
     local catlines = table.concat(tbl)
-    local start, finish, capture = string.find(catlines, str, init, plain)
+    local start, finish, capture = utf8.find(catlines, str, init, plain)
     if capture then
-        start, finish = string.find(catlines, capture, start, true)
+        start, finish = utf8.find(catlines, capture, start, true)
     end
     local chars, match_start_row, match_start_col, match_end_row, match_end_col = 0, nil, nil, nil, nil
     if start and finish then

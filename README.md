@@ -23,13 +23,13 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 * Linux, macOS, or Windows
 * Neovim >= 0.7.0 for all functionality (most will work with Neovim >= 0.5.0, but mappings will need to be set separately)
-* Optional: If you wish to use UTF-8 symbols as [custom to-do symbols](#to_do-dictionary-like-table) or in [tables that you wish to have Mkdnflow format](#tables-dictionary-like-table), you'll need the luarocks module [`luautf8`](https://luarocks.org/modules/xavier-wang/luautf8). Luarocks dependencies can be installed via [Packer](#initlua) using the `rocks` key:
+* Optional: If you wish to use UTF-8 symbols as [custom to-do symbols](#to_do-dictionary-like-table), in [tables that you wish to have Mkdnflow format](#tables-dictionary-like-table), or in anchor links, you'll need the luarocks module [`luautf8`](https://luarocks.org/modules/xavier-wang/luautf8). Luarocks dependencies can be installed via [Packer](#initlua) using the `rocks` key:
 
 ```lua
 use({'jakewvincent/mkdnflow.nvim',
     rocks = 'luautf8', -- Ensures optional luautf8 dependency is installed
     config = function()
-        require('mkdnflow').setup({})
+        require('mkdnflow').setup()
     end
 })
 ```
@@ -70,7 +70,7 @@ use({'jakewvincent/mkdnflow.nvim',
     * Absolute links or `.md` links relative to home open in the current window but are interpreted with absolute perspective (e.g. `[File](/home/user/file.md)`/`[File](C:\Users\user\file.md)` on Windows, or `[File](~/Documents/file.md)`)
     * Links to a file prefixed with `file:` (e.g. `[My Xournal notes](file:notes.xopp)`) open with the system's default program for that filetype
     * Links to URLs are opened in the default browser
-    * Anchor links to headings (or bracketed spans) in the current file will trigger a jump to that heading or bracketed span.
+    * Anchor links to headings (or bracketed spans) in the current file will trigger a jump to that heading or bracketed span. (Install the `luautf8` Luarocks module if you want your anchor links to be able to include non-ascii symbols.)
         * Bracketed spans can have arbitrary ID attributes; if multiple bracketed spans in a file have the same ID attribute, the first will be jumped to. If a bracketed span's ID attribute is identical to that of a heading, the bracketed span will be prioritized since it is explicitly labeled.
         * Headings must start with a hash, and the source part of the anchor link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
             * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
@@ -647,6 +647,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 01/14/23: Added support for non-ascii symbols in anchor links (with the `luautf8` Luarocks module)
 * 01/05/23: Added `+` as a valid unordered list or unordered to-do list marker (requested in [issue #112](https://github.com/jakewvincent/mkdnflow.nvim/issues/112))
 * 01/02/23: Automatic links (URLs enclosed in `<` + `>` and lacking the usual markdown link syntax that are automatically rendered as links when compiled into HTML) will now be followed
 * 10/08/22: Create links using the system clipboard content as the link's source
