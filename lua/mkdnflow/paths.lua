@@ -40,31 +40,37 @@ local bib = require('mkdnflow.bib')
 local cursor = require('mkdnflow.cursor')
 local links = require('mkdnflow.links')
 
+local tobool = function(str)
+    local bool = false
+    str = (str:gsub(" ", ""))
+    if str == "true" then
+        bool = true
+    end
+    return bool
+end
+
 --[[
 exists() determines whether the path specified as the argument exists
 NOTE: Assumes that the initially opened file is in an existing directory!
 --]]
-local exists = function(path, type)
+local exists = function(path, unit_type)
     -- If type is not specified, use "d" (directory) by default
-    type = type or "d"
+    unit_type = unit_type or "d"
     local handle
     if this_os:match('Windows') then
-        if type == 'd' then type = '\\' else type = '' end
-        handle = io.popen('IF exist "'..path..type..'" ( echo true ) ELSE ( echo false )')
+        if unit_type == 'd' then unit_type = '\\' else unit_type = '' end
+        local command = 'IF exist "'..path..unit_type..'" ( echo true ) ELSE ( echo false )'
+        handle = io.popen(command)
     else
         -- Use the shell to determine if the path exists
         handle = io.popen(
-            'if [ -'..type..' '..utils.escapeChars(path)..' ]; then echo true; else echo false; fi'
+            'if [ -'..unit_type..' '..utils.escapeChars(path)..' ]; then echo true; else echo false; fi'
         )
     end
     local output = handle:read('*l')
     io.close(handle)
     -- Get the contents of the first (only) line & store as a boolean
-    if output == 'false' then
-        output = false
-    else
-        output = true
-    end
+    output = tobool(output)
     -- Return the existence property of the path
     return(output)
 end
@@ -384,7 +390,7 @@ paths.
 --]]
 local truncate_path = function(oldpath, newpath)
     local difference = ''
-    local last_slash = string.find(string.reverse(newpath), '/')
+    local last_slash = string.find(string.reverse(newpath), sep)
     last_slash = last_slash and #newpath - last_slash + 1 or nil
     local continue = true
     local char = 1
