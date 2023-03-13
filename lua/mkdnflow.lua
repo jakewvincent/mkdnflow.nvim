@@ -16,6 +16,9 @@
 
 -- Default config table (where defaults and user-provided config will be combined)
 local default_config = {
+    create_dirs = true,
+    silent = false,
+    wrap = false,
     modules = {
         bib = true,
         buffers = true,
@@ -29,7 +32,6 @@ local default_config = {
         tables = true,
         yaml = false
     },
-    create_dirs = true,
     perspective = {
         priority = 'first',
         fallback = 'current',
@@ -42,12 +44,10 @@ local default_config = {
         rmd = true,
         markdown = true
     },
-    wrap = false,
     bib = {
         default_path = nil,
         find_in_root = true,
     },
-    silent = false,
     links = {
         style = 'markdown',
         name_is_source = false,
@@ -61,6 +61,7 @@ local default_config = {
             text = os.date('%Y-%m-%d_')..text
             return(text)
         end,
+        inject_title = true
     },
     to_do = {
         symbols = {' ', '-', 'X'},
