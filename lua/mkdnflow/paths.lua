@@ -30,8 +30,9 @@ local perspective = require('mkdnflow').config.perspective
 local initial_dir = require('mkdnflow').initial_dir
 local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow').config.silent
-local implicit_extension = require('mkdnflow').config.links.implicit_extension
-local link_transform = require('mkdnflow').config.links.transform_implicit
+local links_config = require('mkdnflow').config.links
+local implicit_extension = links_config.implicit_extension
+local link_transform = links_config.transform_implicit
 
 -- Load modules
 local utils = require('mkdnflow.utils')
@@ -157,8 +158,19 @@ local internal_open = function(path, anchor)
     else
         -- Push the current buffer name onto the main buffer stack
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
+        -- Prepare to inject the link title as the doc title
+        local title
+        if links_config.inject_title then
+            if not exists(path_w_ext, 'f') then
+                title = links.getLinkPart(links.getLinkUnderCursor(), 'name')
+            end
+        end
         vim.cmd(':e '..path_w_ext)
         M.updateDirs()
+        -- Inject the title
+        if title then
+            vim.api.nvim_buf_set_lines(0, 0, 1, false, {"# "..title})
+        end
         if anchor and anchor ~= '' then
             if not cursor.toId(anchor) then
                 cursor.toHeading(anchor)
