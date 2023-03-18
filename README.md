@@ -400,10 +400,13 @@ require('mkdnflow').setup({
     new_file_template = {
         use_template = false,
         placeholders = {
-            title = "link_title",
-            date = "os_date"
+            before = {
+                title = "link_title",
+                date = "os_date"
+            },
+            after = {}
         },
-        template = "# {{title}}"
+        template = "# {{ title }}"
     },
     to_do = {
         symbols = {' ', '-', 'X'},
@@ -554,6 +557,15 @@ function(input)
     end
 end
 ```
+
+#### `new_file_template` (dictionary-like table)
+* `new_file_template.use_template` (boolean)
+    * `true`: the template is filled in (if it contains placeholders) and inserted into any new buffers entered by following a link to a buffer that doesn't exist yet
+    * `false`: no templates are filled in and inserted into new buffers
+* `new_file_template.placeholders` (dictionary-like table)
+    * `new_file_template.placeholders.before` (dictionary-like table) A table whose keys are placeholder names pointing to functions to be evaluated immediately before the buffer is opened in the current window
+    * `new_file_template.placeholders.after` (dictionary-like table) A table hose keys are placeholder names pointing to functions to be evaluated immediately after the buffer is opened in the current window
+* `new_file_template.template` (string) A string, optionally containing placeholder names, that will be inserted into new buffers
 
 #### `to_do` (dictionary-like table)
 * `to_do.symbols` (array-like table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
