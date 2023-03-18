@@ -190,4 +190,15 @@ M.mFind = function(tbl, str, start_row, init_row, init_col, plain)
     return match_start_row, match_start_col, match_end_row, match_end_col, capture, match_lines
 end
 
+M.strSplit = function(str, sep)
+    if sep == nil then
+        sep = "%s"
+    end
+    local splits =  {}
+    for match in string.gmatch(str, "([^"..sep.."]+)") do
+        table.insert(splits, match)
+    end
+    return splits
+end
+
 return M
