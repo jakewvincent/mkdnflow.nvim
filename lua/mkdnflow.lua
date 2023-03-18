@@ -61,7 +61,20 @@ local default_config = {
             text = os.date('%Y-%m-%d_')..text
             return(text)
         end,
-        inject_title = true
+    },
+    new_file_template = {
+        use_template = false,
+        placeholders = {
+            before = {
+                title = "link_title",
+                date = "os_date"
+            },
+            after = {
+                filename = "filename",
+                path = "path"
+            }
+        },
+        template = {"# {{title}}\n{{date}}"}
     },
     to_do = {
         symbols = {' ', '-', 'X'},
