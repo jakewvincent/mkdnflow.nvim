@@ -7,9 +7,9 @@
 </p>
 
 ### 🆕 Top three [latest features](#-recent-changes)
+1. [Templates for new files]()
 1. [Follow automatic links](#follow-links-and-citations)
 2. [Create links using the system clipboard's content as the link source](#create-customize-and-destroy-links)
-3. [Follow jump to, and rename reference-style links](#markdown-or-wiki-link-styles)
 
 ## 📝 Description
 
@@ -86,6 +86,38 @@ use({'jakewvincent/mkdnflow.nvim',
 ```bib
 @misc{dschrute,
     url={https://dundermifflin.slack.com/archives/P07BFJD82}
+}
+```
+
+### Templates for new files
+* Define a custom template (under config option `new_file_template.template`) that gets populated and inserted into new markdown files.
+* Familiar double-brace syntax for placeholders, e.g. `{{title}}` or `{{ title }}`
+* Define custom template placeholders (under config option `new_file_template.placeholders`).
+    * Evaluate the placeholder value before switching to the new buffer or after switching to the new buffer by defining the placeholder in either `placeholders.before` or `placeholders.after`.
+    * `{{ title }}` and `{{ date }}` are assigned by default to `"link_title"` and `"os_date"` but can be overridden. `"link_title"` refers to the title of the file, _as determined by the label of the the link that led to the new document_. `"os_date"` refers to the system time (formatted as YYYY-MM-DD).
+
+#### Example template
+In the following example, `{{ date }}` will be filled in based on the result of evaluating the `date` function at the exact moment one tries to follow a link. `{{ filename }}` will be filled in based on the result of evaluating the `filename` function _after_ the new buffer has been opened (thereby inserting the filename of the newly-opened buffer, rather than the previous one).
+
+```lua
+new_file_template = {
+    template = [[
+# {{ title }}
+Date: {{ date }}
+Filename: {{ filename }}
+]],
+    placeholders = {
+        before = {
+            date = function()
+                return os.date("%A, %B %d, %Y") -- Wednesday, March 1, 2023
+            end
+        },
+        after = {
+            filename = function()
+                return vim.api.nvim_buf_get_name(0)
+            end
+        }
+    }
 }
 ```
 
@@ -364,6 +396,14 @@ require('mkdnflow').setup({
             text = os.date('%Y-%m-%d_')..text
             return(text)
         end
+    },
+    new_file_template = {
+        use_template = false,
+        placeholders = {
+            title = "link_title",
+            date = "os_date"
+        },
+        template = "# {{title}}"
     },
     to_do = {
         symbols = {' ', '-', 'X'},

@@ -31,6 +31,7 @@ local initial_dir = require('mkdnflow').initial_dir
 local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow').config.silent
 local links_config = require('mkdnflow').config.links
+local new_file_config = require('mkdnflow').config.new_file_template
 local implicit_extension = links_config.implicit_extension
 local link_transform = links_config.transform_implicit
 
@@ -114,6 +115,24 @@ end
 local enter_internal_path = function() end
 
 --[[
+formatTemplate() takes the user-provided (or default) template and replaces it
+with the user-specified (or default) value
+--]]
+M.formatTemplate = function(timing, template)
+    timing = timing or "before"
+    template = template or new_file_config.template
+    for placeholder_name, replacement in pairs(new_file_config.placeholders[timing]) do
+        if replacement == "link_title" then
+            replacement = links.getLinkPart(links.getLinkUnderCursor(), 'name')
+        elseif replacement == "os_date" then
+            replacement = os.date('%Y-%m-%d')
+        end
+        template = string.gsub(template, "{{%s?"..placeholder_name.."%s?}}", replacement)
+    end
+    return template
+end
+
+--[[
 internal_open() takes a path to a notebook-internal file and (optionally) an
 anchor and opens it in nvim.
 --]]
@@ -158,18 +177,20 @@ local internal_open = function(path, anchor)
     else
         -- Push the current buffer name onto the main buffer stack
         buffers.push(buffers.main, vim.api.nvim_win_get_buf(0))
-        -- Prepare to inject the link title as the doc title
-        local title
-        if links_config.inject_title then
+        -- Prepare to inject the filled-out template at the top of the new file
+        local template
+        if new_file_config.use_template then
             if not exists(path_w_ext, 'f') then
-                title = links.getLinkPart(links.getLinkUnderCursor(), 'name')
+                template = M.formatTemplate("before")
             end
         end
         vim.cmd(':e '..path_w_ext)
         M.updateDirs()
-        -- Inject the title
-        if title then
-            vim.api.nvim_buf_set_lines(0, 0, 1, false, {"# "..title})
+        -- Inject the template
+        if new_file_config.use_template and template then
+            template = M.formatTemplate("after", template)
+            local lines = utils.strSplit(template, "\n")
+            vim.api.nvim_buf_set_lines(0, 0, #template, false, lines)
         end
         if anchor and anchor ~= '' then
             if not cursor.toId(anchor) then
