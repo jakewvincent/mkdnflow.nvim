@@ -69,12 +69,9 @@ local default_config = {
                 title = "link_title",
                 date = "os_date"
             },
-            after = {
-                filename = "filename",
-                path = "path"
-            }
+            after = {}
         },
-        template = {"# {{title}}\n{{date}}"}
+        template = "# {{title}}"
     },
     to_do = {
         symbols = {' ', '-', 'X'},
