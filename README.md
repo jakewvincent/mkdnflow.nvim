@@ -7,9 +7,9 @@
 </p>
 
 ### 🆕 Top three [latest features](#-recent-changes)
-1. [Templates for new files]()
-1. [Follow automatic links](#follow-links-and-citations)
-2. [Create links using the system clipboard's content as the link source](#create-customize-and-destroy-links)
+1. [Templates for new files](#templates-for-new-files)
+2. [Follow automatic links](#follow-links-and-citations)
+3. [Create links using the system clipboard's content as the link source](#create-customize-and-destroy-links)
 
 ## 📝 Description
 
