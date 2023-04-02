@@ -137,7 +137,7 @@ Filename: {{ filename }}
 * Create an anchor link if the visual selection starts with `#` 
 * 🆕 Tag visually selected spans of text (mapped to `<M-CR>` in visual mode) using the style specified in the [Pandoc `bracketed_spans` extension](https://pandoc.org/MANUAL.html#extension-bracketed_spans) (ID must be assigned with the ID selector—i.e. `#`): `[This is a span]{#important-span}`.
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
-* `ya` on a heading (🆕 or bracketed span) to add a formatted anchor link for the heading to the default register (ready to paste in the current window)
+* `yaa` ("yank as anchor link"; formerly `ya`) on a heading or bracketed span to add a formatted anchor link for the heading to the default register (ready to paste in the current window)
     * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
 * Customize how link sources are generated from text using a custom explicit transformation function
     * Adding the following to your setup would result in a link that looks like the following: `[Some text the link was created from](sometextthelinkwascreatedfrom.md)`
@@ -440,7 +440,7 @@ require('mkdnflow').setup({
         MkdnDestroyLink = {'n', '<M-CR>'},
         MkdnTagSpan = {'v', '<M-CR>'},
         MkdnMoveSource = {'n', '<F2>'},
-        MkdnYankAnchorLink = {'n', 'ya'},
+        MkdnYankAnchorLink = {'n', 'yaa'},
         MkdnYankFileAnchorLink = {'n', 'yfa'},
         MkdnIncreaseHeading = {'n', '+'},
         MkdnDecreaseHeading = {'n', '-'},
@@ -633,7 +633,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 | `<M-CR>`     | n         | `:MkdnDestroyLink<CR>`             | Destroy the link under the cursor, replacing it with just the text from [...]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `<M-CR>`     | v         | `:MkdnTagSpan<CR>`                 | Tag a visually-selected span of text with an ID, allowing it to be linked to with an anchor link                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `<F2>`       | n         | `:MkdnMoveSource<CR>`              | Open a dialog where you can provide a new source for a link and the plugin will rename and move the associated file on the backend (and rename the link source)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `ya`         | n         | `:MkdnYankAnchorLink<CR>`          | Yank a formatted anchor link (if cursor is currently on a line with a heading)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `yaa`        | n         | `:MkdnYankAnchorLink<CR>`          | Yank a formatted anchor link (if cursor is currently on a line with a heading)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `yfa`        | n         | `:MkdnYankFileAnchorLink<CR>`      | Yank a formatted anchor link with the filename included before the anchor (if cursor is currently on a line with a heading)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `+`          | n         | `:MkdnIncreaseHeading<CR>`         | Increase heading importance (remove hashes)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `-`          | n         | `:MkdnDecreaseHeading<CR>`         | Decrease heading importance (add hashes)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -699,6 +699,12 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 04/02/23: Updated yank-as-anchor mapping from `ya` to `yaa` to prevent interference with `yap` (yank around paragraph)
+* 03/18/23: Added template functionality for new files
+
+<details>
+<summary>Older changes (> 1 month ago)</summary><p>
+
 * 01/14/23: Added support for non-ascii symbols in anchor links (with the `luautf8` Luarocks module)
 * 01/05/23: Added `+` as a valid unordered list or unordered to-do list marker (requested in [issue #112](https://github.com/jakewvincent/mkdnflow.nvim/issues/112))
 * 01/02/23: Automatic links (URLs enclosed in `<` + `>` and lacking the usual markdown link syntax that are automatically rendered as links when compiled into HTML) will now be followed
@@ -709,10 +715,6 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 * 09/20/22: Ignore escaped vertical bars when formatting tables
 * 08/19/22: Add yaml parsing and yaml config options; add bib paths found in parsed yaml block to bib sources
 * 08/11/22: Add two new commands (`:MkdnNewListItemBelowInsert` and `:MkdnNewListItemAboveInsert`) mapped to `o` and `O` by default
-
-<details>
-<summary>Older changes (> 1 month ago)</summary><p>
-
 * 08/07/22: Extend link-following, link-jumping, and source editing/moving functionality to reference-style links
 * 07/26/22: Add config option for automatically extending table (col-wise or row-wise) when attempting to jump to the next cell/row while in the last cell/row
 * 07/26/22: Command & mapping for creating bracketed spans (spans assigned an ID attribute)
