@@ -380,14 +380,16 @@ M.toggleToDo = function(row, status, meta)
             if to_do_update_parents then
                 local new_todo_indent = line:match('^(%s*)[^%s]')
                 local next_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-                local next_li_type = M.hasListType(next_line)
-                if next_li_type == 'ultd' or next_li_type == 'oltd' then
-                    local next_todo_indent = next_line:match('^(%s*)[^%s]')
-                    if string.len(next_todo_indent) > string.len(new_todo_indent) then
-                        -- Get the status of the to-do on the next line
-                        local next_symbol = get_status(next_line)
-                        -- Update the (new) parent
-                        update_parent_to_do(next_line, row + 1, next_symbol)
+                if next_line then
+                    local next_li_type = M.hasListType(next_line)
+                    if next_li_type == 'ultd' or next_li_type == 'oltd' then
+                        local next_todo_indent = next_line:match('^(%s*)[^%s]')
+                        if string.len(next_todo_indent) > string.len(new_todo_indent) then
+                            -- Get the status of the to-do on the next line
+                            local next_symbol = get_status(next_line)
+                            -- Update the (new) parent
+                            update_parent_to_do(next_line, row + 1, next_symbol)
+                        end
                     end
                 end
             end
