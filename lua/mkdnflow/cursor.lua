@@ -243,6 +243,10 @@ local go_to_id = function(id, starting_row)
                 local continue_line = true
                 while continue_line do
                     start, finish = line:find('%b[]%b{}', finish)
+                    -- Look for Pandoc-style ID attributes in headings if a bracketed span wasn't found
+                    if not start and not finish then
+                        start, finish = line:find('%s*#*.*%b{}%s*$', finish)
+                    end
                     if start then
                         substring = string.sub(line, start, finish)
                         if substring:match('{[^%}]*'..utils.luaEscape(id)..'[^%}]*}') then
