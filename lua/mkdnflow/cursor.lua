@@ -241,7 +241,12 @@ local go_to_id = function(id, starting_row)
     local continue = true
     local row, line_count = starting_row, vim.api.nvim_buf_line_count(0)
     local start, finish
-    while continue and row <= line_count do
+    local outer_counter = 0
+    while continue and row <= line_count and outer_counter < 1000 do
+        outer_counter = outer_counter + 1
+        if outer_counter == 1000 then
+            print("Outer counter has reached 1000")
+        end
         local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
         start, finish = line:find('%b[]%b{}')
         -- Look for Pandoc-style ID attributes in headings if a bracketed span wasn't found
@@ -254,12 +259,13 @@ local go_to_id = function(id, starting_row)
                 continue = false
             else
                 local continue_line = true
-                while continue_line do
-                    start, finish = line:find('%b[]%b{}', finish)
-                    -- Look for Pandoc-style ID attributes in headings if a bracketed span wasn't found
-                    if not start and not finish then
-                        start, finish = line:find('%s*#*.*%b{}%s*$', finish)
+                local inner_counter = 0
+                while continue_line and inner_counter < 1000 do
+                    inner_counter = inner_counter + 1
+                    if inner_counter == 1000 then
+                        print("Inner counter has reached 1000")
                     end
+                    start, finish = line:find('%b[]%b{}', finish)
                     if start then
                         substring = string.sub(line, start, finish)
                         if substring:match('{[^%}]*' .. utils.luaEscape(id) .. '[^%}]*}') then
