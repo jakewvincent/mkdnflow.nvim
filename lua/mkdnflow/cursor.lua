@@ -246,7 +246,7 @@ local go_to_id = function(id, starting_row)
         start, finish = line:find('%b[]%b{}')
         -- Look for Pandoc-style ID attributes in headings if a bracketed span wasn't found
         if not start and not finish then
-            start, finish = line:find('%s*#*.*%b{}%s*$')
+            start, finish = line:find('%s*#+.*%b{}%s*$')
         end
         if start then
             local substring = string.sub(line, start, finish)
