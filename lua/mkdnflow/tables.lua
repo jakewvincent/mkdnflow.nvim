@@ -29,7 +29,7 @@ local width = function(string)
     if utf8_available then
         return require('lua-utf8').width(string)
     else
-        return #string
+        return vim.api.nvim_strwidth(string)
     end
 end
 
