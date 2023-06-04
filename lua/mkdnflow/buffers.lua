@@ -49,18 +49,20 @@ M.goBack = function()
         -- Get previous buffer number
         local prev_buf = M.main[1]
         -- Go to buffer
-        vim.api.nvim_command("buffer "..prev_buf)
+        vim.api.nvim_command('buffer ' .. prev_buf)
         -- Pop the buffer we just navigated to off the top of the stack
         M.pop(M.main)
         -- Update the root and/or directory if needed
         require('mkdnflow').paths.updateDirs()
         -- return a boolean if goback succeeded (for users who want <bs> to do
         -- sth else if goback isn't possible)
-        return(true)
+        return true
     else
-        if not silent then vim.api.nvim_echo({{"⬇️  Can't go back any further!", 'WarningMsg'}}, true, {}) end
+        if not silent then
+            vim.api.nvim_echo({ { "⬇️  Can't go back any further!", 'WarningMsg' } }, true, {})
+        end
         -- Return a boolean if goBack fails
-        return(false)
+        return false
     end
 end
 
@@ -80,20 +82,26 @@ M.goForward = function()
     if hist_bufnr then
         M.push(M.main, cur_bufnr)
         -- Go to the historical buffer number
-        vim.api.nvim_command("buffer "..hist_bufnr)
+        vim.api.nvim_command('buffer ' .. hist_bufnr)
         -- Pop historical buffer stack
         M.pop(M.hist)
         -- Update the root and/or working directory if needed
         require('mkdnflow').paths.updateDirs()
         -- Return a boolean if goForward succeeded (for users who want <Del> to
         -- do sth else if goForward isn't possible)
-        return(true)
+        return true
     else
         -- Print out an error if there's nothing in the historical buffer stack
-        if not silent then vim.api.nvim_echo({{"⬇️  Can't go forward any further!", 'WarningMsg'}}, true, {}) end
+        if not silent then
+            vim.api.nvim_echo(
+                { { "⬇️  Can't go forward any further!", 'WarningMsg' } },
+                true,
+                {}
+            )
+        end
         -- Return a boolean if goForward failed (for users who want <Del> to do
         -- sth else if goForward isn't possible)
-        return(false)
+        return false
     end
 end
 

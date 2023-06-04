@@ -15,18 +15,18 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- Mkdnflow mappings
-local config = require("mkdnflow").config
-local nvim_version = require("mkdnflow").nvim_version
-local command_deps = require("mkdnflow").command_deps
+local config = require('mkdnflow').config
+local nvim_version = require('mkdnflow').nvim_version
+local command_deps = require('mkdnflow').command_deps
 local extension_patterns = {}
 for key, _ in pairs(config.filetypes) do
-    table.insert(extension_patterns, "*."..key)
+    table.insert(extension_patterns, '*.' .. key)
 end
 
 -- Enable mappings in buffers in which Mkdnflow activates
 if nvim_version >= 7 then
-    vim.api.nvim_create_augroup("MkdnflowMappings", {clear = true})
-    vim.api.nvim_create_autocmd({"BufEnter, BufWinEnter"}, {
+    vim.api.nvim_create_augroup('MkdnflowMappings', { clear = true })
+    vim.api.nvim_create_autocmd({ 'BufEnter, BufWinEnter' }, {
         pattern = extension_patterns,
         callback = function()
             for command, mapping in pairs(config.mappings) do
@@ -39,23 +39,23 @@ if nvim_version >= 7 then
                         end
                     end
                 end
-                if available and mapping and type(mapping[1]) == "table" then
+                if available and mapping and type(mapping[1]) == 'table' then
                     for _, value in ipairs(mapping[1]) do
                         vim.api.nvim_buf_set_keymap(
                             0,
                             value,
                             mapping[2],
-                            "<Cmd>:"..command.."<CR>",
-                            {noremap = true}
+                            '<Cmd>:' .. command .. '<CR>',
+                            { noremap = true }
                         )
                     end
-                elseif available and type(mapping) == "table" then
+                elseif available and type(mapping) == 'table' then
                     vim.api.nvim_buf_set_keymap(
                         0,
                         mapping[1],
                         mapping[2],
-                        "<Cmd>:"..command.."<CR>",
-                        {noremap = true}
+                        '<Cmd>:' .. command .. '<CR>',
+                        { noremap = true }
                     )
                 end
             end

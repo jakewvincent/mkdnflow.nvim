@@ -65,7 +65,7 @@ local go_to = function(pattern, reverse)
         if context > 0 and line_len > 0 then
             for i = 1, context, 1 do
                 local following_line = rev_get_line(0, row, row + 1, false)[1]
-                line = (following_line and following_line..line) or line
+                line = (following_line and following_line .. line) or line
                 rev_col = (following_line and rev_col + #following_line) or rev_col
             end
         end
@@ -79,7 +79,7 @@ local go_to = function(pattern, reverse)
         if context > 0 and line_len > 0 then
             for i = 1, context, 1 do
                 local following_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-                line = (following_line and line..following_line) or line
+                line = (following_line and line .. following_line) or line
             end
         end
         -- Get start & end indices of match (if any)
@@ -93,7 +93,7 @@ local go_to = function(pattern, reverse)
             if reverse then -- If there is, see if the cursor is before the match
                 if rev_col + 1 < right_ and left <= line_len then
                     -- If it is, send the cursor to the start of the match
-                    vim.api.nvim_win_set_cursor(0, {row, left - 1})
+                    vim.api.nvim_win_set_cursor(0, { row, left - 1 })
                     continue = false
                 else -- If it isn't, search after the end of the previous match.
                     -- These values will be used on the next iteration of the loop.
@@ -103,7 +103,7 @@ local go_to = function(pattern, reverse)
             else
                 if col + 1 < left and left <= line_len then -- If there is, see if the cursor is before the match
                     -- If it is, send the cursor to the start of the match
-                    vim.api.nvim_win_set_cursor(0, {row, left - 1})
+                    vim.api.nvim_win_set_cursor(0, { row, left - 1 })
                     continue = false
                 else -- If it isn't, search after the end of the previous match.
                     -- These values will be used on the next iteration of the loop.
@@ -127,7 +127,7 @@ local go_to = function(pattern, reverse)
                 if line and context > 0 and line_len > 0 then
                     for i = 1, context, 1 do
                         local following_line = rev_get_line(0, row, row + 1, false)[1]
-                        line = (following_line and following_line..line) or line
+                        line = (following_line and following_line .. line) or line
                     end
                 end
             else
@@ -136,7 +136,7 @@ local go_to = function(pattern, reverse)
                 if line and context > 0 and line_len > 0 then
                     for i = 1, context, 1 do
                         local following_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-                        line = (following_line and line..following_line) or line
+                        line = (following_line and line .. following_line) or line
                     end
                 end
             end
@@ -175,7 +175,8 @@ local go_to_heading = function(anchor_text, reverse)
     local starting_row, continue = position[1], true
     local row = (reverse and starting_row - 1) or starting_row + 1
     while continue do
-        local line = (reverse and vim.api.nvim_buf_get_lines(0, row - 1, row, false)) or vim.api.nvim_buf_get_lines(0, row - 1, row, false)
+        local line = (reverse and vim.api.nvim_buf_get_lines(0, row - 1, row, false))
+            or vim.api.nvim_buf_get_lines(0, row - 1, row, false)
         -- If the line has contents, do the thing
         if line[1] then
             -- Does the line start with a hash?
@@ -183,7 +184,7 @@ local go_to_heading = function(anchor_text, reverse)
             if has_heading then
                 if anchor_text == nil then
                     -- Send the cursor to the heading
-                    vim.api.nvim_win_set_cursor(0, {row, 0})
+                    vim.api.nvim_win_set_cursor(0, { row, 0 })
                     continue = false
                 else
                     -- Format current heading to see if it matches our search term
@@ -192,7 +193,7 @@ local go_to_heading = function(anchor_text, reverse)
                         -- Set a mark
                         vim.api.nvim_buf_set_mark(0, '`', position[1], position[2], {})
                         -- Send the cursor to the row w/ the matching heading
-                        vim.api.nvim_win_set_cursor(0, {row, 0})
+                        vim.api.nvim_win_set_cursor(0, { row, 0 })
                         continue = false
                     end
                 end
@@ -202,10 +203,16 @@ local go_to_heading = function(anchor_text, reverse)
                 continue = nil
                 if anchor_text == nil then
                     local message = "⬇️  Couldn't find a heading to go to!"
-                    if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
+                    if not silent then
+                        vim.api.nvim_echo({ { message, 'WarningMsg' } }, true, {})
+                    end
                 else
-                    local message = "⬇️  Couldn't find a heading matching "..anchor_text.."!"
-                    if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
+                    local message = "⬇️  Couldn't find a heading matching "
+                        .. anchor_text
+                        .. '!'
+                    if not silent then
+                        vim.api.nvim_echo({ { message, 'WarningMsg' } }, true, {})
+                    end
                 end
             end
         else
@@ -216,8 +223,14 @@ local go_to_heading = function(anchor_text, reverse)
                 continue = nil
                 local place = (reverse and 'beginning') or 'end'
                 local preposition = (reverse and 'after') or 'before'
-                local message = "⬇️  There are no more headings "..preposition.." the "..place.." of the document!"
-                if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
+                local message = '⬇️  There are no more headings '
+                    .. preposition
+                    .. ' the '
+                    .. place
+                    .. ' of the document!'
+                if not silent then
+                    vim.api.nvim_echo({ { message, 'WarningMsg' } }, true, {})
+                end
             end
         end
     end
@@ -233,7 +246,7 @@ local go_to_id = function(id, starting_row)
         start, finish = line:find('%b[]%b{}')
         if start then
             local substring = string.sub(line, start, finish)
-            if substring:match('{[^%a-_]-'..utils.luaEscape(id)..'[^%a-_]-}') then
+            if substring:match('{[^%a-_]-' .. utils.luaEscape(id) .. '[^%a-_]-}') then
                 continue = false
             else
                 local continue_line = true
@@ -241,7 +254,7 @@ local go_to_id = function(id, starting_row)
                     start, finish = line:find('%b[]%b{}', finish)
                     if start then
                         substring = string.sub(line, start, finish)
-                        if substring:match('{[^%a-_]-'..utils.luaEscape(id)..'[^%a-_]-}') then
+                        if substring:match('{[^%a-_]-' .. utils.luaEscape(id) .. '[^%a-_]-}') then
                             continue_line = false
                             continue = false
                         end
@@ -256,7 +269,7 @@ local go_to_id = function(id, starting_row)
         end
     end
     if start and finish then
-        vim.api.nvim_win_set_cursor(0, {row, start - 1})
+        vim.api.nvim_win_set_cursor(0, { row, start - 1 })
         return true
     else
         return false
@@ -278,14 +291,16 @@ M.changeHeadingLevel = function(change)
     if is_heading then
         if change == 'decrease' then
             -- Add a hash
-            vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 0, {'#'})
+            vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 0, { '#' })
         else
             -- Remove a hash, but only if there's more than one
             if not string.find(line[1], '^##') then
                 local message = "⬇️  Can't increase this heading any more!"
-                if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
+                if not silent then
+                    vim.api.nvim_echo({ { message, 'WarningMsg' } }, true, {})
+                end
             else
-                vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 1, {''})
+                vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 1, { '' })
             end
         end
     end
@@ -354,11 +369,11 @@ M.yankAsAnchorLink = function(full_path)
             local buffer = vim.api.nvim_buf_get_name(0)
             local left = anchor_link:match('(%b[]%()#')
             local right = anchor_link:match('%b[]%((#.*)$')
-            anchor_link = left..buffer..right
-            vim.cmd('let @"="'..anchor_link..'"')
+            anchor_link = left .. buffer .. right
+            vim.cmd('let @"="' .. anchor_link .. '"')
         else
             -- Add to the unnamed register
-            vim.cmd('let @"="'..anchor_link..'"')
+            vim.cmd('let @"="' .. anchor_link .. '"')
         end
     elseif is_bracketed_span then
         local name = links.getBracketedSpanPart('text')
@@ -367,15 +382,17 @@ M.yankAsAnchorLink = function(full_path)
         if name and attr then
             if full_path then
                 local buffer = vim.api.nvim_buf_get_name(0)
-                anchor_link = '['..name..']'..'('..buffer..attr..')'
+                anchor_link = '[' .. name .. ']' .. '(' .. buffer .. attr .. ')'
             else
-                anchor_link = '['..name..']'..'('..attr..')'
+                anchor_link = '[' .. name .. ']' .. '(' .. attr .. ')'
             end
-                vim.cmd('let @"="'..anchor_link..'"')
+            vim.cmd('let @"="' .. anchor_link .. '"')
         end
     else
         local message = '⬇️  The current line is not a heading or bracketed span!'
-        if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
+        if not silent then
+            vim.api.nvim_echo({ { message, 'WarningMsg' } }, true, {})
+        end
     end
 end
 

@@ -19,13 +19,13 @@ local filetypes = require('mkdnflow').config.filetypes
 local patterns = {}
 for ext, value in pairs(filetypes) do
     if value then
-        table.insert(patterns, "*."..ext)
+        table.insert(patterns, '*.' .. ext)
     end
 end
 
 local M = {}
 
-vim.api.nvim_create_autocmd("BufWinEnter", {
+vim.api.nvim_create_autocmd('BufWinEnter', {
     pattern = patterns,
     callback = function()
         bib.bib_paths.yaml = {}
@@ -34,11 +34,12 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
             local yaml = M.ingestYamlBlock(start, finish)
             bib.bib_paths.yaml = yaml.bib
         end
-    end
+    end,
 })
 
-M.hasYaml = function ()
-    local first_line, row, line_count = vim.api.nvim_buf_get_lines(0, 0, 1, false)[1], 1, vim.api.nvim_buf_line_count(0)
+M.hasYaml = function()
+    local first_line, row, line_count =
+        vim.api.nvim_buf_get_lines(0, 0, 1, false)[1], 1, vim.api.nvim_buf_line_count(0)
     if first_line:match('^---$') then
         local continue = true
         while continue and row <= line_count do
@@ -62,9 +63,11 @@ M.ingestYamlBlock = function(start, finish)
             local key = line:match('^([%a_-]*):')
             local value = line:match('.*:%s?(.+)$')
             local item = line:match('^  %- (.*)')
-            if item then print(item) end
+            if item then
+                print(item)
+            end
             if key and value then
-                yaml[key] = {value}
+                yaml[key] = { value }
             elseif key and not item then
                 last_key = key
                 yaml[key] = {}

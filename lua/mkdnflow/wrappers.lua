@@ -26,7 +26,7 @@ M.newListItemOrNextTableRow = function()
     elseif require('mkdnflow').tables.isPartOfTable(line) then
         require('mkdnflow').tables.moveToCell(1, 0)
     else
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<CR>', true, false, true), 'n', true)
     end
 end
 
@@ -34,11 +34,23 @@ M.indentListItemOrJumpTableCell = function(direction)
     -- Get the current line
     local line = vim.api.nvim_get_current_line()
     local list_type = require('mkdnflow').lists.hasListType(line)
-    if list_type and config.modules.lists and line:match(require('mkdnflow').lists.patterns[list_type].empty) then
+    if
+        list_type
+        and config.modules.lists
+        and line:match(require('mkdnflow').lists.patterns[list_type].empty)
+    then
         if direction == -1 then
-            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-D>", true, false, true), 'n', true)
+            vim.api.nvim_feedkeys(
+                vim.api.nvim_replace_termcodes('<C-D>', true, false, true),
+                'n',
+                true
+            )
         else
-            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-T>", true, false, true), 'n', true)
+            vim.api.nvim_feedkeys(
+                vim.api.nvim_replace_termcodes('<C-T>', true, false, true),
+                'n',
+                true
+            )
         end
     elseif config.modules.tables and require('mkdnflow').tables.isPartOfTable(line) then
         if direction == -1 then
@@ -47,7 +59,7 @@ M.indentListItemOrJumpTableCell = function(direction)
             require('mkdnflow').tables.moveToCell(0, 1)
         end
     else
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-I>", true, false, true), 'n', true)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-I>', true, false, true), 'n', true)
     end
 end
 
@@ -58,7 +70,11 @@ M.followOrCreateLinksOrToggleFolds = function(mode)
     else
         local row, line = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_get_current_line()
         local on_fold = vim.fn.foldclosed(tostring(row)) ~= -1
-        if config.modules.folds and not on_fold and require('mkdnflow').folds.getHeadingLevel(line) < 99 then
+        if
+            config.modules.folds
+            and not on_fold
+            and require('mkdnflow').folds.getHeadingLevel(line) < 99
+        then
             require('mkdnflow').folds.foldSection()
         elseif config.modules.folds and on_fold then
             require('mkdnflow').folds.unfoldSection(row)

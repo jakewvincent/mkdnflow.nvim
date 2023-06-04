@@ -18,7 +18,8 @@ local link_style = require('mkdnflow').config.links.style
 vim.wo.conceallevel = 2
 
 if link_style == 'markdown' then
-    vim.api.nvim_exec([[
+    vim.api.nvim_exec(
+        [[
         call matchadd('Conceal', '\[[^[]\{-}\]\zs([^(]\{-})\ze', 0, 14, {'conceal': ''})
         call matchadd('Conceal', '\zs\[\ze[^[]\{-}\]([^(]\{-})', 0, 15, {'conceal': ''})
         call matchadd('Conceal', '\[[^[]\{-}\zs\]\ze([^(]\{-})', 0, 16, {'conceal': ''})
@@ -28,14 +29,19 @@ if link_style == 'markdown' then
         call matchadd('Conceal', '\[[^[]\{-}\]\zs\%[ ]\[[^[]\{-}\]\ze\n', 0, 20, {'conceal': ''})
         call matchadd('Conceal', '\zs\[\ze[^[]\{-}\]\%[ ]\[[^[]\{-}\]\n', 0, 21, {'conceal': ''})
         call matchadd('Conceal', '\[[^[]\{-}\zs\]\ze\%[ ]\[[^[]\{-}\]\n', 0, 22, {'conceal': ''})
-    ]], false)
+    ]],
+        false
+    )
 elseif link_style == 'wiki' then
-    vim.api.nvim_exec([[
+    vim.api.nvim_exec(
+        [[
         call matchadd('Conceal', '\zs\[\[[^[]\{-}[|]\ze[^[]\{-}\]\]', 0, 14, {'conceal': ''})
         call matchadd('Conceal', '\[\[[^[\{-}[|][^[]\{-}\zs\]\]\ze', 0, 15, {'conceal': ''})
         call matchadd('Conceal', '\zs\[\[\ze[^[]\{-}\]\]', 0, 16, {'conceal': ''})
         call matchadd('Conceal', '\[\[[^[]\{-}\zs\]\]\ze', 0, 17, {'conceal': ''})
-    ]], false)
+    ]],
+        false
+    )
 end
 
 -- Don't change the highlighting of concealed characters
