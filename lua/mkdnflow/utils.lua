@@ -29,13 +29,13 @@ M.mergeTables = function(defaults, user_config)
             defaults[k] = v
         end
     end
-    return(defaults)
+    return defaults
 end
 
 -- Private function to detect the extension of a filename passed as a string
 M.getFileType = function(string)
-    local ext = string:match("^.*%.(.+)$")
-    return(ext ~= nil and string.lower(ext) or '')
+    local ext = string:match('^.*%.(.+)$')
+    return (ext ~= nil and string.lower(ext) or '')
 end
 
 -- Public function to identify root directory on a unix or Windows machine
@@ -49,9 +49,9 @@ M.getRootDir = function(dir, root_tell, os)
         -- Get the output of running ls -a in dir
         local pfile
         if os:match('Windows') then
-            pfile = io.popen('dir /b "'..dir..'"')
+            pfile = io.popen('dir /b "' .. dir .. '"')
         else
-            pfile = io.popen('ls -a "'..dir..'"')
+            pfile = io.popen('ls -a "' .. dir .. '"')
         end
         -- Check the list of files for the tell
         for filename in pfile:lines() do
@@ -64,50 +64,53 @@ M.getRootDir = function(dir, root_tell, os)
         pfile:close()
         if search_is_on then
             if os:match('Windows') then
-                if dir == drive..':\\' then
+                if dir == drive .. ':\\' then
                     -- If we've reached the highest directory possible, call off
                     -- the search and return nothing
                     search_is_on = false
-                    return(nil)
+                    return nil
                 else
                     -- If there's still more to remove, remove it
                     dir = dir:match('(.*)\\')
                     -- If dir is an empty string, look for the tell in *root* root
-                    if dir == drive..':' then dir = drive..':\\' end
+                    if dir == drive .. ':' then
+                        dir = drive .. ':\\'
+                    end
                 end
             else
                 if dir == '/' or dir == '~/' then
                     -- If we've reached the highest directory possible, call off
                     -- the search and return nothing
                     search_is_on = false
-                    return(nil)
+                    return nil
                 else
                     -- If there's still more to remove, remove it
                     dir = dir:match('(.*)/')
                     -- If dir is an empty string, look for the tell in *root* root
-                    if dir == '' then dir = '/' end
+                    if dir == '' then
+                        dir = '/'
+                    end
                 end
             end
         else
-            return(root)
+            return root
         end
     end
 end
 
-
 M.moduleAvailable = function(name)
-  if package.loaded[name] then
-    return true
-  else
-    for _, searcher in ipairs(package.searchers or package.loaders) do
-      local loader = searcher(name)
-      if type(loader) == 'function' then
-        package.preload[name] = loader
+    if package.loaded[name] then
         return true
-      end
+    else
+        for _, searcher in ipairs(package.searchers or package.loaders) do
+            local loader = searcher(name)
+            if type(loader) == 'function' then
+                package.preload[name] = loader
+                return true
+            end
+        end
+        return false
     end
-    return false
-  end
 end
 
 if M.moduleAvailable('lua-utf8') then
@@ -118,21 +121,21 @@ end
 
 M.luaEscape = function(string)
     -- Which characters to match
-    local chars = "[-.'\"+?%%]"
+    local chars = '[-.\'"+?%%]'
     -- Set up table of replacements
     local replacements = {
-        ["-"] = "%-",
-        ["."] = "%.",
-        ["'"] = "\'",
-        ['"'] = '\"',
+        ['-'] = '%-',
+        ['.'] = '%.',
+        ["'"] = "'",
+        ['"'] = '"',
         ['+'] = '%+',
         ['?'] = '%?',
-        ['%'] = '%%'
+        ['%'] = '%%',
     }
     -- Do the replacement
     local escaped = string.gsub(string, chars, replacements)
     -- Return the new string
-    return(escaped)
+    return escaped
 end
 
 M.escapeChars = function(string)
@@ -140,18 +143,18 @@ M.escapeChars = function(string)
     local chars = "[ '&()$#]"
     -- Set up table of replacements
     local replacements = {
-        [" "] = "\\ ",
+        [' '] = '\\ ',
         ["'"] = "\\'",
-        ["&"] = "\\&",
-        ["("] = "\\(",
-        [")"] = "\\)",
-        ["$"] = "\\$",
-        ["#"] = "\\#",
+        ['&'] = '\\&',
+        ['('] = '\\(',
+        [')'] = '\\)',
+        ['$'] = '\\$',
+        ['#'] = '\\#',
     }
     -- Do the replacement
     local escaped = string.gsub(string, chars, replacements)
     -- Return the new string
-    return(escaped)
+    return escaped
 end
 
 M.mFind = function(tbl, str, start_row, init_row, init_col, plain)
@@ -171,7 +174,8 @@ M.mFind = function(tbl, str, start_row, init_row, init_col, plain)
     if capture then
         start, finish = utf8.find(catlines, capture, start, true)
     end
-    local chars, match_start_row, match_start_col, match_end_row, match_end_col = 0, nil, nil, nil, nil
+    local chars, match_start_row, match_start_col, match_end_row, match_end_col =
+        0, nil, nil, nil, nil
     if start and finish then
         for i, line in ipairs(tbl) do
             if match_start_row and not match_end_row then -- If we have the start row but not the end row...
@@ -192,10 +196,10 @@ end
 
 M.strSplit = function(str, sep)
     if sep == nil then
-        sep = "%s"
+        sep = '%s'
     end
-    local splits =  {}
-    for match in string.gmatch(str, "([^"..sep.."]+)") do
+    local splits = {}
+    for match in string.gmatch(str, '([^' .. sep .. ']+)') do
         table.insert(splits, match)
     end
     return splits

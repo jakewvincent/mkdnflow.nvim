@@ -38,12 +38,12 @@ local default_config = {
         fallback = 'current',
         root_tell = false,
         nvim_wd_heel = false,
-        update = true
+        update = true,
     },
     filetypes = {
         md = true,
         rmd = true,
-        markdown = true
+        markdown = true,
     },
     bib = {
         default_path = nil,
@@ -57,76 +57,76 @@ local default_config = {
         implicit_extension = nil,
         transform_implicit = false,
         transform_explicit = function(text)
-            text = text:gsub("[ /]", "-")
+            text = text:gsub('[ /]', '-')
             text = text:lower()
-            text = os.date('%Y-%m-%d_')..text
-            return(text)
+            text = os.date('%Y-%m-%d_') .. text
+            return text
         end,
     },
     new_file_template = {
         use_template = false,
         placeholders = {
             before = {
-                title = "link_title",
-                date = "os_date"
+                title = 'link_title',
+                date = 'os_date',
             },
-            after = {}
+            after = {},
         },
-        template = "# {{title}}"
+        template = '# {{title}}',
     },
     to_do = {
-        symbols = {' ', '-', 'X'},
+        symbols = { ' ', '-', 'X' },
         update_parents = true,
         not_started = ' ',
         in_progress = '-',
-        complete = 'X'
+        complete = 'X',
     },
     tables = {
         trim_whitespace = true,
         format_on_move = true,
         auto_extend_rows = false,
-        auto_extend_cols = false
+        auto_extend_cols = false,
     },
     yaml = {
-        bib = {override = false}
+        bib = { override = false },
     },
     mappings = {
-        MkdnEnter = {{'n', 'v'}, '<CR>'},
-        MkdnGoBack = {'n', '<BS>'},
-        MkdnGoForward = {'n', '<Del>'},
-        MkdnMoveSource = {'n', '<F2>'},
-        MkdnNextLink = {'n', '<Tab>'},
-        MkdnPrevLink = {'n', '<S-Tab>'},
+        MkdnEnter = { { 'n', 'v' }, '<CR>' },
+        MkdnGoBack = { 'n', '<BS>' },
+        MkdnGoForward = { 'n', '<Del>' },
+        MkdnMoveSource = { 'n', '<F2>' },
+        MkdnNextLink = { 'n', '<Tab>' },
+        MkdnPrevLink = { 'n', '<S-Tab>' },
         MkdnFollowLink = false,
-        MkdnDestroyLink = {'n', '<M-CR>'},
-        MkdnTagSpan = {'v', '<M-CR>'},
-        MkdnYankAnchorLink = {'n', 'yaa'},
-        MkdnYankFileAnchorLink = {'n', 'yfa'},
-        MkdnNextHeading = {'n', ']]'},
-        MkdnPrevHeading = {'n', '[['},
-        MkdnIncreaseHeading = {'n', '+'},
-        MkdnDecreaseHeading = {'n', '-'},
-        MkdnToggleToDo = {{'n', 'v'}, '<C-Space>'},
+        MkdnDestroyLink = { 'n', '<M-CR>' },
+        MkdnTagSpan = { 'v', '<M-CR>' },
+        MkdnYankAnchorLink = { 'n', 'yaa' },
+        MkdnYankFileAnchorLink = { 'n', 'yfa' },
+        MkdnNextHeading = { 'n', ']]' },
+        MkdnPrevHeading = { 'n', '[[' },
+        MkdnIncreaseHeading = { 'n', '+' },
+        MkdnDecreaseHeading = { 'n', '-' },
+        MkdnToggleToDo = { { 'n', 'v' }, '<C-Space>' },
         MkdnNewListItem = false,
-        MkdnNewListItemBelowInsert = {'n', 'o'},
-        MkdnNewListItemAboveInsert = {'n', 'O'},
+        MkdnNewListItemBelowInsert = { 'n', 'o' },
+        MkdnNewListItemAboveInsert = { 'n', 'O' },
         MkdnExtendList = false,
-        MkdnUpdateNumbering = {'n', '<leader>nn'},
-        MkdnTableNextCell = {'i', '<Tab>'},
-        MkdnTablePrevCell = {'i', '<S-Tab>'},
+        MkdnUpdateNumbering = { 'n', '<leader>nn' },
+        MkdnTableNextCell = { 'i', '<Tab>' },
+        MkdnTablePrevCell = { 'i', '<S-Tab>' },
         MkdnTableNextRow = false,
-        MkdnTablePrevRow = {'i', '<M-CR>'},
-        MkdnTableNewRowBelow = {'n', '<leader>ir'},
-        MkdnTableNewRowAbove = {'n', '<leader>iR'},
-        MkdnTableNewColAfter = {'n', '<leader>ic'},
-        MkdnTableNewColBefore = {'n', '<leader>iC'},
-        MkdnFoldSection = {'n', '<leader>f'},
-        MkdnUnfoldSection = {'n', '<leader>F'},
+        MkdnTablePrevRow = { 'i', '<M-CR>' },
+        MkdnTableNewRowBelow = { 'n', '<leader>ir' },
+        MkdnTableNewRowAbove = { 'n', '<leader>iR' },
+        MkdnTableNewColAfter = { 'n', '<leader>ic' },
+        MkdnTableNewColBefore = { 'n', '<leader>iC' },
+        MkdnFoldSection = { 'n', '<leader>f' },
+        MkdnUnfoldSection = { 'n', '<leader>F' },
         MkdnTab = false,
         MkdnSTab = false,
         MkdnCreateLink = false,
-        MkdnCreateLinkFromClipboard = {{'n', 'v'}, '<leader>p'}
-    }
+        MkdnCreateLinkFromClipboard = { { 'n', 'v' }, '<leader>p' },
+    },
 }
 
 local init = {} -- Init functions & variables
@@ -136,47 +136,46 @@ init.config = {} -- For merged configs
 init.loaded = nil -- For load status
 
 init.command_deps = {
-    MkdnGoBack = {'buffers'},
-    MkdnGoForward = {'buffers'},
-    MkdnMoveSource = {'paths', 'links'},
-    MkdnNextLink = {'links', 'cursor'},
-    MkdnPrevLink = {'links', 'cursor'},
-    MkdnCreateLink = {'links'},
-    MkdnCreateLinkFromClipboard = {'links'},
-    MkdnTagSpan = {'links'},
-    MkdnFollowLink = {'links', 'paths'},
-    MkdnDestroyLink = {'links'},
-    MkdnYankAnchorLink = {'cursor'},
-    MkdnYankFileAnchorLink = {'cursor'},
-    MkdnNextHeading = {'cursor'},
-    MkdnPrevHeading = {'cursor'},
-    MkdnIncreaseHeading = {'cursor'},
-    MkdnDecreaseHeading = {'cursor'},
-    MkdnToggleToDo = {'lists'},
-    MkdnNewListItem = {'lists'},
-    MkdnNewListItemAboveInsert = {'lists'},
-    MkdnNewListItemBelowInsert = {'lists'},
-    MkdnExtendList = {'lists'},
-    MkdnUpdateNumbering = {'lists'},
-    MkdnTable = {'tables'},
-    MkdnTableFormat = {'tables'},
-    MkdnTableNextCell = {'tables'},
-    MkdnTablePrevCell = {'tables'},
-    MkdnTableNextRow = {'tables'},
-    MkdnTablePrevRow = {'tables'},
-    MkdnTableNewRowBelow = {'tables'},
-    MkdnTableNewRowAbove = {'tables'},
-    MkdnTableNewColAfter = {'tables'},
-    MkdnTableNewColBefore = {'tables'},
-    MkdnFoldSection = {'folds'},
-    MkdnUnfoldSection = {'folds'},
+    MkdnGoBack = { 'buffers' },
+    MkdnGoForward = { 'buffers' },
+    MkdnMoveSource = { 'paths', 'links' },
+    MkdnNextLink = { 'links', 'cursor' },
+    MkdnPrevLink = { 'links', 'cursor' },
+    MkdnCreateLink = { 'links' },
+    MkdnCreateLinkFromClipboard = { 'links' },
+    MkdnTagSpan = { 'links' },
+    MkdnFollowLink = { 'links', 'paths' },
+    MkdnDestroyLink = { 'links' },
+    MkdnYankAnchorLink = { 'cursor' },
+    MkdnYankFileAnchorLink = { 'cursor' },
+    MkdnNextHeading = { 'cursor' },
+    MkdnPrevHeading = { 'cursor' },
+    MkdnIncreaseHeading = { 'cursor' },
+    MkdnDecreaseHeading = { 'cursor' },
+    MkdnToggleToDo = { 'lists' },
+    MkdnNewListItem = { 'lists' },
+    MkdnNewListItemAboveInsert = { 'lists' },
+    MkdnNewListItemBelowInsert = { 'lists' },
+    MkdnExtendList = { 'lists' },
+    MkdnUpdateNumbering = { 'lists' },
+    MkdnTable = { 'tables' },
+    MkdnTableFormat = { 'tables' },
+    MkdnTableNextCell = { 'tables' },
+    MkdnTablePrevCell = { 'tables' },
+    MkdnTableNextRow = { 'tables' },
+    MkdnTablePrevRow = { 'tables' },
+    MkdnTableNewRowBelow = { 'tables' },
+    MkdnTableNewRowAbove = { 'tables' },
+    MkdnTableNewColAfter = { 'tables' },
+    MkdnTableNewColBefore = { 'tables' },
+    MkdnFoldSection = { 'folds' },
+    MkdnUnfoldSection = { 'folds' },
     -- The following three depend on multiple modules; they will be defined but will
     -- self-limit their functionality depending on the available modules
     MkdnEnter = {},
     MkdnTab = {},
-    MkdnSTab = {}
+    MkdnSTab = {},
 }
-
 
 -- Run setup
 init.setup = function(user_config)
@@ -186,7 +185,8 @@ init.setup = function(user_config)
     -- Get first opened file/buffer path and directory
     init.initial_buf = vim.api.nvim_buf_get_name(0)
     -- Determine initial_dir according to OS
-    init.initial_dir = (init.this_os:match('Windows') ~= nil and init.initial_buf:match('(.*)\\.-')) or init.initial_buf:match('(.*)/.-')
+    init.initial_dir = (init.this_os:match('Windows') ~= nil and init.initial_buf:match('(.*)\\.-'))
+        or init.initial_buf:match('(.*)/.-')
     -- Get the extension of the file being edited
     local ft = init.utils.getFileType(init.initial_buf)
     -- Before fully loading config see if the plugin should be started
@@ -218,10 +218,23 @@ init.setup = function(user_config)
                 if init.root_dir then
                     vim.api.nvim_set_current_dir(init.root_dir)
                     local name = init.root_dir:match('.*/(.*)') or init.root_dir
-                    if not silent then vim.api.nvim_echo({{'⬇️  Notebook: '..name}}, true, {}) end
+                    if not silent then
+                        vim.api.nvim_echo({ { '⬇️  Notebook: ' .. name } }, true, {})
+                    end
                 else
                     local fallback = init.config.perspective.fallback
-                    if not silent then vim.api.nvim_echo({{'⬇️  No notebook found. Fallback perspective: '..fallback, 'WarningMsg'}}, true, {}) end
+                    if not silent then
+                        vim.api.nvim_echo(
+                            {
+                                {
+                                    '⬇️  No notebook found. Fallback perspective: ' .. fallback,
+                                    'WarningMsg',
+                                },
+                            },
+                            true,
+                            {}
+                        )
+                    end
                     --init.config.perspective.priority = init.config.perspective.fallback
                     -- Set working directory according to current perspective
                     if fallback == 'first' then
@@ -236,7 +249,14 @@ init.setup = function(user_config)
                     end
                 end
             else
-                if not silent then vim.api.nvim_echo({{'⬇️  No tell was provided for the notebook\'s root directory. See :h mkdnflow-configuration.', 'WarningMsg'}}, true, {}) end
+                if not silent then
+                    vim.api.nvim_echo({
+                        {
+                            "⬇️  No tell was provided for the notebook's root directory. See :h mkdnflow-configuration.",
+                            'WarningMsg',
+                        },
+                    }, true, {})
+                end
                 if init.config.perspective.fallback == 'first' then
                     vim.api.nvim_set_current_dir(init.initial_dir)
                 else
@@ -271,34 +291,30 @@ init.setup = function(user_config)
         -- Make table of extension patterns to try to match
         local extension_patterns = {}
         for key, _ in pairs(load_on_ft) do
-            table.insert(extension_patterns, '*.'..key)
+            table.insert(extension_patterns, '*.' .. key)
         end
         -- Define an autocommand to enable to plugin when the right buffer type is entered
         if init.nvim_version >= 7 then
-            init.autocmd_id = vim.api.nvim_create_autocmd(
-                {"BufEnter", "BufWinEnter"},
-                {
-                    pattern = extension_patterns,
-                    command = "Mkdnflow silent"
-                }
-            )
+            init.autocmd_id = vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
+                pattern = extension_patterns,
+                command = 'Mkdnflow silent',
+            })
         end
         -- If maps module is not disabled, load the mapping autocmds
         if init.config.modules.maps then
             require('mkdnflow.maps')
         end
     end
-
 end
 
 -- Force start
 init.forceStart = function(opts)
     local silent = opts[1] or false
     if init.loaded == true then
-        vim.api.nvim_echo({{"⬇️  Mkdnflow is already running!", 'ErrorMsg'}}, true, {})
+        vim.api.nvim_echo({ { '⬇️  Mkdnflow is already running!', 'ErrorMsg' } }, true, {})
     else
         if silent ~= 'silent' then
-            vim.api.nvim_echo({{"⬇️  Starting Mkdnflow", 'WarningMsg'}}, true, {})
+            vim.api.nvim_echo({ { '⬇️  Starting Mkdnflow', 'WarningMsg' } }, true, {})
         end
         init.setup(init.user_config)
         if vim.fn.api_info().version.minor >= 7 then

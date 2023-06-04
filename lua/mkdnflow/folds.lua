@@ -26,7 +26,9 @@ end
 
 local get_section_range = function(start_row)
     start_row = start_row or vim.api.nvim_win_get_cursor(0)[1]
-    local line, n_lines = vim.api.nvim_buf_get_lines(0, start_row - 1, start_row, false)[1], vim.api.nvim_buf_line_count(0)
+    local line, n_lines =
+        vim.api.nvim_buf_get_lines(0, start_row - 1, start_row, false)[1],
+        vim.api.nvim_buf_line_count(0)
     local heading_level = M.getHeadingLevel(line)
     if heading_level > 0 then
         local continue = true
@@ -45,7 +47,7 @@ local get_section_range = function(start_row)
                 continue = false
             end
         end
-        return {start_row, end_row - 1}
+        return { start_row, end_row - 1 }
     end
 end
 
@@ -68,14 +70,14 @@ M.foldSection = function()
     if M.getHeadingLevel(line) < 99 then
         local range = get_section_range()
         if range then
-            vim.cmd(tostring(range[1])..','..tostring(range[2])..'fold')
+            vim.cmd(tostring(range[1]) .. ',' .. tostring(range[2]) .. 'fold')
         end
     else
         local start_row = get_nearest_heading()
         if start_row then
             local range = get_section_range(start_row)
             if range then
-                vim.cmd(tostring(range[1])..','..tostring(range[2])..'fold')
+                vim.cmd(tostring(range[1]) .. ',' .. tostring(range[2]) .. 'fold')
             end
         end
     end
@@ -86,7 +88,7 @@ M.unfoldSection = function(row)
     local foldstart = vim.fn.foldclosed(tostring(row))
     if foldstart > -1 then
         local foldend = vim.fn.foldclosedend(tostring(row))
-        vim.cmd(tostring(foldstart)..','..tostring(foldend)..'foldopen')
+        vim.cmd(tostring(foldstart) .. ',' .. tostring(foldend) .. 'foldopen')
     end
 end
 
