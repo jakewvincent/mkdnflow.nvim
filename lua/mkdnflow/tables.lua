@@ -26,11 +26,7 @@ end
 local M = {}
 
 local width = function(string)
-    if utf8_available then
-        return require('lua-utf8').width(string)
-    else
-        return #string
-    end
+		return vim.fn.strdisplaywidth(string)
 end
 
 local extract_cell_data = function(text)
