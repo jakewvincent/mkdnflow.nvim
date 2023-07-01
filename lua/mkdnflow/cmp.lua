@@ -124,6 +124,12 @@ function source:complete(params, callback)
 			table.insert(items, item)
 		end
 	end
+	for _, v in pairs(bib_paths.yaml) do
+		local bib_items_yaml = parse_bib(v)
+		for _, item in ipairs(bib_items_yaml) do
+			table.insert(items, item)
+		end
+	end
 	callback(items)
 end
 
