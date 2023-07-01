@@ -30,7 +30,8 @@ local default_config = {
         maps = true,
         paths = true,
         tables = true,
-        yaml = false
+        yaml = false,
+        cmp = true,
     },
     perspective = {
         priority = 'first',
@@ -261,6 +262,7 @@ init.setup = function(user_config)
         init.paths = init.config.modules.paths and require('mkdnflow.paths')
         init.tables = init.config.modules.tables and require('mkdnflow.tables')
         init.yaml = init.config.modules.yaml and require('mkdnflow.yaml')
+        init.cmp = init.config.modules.cmp and require('mkdnflow.cmp')
         -- Record load status (i.e. loaded)
         init.loaded = true
     else

@@ -366,7 +366,8 @@ require('mkdnflow').setup({
         maps = true,
         paths = true,
         tables = true,
-        yaml = false
+        yaml = false,
+        cmp = true
     },
     filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,             
@@ -795,3 +796,39 @@ end
 * [wiki.vim](https://github.com/lervag/wiki.vim/) (A lighter-weight alternative to Vimwiki, written in Vimscript)
 * [Neorg](https://github.com/nvim-neorg/neorg) (A revised [Org-mode](https://en.wikipedia.org/wiki/Org-mode) for Neovim, written in Lua)
 * [follow-md-links.nvim](https://github.com/jghauser/follow-md-links.nvim) (A simpler plugin for following markdown links, written in Lua)
+=======
+
+# nvim-cmp autocompletion
+
+
+* Autocompletion in insert mode when the word you are typing matches any of the *.md* files in the notebook.
+* Autocompletion for bibliography key from entries in *.bib* files.
+* Documentation options to check the contents before selecting the completion.
+* A module for completion that can be disabled in configuration. Use the *cmp* key.
+
+
+Add this sources into the list of sources in your *init.lua* file.
+```lua
+cmp.setup({
+	sources = cmp.config.sources({
+		----- Rest of the sources
+
+		{ name = 'mkdnflow' },  -- new source
+	}),
+})
+```
+
+Also, don't forget to edit your `formatting` options in `cmp.setup`.
+
+
+#### possible completion issues with links.transform functions
+
+If you have some *transform_explicit* option for *links* to organizing in folders then the folder name will be inserted accordingly. **All transforms may not work**
+For example you have an implicit transform that will make the link as `[auther_year] (author_year.md)` and save the file as `ref_author_year.md`. The condition can be if the link name ends with *_yyyy*.
+Now cmp will complete it as `[ref_author_year] (ref_author_year.md)`.
+Now when you enter the link completed by cmp, you will go to a new file that is saved as `ref_ref_author_year.md`
+
+So have sensible transform functions, preferably organizing in folders. The other solution is to do a full text search in all the files for links, which is .. too much for me.
+
+
+I should credit the following developer of [cmp-pandoc-references](https://github.com/jc-doyle/cmp-pandoc-references) whose code i copied. And other nvim-cmp plugins i referred to for syntax etc.
