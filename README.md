@@ -828,7 +828,7 @@ For example you have an implicit transform that will make the link as `[auther_y
 Now cmp will complete it as `[ref_author_year] (ref_author_year.md)`.
 Now when you enter the link completed by cmp, you will go to a new file that is saved as `ref_ref_author_year.md`
 
-So have sensible transform functions, preferably organizing in folders. The other solution is to do a full text search in all the files for links, which is .. too much for me.
+So have sensible transform functions, preferably organizing in folders. The other solution is to do a full text search in all the files for links.
 
 
 I should credit the following developer of [cmp-pandoc-references](https://github.com/jc-doyle/cmp-pandoc-references) whose code i copied. And other nvim-cmp plugins i referred to for syntax etc.
