@@ -394,8 +394,8 @@ M.toggleToDo = function(row, status, meta)
                 end
             end
         else
-            local message = '⬇️  Not a to-do list item!'
-            if not silent then vim.api.nvim_echo({{message, 'WarningMsg'}}, true, {}) end
+            -- No to-do found, insert one.
+            vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 0, { '- [' .. to_do_not_started .. '] ' })
         end
     end
 end
