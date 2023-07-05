@@ -595,16 +595,12 @@ M.moveSource = function()
                 local dir = string.match(derived_goal, '(.*)' .. sep .. '.-$')
                 if goal_exists then -- If the goal location already exists, abort
                     vim.api.nvim_command('normal! :')
-                    vim.api.nvim_echo(
+                    vim.api.nvim_echo({
                         {
-                            {
-                                "⬇️  '" .. location .. "' already exists! Aborting.",
-                                'WarningMsg',
-                            },
+                            "⬇️  '" .. location .. "' already exists! Aborting.",
+                            'WarningMsg',
                         },
-                        true,
-                        {}
-                    )
+                    }, true, {})
                 elseif source_exists then -- If the source location exists, proceed
                     if dir then -- If there's a directory in the goal location, ...
                         local to_dir_exists = exists(dir, 'd')
@@ -653,16 +649,12 @@ M.moveSource = function()
                 else -- Otherwise, the file we're trying to move must not exist
                     -- Clear the prompt & send a warning
                     vim.api.nvim_command('normal! :')
-                    vim.api.nvim_echo(
+                    vim.api.nvim_echo({
                         {
-                            {
-                                '⬇️  ' .. derived_source .. " doesn't seem to exist! Aborting.",
-                                'WarningMsg',
-                            },
+                            '⬇️  ' .. derived_source .. " doesn't seem to exist! Aborting.",
+                            'WarningMsg',
                         },
-                        true,
-                        {}
-                    )
+                    }, true, {})
                 end
             end
         end)
