@@ -494,11 +494,11 @@ M.moveSource = function()
     end
     -- Retrieve source from link
     local source, anchor, link_type, start_row, start_col, end_row, end_col = links.getLinkPart(links.getLinkUnderCursor(), 'source')
-    -- Determine type of source
-    local source_type = M.pathType(source)
-    -- Modify source path in the same way as when links are interpreted
-    local derived_source = M.transformPath(source)
-    if derived_source then
+    if source then
+        -- Determine type of source
+        local source_type = M.pathType(source)
+        -- Modify source path in the same way as when links are interpreted
+        local derived_source = M.transformPath(source)
         if not derived_source:match('%..+$') then
             if implicit_extension then
                 derived_source = derived_source..'.'..implicit_extension
@@ -506,60 +506,60 @@ M.moveSource = function()
                 derived_source = derived_source..'.md'
             end
         end
-    -- If it's a file, determine the full path of the source using perspective
-    derived_source = derive_path(derived_source, source_type)
-    -- Ask user to edit name in console (only display what's in the link)
-    local input_opts = {
-        prompt = '⬇️  Move to: ',
-        default = source,
-        completion = 'file'
-    }
-    -- Determine what to do based on user input
-    vim.ui.input(input_opts, function(location)
-        if location then
-            local derived_goal = M.transformPath(location)
-            if not derived_goal:match('%..+$') then
-                if implicit_extension then
-                    derived_goal = derived_goal..'.'..implicit_extension
-                else
-                    derived_goal = derived_goal..'.md'
+        -- If it's a file, determine the full path of the source using perspective
+        derived_source = derive_path(derived_source, source_type)
+        -- Ask user to edit name in console (only display what's in the link)
+        local input_opts = {
+            prompt = '⬇️  Move to: ',
+            default = source,
+            completion = 'file'
+        }
+        -- Determine what to do based on user input
+        vim.ui.input(input_opts, function(location)
+            if location then
+                local derived_goal = M.transformPath(location)
+                if not derived_goal:match('%..+$') then
+                    if implicit_extension then
+                        derived_goal = derived_goal..'.'..implicit_extension
+                    else
+                        derived_goal = derived_goal..'.md'
+                    end
                 end
-            end
-            derived_goal = derive_path(derived_goal, M.pathType(derived_goal))
-            local source_exists = exists(derived_source, 'f')
-            local goal_exists = exists(derived_goal, 'f')
-            local dir = string.match(derived_goal, '(.*)'..sep..'.-$')
-            if goal_exists then -- If the goal location already exists, abort
-                vim.api.nvim_command("normal! :")
-                vim.api.nvim_echo({{"⬇️  '"..location.."' already exists! Aborting.", 'WarningMsg'}}, true, {})
-            elseif source_exists then -- If the source location exists, proceed
-                if dir then -- If there's a directory in the goal location, ...
-                    local to_dir_exists = exists(dir, 'd')
-                    if not to_dir_exists then
-                        if create_dirs then
-                            local path_to_file = utils.escapeChars(dir)
-                            if this_os:match('Windows') then
-                                os.execute('mkdir "'..path_to_file..'"')
+                derived_goal = derive_path(derived_goal, M.pathType(derived_goal))
+                local source_exists = exists(derived_source, 'f')
+                local goal_exists = exists(derived_goal, 'f')
+                local dir = string.match(derived_goal, '(.*)'..sep..'.-$')
+                if goal_exists then -- If the goal location already exists, abort
+                    vim.api.nvim_command("normal! :")
+                    vim.api.nvim_echo({{"⬇️  '"..location.."' already exists! Aborting.", 'WarningMsg'}}, true, {})
+                elseif source_exists then -- If the source location exists, proceed
+                    if dir then -- If there's a directory in the goal location, ...
+                        local to_dir_exists = exists(dir, 'd')
+                        if not to_dir_exists then
+                            if create_dirs then
+                                local path_to_file = utils.escapeChars(dir)
+                                if this_os:match('Windows') then
+                                    os.execute('mkdir "'..path_to_file..'"')
+                                else
+                                    os.execute('mkdir -p '..path_to_file)
+                                end
                             else
-                                os.execute('mkdir -p '..path_to_file)
+                                vim.api.nvim_command("normal! :")
+                                vim.api.nvim_echo({{'⬇️  The goal directory doesn\'t exist. Set create_dirs to true for automatic directory creation.'}})
                             end
                         else
-                            vim.api.nvim_command("normal! :")
-                            vim.api.nvim_echo({{'⬇️  The goal directory doesn\'t exist. Set create_dirs to true for automatic directory creation.'}})
+                            confirm_and_execute(derived_source, source, derived_goal, anchor, location, start_row, start_col, end_row, end_col)
                         end
-                    else
+                    else -- Move
                         confirm_and_execute(derived_source, source, derived_goal, anchor, location, start_row, start_col, end_row, end_col)
                     end
-                else -- Move
-                    confirm_and_execute(derived_source, source, derived_goal, anchor, location, start_row, start_col, end_row, end_col)
+                else -- Otherwise, the file we're trying to move must not exist
+                    -- Clear the prompt & send a warning
+                    vim.api.nvim_command("normal! :")
+                    vim.api.nvim_echo({{'⬇️  '..derived_source..' doesn\'t seem to exist! Aborting.', 'WarningMsg'}}, true, {})
                 end
-            else -- Otherwise, the file we're trying to move must not exist
-                -- Clear the prompt & send a warning
-                vim.api.nvim_command("normal! :")
-                vim.api.nvim_echo({{'⬇️  '..derived_source..' doesn\'t seem to exist! Aborting.', 'WarningMsg'}}, true, {})
             end
-        end
-    end)
+        end)
     else
         vim.api.nvim_echo({{'⬇️  Couldn\'t find a link under the cursor to rename!', 'WarningMsg'}}, true, {})
     end
