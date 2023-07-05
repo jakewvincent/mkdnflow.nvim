@@ -481,6 +481,8 @@ M.formatLink = function(text, source, part)
         path_text = '#'..utf8.lower(path_text)
     elseif not source then
         path_text = M.transformPath(text)
+        -- If no path_text, end here
+        if not path_text then return end
         if not links.implicit_extension then
             path_text = path_text..'.md'
         end
@@ -544,6 +546,8 @@ M.createLink = function(from_clipboard)
             else
                 replacement = M.formatLink(cursor_word)
             end
+            -- If there's no replacement, stop here
+            if not replacement then return end
             -- Find the (first) position of the matched word in the line
             local left, right = utf8.find(line, cursor_word, nil, true)
             -- Make sure it's not a duplicate of the word under the cursor, and if it
@@ -599,6 +603,8 @@ M.createLink = function(from_clipboard)
         else
             replacement = M.formatLink(text)
         end
+        -- If no replacement, end here
+        if not replacement then return end
         -- Replace the visual selection w/ the formatted link replacement
         vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, replacement)
         -- Leave visual mode
