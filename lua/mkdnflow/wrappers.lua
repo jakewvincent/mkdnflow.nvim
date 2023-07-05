@@ -33,7 +33,7 @@ M.newListItemOrNextTableRow = function()
     elseif require('mkdnflow').tables.isPartOfTable(line) then
         require('mkdnflow').tables.moveToCell(1, 0)
     else
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), 'n', true)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<CR>', true, false, true), 'n', true)
     end
 end
 
@@ -43,15 +43,15 @@ M.indentListItemOrJumpTableCell = function(direction)
     local list_type = lists.hasListType(line)
     if list_type and config.modules.lists and line:match(lists.patterns[list_type].empty) then
         if direction == -1 then
-            if line:match("^"..vim_indent) then
-                local new_line = line:gsub("^"..vim_indent, "")
-                vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, #line, {new_line})
+            if line:match('^' .. vim_indent) then
+                local new_line = line:gsub('^' .. vim_indent, '')
+                vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, #line, { new_line })
             end
         else
-            vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 0, {vim_indent})
+            vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 0, { vim_indent })
         end
         -- Update numbering if it's a numbered list
-        if list_type == "ol" or list_type == "oltd" then
+        if list_type == 'ol' or list_type == 'oltd' then
             lists.updateNumbering()
             lists.updateNumbering({}, -1)
             lists.updateNumbering({}, 1)
@@ -63,7 +63,7 @@ M.indentListItemOrJumpTableCell = function(direction)
             require('mkdnflow').tables.moveToCell(0, 1)
         end
     else
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-I>", true, false, true), 'n', true)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-I>', true, false, true), 'n', true)
     end
 end
 
@@ -74,7 +74,11 @@ M.followOrCreateLinksOrToggleFolds = function(mode)
     else
         local row, line = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_get_current_line()
         local on_fold = vim.fn.foldclosed(tostring(row)) ~= -1
-        if config.modules.folds and not on_fold and require('mkdnflow').folds.getHeadingLevel(line) < 99 then
+        if
+            config.modules.folds
+            and not on_fold
+            and require('mkdnflow').folds.getHeadingLevel(line) < 99
+        then
             require('mkdnflow').folds.foldSection()
         elseif config.modules.folds and on_fold then
             require('mkdnflow').folds.unfoldSection(row)

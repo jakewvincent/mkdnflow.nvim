@@ -30,22 +30,22 @@ local M = {}
 M.bib_paths = {
     default = {},
     root = {},
-    yaml = {}
+    yaml = {},
 }
 
 if find_in_root and root_dir then
     local pfile
     if this_os:match('Windows') then
-        pfile = io.popen('dir /b "'..root_dir..'"')
+        pfile = io.popen('dir /b "' .. root_dir .. '"')
     else
-        pfile = io.popen('ls -a "'..root_dir..'"')
+        pfile = io.popen('ls -a "' .. root_dir .. '"')
     end
     -- Check the list of files for any bib files
     for filename in pfile:lines() do
         local match = filename:match('%.bib$')
         if match then
             -- TODO: Make the following OS-agnostic
-            table.insert(M.bib_paths.root, root_dir..'/'..filename)
+            table.insert(M.bib_paths.root, root_dir .. '/' .. filename)
         end
     end
     pfile:close()
@@ -81,7 +81,7 @@ local search_bib_file = function(path, citekey)
     if bib_file then
         local text = bib_file:read('*a')
         if text then
-            local start, _ = string.find(text, '\n%s?@[%a]-{%s?'..citekey)
+            local start, _ = string.find(text, '\n%s?@[%a]-{%s?' .. citekey)
             if start then
                 local match = text:match('%b{}', start)
                 return match
@@ -93,9 +93,18 @@ local search_bib_file = function(path, citekey)
         if bib_path == nil then
             bib_path_name = '<nil>'
         else
-            bib_path_name = '"'..bib_path..'"'
+            bib_path_name = '"' .. bib_path .. '"'
         end
-        if not silent then vim.api.nvim_echo({{'⬇️  Could not find a bib file. The default bib path is currently '..bib_path_name..'. Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.', 'ErrorMsg'}}, true, {}) end
+        if not silent then
+            vim.api.nvim_echo({
+                {
+                    '⬇️  Could not find a bib file. The default bib path is currently '
+                        .. bib_path_name
+                        .. '. Fix the path or add a default bib path by specifying a value for the "default_bib_path" key.',
+                    'ErrorMsg',
+                },
+            }, true, {})
+        end
         -- TODO: Make this section a little smarter. Change message depending on both bib_path and find_in_root.
     end
 end
@@ -120,15 +129,30 @@ local find_bib_entry = function(citation)
     if yaml.bib.override and M.bib_paths.yaml[1] then
         entry = search_bib_source(citekey, 'yaml')
     elseif find_in_root and root_dir and M.bib_paths.root[1] then
-        entry = search_bib_source(citekey, 'yaml') or search_bib_source(citekey, 'root') or search_bib_source(citekey, 'default')
+        entry = search_bib_source(citekey, 'yaml')
+            or search_bib_source(citekey, 'root')
+            or search_bib_source(citekey, 'default')
     elseif M.bib_paths.yaml[1] or M.bib_paths.default[1] then
         entry = search_bib_source(citekey, 'yaml') or search_bib_source(citekey, 'default')
     else
-        if not silent then vim.api.nvim_echo({{'⬇️  Could not find a bib file. The default bib path is currently '..tostring(M.bib_paths.default[1])..'. Fix the path or add a default bib path by specifying a value for the "bib.default_path" key.', 'ErrorMsg'}}, true, {}) end
+        if not silent then
+            vim.api.nvim_echo({
+                {
+                    '⬇️  Could not find a bib file. The default bib path is currently '
+                        .. tostring(M.bib_paths.default[1])
+                        .. '. Fix the path or add a default bib path by specifying a value for the "bib.default_path" key.',
+                    'ErrorMsg',
+                },
+            }, true, {})
+        end
         -- TODO: Make this section a little smarter. Change message depending on both bib_path and find_in_root.
     end
     if not silent and not entry then
-        vim.api.nvim_echo({{'⬇️  No entry found for "'..citekey..'"!', 'WarningMsg'}}, true, {})
+        vim.api.nvim_echo(
+            { { '⬇️  No entry found for "' .. citekey .. '"!', 'WarningMsg' } },
+            true,
+            {}
+        )
     else
         return entry
     end
@@ -144,19 +168,28 @@ M.handleCitation = function(citation)
     local bib_entry = find_bib_entry(citation)
     if bib_entry then
         if bib_entry['file'] then
-            local path = 'file:'..bib_entry['file']
+            local path = 'file:' .. bib_entry['file']
             return path
         elseif bib_entry['url'] then
             local url = bib_entry['url']
             return url
         elseif bib_entry['doi'] then
-            local doi = 'https://doi.org/'..bib_entry['doi']
+            local doi = 'https://doi.org/' .. bib_entry['doi']
             return doi
         elseif bib_entry['howpublished'] then
             local howpublished = bib_entry['howpublished']
             return howpublished
         else
-            if not silent then vim.api.nvim_echo({{'⬇️  Bib entry with citekey "'..bib_entry.key..'" had no relevant content!', 'WarningMsg'}}, true, {}) end
+            if not silent then
+                vim.api.nvim_echo({
+                    {
+                        '⬇️  Bib entry with citekey "'
+                            .. bib_entry.key
+                            .. '" had no relevant content!',
+                        'WarningMsg',
+                    },
+                }, true, {})
+            end
             return nil
         end
     end
