@@ -158,6 +158,34 @@ require('mkdnflow').setup({
 * `]]` and `[[` jump to the next and previous headings in the file
 * "Wrap" back to the beginning/end of the file when jumping with a [config setting](#wrap-boolean)
 
+### 🆕 Completion for [`nvim-cmp`](https://github.com/hrsh7th/nvim-cmp)
+* Autocompletion in insert mode when the word you are typing matches any of the `.md` files in the notebook.
+* Autocompletion for bibliography keys from entries in known `.bib` files (see [`bib`](#bib-dictionary-like-table)).
+* File or bib entry contents are displayed in the completion menu before selecting the completion.
+* A module for completion that can be disabled in configuration. Use the `cmp` key.
+
+To enable completion via `cmp` using the provided source, add `mkdnflow` as one of the sources in your `cmp` setup function.
+```lua
+cmp.setup({
+	sources = cmp.config.sources({
+		-- Other cmp sources
+		{ name = 'mkdnflow' },  -- Add this
+		-- Other cmp sources
+	}),
+})
+```
+
+Also, don't forget to edit your `formatting` options in `cmp.setup`.
+
+NOTE: There may be some compatibility issues with the completion module and `links.transform_explicit`/`links.transform_implicit` functions:
+
+* If you have some `transform_explicit` option for links to organizing in folders then the folder name will be inserted accordingly. **All transforms may not work**
+    * For example, if you have an implicit transformation that will make the link appear as `[author_year](author_year.md)` and you save the file as `ref_author_year.md`. The condition can be if the link name ends with *_yyyy*. Now `cmp` will complete it as `[ref_author_year](ref_author_year.md)` (without the transformation applied). Next, when you follow the link completed by `cmp`, you will go to a new file that is saved as `ref_ref_author_year.md`, which of course does not refer to the intended file.
+
+To prevent this, make sure you write sensible transform functions, preferably using it for folder organization. The other solution is to do a full text search in all the files for links.
+
+Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyle/cmp-pandoc-references) and code from other completion sources when writing the `cmp` module.
+
 ### Create missing directories
 * If a link goes to a file in a directory that doesn't exist, it can optionally [be created](#create_dirs-boolean)
 
@@ -366,7 +394,8 @@ require('mkdnflow').setup({
         maps = true,
         paths = true,
         tables = true,
-        yaml = false
+        yaml = false,
+        cmp = true
     },
     filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,             
@@ -470,6 +499,7 @@ require('mkdnflow').setup({
     * `modules.bib` (required for [parsing bib files](#follow-links-and-citations) and [following citations](#follow-links-and-citations))
     * `modules.buffers` (required for [backward and forward navigation through buffers](#backward-and-forward-navigation-through-buffers))
     * `modules.conceal` (required if you wish to enable [link concealing](#markdown-or-wiki-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to leaving this module enabled [it is enabled by default] if you wish to conceal links)
+    * `modules.cmp` (required if you wish to enable [Completion for [`nvim-cmp`](https://github.com/hrsh7th/nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp))
     * `modules.cursor` (required for [jumping to links and headings](#jump-to-links-headings); [yanking anchor links](#create-customize-and-destroy-links))
     * `modules.folds` (required for [folding by section](#section-folding))
     * `modules.links` (required for [creating and destroying links](#create-customize-and-destroy-links) and [following links](#follow-links-and-citations))
@@ -506,7 +536,7 @@ require('mkdnflow').setup({
 * `<any arbitrary filetype extension>` (boolean value)
     * `true`: A matching extension will enable the plugin's functionality for a file with that extension
 
-Note: This functionality references the file's extension. It does not rely on Neovim's filetype recognition. The extension must be provided in lower case because the plugin converts file names to lowercase. Any arbitrary extension can be supplied. Setting an extension to `false` is the same as not including it in the list.
+NOTE: This functionality references the file's extension. It does not rely on Neovim's filetype recognition. The extension must be provided in lower case because the plugin converts file names to lowercase. Any arbitrary extension can be supplied. Setting an extension to `false` is the same as not including it in the list.
 
 #### `wrap` (boolean)
 * `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
@@ -594,7 +624,7 @@ end
     * `mappings.<name of command>[2]` string representing the keymap (e.g. `'<Space>'`)
     * set `mappings.<name of command> = false` to disable default mapping without providing a custom mapping
 
-Note: `<name of command>` should be the name of a commands defined in `mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
+NOTE: `<name of command>` should be the name of a commands defined in `mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
 
 ### 👍 Recommended vim settings
 
@@ -664,6 +694,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (e.g. nvim-autopairs allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
+* [ ] Finalize completion module & add comments
 
 <details>
 <summary>Completed to-dos</summary><p>
@@ -699,12 +730,13 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
-* 04/02/23: Updated yank-as-anchor mapping from `ya` to `yaa` to prevent interference with `yap` (yank around paragraph)
-* 03/18/23: Added template functionality for new files
+* 09/11/23: Merge completion module PR for testing in dev branch
 
 <details>
 <summary>Older changes (> 1 month ago)</summary><p>
 
+* 04/02/23: Updated yank-as-anchor mapping from `ya` to `yaa` to prevent interference with `yap` (yank around paragraph)
+* 03/18/23: Added template functionality for new files
 * 01/14/23: Added support for non-ascii symbols in anchor links (with the `luautf8` Luarocks module)
 * 01/05/23: Added `+` as a valid unordered list or unordered to-do list marker (requested in [issue #112](https://github.com/jakewvincent/mkdnflow.nvim/issues/112))
 * 01/02/23: Automatic links (URLs enclosed in `<` + `>` and lacking the usual markdown link syntax that are automatically rendered as links when compiled into HTML) will now be followed
@@ -795,3 +827,5 @@ end
 * [wiki.vim](https://github.com/lervag/wiki.vim/) (A lighter-weight alternative to Vimwiki, written in Vimscript)
 * [Neorg](https://github.com/nvim-neorg/neorg) (A revised [Org-mode](https://en.wikipedia.org/wiki/Org-mode) for Neovim, written in Lua)
 * [follow-md-links.nvim](https://github.com/jghauser/follow-md-links.nvim) (A simpler plugin for following markdown links, written in Lua)
+=======
+

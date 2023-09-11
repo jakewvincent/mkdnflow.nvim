@@ -558,11 +558,11 @@ M.moveSource = function()
     -- Retrieve source from link
     local source, anchor, link_type, start_row, start_col, end_row, end_col =
         links.getLinkPart(links.getLinkUnderCursor(), 'source')
-    -- Determine type of source
-    local source_type = M.pathType(source)
-    -- Modify source path in the same way as when links are interpreted
-    local derived_source = M.transformPath(source)
-    if derived_source then
+    if source then
+        -- Determine type of source
+        local source_type = M.pathType(source)
+        -- Modify source path in the same way as when links are interpreted
+        local derived_source = M.transformPath(source)
         if not derived_source:match('%..+$') then
             if implicit_extension then
                 derived_source = derived_source .. '.' .. implicit_extension
@@ -595,12 +595,11 @@ M.moveSource = function()
                 local dir = string.match(derived_goal, '(.*)' .. sep .. '.-$')
                 if goal_exists then -- If the goal location already exists, abort
                     vim.api.nvim_command('normal! :')
-                    vim.api.nvim_echo({
-                        {
-                            "⬇️  '" .. location .. "' already exists! Aborting.",
-                            'WarningMsg',
-                        },
-                    }, true, {})
+                    vim.api.nvim_echo(
+                        { { "⬇️  '" .. location .. "' already exists! Aborting.", 'WarningMsg' } },
+                        true,
+                        {}
+                    )
                 elseif source_exists then -- If the source location exists, proceed
                     if dir then -- If there's a directory in the goal location, ...
                         local to_dir_exists = exists(dir, 'd')
@@ -649,12 +648,16 @@ M.moveSource = function()
                 else -- Otherwise, the file we're trying to move must not exist
                     -- Clear the prompt & send a warning
                     vim.api.nvim_command('normal! :')
-                    vim.api.nvim_echo({
+                    vim.api.nvim_echo(
                         {
-                            '⬇️  ' .. derived_source .. " doesn't seem to exist! Aborting.",
-                            'WarningMsg',
+                            {
+                                '⬇️  ' .. derived_source .. " doesn't seem to exist! Aborting.",
+                                'WarningMsg',
+                            },
                         },
-                    }, true, {})
+                        true,
+                        {}
+                    )
                 end
             end
         end)

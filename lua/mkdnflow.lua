@@ -31,6 +31,7 @@ local default_config = {
         paths = true,
         tables = true,
         yaml = false,
+        cmp = true,
     },
     perspective = {
         priority = 'first',
@@ -223,16 +224,12 @@ init.setup = function(user_config)
                 else
                     local fallback = init.config.perspective.fallback
                     if not silent then
-                        vim.api.nvim_echo(
+                        vim.api.nvim_echo({
                             {
-                                {
-                                    '⬇️  No notebook found. Fallback perspective: ' .. fallback,
-                                    'WarningMsg',
-                                },
+                                '⬇️  No notebook found. Fallback perspective: ' .. fallback,
+                                'WarningMsg',
                             },
-                            true,
-                            {}
-                        )
+                        }, true, {})
                     end
                     --init.config.perspective.priority = init.config.perspective.fallback
                     -- Set working directory according to current perspective
@@ -281,6 +278,7 @@ init.setup = function(user_config)
         init.paths = init.config.modules.paths and require('mkdnflow.paths')
         init.tables = init.config.modules.tables and require('mkdnflow.tables')
         init.yaml = init.config.modules.yaml and require('mkdnflow.yaml')
+        init.cmp = init.config.modules.cmp and require('mkdnflow.cmp')
         -- Record load status (i.e. loaded)
         init.loaded = true
     else

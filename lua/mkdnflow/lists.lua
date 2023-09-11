@@ -421,7 +421,7 @@ M.toggleToDo = function(row, status, meta)
                 end
             end
         else
-            -- No to-do found, insert one.
+            -- If no to-do is found, insert one
             vim.api.nvim_buf_set_text(
                 0,
                 row - 1,
