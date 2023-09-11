@@ -422,7 +422,14 @@ M.toggleToDo = function(row, status, meta)
             end
         else
             -- If no to-do is found, insert one
-            vim.api.nvim_buf_set_text(0, row - 1, 0, row - 1, 0, { '- [' .. to_do_not_started .. '] ' })
+            vim.api.nvim_buf_set_text(
+                0,
+                row - 1,
+                0,
+                row - 1,
+                0,
+                { '- [' .. to_do_not_started .. '] ' }
+            )
         end
     end
 end
