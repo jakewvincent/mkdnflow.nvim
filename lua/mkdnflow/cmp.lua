@@ -1,32 +1,40 @@
-local mkdnflow_root_dir = require('mkdnflow').root_dir -- String
+-- mkdnflow.nvim (Tools for personal markdown notebook navigation and management)
+-- Copyright (C) 2022-2023 Jake W. Vincent <https://github.com/jakewvincent>
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+local mkdnflow_root_dir = require('mkdnflow').root_dir
 local bib_paths = require('mkdnflow').bib.bib_paths
--- local mkdnflow_root_dir = '../..'
--- local mkdnflow_root_dir = 'asdfasdfasdfsadfasdf'
-local plenary_scandir = require('plenary').scandir.scan_dir -- Function
+local plenary_scandir = require('plenary').scandir.scan_dir
 local cmp = require('cmp')
--- local plenary_path = require('plenary').path
-local extension = '.md' -- keep the .
+local extension = '.md' -- Keep the '.'
 
-local transform_explicit_function_in_config = require('mkdnflow').config.links.transform_explicit
-
-local function transform_explicit(text)
-    if transform_explicit_function_in_config then -- condition will be false if it doesn't exist
-        return transform_explicit_function_in_config(text)
-    else
-        return text
-    end
-end
+local transform_explicit = require('mkdnflow').config.links.transform_explicit
 
 local function get_files_items()
     local filepaths_in_root = plenary_scandir(mkdnflow_root_dir)
     local items = {}
+    -- Iterate over files in the root directory & prepare for completion (if md file)
     for _, path in ipairs(filepaths_in_root) do
         if vim.endswith(path, extension) then
             local item = {}
-            item.path = path -- absolute path of the file
-            -- Anything except / and \ (\\) followed by extension so that folders will be excluded
+            -- Absolute path of the file
+            item.path = path
+            -- Anything except / and \ (\\) followed by the extension so that folders will be excluded
+            -- from the label
             item.label = path:match('([^/^\\]+)' .. extension .. '$')
-            local explicit_link = transform_explicit(item.label) .. extension
+            local explicit_link = transform_explicit and transform_explicit(item.label) .. extension or item.label .. extension
             -- Text should be inserted in markdown format
             item.insertText = '[' .. item.label .. '](' .. explicit_link .. ')'
             -- For beautification
@@ -37,7 +45,8 @@ local function get_files_items()
             local first_kb = binary:read(1024)
 
             local contents = {}
-            if first_kb then -- if its not empty file
+            -- Add to the table if it's not an empty file
+            if first_kb then
                 for content in first_kb:gmatch('[^\r\n]+') do
                     table.insert(contents, content)
                 end
@@ -51,7 +60,7 @@ local function get_files_items()
     return items
 end
 
--- Remove newline & excessive whitespace. Will be used in parse_bib function
+-- Remove newline chars and excessive whitespace. Will be used in parse_bib function.
 local function clean(text)
     if text then
         text = text:gsub('\n', ' ')
@@ -68,11 +77,6 @@ local function parse_bib(filename)
     local file = io.open(filename, 'rb')
     local bibentries = file:read('*all')
     file:close()
-    -- if not file then  -- check if you are able to open the file
-    -- 	bibentries = file:read('*all')
-    -- 	file:close()
-    -- end
-    -- print('bibentries are ' .. bibentries)
     for bibentry in bibentries:gmatch('@.-\n}\n') do
         local item = {}
 
@@ -95,8 +99,6 @@ local function parse_bib(filename)
     return items
 end
 
--------------------------------------------------------------- cmp source
-
 local source = {}
 
 source.new = function()
@@ -105,7 +107,7 @@ end
 
 function source:complete(params, callback)
     local items = get_files_items()
-    -- for bib files there are three lists (tables) that may store the bib file paths
+    -- For bib files, there are three lists (tables) in mkdnflow where we might find the paths for a bib file
     for _, v in pairs(bib_paths.default) do
         local bib_items_default = parse_bib(v)
         for _, item in ipairs(bib_items_default) do
@@ -127,6 +129,5 @@ function source:complete(params, callback)
     callback(items)
 end
 
--- return source  -- done in usual cmp method where the next line is present in after/plugin/file.lua or plugin/file.lua
-
-require('cmp').register_source('mkdnflow', source.new())
+-- Register this as a completion source
+cmp.register_source('mkdnflow', source.new())
