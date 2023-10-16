@@ -44,6 +44,9 @@ local function get_files_items()
             local binary = assert(io.open(filepath, 'rb'))
             local first_kb = binary:read(1024)
 
+            -- Close the file
+            binary:close()
+
             local contents = {}
             -- Add to the table if it's not an empty file
             if first_kb then
