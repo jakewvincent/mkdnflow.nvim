@@ -62,6 +62,9 @@ local default_config = {
             return text
         end,
     },
+    paths = {
+        update_link_everywhere = false,
+    },
     new_file_template = {
         use_template = false,
         placeholders = {
@@ -223,16 +226,12 @@ init.setup = function(user_config)
                 else
                     local fallback = init.config.perspective.fallback
                     if not silent then
-                        vim.api.nvim_echo(
+                        vim.api.nvim_echo({
                             {
-                                {
-                                    '⬇️  No notebook found. Fallback perspective: ' .. fallback,
-                                    'WarningMsg',
-                                },
+                                '⬇️  No notebook found. Fallback perspective: ' .. fallback,
+                                'WarningMsg',
                             },
-                            true,
-                            {}
-                        )
+                        }, true, {})
                     end
                     --init.config.perspective.priority = init.config.perspective.fallback
                     -- Set working directory according to current perspective

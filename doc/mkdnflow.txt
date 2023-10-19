@@ -888,7 +888,15 @@ it in the list.
             return('pages/'..input)
         end
     end
-<
+
+<`paths` (dictionary-like table)~
+                                                        *Mkdnfow-config-paths*
+- `paths.update_link_everywhere` (boolean): Whether `MkdnMoveSource` update
+  references in all files in the root directory. Preferably set
+  `perspective.priority` to `first` or `root`. It just substitute the old url
+  with the new one, without calculating the relative path. Also it only
+  changes files whose extensions are listed `filetypes`. (default: false)
+
 `to_do` (dictionary-like table)~
                                                         *Mkdnfow-config-to-do*
                                                *Mkdnflow-config-to-do-symbols*
