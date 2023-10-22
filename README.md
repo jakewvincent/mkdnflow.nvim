@@ -7,9 +7,9 @@
 </p>
 
 ### 🆕 Top three [latest features](#-recent-changes)
-1. [Templates for new files](#templates-for-new-files)
-2. [Follow automatic links](#follow-links-and-citations)
-3. [Create links using the system clipboard's content as the link source](#create-customize-and-destroy-links)
+1. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp)
+2. [Templates for new files](#templates-for-new-files)
+3. [Follow automatic links](#follow-links-and-citations)
 
 ## 📝 Description
 
@@ -23,6 +23,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 
 * Linux, macOS, or Windows
 * Neovim >= 0.7.0 for all functionality (most will work with Neovim >= 0.5.0, but mappings will need to be set separately)
+* [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) is required for the new completion module.
 * Optional: If you wish to use UTF-8 symbols as [custom to-do symbols](#to_do-dictionary-like-table), in [tables that you wish to have Mkdnflow format](#tables-dictionary-like-table), or in anchor links, you'll need the luarocks module [`luautf8`](https://luarocks.org/modules/xavier-wang/luautf8). Luarocks dependencies can be installed via [Packer](#initlua) using the `rocks` key:
 
 ```lua
