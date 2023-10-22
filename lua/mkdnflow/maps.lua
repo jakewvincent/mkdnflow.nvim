@@ -26,7 +26,7 @@ end
 -- Enable mappings in buffers in which Mkdnflow activates
 if nvim_version >= 7 then
     vim.api.nvim_create_augroup('MkdnflowMappings', { clear = true })
-    vim.api.nvim_create_autocmd({ 'BufEnter, BufWinEnter' }, {
+    vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
         pattern = extension_patterns,
         callback = function()
             for command, mapping in pairs(config.mappings) do
