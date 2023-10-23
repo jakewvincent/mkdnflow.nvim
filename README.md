@@ -427,6 +427,9 @@ require('mkdnflow').setup({
             return(text)
         end
     },
+    paths = {
+        update_link_everywhere = false,
+    },
     new_file_template = {
         use_template = false,
         placeholders = {
@@ -552,6 +555,11 @@ NOTE: This functionality references the file's extension. It does not rely on Ne
 #### `silent` (boolean)
 * `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
 * `false` (default): The plugin will display messages to the console (all messages from the plugin start with ⬇️ )
+
+#### `paths` (dictionary-like table)
+* `paths.update_link_everywhere` (boolean): Whether `MkdnMoveSource` update references in all files in the root directory. Preferably set `perspective.priority` to `first` or `root`. It just substitute the old url with the new one, without calculating the relative path. Also it only changes files whose extensions are listed `filetypes`.
+    * `true`: `MkdnMoveSource` will update references in all files in the root directory.
+    * `false` (default): Just update the reference under the cursor and move the file.
 
 #### `links` (dictionary-like table)
 * `links.style` (string)

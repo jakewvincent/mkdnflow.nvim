@@ -63,6 +63,9 @@ local default_config = {
             return text
         end,
     },
+    paths = {
+        update_link_everywhere = false,
+    },
     new_file_template = {
         use_template = false,
         placeholders = {

@@ -34,6 +34,8 @@ local links_config = require('mkdnflow').config.links
 local new_file_config = require('mkdnflow').config.new_file_template
 local implicit_extension = links_config.implicit_extension
 local link_transform = links_config.transform_implicit
+local paths = require('mkdnflow').config.paths
+local filetypes = vim.tbl_keys(require('mkdnflow').config.filetypes)
 
 -- Load modules
 local utils = require('mkdnflow.utils')
@@ -228,7 +230,7 @@ enter_internal_path = function(path)
     vim.ui.input(input_opts, function(response)
         if response ~= nil and response ~= path .. sep then
             internal_open(response)
-            vim.api.nvim_command('normal! :')
+            vim.cmd('mode')
         end
     end)
 end
@@ -454,25 +456,12 @@ truncate_path() cuts out the middle of a path for improved presentation of long
 paths.
 --]]
 local truncate_path = function(oldpath, newpath)
-    local difference = ''
-    local last_slash = string.find(string.reverse(newpath), sep)
-    last_slash = last_slash and #newpath - last_slash + 1 or nil
-    local continue = true
-    local char = 1
-    while continue do
-        local newpath_char = newpath:sub(char, char)
-        if oldpath:sub(char, char) ~= newpath_char and char <= #newpath then
-            continue = false
-        else
-            char = char + 1
+    for dir in vim.fs.parents(newpath) do
+        if oldpath:match(dir) then
+            return newpath:sub(#dir + 1)
         end
     end
-    if char > last_slash then
-        difference = string.sub(newpath, last_slash)
-    else
-        difference = string.sub(newpath, char)
-    end
-    return difference
+    return newpath
 end
 
 --[[
@@ -518,17 +507,57 @@ M.moveSource = function()
         vim.api.nvim_set_option('cmdheight', rows_needed)
         vim.ui.input({ prompt = prompt }, function(response)
             if response == 'y' then
-                if this_os:match('Windows') then
-                    os.execute('move "' .. derived_source .. '" "' .. derived_goal .. '"')
-                else
-                    os.execute(
-                        'mv '
-                            .. utils.escapeChars(derived_source)
-                            .. ' '
-                            .. utils.escapeChars(derived_goal)
-                    )
-                end
+                vim.loop.fs_rename(derived_source, derived_goal)
                 -- Change the link content
+                if paths.update_link_everywhere then
+                    (setmetatable({}, {
+                        __call = function(self, path)
+                            local fs = vim.loop.fs_scandir(path)
+                            while fs do
+                                local name, type = vim.loop.fs_scandir_next(fs)
+                                if not name then
+                                    break
+                                end
+                                local full_name = path .. sep .. name
+                                if type == 'directory' then
+                                    self[#self + 1] = full_name
+                                elseif
+                                    type == 'file'
+                                    and cur_file ~= full_name
+                                    and vim.list_contains(filetypes, utils.getFileType(name))
+                                then
+                                    local content
+                                    local r, r_err = io.open(full_name, 'r')
+                                    if r then
+                                        content = r:read('*all')
+                                        r:close()
+                                        local w, w_err = io.open(full_name, 'w')
+                                        if content and w then
+                                            content = content:gsub(source, location)
+                                            w:write(content)
+                                            w:close()
+                                        else
+                                            vim.api.nvim_echo(
+                                                { { '⬇️  ' .. w_err, 'WarningMsg' } },
+                                                true,
+                                                {}
+                                            )
+                                        end
+                                    else
+                                        vim.api.nvim_echo(
+                                            { { '⬇️  ' .. r_err, 'WarningMsg' } },
+                                            true,
+                                            {}
+                                        )
+                                    end
+                                end
+                            end
+                            if #self > 0 then
+                                self(table.remove(self, 1))
+                            end
+                        end,
+                    }))(root_dir)
+                end
                 vim.api.nvim_buf_set_text(
                     0,
                     start_row - 1,
@@ -539,7 +568,7 @@ M.moveSource = function()
                 )
                 -- Clear the prompt & print sth
                 -- Reset cmdheight value
-                vim.api.nvim_command('normal! :')
+                vim.cmd('mode')
                 vim.api.nvim_set_option('cmdheight', cmdheight)
                 vim.api.nvim_echo(
                     { { '⬇️  Success! File moved to ' .. derived_goal } },
@@ -549,7 +578,7 @@ M.moveSource = function()
             else
                 -- Clear the prompt & print sth
                 -- Reset cmdheight value
-                vim.api.nvim_command('normal! :')
+                vim.cmd('mode')
                 vim.api.nvim_set_option('cmdheight', cmdheight)
                 vim.api.nvim_echo({ { '⬇️  Aborted', 'WarningMsg' } }, true, {})
             end
@@ -594,12 +623,13 @@ M.moveSource = function()
                 local goal_exists = exists(derived_goal, 'f')
                 local dir = string.match(derived_goal, '(.*)' .. sep .. '.-$')
                 if goal_exists then -- If the goal location already exists, abort
-                    vim.api.nvim_command('normal! :')
-                    vim.api.nvim_echo(
-                        { { "⬇️  '" .. location .. "' already exists! Aborting.", 'WarningMsg' } },
-                        true,
-                        {}
-                    )
+                    vim.cmd('mode')
+                    vim.api.nvim_echo({
+                        {
+                            "⬇️  '" .. location .. "' already exists! Aborting.",
+                            'WarningMsg',
+                        },
+                    }, true, {})
                 elseif source_exists then -- If the source location exists, proceed
                     if dir then -- If there's a directory in the goal location, ...
                         local to_dir_exists = exists(dir, 'd')
@@ -612,7 +642,7 @@ M.moveSource = function()
                                     os.execute('mkdir -p ' .. path_to_file)
                                 end
                             else
-                                vim.api.nvim_command('normal! :')
+                                vim.cmd('mode')
                                 vim.api.nvim_echo({
                                     {
                                         "⬇️  The goal directory doesn't exist. Set create_dirs to true for automatic directory creation.",
@@ -647,7 +677,7 @@ M.moveSource = function()
                     end
                 else -- Otherwise, the file we're trying to move must not exist
                     -- Clear the prompt & send a warning
-                    vim.api.nvim_command('normal! :')
+                    vim.cmd('mode')
                     vim.api.nvim_echo(
                         {
                             {
