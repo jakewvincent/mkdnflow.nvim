@@ -15,7 +15,8 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local mkdnflow_root_dir = require('mkdnflow').root_dir
-local bib_paths = require('mkdnflow').bib.bib_paths
+-- Only try to load bib paths if the bib module is enabled
+local bib_paths = require('mkdnflow').bib and require('mkdnflow').bib.bib_paths or nil
 local plenary_scandir = require('plenary').scandir.scan_dir
 local cmp = require('cmp')
 local extension = '.md' -- Keep the '.'
@@ -110,23 +111,25 @@ end
 
 function source:complete(params, callback)
     local items = get_files_items()
-    -- For bib files, there are three lists (tables) in mkdnflow where we might find the paths for a bib file
-    for _, v in pairs(bib_paths.default) do
-        local bib_items_default = parse_bib(v)
-        for _, item in ipairs(bib_items_default) do
-            table.insert(items, item)
+    if bib_paths then
+        -- For bib files, there are three lists (tables) in mkdnflow where we might find the paths for a bib file
+        for _, v in pairs(bib_paths.default) do
+            local bib_items_default = parse_bib(v)
+            for _, item in ipairs(bib_items_default) do
+                table.insert(items, item)
+            end
         end
-    end
-    for _, v in pairs(bib_paths.root) do
-        local bib_items_root = parse_bib(v)
-        for _, item in ipairs(bib_items_root) do
-            table.insert(items, item)
+        for _, v in pairs(bib_paths.root) do
+            local bib_items_root = parse_bib(v)
+            for _, item in ipairs(bib_items_root) do
+                table.insert(items, item)
+            end
         end
-    end
-    for _, v in pairs(bib_paths.yaml) do
-        local bib_items_yaml = parse_bib(v)
-        for _, item in ipairs(bib_items_yaml) do
-            table.insert(items, item)
+        for _, v in pairs(bib_paths.yaml) do
+            local bib_items_yaml = parse_bib(v)
+            for _, item in ipairs(bib_items_yaml) do
+                table.insert(items, item)
+            end
         end
     end
     callback(items)
