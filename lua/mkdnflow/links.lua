@@ -817,8 +817,9 @@ createLink() makes a link from the word under the cursor--or, if no word is
 under the cursor, produces the syntax for a md link: [](YYYY-MM-DD_.md)
 Returns nothing via stdout, but does insert text into the vim buffer
 --]]
-M.createLink = function(from_clipboard)
-    from_clipboard = from_clipboard or false
+M.createLink = function(args)
+    local from_clipboard = args.from_clipboard or false
+    local range = args.range or false
     -- Get mode from vim
     local mode = vim.api.nvim_get_mode()['mode']
     -- Get the cursor position
@@ -826,7 +827,7 @@ M.createLink = function(from_clipboard)
     local row = position[1]
     local col = position[2]
     -- If the current mode is 'normal', make link from word under cursor
-    if mode == 'n' then
+    if mode == 'n' and not range then
         -- Get the text of the line the cursor is on
         local line = vim.api.nvim_get_current_line()
         local url_start, url_end = M.hasUrl(line, 'positions', col)
@@ -875,18 +876,33 @@ M.createLink = function(from_clipboard)
             vim.api.nvim_win_set_cursor(0, { row, col + 1 })
         end
     -- If current mode is 'visual', make link from selection
-    elseif mode == 'v' then
+    elseif mode == 'v' or range then
         -- Get the start of the visual selection (the end is the cursor position)
-        local first = vim.fn.getpos('v')
+        local vis = vim.fn.getpos('v')
         -- If the start of the visual selection is after the cursor position,
         -- use the cursor position as start and the visual position as finish
-        local inverted = first[3] > col
-        local start = (inverted and { row - 1, col }) or { first[2] - 1, first[3] - 1 + first[4] }
-        local finish = (inverted and { first[2] - 1, first[3] - 1 + first[4] }) or { row - 1, col }
-        local start_row = (inverted and row - 1) or first[2] - 1
-        local start_col = (inverted and col) or first[3] - 1
-        local end_row = (inverted and first[2] - 1) or row - 1
-        local end_col = (inverted and first[3]) or col + 1
+        local inverted
+        if range then
+            inverted = false
+        else
+            inverted = vis[3] > col
+        end
+        local start, finish
+        if range then
+            start = vim.api.nvim_buf_get_mark(0, "<")
+            finish = vim.api.nvim_buf_get_mark(0, ">")
+            start[1] = start[1] - 1
+            finish[1] = finish[1] - 1
+        else
+            start = (inverted and { row - 1, col }) or { vis[2] - 1, vis[3] - 1 + vis[4] }
+            finish = (inverted and { vis[2] - 1, vis[3] - 1 + vis[4] }) or { row - 1, col }
+        end
+        local start_row = (inverted and row - 1) or vis[2] - 1
+        local start_col = (inverted and col) or vis[3] - 1
+        local end_row = (inverted and vis[2] - 1) or row - 1
+        -- If inverted, use the col value from the visual selection; otherwise, use the col value
+        -- from start.
+        local end_col = (inverted and vis[3]) or finish[2] + 1
         local region =
             vim.region(0, start, finish, vim.fn.visualmode(), (vim.o.selection ~= 'exclusive'))
         local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
@@ -960,7 +976,7 @@ M.followLink = function(path, anchor)
             {}
         )
     else
-        M.createLink()
+        M.createLink({})
     end
 end
 
@@ -975,16 +991,16 @@ M.tagSpan = function()
     -- If the current mode is 'normal', make link from word under cursor
     if mode == 'v' then
         -- Get the start of the visual selection (the end is the cursor position)
-        local first = vim.fn.getpos('v')
+        local vis = vim.fn.getpos('v')
         -- If the start of the visual selection is after the cursor position,
         -- use the cursor position as start and the visual position as finish
-        local inverted = first[3] > col
-        local start = (inverted and { row - 1, col }) or { first[2] - 1, first[3] - 1 + first[4] }
-        local finish = (inverted and { first[2] - 1, first[3] - 1 + first[4] }) or { row - 1, col }
-        local start_row = (inverted and row - 1) or first[2] - 1
-        local start_col = (inverted and col) or first[3] - 1
-        local end_row = (inverted and first[2] - 1) or row - 1
-        local end_col = (inverted and first[3]) or col + 1
+        local inverted = vis[3] > col
+        local start = (inverted and { row - 1, col }) or { vis[2] - 1, vis[3] - 1 + vis[4] }
+        local finish = (inverted and { vis[2] - 1, vis[3] - 1 + vis[4] }) or { row - 1, col }
+        local start_row = (inverted and row - 1) or vis[2] - 1
+        local start_col = (inverted and col) or vis[3] - 1
+        local end_row = (inverted and vis[2] - 1) or row - 1
+        local end_col = (inverted and vis[3]) or col + 1
         local region =
             vim.region(0, start, finish, vim.fn.visualmode(), (vim.o.selection ~= 'exclusive'))
         local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
