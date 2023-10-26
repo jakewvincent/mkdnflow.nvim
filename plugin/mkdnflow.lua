@@ -56,11 +56,19 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
         mkdnflow.links.followLink()
     end, {})
     user_command('MkdnCreateLink', function(opts)
-        mkdnflow.links.createLink(false)
-    end, {})
+        if opts.range > 0 then
+            mkdnflow.links.createLink({from_clipboard = false, range = true})
+        else
+            mkdnflow.links.createLink({from_clipboard = false})
+        end
+    end, {range = true})
     user_command('MkdnCreateLinkFromClipboard', function(opts)
-        mkdnflow.links.createLink(true)
-    end, {})
+        if opts.range > 0 then
+            mkdnflow.links.createLink({from_clipboard = true, range = true})
+        else
+            mkdnflow.links.createLink({from_clipboard = true})
+        end
+    end, {range = true})
     user_command('MkdnDestroyLink', function(opts)
         mkdnflow.links.destroyLink()
     end, {})
