@@ -549,13 +549,13 @@ require("mkdnflow").forceStart()~
     table), regardless of what the current filetype is. Providing an empty
     table initializes the plugin using the defaults.
 
-require("mkdnflow").links.createLink(from_clipboard)~
+require("mkdnflow").links.createLink(args)~
     Makes a link from the word under the cursor--or, if no word is under the
     cursor, produces the syntax for a md link: `[](<prefix->.md)`. If there's
     a URL under the cursor, the whole URL is made into a link. Returns nothing
     via std out, but inserts text into the vim buffer. If `from_clipboard` is
-    `true`, the link is created using the system clipboard's content as the
-    link source.
+    `true` (in the args table), the link is created using the system
+    clipboard's content as the link source.
 
 require("mkdnflow").links.followLink()~
     Does something with the path in the link under the cursor. If the path is
