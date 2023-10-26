@@ -818,6 +818,7 @@ under the cursor, produces the syntax for a md link: [](YYYY-MM-DD_.md)
 Returns nothing via stdout, but does insert text into the vim buffer
 --]]
 M.createLink = function(args)
+    args = args or {}
     local from_clipboard = args.from_clipboard or false
     local range = args.range or false
     -- Get mode from vim
@@ -957,10 +958,14 @@ the cursor) to handlePath from the paths module. If no path or anchor are passed
 in and there is no link under the cursor, createLink() is called to create a
 link from the word under the cursor or a visual selection (if there is one).
 --]]
-M.followLink = function(path, anchor)
+M.followLink = function(args)
     -- Path can be provided as an argument (this is currently only used when
     -- this function retrieves a path from the citation handler). If no path
     -- is provided as an arg, get the path under the cursor via getLinkPart().
+    args = args or {}
+    local path = args.path
+    local anchor = args.anchor
+    local range = args.range or false
     local link_type
     if path or anchor then
         path, anchor = path, anchor
@@ -976,7 +981,7 @@ M.followLink = function(path, anchor)
             {}
         )
     else
-        M.createLink({})
+        M.createLink({range = range})
     end
 end
 

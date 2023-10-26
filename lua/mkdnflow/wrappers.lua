@@ -67,10 +67,12 @@ M.indentListItemOrJumpTableCell = function(direction)
     end
 end
 
-M.followOrCreateLinksOrToggleFolds = function(mode)
-    mode = mode or vim.api.nvim_get_mode()['mode']
-    if config.modules.links and mode == 'v' then
-        require('mkdnflow').links.followLink()
+M.followOrCreateLinksOrToggleFolds = function(args)
+    args = args or {}
+    local mode = args.mode or vim.api.nvim_get_mode()['mode']
+    local range = args.range or false
+    if config.modules.links and (mode == 'v' or range) then
+        require('mkdnflow').links.followLink({range = range})
     else
         local row, line = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_get_current_line()
         local on_fold = vim.fn.foldclosed(tostring(row)) ~= -1
@@ -83,15 +85,17 @@ M.followOrCreateLinksOrToggleFolds = function(mode)
         elseif config.modules.folds and on_fold then
             require('mkdnflow').folds.unfoldSection(row)
         elseif config.modules.links then
-            require('mkdnflow').links.followLink()
+            require('mkdnflow').links.followLink({range = range})
         end
     end
 end
 
-M.multiFuncEnter = function()
+M.multiFuncEnter = function(args)
+    args = args or {}
     local mode = vim.api.nvim_get_mode()['mode']
+    local range = args.range or false
     if mode == 'n' or mode == 'v' then
-        M.followOrCreateLinksOrToggleFolds(mode)
+        M.followOrCreateLinksOrToggleFolds({mode = mode, range = range})
     elseif mode == 'i' then
         M.newListItemOrNextTableRow()
     end
