@@ -29,8 +29,12 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
         mkdnflow.forceStart(opts.fargs)
     end, { nargs = '*' })
     user_command('MkdnEnter', function(opts)
-        require('mkdnflow.wrappers').multiFuncEnter()
-    end, {})
+        if opts.range > 0 then
+            require('mkdnflow.wrappers').multiFuncEnter({range = true})
+        else
+            require('mkdnflow.wrappers').multiFuncEnter()
+        end
+    end, {range = true})
     user_command('MkdnTab', function(opts)
         require('mkdnflow.wrappers').indentListItemOrJumpTableCell(1)
     end, {})
@@ -57,9 +61,9 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
     end, {})
     user_command('MkdnCreateLink', function(opts)
         if opts.range > 0 then
-            mkdnflow.links.createLink({from_clipboard = false, range = true})
+            mkdnflow.links.createLink({range = true})
         else
-            mkdnflow.links.createLink({from_clipboard = false})
+            mkdnflow.links.createLink()
         end
     end, {range = true})
     user_command('MkdnCreateLinkFromClipboard', function(opts)
