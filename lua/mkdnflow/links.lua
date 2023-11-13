@@ -882,16 +882,12 @@ M.createLink = function(args)
         local vis = vim.fn.getpos('v')
         -- If the start of the visual selection is after the cursor position,
         -- use the cursor position as start and the visual position as finish
-        local inverted
-        if range then
-            inverted = false
-        else
-            inverted = vis[3] > col
-        end
+        local inverted = range and false or vis[3] > col
         local start, finish
         if range then
-            start = vim.api.nvim_buf_get_mark(0, "<")
-            finish = vim.api.nvim_buf_get_mark(0, ">")
+            start = vim.api.nvim_buf_get_mark(0, '<')
+            finish = vim.api.nvim_buf_get_mark(0, '>')
+            -- Update char offsets
             start[1] = start[1] - 1
             finish[1] = finish[1] - 1
         else
@@ -904,21 +900,30 @@ M.createLink = function(args)
         -- If inverted, use the col value from the visual selection; otherwise, use the col value
         -- from start.
         local end_col = (inverted and vis[3]) or finish[2] + 1
+        -- TODO: See if there are any use cases where I need this region info... possibly for
+        -- multiline links?
         local region =
             vim.region(0, start, finish, vim.fn.visualmode(), (vim.o.selection ~= 'exclusive'))
         local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
-        lines[1] = lines[1]:sub(region[start[1]][1] + 1, region[start[1]][2])
+
+        -- Check if last byte is part of a multibyte character & adjust end index if so
+        local is_multibyte_char = utils.isMultibyteChar(0, finish[1], end_col)
+        if is_multibyte_char then
+            end_col = is_multibyte_char['finish']
+        end
+
+        -- Reduce the text only to the visual selection
+        lines[1] = lines[1]:sub(start_col + 1, end_col)
+
+        -- If start and end are on different rows, reduce the text on the last line to the visual
+        -- selection as well
         if start[1] ~= finish[1] then
-            lines[#lines] = lines[#lines]:sub(region[finish[1]][1] + 1, region[finish[1]][2])
+            lines[#lines] = lines[#lines]:sub(start_col + 1, end_col)
         end
-        -- Save the text selection & replace spaces with dashes
+        -- Save the text selection & format as a link
         local text = table.concat(lines)
-        local replacement
-        if from_clipboard then
-            replacement = M.formatLink(text, vim.fn.getreg('+'))
-        else
-            replacement = M.formatLink(text)
-        end
+        local replacement = from_clipboard and M.formatLink(text, vim.fn.getreg('+'))
+            or M.formatLink(text)
         -- If no replacement, end here
         if not replacement then
             return
@@ -981,7 +986,7 @@ M.followLink = function(args)
             {}
         )
     else
-        M.createLink({range = range})
+        M.createLink({ range = range })
     end
 end
 
