@@ -59,17 +59,6 @@ M.userConfigCheck = function(user_config)
                 user_config.to_do.complete = user_config.to_do.symbols[2]
             end
         end
-        if user_config.to_do.symbols then
-            local symbols = table.concat(user_config.to_do.symbols)
-            if
-                string.len(symbols) > #user_config.to_do.symbols
-                and not utils.moduleAvailable('lua-utf8')
-            then
-                warn(
-                    '⬇️  A to-do symbol is longer than one character or may be a utf8 symbol. To-do functionality may not work as expected. If you wish to use utf8 symbols, install the lua-utf8 luarocks dependency.'
-                )
-            end
-        end
     end
 
     -- Look for default bib path
