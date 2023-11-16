@@ -900,40 +900,45 @@ M.createLink = function(args)
         -- If inverted, use the col value from the visual selection; otherwise, use the col value
         -- from start.
         local end_col = (inverted and vis[3]) or finish[2] + 1
-        -- TODO: See if there are any use cases where I need this region info... possibly for
-        -- multiline links?
-        local region =
-            vim.region(0, start, finish, vim.fn.visualmode(), (vim.o.selection ~= 'exclusive'))
-        local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
+        -- Make sure the selection is on a single line; otherwise, do nothing & throw a warning
+        if start_row == end_row then
+            local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
 
-        -- Check if last byte is part of a multibyte character & adjust end index if so
-        local is_multibyte_char = utils.isMultibyteChar(0, finish[1], end_col)
-        if is_multibyte_char then
-            end_col = is_multibyte_char['finish']
-        end
+            -- Check if last byte is part of a multibyte character & adjust end index if so
+            local is_multibyte_char = utils.isMultibyteChar(0, finish[1], end_col)
+            if is_multibyte_char then
+                end_col = is_multibyte_char['finish']
+            end
 
-        -- Reduce the text only to the visual selection
-        lines[1] = lines[1]:sub(start_col + 1, end_col)
+            -- Reduce the text only to the visual selection
+            lines[1] = lines[1]:sub(start_col + 1, end_col)
 
-        -- If start and end are on different rows, reduce the text on the last line to the visual
-        -- selection as well
-        if start[1] ~= finish[1] then
-            lines[#lines] = lines[#lines]:sub(start_col + 1, end_col)
-        end
-        -- Save the text selection & format as a link
-        local text = table.concat(lines)
-        local replacement = from_clipboard and M.formatLink(text, vim.fn.getreg('+'))
+            -- If start and end are on different rows, reduce the text on the last line to the visual
+            -- selection as well
+            if start[1] ~= finish[1] then
+                lines[#lines] = lines[#lines]:sub(start_col + 1, end_col)
+            end
+            -- Save the text selection & format as a link
+            local text = table.concat(lines)
+            local replacement = from_clipboard and M.formatLink(text, vim.fn.getreg('+'))
             or M.formatLink(text)
-        -- If no replacement, end here
-        if not replacement then
-            return
+            -- If no replacement, end here
+            if not replacement then
+                return
+            end
+            -- Replace the visual selection w/ the formatted link replacement
+            vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, replacement)
+            -- Leave visual mode
+            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<esc>', true, false, true), 'x', true)
+            -- Retain original cursor position
+            vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+        else
+            vim.api.nvim_echo(
+                { { "⬇️  Creating links from multi-line visual selection not supported", 'WarningMsg' } },
+                true,
+                {}
+            )
         end
-        -- Replace the visual selection w/ the formatted link replacement
-        vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, replacement)
-        -- Leave visual mode
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<esc>', true, false, true), 'x', true)
-        -- Retain original cursor position
-        vim.api.nvim_win_set_cursor(0, { row, col + 1 })
     end
 end
 
