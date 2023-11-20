@@ -31,7 +31,7 @@ local default_config = {
         paths = true,
         tables = true,
         yaml = false,
-        cmp = true,
+        cmp = false,
     },
     perspective = {
         priority = 'first',

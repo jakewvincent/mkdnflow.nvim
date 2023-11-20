@@ -396,7 +396,7 @@ require('mkdnflow').setup({
         paths = true,
         tables = true,
         yaml = false,
-        cmp = true
+        cmp = false
     },
     filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,             
@@ -500,7 +500,6 @@ require('mkdnflow').setup({
     * `modules.bib` (required for [parsing bib files](#follow-links-and-citations) and [following citations](#follow-links-and-citations))
     * `modules.buffers` (required for [backward and forward navigation through buffers](#backward-and-forward-navigation-through-buffers))
     * `modules.conceal` (required if you wish to enable [link concealing](#markdown-or-wiki-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to leaving this module enabled [it is enabled by default] if you wish to conceal links)
-    * `modules.cmp` (required if you wish to enable [Completion for [`nvim-cmp`](https://github.com/hrsh7th/nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp))
     * `modules.cursor` (required for [jumping to links and headings](#jump-to-links-headings); [yanking anchor links](#create-customize-and-destroy-links))
     * `modules.folds` (required for [folding by section](#section-folding))
     * `modules.links` (required for [creating and destroying links](#create-customize-and-destroy-links) and [following links](#follow-links-and-citations))
@@ -510,6 +509,7 @@ require('mkdnflow').setup({
     * `modules.tables` (required for [table navigation and formatting](#tables))
 * Modules not enabled by default:
     * `modules.yaml` (required for parsing yaml blocks)
+    * `modules.cmp` (required if you wish to enable [Completion for [`nvim-cmp`](https://github.com/hrsh7th/nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp))
 
 #### `create_dirs` (boolean)
 * `true` (default): Directories referenced in a link will be (recursively) created if they do not exist

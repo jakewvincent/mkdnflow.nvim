@@ -216,6 +216,19 @@ M.userConfigCheck = function(user_config)
             end
             user_config.mappings.MkdnCR = nil
         end
+
+        --
+        local cmp, _ = pcall(require, 'cmp')
+        if user_config.modules.cmp and not cmp then
+            vim.notify(
+                "⬇️  cmp module is enabled, but require('cmp') failed.",
+                vim.log.levels.WARN,
+                {
+                    title = "mkdnflow.nvim"
+                }
+            )
+            user_config.cmp = false
+        end
     end
     return user_config
 end
