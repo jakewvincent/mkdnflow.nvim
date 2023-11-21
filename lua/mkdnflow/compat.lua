@@ -219,7 +219,7 @@ M.userConfigCheck = function(user_config)
 
         --
         local cmp, _ = pcall(require, 'cmp')
-        if user_config.modules.cmp and not cmp then
+        if user_config.modules and user_config.modules.cmp and not cmp then
             vim.notify(
                 "⬇️  cmp module is enabled, but require('cmp') failed.",
                 vim.log.levels.WARN,
