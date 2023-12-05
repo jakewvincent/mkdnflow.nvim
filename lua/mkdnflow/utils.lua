@@ -205,4 +205,25 @@ M.strSplit = function(str, sep)
     return splits
 end
 
+M.isMultibyteChar = function(buffer, row, start_col, opts)
+    opts = opts or {}
+    local byte = vim.api.nvim_buf_get_text(buffer, row, start_col - 1, row, start_col, opts)[1]
+    local width = vim.api.nvim_strwidth(byte)
+    local last_width = width
+    -- Check up to the following three bytes (max byte count for a single char in unicode is 4)
+    for i = 1, 3, 1 do
+        -- Concat to the previous byte and see if the string width reduces
+        byte = byte
+            .. vim.api.nvim_buf_get_text(buffer, row, start_col - 1 + i, row, start_col + i, {})[1]
+        width = vim.api.nvim_strwidth(byte)
+        if width < last_width then
+            -- Return the byte indices for the character in question
+            return { start = start_col - 1, finish = start_col + i }
+        elseif i == 3 then
+            -- If we're on the last iteration and this condition was met (rather than the other), there's no multibyte char
+            return false
+        end
+    end
+end
+
 return M
