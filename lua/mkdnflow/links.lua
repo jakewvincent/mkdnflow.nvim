@@ -202,7 +202,7 @@ M.getLinkPart = function(link_table, part)
                     else
                         return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                     end
-                elseif part_ == 'name' and utf8.match(match, '#') then -- If there was no match, we have a link w/ no bar; check for an anchor first
+                elseif match and part_ == 'name' and utf8.match(match, '#') then -- If there was no match, we have a link w/ no bar; check for an anchor first
                     part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines =
                         utils.mFind(
                             match_lines,
