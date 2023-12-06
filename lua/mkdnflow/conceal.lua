@@ -18,20 +18,68 @@ local link_style = require('mkdnflow').config.links.style
 
 local start_link_concealing = function()
     if link_style == 'markdown' then
-        vim.fn.matchadd('Conceal', "\\[[^[]\\{-}\\]\\zs([^(]\\{-})\\ze", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\zs\\[\\ze[^[]\\{-}\\]([^(]\\{-})", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\[[^[]\\{-}\\zs\\]\\ze([^(]\\{-})", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\[[^[]\\{-}\\]\\zs\\%[ ]\\[[^[]\\{-}\\]\\ze\\%[ ]\\v([^(]|$)", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\zs\\[\\ze[^[]\\{-}\\]\\%[ ]\\[[^[]\\{-}\\]\\%[ ]\\v([^(]|$)", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\[[^[]\\{-}\\zs\\]\\ze\\%[ ]\\[[^[]\\{-}\\]\\%[ ]\\v([^(]|$)", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\[[^[]\\{-}\\]\\zs\\%[ ]\\[[^[]\\{-}\\]\\ze\\n", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\zs\\[\\ze[^[]\\{-}\\]\\%[ ]\\[[^[]\\{-}\\]\\n", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\[[^[]\\{-}\\zs\\]\\ze\\%[ ]\\[[^[]\\{-}\\]\\n", 0, -1, {conceal = ''})
+        vim.fn.matchadd('Conceal', '\\[[^[]\\{-}\\]\\zs([^(]\\{-})\\ze', 0, -1, { conceal = '' })
+        vim.fn.matchadd('Conceal', '\\zs\\[\\ze[^[]\\{-}\\]([^(]\\{-})', 0, -1, { conceal = '' })
+        vim.fn.matchadd('Conceal', '\\[[^[]\\{-}\\zs\\]\\ze([^(]\\{-})', 0, -1, { conceal = '' })
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[[^[]\\{-}\\]\\zs\\%[ ]\\[[^[]\\{-}\\]\\ze\\%[ ]\\v([^(]|$)',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\zs\\[\\ze[^[]\\{-}\\]\\%[ ]\\[[^[]\\{-}\\]\\%[ ]\\v([^(]|$)',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[[^[]\\{-}\\zs\\]\\ze\\%[ ]\\[[^[]\\{-}\\]\\%[ ]\\v([^(]|$)',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[[^[]\\{-}\\]\\zs\\%[ ]\\[[^[]\\{-}\\]\\ze\\n',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\zs\\[\\ze[^[]\\{-}\\]\\%[ ]\\[[^[]\\{-}\\]\\n',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[[^[]\\{-}\\zs\\]\\ze\\%[ ]\\[[^[]\\{-}\\]\\n',
+            0,
+            -1,
+            { conceal = '' }
+        )
     elseif link_style == 'wiki' then
-        vim.fn.matchadd('Conceal', "\\zs\\[\\[[^[]\\{-}[|]\\ze[^[]\\{-}\\]\\]", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\[\\[[^[\\{-}[|][^[]\\{-}\\zs\\]\\]\\ze", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\zs\\[\\[\\ze[^[]\\{-}\\]\\]", 0, -1, {conceal = ''})
-        vim.fn.matchadd('Conceal', "\\[\\[[^[]\\{-}\\zs\\]\\]\\ze", 0, -1, {conceal = ''})
+        vim.fn.matchadd(
+            'Conceal',
+            '\\zs\\[\\[[^[]\\{-}[|]\\ze[^[]\\{-}\\]\\]',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[\\[[^[\\{-}[|][^[]\\{-}\\zs\\]\\]\\ze',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd('Conceal', '\\zs\\[\\[\\ze[^[]\\{-}\\]\\]', 0, -1, { conceal = '' })
+        vim.fn.matchadd('Conceal', '\\[\\[[^[]\\{-}\\zs\\]\\]\\ze', 0, -1, { conceal = '' })
     end
 
     -- Set conceal level
@@ -42,15 +90,15 @@ local start_link_concealing = function()
 end
 
 -- Set up autocommands to trigger the link concealing setup in Markdown files
-local conceal_augroup = vim.api.nvim_create_augroup("MkdnflowLinkConcealing", { clear = true })
+local conceal_augroup = vim.api.nvim_create_augroup('MkdnflowLinkConcealing', { clear = true })
 
 local ft_patterns = function()
     -- Create ft pattern
     local filetypes = require('mkdnflow').config.filetypes
-    local ft_pattern = ""
+    local ft_pattern = ''
 
     for ext, _ in pairs(filetypes) do
-        ft_pattern = ft_pattern .. "*." .. ext .. ","
+        ft_pattern = ft_pattern .. '*.' .. ext .. ','
     end
     return ft_pattern
 end
