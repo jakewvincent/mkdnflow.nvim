@@ -99,7 +99,7 @@ local resolve_notebook_path = function(path, sub_home_var)
             derived_path = string.gsub(derived_path, '^~\\', vim.loop.os_homedir() .. '\\')
         end
     end
-    -- Decide what to pass to internal_open function
+    -- Decide what to pass to vim_open function
     if derived_path:match('^~/') or derived_path:match('^/') or derived_path:match('^%u:\\') then
         derived_path = sub_home_var and string.gsub(derived_path, '^~/', '$HOME/') or derived_path
     elseif perspective.priority == 'root' and root_dir then
@@ -146,10 +146,10 @@ M.formatTemplate = function(timing, template)
 end
 
 --[[
-internal_open() takes a path to a notebook-internal file and (optionally) an
+vim_open() takes a path to a notebook-internal file and (optionally) an
 anchor and opens it in nvim.
 --]]
-local internal_open = function(path, anchor)
+local vim_open = function(path, anchor)
     if this_os:match('Windows') then
         path = path:gsub('/', '\\')
     end
@@ -227,18 +227,19 @@ enter_internal_path = function(path)
     }
     vim.ui.input(input_opts, function(response)
         if response ~= nil and response ~= path .. sep then
-            internal_open(response)
+            vim_open(response)
             vim.api.nvim_command('normal! :')
         end
     end)
 end
 
 --[[
-open() handles vim-external paths, including local files or web URLs
+system_open() handles vim-external paths, including local files or web URLs
 Returns nothing
 --]]
-local open = function(path, type)
+local system_open = function(path, type)
     local shell_open = function(path_)
+        path_ = utils.escapeChars(path_)
         path_ = path_:gsub('%%', '\\%%')
         path_ = path_:gsub('#', '\\#')
         if this_os == 'Linux' then
@@ -287,9 +288,10 @@ local handle_external_file = function(path)
     -- Check if path provided is absolute or relative to $HOME
     if real_path:match('^~/') or real_path:match('^/') or real_path:match('^%u:\\') then
         if this_os:match('Windows') then
-            open(real_path)
+            system_open(real_path)
         else
-            escaped_path = utils.escapeChars(real_path)
+            escaped_path = real_path
+            --escaped_path = utils.escapeChars(real_path)
             -- If the path starts with a tilde, replace it w/ $HOME
             if string.match(real_path, '^~/') then
                 escaped_path = string.gsub(escaped_path, '^~/', '$HOME/')
@@ -297,8 +299,9 @@ local handle_external_file = function(path)
         end
     elseif perspective.priority == 'root' and root_dir then
         -- Paste together root directory path and path in link and escape
-        escaped_path = this_os:match('Windows') and root_dir .. sep .. real_path
-            or utils.escapeChars(root_dir .. sep .. real_path)
+        escaped_path = root_dir .. sep .. real_path
+        --escaped_path = this_os:match('Windows') and root_dir .. sep .. real_path
+        --    or utils.escapeChars(root_dir .. sep .. real_path)
     elseif
         perspective.priority == 'first'
         or (perspective.priority == 'root' and perspective.fallback == 'first')
@@ -306,8 +309,9 @@ local handle_external_file = function(path)
         -- Otherwise, links are relative to the first-opened file, so
         -- paste together the directory of the first-opened file and the
         -- path in the link and escape for the shell
-        escaped_path = this_os:match('Windows') and initial_dir .. sep .. real_path
-            or utils.escapeChars(initial_dir .. sep .. real_path)
+        escaped_path = initial_dir .. sep .. real_path
+        --escaped_path = this_os:match('Windows') and initial_dir .. sep .. real_path
+        --    or utils.escapeChars(initial_dir .. sep .. real_path)
     else
         -- Get the path of the current file
         local cur_file = vim.api.nvim_buf_get_name(0)
@@ -315,12 +319,13 @@ local handle_external_file = function(path)
         -- directory of the current file and the directory path provided in the
         -- link, and escape for shell
         local cur_file_dir = string.match(cur_file, '(.*)' .. sep .. '.-$')
-        escaped_path = this_os:match('Windows') and cur_file_dir .. sep .. real_path
-            or utils.escapeChars(cur_file_dir .. sep .. real_path)
+        escaped_path = cur_file_dir .. sep .. real_path
+        --escaped_path = this_os:match('Windows') and cur_file_dir .. sep .. real_path
+        --    or utils.escapeChars(cur_file_dir .. sep .. real_path)
     end
-    -- Pass to the open() function
+    -- Pass to the system_open() function
     if escaped_path then
-        open(escaped_path)
+        system_open(escaped_path)
     end
 end
 
@@ -415,9 +420,9 @@ end
 handlePath() does something with the path in the link under the cursor:
      1. Creates the file specified in the path, if the path is determined to
         be a filename,
-     2. Uses open() to open the URL specified in the path, if the path
+     2. Uses system_open() to open the URL specified in the path, if the path
         is determined to be a URL, or
-     3. Uses open() to open a local file at the specified path via the
+     3. Uses system_open() to open a local file at the specified path via the
         system's default application for that filetype, if the path is dete-
         rmined to be neither the filename for a text file nor a URL.
 Returns nothing
@@ -428,11 +433,11 @@ M.handlePath = function(path, anchor)
     local path_type = M.pathType(path, anchor)
     -- Handle according to path type
     if path_type == 'filename' then
-        internal_open(path, anchor)
+        vim_open(path, anchor)
     elseif path_type == 'url' then
         --path = vim.fn.escape(path, '%#')
         path = vim.fn.shellescape(path .. anchor)
-        open(path, 'url')
+        system_open(path, 'url')
     elseif path_type == 'file' then
         handle_external_file(path)
     elseif path_type == 'anchor' then
