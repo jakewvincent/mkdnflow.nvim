@@ -138,25 +138,6 @@ M.luaEscape = function(string)
     return escaped
 end
 
-M.escapeChars = function(string)
-    -- Which characters to match
-    local chars = "[ '&()$#]"
-    -- Set up table of replacements
-    local replacements = {
-        [' '] = '\\ ',
-        ["'"] = "\\'",
-        ['&'] = '\\&',
-        ['('] = '\\(',
-        [')'] = '\\)',
-        ['$'] = '\\$',
-        ['#'] = '\\#',
-    }
-    -- Do the replacement
-    local escaped = string.gsub(string, chars, replacements)
-    -- Return the new string
-    return escaped
-end
-
 M.mFind = function(tbl, str, start_row, init_row, init_col, plain)
     init_row = init_row or 1 -- Line where the cursor is (start_row is first line in table, including user-configurable context)
     init_col = init_col or 1 -- Where to start the search from in the line

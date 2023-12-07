@@ -73,7 +73,7 @@ local exists = function(path, unit_type)
             'if [ -'
                 .. unit_type
                 .. ' '
-                .. utils.escapeChars(path)
+                .. vim.fn.shellescape(path)
                 .. ' ]; then echo true; else echo false; fi'
         )
     end
@@ -164,7 +164,7 @@ local vim_open = function(path, anchor)
             if this_os:match('Windows') then
                 os.execute('mkdir "' .. dir .. '"')
             else
-                os.execute('mkdir -p ' .. utils.escapeChars(dir))
+                os.execute('mkdir -p ' .. vim.fn.shellescape(dir))
             end
         end
     end
@@ -239,12 +239,10 @@ Returns nothing
 --]]
 local system_open = function(path, type)
     local shell_open = function(path_)
-        path_ = path_:gsub('%%', '\\%%')
-        path_ = path_:gsub('#', '\\#')
         if this_os == 'Linux' then
-            vim.api.nvim_command('silent !xdg-open ' .. path_)
+            vim.api.nvim_command('silent !xdg-open ' .. vim.fn.shellescape(path_, true))
         elseif this_os == 'Darwin' then
-            vim.api.nvim_command('silent !open ' .. path_ .. ' &')
+            vim.api.nvim_command('silent !open ' .. vim.fn.shellescape(path_, true) .. ' &')
         elseif this_os:match('Windows') then
             os.execute('cmd.exe /c "start "" "' .. path_ .. '"')
         else
@@ -253,9 +251,7 @@ local system_open = function(path, type)
             end
         end
     end
-    -- If the file exists, handle it; otherwise,  a warning
-    -- Don't want to use the shell-escaped version; it will throw a
-    -- false alert if there are escape chars
+    -- If the file exists, open it; otherwise, issue a warning
     if type == 'url' then
         shell_open(path)
     elseif exists(path, 'f') == false and exists(path, 'd') == false then
@@ -272,12 +268,11 @@ local system_open = function(path, type)
 end
 
 --[[
-handle_external_file() takes a path to a non-notebook file and determines how to open it
+handle_external_file() takes a path to a non-notebook file and determines how to open it:
 --]]
 local handle_external_file = function(path)
     -- Get what's after the file: tag
     local real_path = string.match(path, '^file:(.*)')
-    local escaped_path
     if this_os:match('Windows') then
         real_path = real_path:gsub('/', '\\')
         if real_path:match('^~\\') then
@@ -289,16 +284,14 @@ local handle_external_file = function(path)
         if this_os:match('Windows') then
             system_open(real_path)
         else
-            escaped_path = utils.escapeChars(real_path)
             -- If the path starts with a tilde, replace it w/ $HOME
             if string.match(real_path, '^~/') then
-                escaped_path = string.gsub(escaped_path, '^~/', '$HOME/')
+                real_path = string.gsub(real_path, '^~/', '$HOME/')
             end
         end
     elseif perspective.priority == 'root' and root_dir then
         -- Paste together root directory path and path in link and escape
-        escaped_path = this_os:match('Windows') and root_dir .. sep .. real_path
-            or utils.escapeChars(root_dir .. sep .. real_path)
+        real_path = root_dir .. sep .. real_path
     elseif
         perspective.priority == 'first'
         or (perspective.priority == 'root' and perspective.fallback == 'first')
@@ -306,8 +299,7 @@ local handle_external_file = function(path)
         -- Otherwise, links are relative to the first-opened file, so
         -- paste together the directory of the first-opened file and the
         -- path in the link and escape for the shell
-        escaped_path = this_os:match('Windows') and initial_dir .. sep .. real_path
-            or utils.escapeChars(initial_dir .. sep .. real_path)
+        real_path = initial_dir .. sep .. real_path
     else
         -- Get the path of the current file
         local cur_file = vim.api.nvim_buf_get_name(0)
@@ -315,12 +307,11 @@ local handle_external_file = function(path)
         -- directory of the current file and the directory path provided in the
         -- link, and escape for shell
         local cur_file_dir = string.match(cur_file, '(.*)' .. sep .. '.-$')
-        escaped_path = this_os:match('Windows') and cur_file_dir .. sep .. real_path
-            or utils.escapeChars(cur_file_dir .. sep .. real_path)
+        real_path = cur_file_dir .. sep .. real_path
     end
     -- Pass to the system_open() function
-    if escaped_path then
-        system_open(escaped_path)
+    if real_path then
+        system_open(real_path)
     end
 end
 
@@ -381,7 +372,7 @@ pathType() determines what kind of path is in a url
 Returns a string:
      1. 'file' if the path has the 'file:' prefix,
      2. 'url' is the result of hasUrl(path) is true
-     3. 'filename' if (1) and (2) aren't true
+     3. 'nb_page' if (1) and (2) aren't true
 --]]
 M.pathType = function(path, anchor)
     if not path then
@@ -395,7 +386,7 @@ M.pathType = function(path, anchor)
     elseif path == '' and anchor then
         return 'anchor'
     else
-        return 'filename'
+        return 'nb_page'
     end
 end
 
@@ -414,7 +405,7 @@ end
 --[[
 handlePath() does something with the path in the link under the cursor:
      1. Creates the file specified in the path, if the path is determined to
-        be a filename,
+        be a notebook page,
      2. Uses system_open() to open the URL specified in the path, if the path
         is determined to be a URL, or
      3. Uses system_open() to open a local file at the specified path via the
@@ -427,12 +418,10 @@ M.handlePath = function(path, anchor)
     path = M.transformPath(path)
     local path_type = M.pathType(path, anchor)
     -- Handle according to path type
-    if path_type == 'filename' then
+    if path_type == 'nb_page' then
         vim_open(path, anchor)
     elseif path_type == 'url' then
-        --path = vim.fn.escape(path, '%#')
-        path = vim.fn.shellescape(path .. anchor)
-        system_open(path, 'url')
+        system_open(path .. anchor, 'url')
     elseif path_type == 'file' then
         handle_external_file(path)
     elseif path_type == 'anchor' then
@@ -442,7 +431,7 @@ M.handlePath = function(path, anchor)
         end
     elseif path_type == 'citation' then
         -- Retrieve highest-priority field in bib entry (if it exists)
-        local field = bib.handleCitation(utils.luaEscape(path))
+        local field = bib.handleCitation(path)
         -- Use this function to do sth with the information returned (if any)
         if field then
             M.handlePath(field)
@@ -519,16 +508,14 @@ M.moveSource = function()
         vim.api.nvim_set_option('cmdheight', rows_needed)
         vim.ui.input({ prompt = prompt }, function(response)
             if response == 'y' then
-                if this_os:match('Windows') then
-                    os.execute('move "' .. derived_source .. '" "' .. derived_goal .. '"')
-                else
-                    os.execute(
-                        'mv '
-                            .. utils.escapeChars(derived_source)
-                            .. ' '
-                            .. utils.escapeChars(derived_goal)
-                    )
-                end
+                local command = this_os:match('Windows') and 'move' or 'mv'
+                os.execute(
+                    command
+                        .. ' '
+                        .. vim.fn.shellescape(derived_source)
+                        .. ' '
+                        .. vim.fn.shellescape(derived_goal)
+                )
                 -- Change the link content
                 vim.api.nvim_buf_set_text(
                     0,
@@ -597,7 +584,12 @@ M.moveSource = function()
                 if goal_exists then -- If the goal location already exists, abort
                     vim.api.nvim_command('normal! :')
                     vim.api.nvim_echo(
-                        { { "⬇️  '" .. location .. "' already exists! Aborting.", 'WarningMsg' } },
+                        {
+                            {
+                                "⬇️  '" .. location .. "' already exists! Aborting.",
+                                'WarningMsg',
+                            },
+                        },
                         true,
                         {}
                     )
@@ -606,12 +598,9 @@ M.moveSource = function()
                         local to_dir_exists = exists(dir, 'd')
                         if not to_dir_exists then
                             if create_dirs then
-                                local path_to_file = utils.escapeChars(dir)
-                                if this_os:match('Windows') then
-                                    os.execute('mkdir "' .. path_to_file .. '"')
-                                else
-                                    os.execute('mkdir -p ' .. path_to_file)
-                                end
+                                local path_to_file = vim.fn.shellescape(dir)
+                                local command = this_os:match('Windows') and 'mkdir' or 'mkdir -p'
+                                os.execute(command .. ' ' .. path_to_file)
                             else
                                 vim.api.nvim_command('normal! :')
                                 vim.api.nvim_echo({
@@ -649,16 +638,12 @@ M.moveSource = function()
                 else -- Otherwise, the file we're trying to move must not exist
                     -- Clear the prompt & send a warning
                     vim.api.nvim_command('normal! :')
-                    vim.api.nvim_echo(
+                    vim.api.nvim_echo({
                         {
-                            {
-                                '⬇️  ' .. derived_source .. " doesn't seem to exist! Aborting.",
-                                'WarningMsg',
-                            },
+                            '⬇️  ' .. derived_source .. " doesn't seem to exist! Aborting.",
+                            'WarningMsg',
                         },
-                        true,
-                        {}
-                    )
+                    }, true, {})
                 end
             end
         end)

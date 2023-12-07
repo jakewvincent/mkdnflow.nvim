@@ -23,6 +23,7 @@ local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow').config.silent
 local this_os = require('mkdnflow').this_os
 local yaml = require('mkdnflow').config.yaml
+local utils = require('mkdnflow').utils
 
 local M = {}
 
@@ -81,7 +82,7 @@ local search_bib_file = function(path, citekey)
     if bib_file then
         local text = bib_file:read('*a')
         if text then
-            local start, _ = string.find(text, '\n%s?@[%a]-{%s?' .. citekey)
+            local start, _ = string.find(text, '\n%s?@[%a]-{%s?' .. utils.luaEscape(citekey))
             if start then
                 local match = text:match('%b{}', start)
                 return match
