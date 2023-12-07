@@ -134,7 +134,7 @@ M.getLinkPart = function(link_table, part)
                 citation = '(@.*)',
             },
             source = {
-                md_link = '%]%((.-)%)', -- 3 thru length of match
+                md_link = '%]%((.*)%)', -- 3 thru length of match
                 wiki_link = '%[%[(.-)|.-%]%]', -- 3 thru length of match
                 wiki_link_no_bar = '%[%[(.-)%]%]', -- 3 thru length of match
                 ref_style_link = '%]%[(.*)%]', -- 3 or 4 thru length of match
