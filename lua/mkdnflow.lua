@@ -62,6 +62,7 @@ local default_config = {
             text = os.date('%Y-%m-%d_') .. text
             return text
         end,
+        jump_patterns = nil
     },
     new_file_template = {
         use_template = false,
@@ -264,6 +265,22 @@ init.setup = function(user_config)
                         vim.api.nvim_set_current_dir(bufname:match('(.*)/.-$'))
                     end
                 end
+            end
+        end
+        if init.config.links.jump_patterns == nil then
+            if init.config.links.style == 'markdown' then
+                init.config.links.jump_patterns = {
+                    '%b[]%b()',
+                    '<[^<>]->',
+                    '%b[] ?%b[]',
+                    '%[@[^%[%]]-%]'
+                }
+            elseif init.config.links.style == 'wiki' then
+                init.config.links.jump_patterns = {
+                    '%[%[[^%[%]]-%]%]',
+                }
+            else
+                init.config.links.jump_patterns = {}
             end
         end
         -- Load modules
