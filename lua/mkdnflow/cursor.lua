@@ -19,7 +19,7 @@ local links = require('mkdnflow').links
 local wrap = require('mkdnflow').config.wrap
 local silent = require('mkdnflow').config.silent
 local context = require('mkdnflow').config.links.context
-local jump_patterns = require('mkdnflow').config.links.jump_patterns
+local jump_patterns = require('mkdnflow').config.cursor.jump_patterns
 local utils = require('mkdnflow').utils
 
 --[[

@@ -49,6 +49,9 @@ local default_config = {
         default_path = nil,
         find_in_root = true,
     },
+    cursor = {
+        jump_patterns = nil
+    },
     links = {
         style = 'markdown',
         name_is_source = false,
@@ -61,8 +64,7 @@ local default_config = {
             text = text:lower()
             text = os.date('%Y-%m-%d_') .. text
             return text
-        end,
-        jump_patterns = nil
+        end
     },
     new_file_template = {
         use_template = false,
@@ -267,20 +269,20 @@ init.setup = function(user_config)
                 end
             end
         end
-        if init.config.links.jump_patterns == nil then
+        if init.config.cursor.jump_patterns == nil then
             if init.config.links.style == 'markdown' then
-                init.config.links.jump_patterns = {
+                init.config.cursor.jump_patterns = {
                     '%b[]%b()',
                     '<[^<>]->',
                     '%b[] ?%b[]',
                     '%[@[^%[%]]-%]'
                 }
             elseif init.config.links.style == 'wiki' then
-                init.config.links.jump_patterns = {
+                init.config.cursor.jump_patterns = {
                     '%[%[[^%[%]]-%]%]',
                 }
             else
-                init.config.links.jump_patterns = {}
+                init.config.cursor.jump_patterns = {}
             end
         end
         -- Load modules
