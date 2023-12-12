@@ -322,20 +322,6 @@ require('pckr').add({
 
 </p></details>
 
-<summary>Install with <a href="https://github.com/wbthomason/packer.nvim">Packer</a></summary><p>
-
-```lua
-use({'jakewvincent/mkdnflow.nvim',
-     config = function()
-        require('mkdnflow').setup({
-            -- Config goes here; leave blank for defaults
-        })
-     end
-})
-```
-
-</p></details>
-
 <details>
 <summary>Install with <a href="https://github.com/savq/paq-nvim">Paq</a></summary><p>
 
@@ -351,6 +337,21 @@ require('paq')({
 
 require('mkdnflow').setup({
     -- Config goes here; leave blank for defaults
+})
+```
+
+</p></details>
+
+<details>
+<summary>Install with <a href="https://github.com/wbthomason/packer.nvim">Packer</a></summary><p>
+
+```lua
+use({'jakewvincent/mkdnflow.nvim',
+     config = function()
+        require('mkdnflow').setup({
+            -- Config goes here; leave blank for defaults
+        })
+     end
 })
 ```
 
