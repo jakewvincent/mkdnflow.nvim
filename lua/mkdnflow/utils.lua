@@ -226,11 +226,9 @@ M.isMultibyteChar = function(args)
         width = vim.api.nvim_strwidth(byte)
         if width < last_width then
             -- Return the byte indices for the character in question
-            vim.print(">"..byte.."<")
             return { start = start_col - 1, finish = start_col + i }
         elseif i == 3 then
             -- If we're on the last iteration and this condition was met (rather than the other), there's no multibyte char
-            vim.print(">"..byte.."<")
             return false
         end
     end
