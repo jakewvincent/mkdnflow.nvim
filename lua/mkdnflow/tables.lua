@@ -252,7 +252,7 @@ local format_table = function(table_rows)
                     )
                 elseif diff < 0 then
                     local replacement = rowdata[cur_col].trimmed_content
-                    if #replacement < max_length then
+                    if width(replacement) < max_length then
                         repeat
                             replacement = replacement .. ' '
                         until width(replacement) == max_length
