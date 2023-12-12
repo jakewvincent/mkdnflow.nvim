@@ -292,14 +292,18 @@ bib:
 <summary>Install with <a href="https://github.com/folke/lazy.nvim">Lazy</a></summary><p>
 
 ```lua
-{
-    'jakewvincent/mkdnflow.nvim',
-    config = function()
-        require('mkdnflow').setup({
-            -- Config goes here; leave blank for defaults
-        })
-    end
-}
+require('lazy').setup({
+    -- Your other plugins
+    {
+        'jakewvincent/mkdnflow.nvim',
+        config = function()
+            require('mkdnflow').setup({
+                -- Config goes here; leave blank for defaults
+            })
+        end
+    }
+    -- Your other plugins
+})
 ```
 
 </p></details>
@@ -309,6 +313,7 @@ bib:
 
 ```lua
 require('pckr').add({
+    -- Your other plugins
     {
         'jakewvincent/mkdnflow.nvim',
         config = function()
@@ -317,6 +322,7 @@ require('pckr').add({
             })
         end
     }
+    -- Your other plugins
 })
 ```
 
@@ -327,9 +333,9 @@ require('pckr').add({
 
 ```lua
 require('paq')({
-    -- Your other plugins;
-    'jakewvincent/mkdnflow.nvim';
-    -- Your other plugins;
+    -- Your other plugins
+    'jakewvincent/mkdnflow.nvim',
+    -- Your other plugins
 })
 
 -- Include the setup function somewhere else in your init.lua/vim file, or the
