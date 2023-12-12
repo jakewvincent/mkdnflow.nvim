@@ -11,9 +11,9 @@
 </p>
 
 ### 🆕 Top three [latest features](#-recent-changes)
-1. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp)
-2. [Templates for new files](#templates-for-new-files)
-3. [Follow automatic links](#follow-links-and-citations)
+1. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
+2. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp)
+3. [Templates for new files](#templates-for-new-files)
 
 ## 📝 Description
 
@@ -57,7 +57,7 @@ use({'jakewvincent/mkdnflow.nvim',
 * See [links config](#links-dictionary-like-table)
 * Markdown link formats recognized:
     * Standard style: `[name](source)`
-    * 🆕 [Reference style](https://www.markdownguide.org/basic-syntax#reference-style-links):
+    * [Reference style](https://www.markdownguide.org/basic-syntax#reference-style-links):
         * `[name][label]` followed anywhere in the file by `[label]: source`, where `label` is an integer
         * `source` can optionally be surrounded by `<` and `>`
         * `source` can optionally be followed by a title, following any of the formats specified [here](https://www.markdownguide.org/basic-syntax#reference-style-links)
@@ -82,7 +82,7 @@ use({'jakewvincent/mkdnflow.nvim',
             * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
     * Links to markdown files that include an anchor (e.g. `[Link](grocery_list.md#produce)`) will open the file in the current window and jump to a bracketed span or heading matching the `#` attribute
     * Following a link to a directory (e.g. another notebook) will open a dialogue for you to select which file in the directory to open in the current window
-    * 🆕 [Automatic links](https://pandoc.org/MANUAL.html#automatic-links) (URLs enclosed in angle brackets, e.g. `<https://example.org>`) are followed directly
+    * [Automatic links](https://pandoc.org/MANUAL.html#automatic-links) (URLs enclosed in angle brackets, e.g. `<https://example.org>`) are followed directly
 * `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
     * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_path-string)—or if `perspective.priority` is `root`, simply place your bib files to be searched in your notebook's root directory.
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
@@ -94,7 +94,7 @@ use({'jakewvincent/mkdnflow.nvim',
 }
 ```
 
-### Templates for new files
+### 🆕 Templates for new files
 * Define a custom template (under config option `new_file_template.template`) that gets populated and inserted into new markdown files.
 * Familiar double-brace syntax for placeholders, e.g. `{{title}}` or `{{ title }}`
 * Define custom template placeholders (under config option `new_file_template.placeholders`).
@@ -137,10 +137,10 @@ Filename: {{ filename }}
 ### Create, customize, and destroy links
 * `<CR>` on the word under cursor or visual selection to create a notebook-internal link
     * Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-like-table) config key for customization instructions.
-* 🆕 `<leader>p` on the word under cursor or visual selection to create a link using the system clipboard's content as the source
+* `<leader>p` on the word under cursor or visual selection to create a link using the system clipboard's content as the source
 * `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
 * Create an anchor link if the visual selection starts with `#` 
-* 🆕 Tag visually selected spans of text (mapped to `<M-CR>` in visual mode) using the style specified in the [Pandoc `bracketed_spans` extension](https://pandoc.org/MANUAL.html#extension-bracketed_spans) (ID must be assigned with the ID selector—i.e. `#`): `[This is a span]{#important-span}`.
+* Tag visually selected spans of text (mapped to `<M-CR>` in visual mode) using the style specified in the [Pandoc `bracketed_spans` extension](https://pandoc.org/MANUAL.html#extension-bracketed_spans) (ID must be assigned with the ID selector—i.e. `#`): `[This is a span]{#important-span}`.
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
 * `yaa` ("yank as anchor link"; formerly `ya`) on a heading or bracketed span to add a formatted anchor link for the heading to the default register (ready to paste in the current window)
     * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
@@ -158,10 +158,12 @@ require('mkdnflow').setup({
 })
 ```
 
-### Jump to links, headings
+### Jump to links, headings, and arbitrary pattern matches
 * `<Tab>` and `<S-Tab>` jump to the next and previous links in the file 
-* `]]` and `[[` jump to the next and previous headings in the file
+    * The type of link to jump to is determined by what [`links.style`](#links-dictionary-like-table) is set to (['markdown' or 'wiki'](#markdown-or-wiki-link-styles)), but you can also define your own _jump patterns_ under the [`cursor` config table](#cursor-dictionary-like-table).
+* `]]` and `[[` jump to the next and previous headings in the file, respectively
 * "Wrap" back to the beginning/end of the file when jumping with a [config setting](#wrap-boolean)
+* 🆕 Map your own user command to `require("mkdnflow").cursor.goTo(pattern)` to jump to arbitrarily-defined Lua regex matches (see `:h Mkdnflow-cursor-goTo`)
 
 ### 🆕 Completion for [`nvim-cmp`](https://github.com/hrsh7th/nvim-cmp)
 * Autocompletion in insert mode when the word you are typing matches any of the `.md` files in the notebook.
@@ -184,10 +186,10 @@ Also, don't forget to edit your `formatting` options in `cmp.setup`.
 
 NOTE: There may be some compatibility issues with the completion module and `links.transform_explicit`/`links.transform_implicit` functions:
 
-* If you have some `transform_explicit` option for links to organizing in folders then the folder name will be inserted accordingly. **All transforms may not work**
+* If you have some `transform_explicit` option for links to organizing in folders then the folder name will be inserted accordingly. **Some transformations may not work as expected in completions**.
     * For example, if you have an implicit transformation that will make the link appear as `[author_year](author_year.md)` and you save the file as `ref_author_year.md`. The condition can be if the link name ends with *_yyyy*. Now `cmp` will complete it as `[ref_author_year](ref_author_year.md)` (without the transformation applied). Next, when you follow the link completed by `cmp`, you will go to a new file that is saved as `ref_ref_author_year.md`, which of course does not refer to the intended file.
 
-To prevent this, make sure you write sensible transform functions, preferably using it for folder organization. The other solution is to do a full text search in all the files for links.
+To prevent this, make sure you write sensible transformation functions, preferably using it for folder organization. The other solution is to do a full text search in all the files for links.
 
 Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyle/cmp-pandoc-references) and code from other completion sources when writing the `cmp` module.
 
@@ -198,7 +200,7 @@ Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyl
 * Use built-in dialog triggered by `MkdnMoveSource` (mapped to `<F2>` by default) to rename a link's source *and rename/move the linked file* simultaneously
     * [Perspective](#customizable-link-interpretation), [implicit extensions](#links-dictionary-like-table), and custom [implicit transformations](#links-dictionary-like-table) are all taken into account when moving the linked file
     * The dialog will confirm the details of the changes for you to approve/reject before taking any action
-    * 🆕 When a reference-style link is renamed, the reference line will be found and renamed accordingly without moving the cursor
+    * When a reference-style link is renamed, the reference line will be found and renamed accordingly without moving the cursor
 
 ### Backward and forward navigation through buffers
 * `<BS>` to go **backward** (to the previous file/buffer opened in the current window, like clicking the back button in a web browser)
@@ -212,10 +214,10 @@ Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyl
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing* a hash symbol.
 
 ### Section folding
-* 🆕 Fold a section using `<CR>` in normal mode if the cursor is on the heading of the section
+* Fold a section using `<CR>` in normal mode if the cursor is on the heading of the section
     * Unfold a folded section using `<CR>` or `<leader>F` (both are default mappings; the former maps to a wrapper function that will follow links if the cursor is not on a fold or section heading; the latter is mapped specifically to `:MkdnUnfoldSection<CR>`)
     * If you wish to create a link in a heading (normally done with `<CR>`), you'll need to do so by making a visual selection of the text you wish to create a link from and then hitting `<CR>`, or otherwise disabling the mapping for `MkdnEnter` and mapping `MkdnFollowLink` to `<CR>` in visual and normal modes.
-* 🆕 Fold the section the cursor is currently in—even if the cursor is not on the heading—using `<leader>f`
+* Fold the section the cursor is currently in—even if the cursor is not on the heading—using `<leader>f`
 
 ### Lists
 * List markers recognized: `-`, `*`, and `+`
@@ -254,23 +256,23 @@ require('mkdnflow').setup({
 ```
 
 ### Tables
-* 🆕 Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
-* 🆕 Format existing tables with `:MkdnTableFormat`
+* Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
+* Format existing tables with `:MkdnTableFormat`
     * Make sure you have the `luautf8` rock installed if you want to format tables containing non-ascii symbols!
-* 🆕 Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
-* 🆕 Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default; jumping forward is not mapped to anything by default; see `MkdnEnter` or `MkdnTableNextRow` in [default mappings](#-commands-and-default-mappings))
-* 🆕 Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
-* 🆕 Optionally disable formatting when moving cells
-* 🆕 Add new rows or columns (before or after the current row/cell; see [default mappings](#-commands-and-default-mappings))
+* Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
+* Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default; jumping forward is not mapped to anything by default; see `MkdnEnter` or `MkdnTableNextRow` in [default mappings](#-commands-and-default-mappings))
+* Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
+* Optionally disable formatting when moving cells
+* Add new rows or columns (before or after the current row/cell; see [default mappings](#-commands-and-default-mappings))
 
 <p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
 
-### 🆕 Disable unused modules
+### Disable unused modules
 * Individually disable any of the modules that enable all of the above functionality (see [`modules` config option descriptions](#modules-dictionary-like-table))
     * Prevents the module from being loaded (rather than simply disabling the functionality the module provides)
     * Disabling a module prevents mappings to commands that are dependent on that module from being defined
 
-### 🆕 YAML block parsing
+### YAML block parsing
 * Use YAML blocks at the very top of a markdown document to specify certain settings on a by-file basis:
     * Paths to bib files (must be absolute paths):
         * Specify as a string or a list (see examples of each below)
@@ -417,6 +419,9 @@ require('mkdnflow').setup({
         find_in_root = true
     },
     silent = false,
+    cursor = {
+        jump_patterns = nil
+    },
     links = {
         style = 'markdown',
         name_is_source = false,
@@ -556,6 +561,12 @@ NOTE: This functionality references the file's extension. It does not rely on Ne
 #### `silent` (boolean)
 * `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
 * `false` (default): The plugin will display messages to the console (all messages from the plugin start with ⬇️ )
+
+#### `cursor` (dictionary-like table)
+* `cursor.jump_patterns` (nil or table): A list of Lua regex patterns to jump to using `:MkdnNextLink` and `:MkdnPrevLink`
+    * `nil` (default): When `nil`, the [default jump patterns](#jump-to-links-headings) for the configured link style are used (markdown-style links by default)
+    * table of custom Lua regex patterns
+    * `{}` (empty table) to disable link jumping without disabling the `cursor` module
 
 #### `links` (dictionary-like table)
 * `links.style` (string)
