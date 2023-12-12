@@ -900,7 +900,7 @@ M.createLink = function(args)
             local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
 
             -- Check if last byte is part of a multibyte character & adjust end index if so
-            local is_multibyte_char = utils.isMultibyteChar(0, finish[1], end_col)
+            local is_multibyte_char = utils.isMultibyteChar({buffer = 0, row = finish[1], start_col = end_col})
             if is_multibyte_char then
                 end_col = is_multibyte_char['finish']
             end
