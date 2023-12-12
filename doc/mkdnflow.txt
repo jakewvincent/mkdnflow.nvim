@@ -566,8 +566,7 @@ SECTION FOLDING                                               *Mkdnflow-folding*
 LISTS                                                           *Mkdnflow-lists*
 - Toggle the status of a to-do list item on the current line (mapped to
   `<C-Space>` by default). Using the default settings, toggling will result in
-  the following changes. To-do symbols can be customized (make sure to use the
-  luautf8 luarock dependency if you want to use utf8 to-do symbols).
+  the following changes. To-do symbols can be customized.
     - `- [ ] ...` → `- [-] ...`
     - `- [-] ...` → `- [X] ...`
     - `- [X] ...` → `- [ ] ...`
@@ -1052,9 +1051,6 @@ it in the list.
   expected: one representing not-yet-started to-dos (default: `' '`), one
   representing in-progress to-dos (default: `-`), and one representing
   complete to-dos (default: `X`).
-    - NOTE: Native Lua support for UTF-8 characters is limited, so in order
-      to ensure all functionality works as intended if you are using non-ascii
-      to-do symbols, you'll need to install the luarocks module "luautf8".
                                           *Mkdnflow-config-to-do-update_parents*
 - `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be
   updated based on child to-do status changes performed via `MkdnToggleToDo`

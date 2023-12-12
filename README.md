@@ -31,16 +31,6 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Linux, macOS, or Windows
 * Neovim >= 0.7.0 for all functionality (most will work with Neovim >= 0.5.0, but mappings will need to be set separately)
 * [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) is required for the new completion module.
-* Optional: If you wish to use UTF-8 symbols as [custom to-do symbols](#to_do-dictionary-like-table), in [tables that you wish to have Mkdnflow format](#tables-dictionary-like-table), or in anchor links, you'll need the luarocks module [`luautf8`](https://luarocks.org/modules/xavier-wang/luautf8). Luarocks dependencies can be installed via [Packer](#initlua) using the `rocks` key:
-
-```lua
-use({'jakewvincent/mkdnflow.nvim',
-    rocks = 'luautf8', -- Ensures optional luautf8 dependency is installed
-    config = function()
-        require('mkdnflow').setup()
-    end
-})
-```
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
 
@@ -78,7 +68,7 @@ use({'jakewvincent/mkdnflow.nvim',
     * Absolute links or `.md` links relative to home open in the current window but are interpreted with absolute perspective (e.g. `[File](/home/user/file.md)`/`[File](C:\Users\user\file.md)` on Windows, or `[File](~/Documents/file.md)`)
     * Links to a file prefixed with `file:` (e.g. `[My Xournal notes](file:notes.xopp)`) open with the system's default program for that filetype
     * Links to URLs are opened in the default browser
-    * Anchor links to headings (or bracketed spans) in the current file will trigger a jump to that heading or bracketed span. (Install the `luautf8` Luarocks module if you want your anchor links to be able to include non-ascii symbols.)
+    * Anchor links to headings (or bracketed spans) in the current file will trigger a jump to that heading or bracketed span.
         * Bracketed spans can have arbitrary ID attributes; if multiple bracketed spans in a file have the same ID attribute, the first will be jumped to. If a bracketed span's ID attribute is identical to that of a heading, the bracketed span will be prioritized since it is explicitly labeled.
         * Headings must start with a hash, and the source part of the anchor link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
             * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
@@ -224,7 +214,7 @@ Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyl
 
 ### Lists
 * List markers recognized: `-`, `*`, and `+`
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table) (make sure to use the [luautf8 luarock dependency](#if-you-wish-to-use-custom-utf-8-to-do-symbols-add-the-luautf8-luarock-dependency) if you want to use utf8 to-do symbols).
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
@@ -261,7 +251,6 @@ require('mkdnflow').setup({
 ### Tables
 * Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
 * Format existing tables with `:MkdnTableFormat`
-    * Make sure you have the `luautf8` rock installed if you want to format tables containing non-ascii symbols!
 * Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
 * Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default; jumping forward is not mapped to anything by default; see `MkdnEnter` or `MkdnTableNextRow` in [default mappings](#-commands-and-default-mappings))
 * Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
@@ -300,23 +289,43 @@ bib:
 
 ### init.lua
 <details>
-<summary>Install with Packer</summary><p>
+<summary>Install with <a href="https://github.com/folke/lazy.nvim">Lazy</a></summary><p>
 
 ```lua
-use({'jakewvincent/mkdnflow.nvim',
-     config = function()
+{
+    'jakewvincent/mkdnflow.nvim',
+    config = function()
         require('mkdnflow').setup({
             -- Config goes here; leave blank for defaults
         })
-     end
+    end
+}
+```
+
+</p></details>
+
+<details>
+<summary>Install with <a href="https://github.com/lewis6991/pckr.nvim">Pckr</a></summary><p>
+
+```lua
+require('pckr').add({
+    {
+        'jakewvincent/mkdnflow.nvim',
+        config = function()
+            require('mkdnflow').setup({
+                -- Config goes here; leave blank for defaults
+            })
+        end
+    }
 })
 ```
 
-#### If you wish to use custom UTF-8 to-do symbols, add the luautf8 luarock dependency
+</p></details>
+
+<summary>Install with <a href="https://github.com/wbthomason/packer.nvim">Packer</a></summary><p>
 
 ```lua
 use({'jakewvincent/mkdnflow.nvim',
-     rocks = 'luautf8',
      config = function()
         require('mkdnflow').setup({
             -- Config goes here; leave blank for defaults
@@ -328,7 +337,7 @@ use({'jakewvincent/mkdnflow.nvim',
 </p></details>
 
 <details>
-<summary>Install with Paq</summary><p>
+<summary>Install with <a href="https://github.com/savq/paq-nvim">Paq</a></summary><p>
 
 ```lua
 require('paq')({
@@ -618,7 +627,6 @@ end
 
 #### `to_do` (dictionary-like table)
 * `to_do.symbols` (array-like table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
-    * NOTE: Native Lua support for UTF-8 characters is limited, so in order to ensure all functionality works as intended if you are using non-ascii to-do symbols, you'll need to install the luarocks module "luautf8".
 * `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
     * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
     * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
@@ -749,6 +757,8 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 12/12/23: `luautf8` no longer required for use of UTF8 symbols in customized to-do symbols or formatted tables
+* 12/12/23: Customizable jump patterns for link jumping
 * 09/11/23: Merge completion module PR for testing in dev branch
 
 <details>
