@@ -13,7 +13,7 @@
 ### 🆕 Top three [latest features](#-recent-changes)
 1. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
 2. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp)
-3. [Templates for new files](#templates-for-new-files)
+3. [Templates for new files](#-templates-for-new-files)
 
 ## 📝 Description
 
