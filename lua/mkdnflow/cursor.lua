@@ -56,11 +56,13 @@ local find_patterns = function(str, patterns, reverse, init)
     return left, right
 end
 
+local M = {}
+
 --[[
-go_to() sends the cursor to the beginning of the next instance of a pattern or a list of patterns.
+goTo() sends the cursor to the beginning of the next instance of a pattern or a list of patterns.
 If 'reverse' is 'true', it will go to the previous instance of the pattern.
 --]]
-local go_to = function(pattern, reverse)
+M.goTo = function(pattern, reverse)
     -- Get current position of cursor
     local position = vim.api.nvim_win_get_cursor(0)
     local row, col = position[1], position[2]
@@ -250,8 +252,6 @@ local go_to_id = function(id, starting_row)
     end
 end
 
-local M = {}
-
 --[[
 changeHeadingLevel() changes the importance of a heading by adding or removing
 a hash symbol. Fewer hashes = more important.
@@ -286,7 +286,7 @@ argument. If no pattern is passed in, it looks for the default markdown link
 pattern.
 --]]
 M.toNextLink = function(pattern)
-    go_to(jump_patterns)
+    M.goTo(jump_patterns)
 end
 
 --[[
@@ -295,7 +295,7 @@ as an argument. If no pattern is passed in, it looks for the default markdown
 link pattern.
 --]]
 M.toPrevLink = function(pattern)
-    go_to(jump_patterns, true)
+    M.goTo(jump_patterns, true)
 end
 
 --[[
