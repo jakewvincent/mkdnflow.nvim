@@ -14,6 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 local config = require('mkdnflow').config
+local utils = require('mkdnflow').utils
 
 local M = {}
 
@@ -26,7 +27,12 @@ local extract_cell_data = function(text)
         first, last = bars_escaped:find('|.-|', last)
         if first and last then
             local content = text:sub(first + 1, last - 1)
-            local trimmed_content = content:match('^%s*( .- )%s*$') or content:match('^%s*(.-)%s*$')
+            -- Check if the first character of the cell is a multi-byte character; if it is, adjust
+            -- the start index
+            local trimmed_content = content:match('^%s*( .- )%s*$')
+                or content:match('^%s*(.- )%s*$')
+                or content:match('^%s*( .-)%s*$')
+                or content:match('^%s*(.-)%s*$')
             cells[#cells + 1] = {
                 content = content,
                 trimmed_content = trimmed_content,
@@ -337,9 +343,13 @@ M.moveToCell = function(row_offset, cell_offset)
             row_offset, cell_offset = row_offset - quotient, target_cell + (ncols * quotient) - 1
             M.moveToCell(row_offset, cell_offset)
         else
+            local multibyte_char = utils.isMultibyteChar({
+                row = row - 1,
+                start_col = table_rows.rowdata[tostring(row)][target_cell].start,
+            })
             vim.api.nvim_win_set_cursor(
                 0,
-                { row, table_rows.rowdata[tostring(row)][target_cell].start }
+                { row, table_rows.rowdata[tostring(row)][target_cell].start - (multibyte_char and 1 or 0) }
             )
         end
     else
