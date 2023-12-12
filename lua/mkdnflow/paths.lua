@@ -24,6 +24,7 @@ local this_os_err = '⬇️ Function unavailable for ' .. this_os .. '. Please f
 local sep = this_os:match('Windows') and '\\' or '/'
 -- Get config setting for whether to make missing directories or not
 local create_dirs = require('mkdnflow').config.create_dirs
+local edit_dirs = require('mkdnflow').config.edit_dirs
 -- Get config setting for where links should be relative to
 local perspective = require('mkdnflow').config.perspective
 -- Get directory of first-opened file
@@ -184,7 +185,13 @@ local internal_open = function(path, anchor)
     else
         path_w_ext = path
     end
-    if exists(path, 'd') and not exists(path_w_ext, 'f') then
+    if exists(path, 'd') and edit_dirs then
+        if edit_dirs == true then
+            vim.cmd(':e ' .. path)
+        else
+            edit_dirs(path)
+        end
+    elseif exists(path, 'd') and not exists(path_w_ext, 'f') then
         -- Looks like this links to a directory, possibly a notebook
         enter_internal_path(path)
     else
