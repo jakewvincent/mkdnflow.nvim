@@ -10,10 +10,13 @@
    <a href="#-features">Features</a> / <a href="#-installation-and-usage">Installation</a> / <a href="#-starting-a-notebook">Starting a notebook</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
 </p>
 
-### 🆕 Top three [latest features](#-recent-changes)
+### 🆕 Top three [latest features](#-recent-changes) and announcements
 1. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
 2. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp)
 3. [Templates for new files](#-templates-for-new-files)
+
+#### Announcements
+12/12/23: Mkdnflow no longer requires the `luautf8` lua rock as a dependency. UTF-8 characters can be used as [custom to-do symbols](#to_do-dictionary-like-table) out of the box, and table formatting will work out of the box when the table contains UTF-8 characters.
 
 ## 📝 Description
 
