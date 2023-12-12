@@ -199,25 +199,38 @@ M.strSplit = function(str, sep)
     return splits
 end
 
-M.isMultibyteChar = function(buffer, row, start_col, opts)
-    opts = opts or {}
-    if opts.retrieve == false then
+M.isMultibyteChar = function(args)
+    -- Extract arguments from table
+    local buffer = args.buffer or 0
+    local row = args.row or nil
+    local start_col = args.start_col or nil
+    local opts = args.opts or {}
+    local text = args.text or nil
+    local byte
+    if text ~= nil and start_col ~= nil then
+        byte = string.sub(text, start_col, start_col + 1)
     else
+        byte = vim.api.nvim_buf_get_text(buffer, row, start_col - 1, row, start_col, opts)[1]
     end
-    local byte = vim.api.nvim_buf_get_text(buffer, row, start_col - 1, row, start_col, opts)[1]
     local width = vim.api.nvim_strwidth(byte)
     local last_width = width
     -- Check up to the following three bytes (max byte count for a single char in unicode is 4)
     for i = 1, 3, 1 do
         -- Concat to the previous byte and see if the string width reduces
-        byte = byte
-            .. vim.api.nvim_buf_get_text(buffer, row, start_col - 1 + i, row, start_col + i, {})[1]
+        if text ~= nil and start_col ~= nil then
+            byte = byte .. string.sub(text, start_col + i, start_col + 1 + i)
+        else
+            byte = byte
+                .. vim.api.nvim_buf_get_text(buffer, row, start_col - 1 + i, row, start_col + i, {})[1]
+        end
         width = vim.api.nvim_strwidth(byte)
         if width < last_width then
             -- Return the byte indices for the character in question
+            vim.print(">"..byte.."<")
             return { start = start_col - 1, finish = start_col + i }
         elseif i == 3 then
             -- If we're on the last iteration and this condition was met (rather than the other), there's no multibyte char
+            vim.print(">"..byte.."<")
             return false
         end
     end
