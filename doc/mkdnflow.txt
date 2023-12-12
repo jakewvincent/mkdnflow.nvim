@@ -35,10 +35,11 @@ CONTENTS                                                         *Mkdnflow-help*
 
 ==============================================================================
 TOP THREE LATEST FEATURES                             *Mkdnflow-latest-features*
-1. Completion of file links and bib-based references for nvim-cmp (see
+1. Customize "jump patterns" for link jumping (see
+|Mkdnflow-config-jump-patterns|)
+2. Completion of file links and bib-based references for nvim-cmp (see
 |Mkdnflow-completion|)
-2. Templates for new files (see |Mkdnflow-templates|)
-3. Follow automatic links (see |Mkdnflow-automatic-links|)
+3. Templates for new files (see |Mkdnflow-templates|)
 
 ==============================================================================
 DESCRIPTION                                               *Mkdnflow-description*
@@ -429,6 +430,10 @@ CREATE, CUSTOMIZE, AND DESTROY LINKS                            *Mkdnflow-links*
 - `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it
   (replace it with the text in [...])
 - Create an anchor link if the visual selection starts with `#` 
+- Tag visually selected spans of text (mapped to `<M-CR>` in visual mode) using
+  the style specified in the  Pandoc `bracketed_spans` extension
+  (https://pandoc.org/MANUAL.html#extension-bracketed_spans) (ID must be
+  assigned with the ID selector—i.e. `#`): `[This is a span]{#important-span}`.
 - Create a web link if what's under the cursor is a URL (and move the cursor
   to enter the link name)
 - `yaa` on a heading to add a formatted anchor link for the heading to the
@@ -454,6 +459,8 @@ JUMP TO LINKS, HEADINGS, AND ARBITRARY PATTERN MATCHES        *Mkdnflow-jumping*
 - `]]` and `[[` jump to the next and previous headings in the file
 - "Wrap" back to the beginning/end of the file when jumping with a config
   setting (see |Mkdnflow-config|)
+- Map your own user command to `require("mkdnflow").cursor.goTo(pattern)` to
+  jump to arbitrarily-defined Lua regex matches (see |Mkdnflow-cursor-goTo|)
 
 COMPLETION FOR NVIM-CMP                                    *Mkdnflow-completion*
 - Reference: https://github.com/hrsh7th/nvim-cmp
@@ -673,6 +680,14 @@ require("mkdnflow").buffers.goBack()~
 
 require("mkdnflow").buffers.goForward()~
     Uses the historical buffer stack to go to the last-opened buffer.
+
+                                                          *Mkdnflow-cursor-goTo*
+require("mkdnflow").cursor.goTo(pattern, reverse)~
+    Goes to the next/previous pattern match in the current buffer
+    {pattern} (string or table): a Lua regex pattern, or a table of Lua regex
+    patterns (whichever pattern is found first will be jumped to)
+    {reverse} (boolean): whether the pattern should be looked for after the
+    cursor (`false`) or before the cursor (`true`)
 
 require("mkdnflow").cursor.toNextLink()~
     Finds the next link in the file.
@@ -958,7 +973,7 @@ it in the list.
 
 `cursor` (dictionary-like table)~
                                                         *Mkdnflow-config-cursor*
-                                          *Mkdnflow-config-cursor-jump-patterns*
+                                                 *Mkdnflow-config-jump-patterns*
 - `cursor.jump_patterns` (array-like table or `nil`): A list of Lua regex
   patterns to jump to using `:MkdnNextLink` and `:MkdnPrevLink`
     - `nil` (default): When `nil`, the default jump patterns for the configured
