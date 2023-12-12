@@ -113,12 +113,6 @@ M.moduleAvailable = function(name)
     end
 end
 
-if M.moduleAvailable('lua-utf8') then
-    utf8 = require('lua-utf8')
-else
-    utf8 = string
-end
-
 M.luaEscape = function(string)
     -- Which characters to match
     local chars = '[-.\'"+?%%]'
@@ -151,9 +145,9 @@ M.mFind = function(tbl, str, start_row, init_row, init_col, plain)
         end
     end
     local catlines = table.concat(tbl)
-    local start, finish, capture = utf8.find(catlines, str, init, plain)
+    local start, finish, capture = string.find(catlines, str, init, plain)
     if capture then
-        start, finish = utf8.find(catlines, capture, start, true)
+        start, finish = string.find(catlines, capture, start, true)
     end
     local chars, match_start_row, match_start_col, match_end_row, match_end_col =
         0, nil, nil, nil, nil
@@ -186,16 +180,30 @@ M.strSplit = function(str, sep)
     return splits
 end
 
-M.isMultibyteChar = function(buffer, row, start_col, opts)
-    opts = opts or {}
-    local byte = vim.api.nvim_buf_get_text(buffer, row, start_col - 1, row, start_col, opts)[1]
+M.isMultibyteChar = function(args)
+    -- Extract arguments from table
+    local buffer = args.buffer or 0
+    local row = args.row or nil
+    local start_col = args.start_col or nil
+    local opts = args.opts or {}
+    local text = args.text or nil
+    local byte
+    if text ~= nil and start_col ~= nil then
+        byte = string.sub(text, start_col, start_col + 1)
+    else
+        byte = vim.api.nvim_buf_get_text(buffer, row, start_col - 1, row, start_col, opts)[1]
+    end
     local width = vim.api.nvim_strwidth(byte)
     local last_width = width
     -- Check up to the following three bytes (max byte count for a single char in unicode is 4)
     for i = 1, 3, 1 do
         -- Concat to the previous byte and see if the string width reduces
-        byte = byte
-            .. vim.api.nvim_buf_get_text(buffer, row, start_col - 1 + i, row, start_col + i, {})[1]
+        if text ~= nil and start_col ~= nil then
+            byte = byte .. string.sub(text, start_col + i, start_col + 1 + i)
+        else
+            byte = byte
+                .. vim.api.nvim_buf_get_text(buffer, row, start_col - 1 + i, row, start_col + i, {})[1]
+        end
         width = vim.api.nvim_strwidth(byte)
         if width < last_width then
             -- Return the byte indices for the character in question

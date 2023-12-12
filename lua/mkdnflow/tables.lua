@@ -15,23 +15,10 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 local config = require('mkdnflow').config
 local utils = require('mkdnflow').utils
-local utf8_available = utils.moduleAvailable('lua-utf8')
-local vim_indent
-if vim.api.nvim_buf_get_option(0, 'expandtab') == true then
-    vim_indent = string.rep(' ', vim.api.nvim_buf_get_option(0, 'shiftwidth'))
-else
-    vim_indent = '	'
-end
 
 local M = {}
 
-local width = function(string)
-    if utf8_available then
-        return require('lua-utf8').width(string)
-    else
-        return vim.api.nvim_strwidth(string)
-    end
-end
+local width = vim.api.nvim_strwidth
 
 local extract_cell_data = function(text)
     local bars_escaped = text:gsub('\\|', '##')
@@ -40,7 +27,12 @@ local extract_cell_data = function(text)
         first, last = bars_escaped:find('|.-|', last)
         if first and last then
             local content = text:sub(first + 1, last - 1)
-            local trimmed_content = content:match('^%s*( .- )%s*$') or content:match('^%s*(.-)%s*$')
+            -- Check if the first character of the cell is a multi-byte character; if it is, adjust
+            -- the start index
+            local trimmed_content = content:match('^%s*( .- )%s*$')
+                or content:match('^%s*(.- )%s*$')
+                or content:match('^%s*( .-)%s*$')
+                or content:match('^%s*(.-)%s*$')
             cells[#cells + 1] = {
                 content = content,
                 trimmed_content = trimmed_content,
@@ -260,7 +252,7 @@ local format_table = function(table_rows)
                     )
                 elseif diff < 0 then
                     local replacement = rowdata[cur_col].trimmed_content
-                    if #replacement < max_length then
+                    if width(replacement) < max_length then
                         repeat
                             replacement = replacement .. ' '
                         until width(replacement) == max_length
@@ -351,9 +343,13 @@ M.moveToCell = function(row_offset, cell_offset)
             row_offset, cell_offset = row_offset - quotient, target_cell + (ncols * quotient) - 1
             M.moveToCell(row_offset, cell_offset)
         else
+            local multibyte_char = utils.isMultibyteChar({
+                row = row - 1,
+                start_col = table_rows.rowdata[tostring(row)][target_cell].start,
+            })
             vim.api.nvim_win_set_cursor(
                 0,
-                { row, table_rows.rowdata[tostring(row)][target_cell].start }
+                { row, table_rows.rowdata[tostring(row)][target_cell].start - (multibyte_char and 1 or 0) }
             )
         end
     else
@@ -389,24 +385,18 @@ M.addRow = function(offset)
     local row = cursor[1] + offset
     local line = vim.api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1]
     if M.isPartOfTable(line) then
+        -- Ignore escaped bars
         line = line:gsub('\\|', '  ')
-        if utf8_available then
-            local utf8 = require('lua-utf8')
-            local newline = ''
-            for i = 1, #line, 1 do
-                local char = utf8.sub(line, i, i)
-                if char:match('[^|]') then
-                    local char_width = utf8.width(char)
-                    newline = newline .. string.rep(' ', char_width)
-                else
-                    newline = newline .. char
-                end
-            end
-            line = newline
-        else
-            line = line:gsub('[^|]', ' ')
+        local newline = ''
+        local last_end = 1
+        while line:find('|[^|]*|', last_end) and width(newline) + 1 < width(line) do
+            local _, finish, capture = line:find('|([^|]*)|', last_end)
+            local cell_width = width(capture)
+            newline = newline .. '|' .. string.rep(' ', cell_width)
+            last_end = finish
         end
-        vim.api.nvim_buf_set_lines(0, row, row, false, { line })
+        newline = newline .. '|'
+        vim.api.nvim_buf_set_lines(0, row, row, false, { newline })
     end
 end
 
