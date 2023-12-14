@@ -145,9 +145,23 @@ M.mFind = function(tbl, str, start_row, init_row, init_col, plain)
         end
     end
     local catlines = table.concat(tbl)
-    local start, finish, capture = string.find(catlines, str, init, plain)
-    if capture then
-        start, finish = string.find(catlines, capture, start, true)
+    local start, finish, capture
+    -- If str is a table of strings, perform the a multi-step regex search
+    if type(str) == 'table' then
+        for i in ipairs(str) do
+            local init_ = start or init
+            local catlines_ = finish and string.sub(catlines, 1, finish) or catlines
+            start, finish, capture = string.find(catlines_, str[i], init_, plain)
+            if capture then
+                start, finish = string.find(string.sub(catlines, 1, finish), capture, start, true)
+            end
+        end
+    -- Otherwise, just do it once
+    else
+        start, finish, capture = string.find(catlines, str, init, plain)
+        if capture then
+            start, finish = string.find(catlines, capture, start, true)
+        end
     end
     local chars, match_start_row, match_start_col, match_end_row, match_end_col =
         0, nil, nil, nil, nil
