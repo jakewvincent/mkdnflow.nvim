@@ -129,7 +129,7 @@ M.getLinkPart = function(link_table, part)
                 citation = '(@.*)',
             },
             source = {
-                md_link = '%]%((.*)%)', -- 3 thru length of match
+                md_link = { '%](%b())', '%((.*)%)' }, -- 3 thru length of match
                 wiki_link = '%[%[(.-)|.-%]%]', -- 3 thru length of match
                 wiki_link_no_bar = '%[%[(.-)%]%]', -- 3 thru length of match
                 ref_style_link = '%]%[(.*)%]', -- 3 or 4 thru length of match
@@ -250,7 +250,8 @@ M.getLinkPart = function(link_table, part)
                         if title then
                             local start, ref_source
                             -- Check first for sources surrounded by < ... >
-                            start, _, ref_source = string.find(source, '^<(.*)> ["\'%(%[].*["\'%)%]]')
+                            start, _, ref_source =
+                                string.find(source, '^<(.*)> ["\'%(%[].*["\'%)%]]')
                             if not start then
                                 start, _, source = string.find(source, '^(.*) ["\'%(%[].*["\'%)%]]')
                             else
@@ -721,7 +722,10 @@ M.hasUrl = function(string, to_return, col)
     end
     -- TODO: add comment
     for pos_start, url, prot, dom, colon, port, slash, path, pos_end in
-        string.gmatch(string, '()((%f[%w]%a+://)(%w[-.%w]*)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))()')
+        string.gmatch(
+            string,
+            '()((%f[%w]%a+://)(%w[-.%w]*)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))()'
+        )
     do
         if
             not finished[pos_start]
@@ -900,7 +904,8 @@ M.createLink = function(args)
             local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
 
             -- Check if last byte is part of a multibyte character & adjust end index if so
-            local is_multibyte_char = utils.isMultibyteChar({buffer = 0, row = finish[1], start_col = end_col})
+            local is_multibyte_char =
+                utils.isMultibyteChar({ buffer = 0, row = finish[1], start_col = end_col })
             if is_multibyte_char then
                 end_col = is_multibyte_char['finish']
             end
@@ -916,7 +921,7 @@ M.createLink = function(args)
             -- Save the text selection & format as a link
             local text = table.concat(lines)
             local replacement = from_clipboard and M.formatLink(text, vim.fn.getreg('+'))
-            or M.formatLink(text)
+                or M.formatLink(text)
             -- If no replacement, end here
             if not replacement then
                 return
@@ -924,12 +929,21 @@ M.createLink = function(args)
             -- Replace the visual selection w/ the formatted link replacement
             vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, replacement)
             -- Leave visual mode
-            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<esc>', true, false, true), 'x', true)
+            vim.api.nvim_feedkeys(
+                vim.api.nvim_replace_termcodes('<esc>', true, false, true),
+                'x',
+                true
+            )
             -- Retain original cursor position
             vim.api.nvim_win_set_cursor(0, { row, col + 1 })
         else
             vim.api.nvim_echo(
-                { { "⬇️  Creating links from multi-line visual selection not supported", 'WarningMsg' } },
+                {
+                    {
+                        '⬇️  Creating links from multi-line visual selection not supported',
+                        'WarningMsg',
+                    },
+                },
                 true,
                 {}
             )
