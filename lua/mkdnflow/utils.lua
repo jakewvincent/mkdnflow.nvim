@@ -229,4 +229,33 @@ M.isMultibyteChar = function(args)
     end
 end
 
+M.inTable = function(value, tbl)
+    local found = false
+    for _, v in ipairs(tbl) do
+        if v == value then
+            found = true
+        end
+    end
+    return found
+end
+
+M.spairs = function(tbl)
+    -- Get the keys and sort them
+    local keys = {}
+    for k, _ in pairs(tbl) do
+        table.insert(keys, k)
+    end
+    table.sort(keys)
+
+    -- Return an iterator function
+    local i = 0
+    return function()
+        i = i + 1
+        local key = keys[i]
+        if key ~= nil then
+            return key, tbl[key]
+        end
+    end
+end
+
 return M
