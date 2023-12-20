@@ -89,6 +89,12 @@ local default_config = {
         format_on_move = true,
         auto_extend_rows = false,
         auto_extend_cols = false,
+        style = {
+            cell_padding = 1,
+            separator_padding = 1,
+            outer_pipes = true,
+            mimic_alignment = true
+        }
     },
     yaml = {
         bib = { override = false },
