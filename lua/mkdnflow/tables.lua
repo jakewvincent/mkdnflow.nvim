@@ -220,10 +220,10 @@ local format_table = function(table_data)
             for idx, value in ipairs(row_data) do
                 local diff = max_lengths[idx] - width(value)
                 local aligned_value
-                if table_data.metadata.col_alignments[idx] == 'right' then
+                if table_data.metadata.col_alignments[idx] == 'right' and config.tables.style.mimic_alignment then
                     aligned_value = string.rep(' ', diff) .. value
                     new_line = new_line .. cell_padding .. aligned_value .. cell_padding .. '|'
-                elseif table_data.metadata.col_alignments[idx] == 'center' then
+                elseif table_data.metadata.col_alignments[idx] == 'center' and config.tables.style.mimic_alignment then
                     local left_fill = string.rep(' ', math.floor(diff / 2))
                     local right_fill = string.rep(' ', diff - #left_fill)
                     aligned_value = left_fill .. value .. right_fill
