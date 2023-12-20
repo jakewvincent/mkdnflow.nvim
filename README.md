@@ -11,9 +11,9 @@
 </p>
 
 ### 🆕 Top three [latest features](#-recent-changes) and announcements
-1. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
-2. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp)
-3. [Templates for new files](#-templates-for-new-files)
+2. [Improved table formatting and table formatting options](#tables)
+3. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
+4. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp)
 
 #### Announcements
 12/12/23: Mkdnflow no longer requires the `luautf8` lua rock as a dependency. UTF-8 characters can be used as [custom to-do symbols](#to_do-dictionary-like-table) out of the box, and table formatting will work out of the box when the table contains UTF-8 characters.
@@ -87,7 +87,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 }
 ```
 
-### 🆕 Templates for new files
+### Templates for new files
 * Define a custom template (under config option `new_file_template.template`) that gets populated and inserted into new markdown files.
 * Familiar double-brace syntax for placeholders, e.g. `{{title}}` or `{{ title }}`
 * Define custom template placeholders (under config option `new_file_template.placeholders`).
@@ -256,8 +256,11 @@ require('mkdnflow').setup({
 * Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
 * Optionally disable formatting when moving cells
 * Add new rows or columns (before or after the current row/cell; see [default mappings](#-commands-and-default-mappings))
-
-<p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
+* 🆕 Table styling options (see [table config options](#tables-dictionary-like-table))
+    * 🆕 Customize cell padding
+    * 🆕 Customize separator row padding
+    * 🆕 Include or exclude outer pipes
+    * 🆕 Mimic column alignment (left/center/right) in markdown
 
 ### Disable unused modules
 * Individually disable any of the modules that enable all of the above functionality (see [`modules` config option descriptions](#modules-dictionary-like-table))
@@ -477,7 +480,13 @@ require('mkdnflow').setup({
         trim_whitespace = true,
         format_on_move = true,
         auto_extend_rows = false,
-        auto_extend_cols = false
+        auto_extend_cols = false,
+        style = {
+            cell_padding = 1,
+            separator_padding = 1,
+            outer_pipes = true,
+            mimic_alignment = true
+        }
     },
     yaml = {
         bib = { override = false }
@@ -647,6 +656,11 @@ end
 * `tables.format_on_move` (boolean): Whether tables should be formatted each time the cursor is moved via MkdnTable{Next/Prev}{Cell/Row} (default: `true`)
 * `tables.auto_extend_rows` (boolean): Whether calling `MkdnTableNextRow` when the cursor is in the last row should add another row instead of leaving the table (default: `false`)
 * `tables.auto_extend_cols` (boolean): Whether calling `MkdnTableNextCol` when the cursor is in the last cell should add another column instead of jumping to the first cell of the next row (default: `false`)
+* 🆕 `tables.style` (dictionary-like table)
+    * 🆕 `tables.style.cell_padding` (integer): Number of spaces to use as cell padding (default: `1`)
+    * 🆕 `tables.style.separator_padding` (integer): Number of spaces to use as cell padding in the row that separates a header row from the table body, if present (default: `1`)
+    * 🆕 `tables.style.outer_pipes` (boolean): Whether to use (`true`) or exclude (`false`) outer pipes when formatting a table or inserting a new table (default: `true`)
+    * 🆕 `tables.style.mimic_alignment` (boolean): Whether to mimic the cell alignment indicated in the separator row when formatting the table; left-alignment always used when alignment not specified (default: `true`)
 
 #### `yaml` (dictionary-like table)
 * `yaml.bib` (dictionary-like table)
@@ -728,6 +742,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (e.g. nvim-autopairs allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
+* [ ] Add option to continuously format tables as they are being edited
 * [ ] Finalize completion module & add comments
 
 <details>
@@ -764,6 +779,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 12/20/23: Major improvements to table formatting (efficiency improvements on the backend; more customization options)
 * 12/12/23: `luautf8` no longer required for use of UTF8 symbols in customized to-do symbols or formatted tables
 * 12/12/23: Customizable jump patterns for link jumping
 * 09/11/23: Merge completion module PR for testing in dev branch
