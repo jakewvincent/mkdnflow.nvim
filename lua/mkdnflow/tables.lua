@@ -15,27 +15,37 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 local config = require('mkdnflow').config
 local utils = require('mkdnflow').utils
-local sep_padding = string.rep(' ', config.tables.style.separator_padding or 1)
-local cell_padding = string.rep(' ', config.tables.style.cell_padding or 1)
+local sep_padding, cell_padding =
+    string.rep(' ', config.tables.style.separator_padding or 1),
+    string.rep(' ', config.tables.style.cell_padding or 1)
 
 local M = {}
 
 local width = vim.api.nvim_strwidth
 
-local is_separator_row = function(line)
-    if line:match('^%s*|[| %-:]+|%s*$') and line:match('%-+') then
-        return true
-    else
-        return false
+local has_outer_pipes = function(line)
+    local result, side = false, nil
+    if line:match('^|.*|%s*$') then
+        result, side = true, 'both'
+    elseif line:match('^%s*|.*[^|]$') then
+        result, side = true, 'left'
+    elseif line:match('^%s*[^|].*|%s*$') then
+        result, side = true, 'right'
     end
+    return result, side
 end
 
-local has_outer_pipes = function(line)
-    if line:match('^|.*|$') then
-        return true
-    else
-        return false
+local is_separator_row = function(line)
+    local outer_pipes, location = has_outer_pipes(line)
+    local pattern = (outer_pipes and location == 'both' and '^|[| %-:]+|%s*$')
+        or (outer_pipes and location == 'left' and '^|[| %-:]+$')
+        or (outer_pipes and location == 'right' and '^[| %-:]+|%s*$')
+        or '^[^|][| %-:]+[^|]$'
+    local result = false
+    if line:match(pattern) and line:match('%-+') then
+        result = true
     end
+    return result
 end
 
 local read_col_alignments = function(row_data)
@@ -59,23 +69,42 @@ local read_celldata_from_row = function(row)
     row = row:gsub('\\|', 'U%+007C')
     local cells = {}
     local max = 0
-    for match in string.gmatch(row, '|([^|]*)') do
+    for match in string.gmatch(row, '([^|]+)') do
         max = max + 1
-        -- Replace any escaped bars back to their original form and strip whitespace around cell
-        -- data
+        -- Replace escaped bars back to their original form; strip whitespace around cell data
         local cell = match:gsub('U%+007C', '\\|'):gsub('^%s*', ''):gsub('%s*$', '')
         table.insert(cells, cell)
     end
-    -- The last match is stuff following the table; store it under a key, separately from the rest
-    cells['after'] = cells[max]
-    table.remove(cells, max)
+    -- The last match is stuff following the table, unless the table is the kind w/o outer pipes;
+    -- store this stuff under a key, separately from the rest
+    --if row:match('^|.-|$') then
+    --    cells['after'] = cells[max]
+    --    table.remove(cells, max)
+    --end
     return cells
+end
+
+local max_cols = function(list)
+    local col_counts = {}
+    for _, row in pairs(list) do
+        table.insert(col_counts, #row)
+    end
+    return math.max(table.unpack(col_counts))
+end
+
+local equalize_rows = function(rowdata)
+    local target_cols = max_cols(rowdata)
+    for _, v in pairs(rowdata) do
+        while #v < target_cols do
+            table.insert(v, '')
+        end
+    end
 end
 
 local read_table = function(rownr)
     -- Get the table text
-    local init_rownr = rownr
     rownr = rownr or vim.api.nvim_win_get_cursor(0)[1]
+    local init_rownr = rownr
     local line = vim.api.nvim_buf_get_lines(0, rownr - 1, rownr, false)[1]
     local i, table_rows = 1, { rowdata = {}, metadata = {}, raw = {} }
     while M.isPartOfTable(line) do
@@ -103,6 +132,7 @@ local read_table = function(rownr)
         table_rows.metadata.col_alignments =
             read_col_alignments(table_rows.rowdata[table_rows.metadata.midrule_row])
     end
+    equalize_rows(table_rows.rowdata)
     return table_rows
 end
 
@@ -137,8 +167,30 @@ local get_max_lengths = function(table_data)
     return max_lengths
 end
 
-M.isPartOfTable = function(text)
-    if text and text:match('^%s*|.+|.-$') then
+M.isPartOfTable = function(text, linenr)
+    local tableyness = 0
+    -- Start by just looking for a single pipe in the line
+    if text and text:match('^.+|.+$') then
+        tableyness = tableyness + 1
+        -- Do some more thorough checks; look up and down if we have linenr
+        if linenr then
+            local above, below =
+                vim.api.nvim_buf_get_lines(0, linenr, linenr + 1, false),
+                vim.api.nvim_buf_get_lines(0, linenr - 2, linenr - 1, false)
+            above = above and above[1] or ''
+            below = below and below[1] or ''
+            for _, line in ipairs({ above, text, below }) do
+                tableyness = tableyness + (line:match('^.+|.+$') and 1 or 0)
+                tableyness = tableyness + (line:match('^%s*|.+|%s*$') and 1 or 0)
+                tableyness = tableyness + (line:match('^|.+|$') and 1 or 0)
+            end
+        else
+            tableyness = tableyness + (text:match('^.+|.+$') and 1 or 0)
+            tableyness = tableyness + (text:match('^%s*|.+|%s*$') and 1 or 0)
+            tableyness = tableyness + (text:match('^|.+|$') and 1 or 0)
+        end
+    end
+    if tableyness >= 2 then
         return true
     else
         return false
@@ -191,7 +243,7 @@ M.newTable = function(opts)
 end
 
 local format_table = function(table_data)
-    local max_lengths = get_max_lengths(table_data)
+    local max_lengths, outer_pipes = get_max_lengths(table_data), config.tables.style.outer_pipes
     local new_lines = {}
     local start, finish
     for linenr, row_data in utils.spairs(table_data.rowdata) do
@@ -199,11 +251,12 @@ local format_table = function(table_data)
         start = start == nil and linenr or start
         -- Assign current linenr if nil or greater than current value
         finish = (finish == nil and linenr) or (linenr > finish and linenr) or finish
-        local new_line = '|'
+        local new_line = ''
         -- Special formatting for the separator row
         if linenr == table_data.metadata.midrule_row then
             local diff = #cell_padding - #sep_padding
             for idx, value in ipairs(table_data.metadata.col_alignments) do
+                local end_sep = idx == #row_data and '' or '|'
                 local aligned_value
                 if value == 'left' then
                     aligned_value = ':' .. string.rep('-', max_lengths[idx] - 1 + 2 * diff)
@@ -214,28 +267,37 @@ local format_table = function(table_data)
                 elseif value == 'default' then
                     aligned_value = string.rep('-', max_lengths[idx] + 2 * diff)
                 end
-                new_line = new_line .. sep_padding .. aligned_value .. sep_padding .. '|'
+                new_line = new_line .. sep_padding .. aligned_value .. sep_padding .. end_sep
             end
         else
-            for idx, value in ipairs(row_data) do
+            for idx = 1, max_cols(table_data.rowdata), 1 do
+                local value = row_data[idx] or ''
                 local diff = max_lengths[idx] - width(value)
                 local aligned_value
-                if table_data.metadata.col_alignments[idx] == 'right' and config.tables.style.mimic_alignment then
+                local end_sep = idx == #row_data and '' or '|'
+                if
+                    table_data.metadata.col_alignments[idx] == 'right'
+                    and config.tables.style.mimic_alignment
+                then
                     aligned_value = string.rep(' ', diff) .. value
-                    new_line = new_line .. cell_padding .. aligned_value .. cell_padding .. '|'
-                elseif table_data.metadata.col_alignments[idx] == 'center' and config.tables.style.mimic_alignment then
+                    new_line = new_line .. cell_padding .. aligned_value .. cell_padding .. end_sep
+                elseif
+                    table_data.metadata.col_alignments[idx] == 'center'
+                    and config.tables.style.mimic_alignment
+                then
                     local left_fill = string.rep(' ', math.floor(diff / 2))
                     local right_fill = string.rep(' ', diff - #left_fill)
                     aligned_value = left_fill .. value .. right_fill
-                    new_line = new_line .. cell_padding .. aligned_value .. cell_padding .. '|'
+                    new_line = new_line .. cell_padding .. aligned_value .. cell_padding .. end_sep
                 else
                     aligned_value = value .. string.rep(' ', diff)
-                    new_line = new_line .. cell_padding .. aligned_value .. cell_padding .. '|'
+                    new_line = new_line .. cell_padding .. aligned_value .. cell_padding .. end_sep
                 end
             end
         end
         -- Append any content that was following the table back onto the line
-        if #row_data['after'] > 0 then
+        new_line = (outer_pipes and '|' or '') .. new_line .. (outer_pipes and '|' or '')
+        if row_data['after'] ~= nil and #row_data['after'] > 0 then
             new_line = new_line .. cell_padding .. row_data['after']
         end
         table.insert(new_lines, new_line)
@@ -253,12 +315,12 @@ end
 
 M.formatTable = function()
     local table_rows = read_table()
-    local formatted_rows = format_table(table_rows)
-    if not formatted_rows then
+    local formatted_tdata = format_table(table_rows)
+    if not formatted_tdata then
         if not config.silent then
             vim.api.nvim_echo({
                 {
-                    '⬇️  At least one row does not have the same number of cells as there are column headers.',
+                    '⬇️  Table formatting failed.',
                     'WarningMsg',
                 },
             }, true, {})
@@ -271,7 +333,7 @@ local which_cell = function(row, col)
     local cursorline = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     cursorline = cursorline:gsub('\\|', '##')
     local init, cell, cursor_cell = 1, 1, 0
-    for match in string.gmatch(cursorline, '|[^|]*') do
+    for match in string.gmatch(cursorline, '[^|]*') do
         -- Find the indices of the match
         local start, finish = string.find(cursorline, match, init, true)
         if col >= start and col <= finish then
@@ -289,7 +351,7 @@ local locate_cell = function(table_row, cellnr, locate_cell_contents)
     local start, finish
     -- Replace escaped bars
     table_row = table_row:gsub('\\|', '  ')
-    for match in string.gmatch(table_row, '|([^|]*)') do
+    for match in string.gmatch(table_row, '[^|]*') do
         cur_cell = cur_cell + 1
         start, finish = string.find(table_row, match, init, true)
         if cur_cell == cellnr then
@@ -317,7 +379,7 @@ M.moveToCell = function(row_offset, cell_offset)
     local target_line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     if is_separator_row(target_line) then
         M.moveToCell(row_offset + (row_offset < 0 and -1 or 1), cell_offset)
-    elseif M.isPartOfTable(target_line) then
+    elseif M.isPartOfTable(target_line, row) then
         local table_rows = read_table(row)
         table_rows = config.tables.format_on_move and format_table(table_rows) or table_rows
         local ncols = ncol(table_rows.rowdata)[1]
@@ -376,20 +438,24 @@ M.addRow = function(offset)
     local cursor = vim.api.nvim_win_get_cursor(0)
     local row = cursor[1] + offset
     local line = vim.api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1]
-    if M.isPartOfTable(line) then
+    if M.isPartOfTable(line, row) then
         -- Ignore escaped bars
         line = line:gsub('\\|', '  ')
-        local newline = ''
-        for match in line:gmatch('|([^|]*)') do
-            newline = newline .. '|' .. string.rep(' ', width(match))
+        local init, start, finish, new_line = 1, nil, nil, ''
+        for match in line:gmatch('([^|]+)', init) do
+            start, finish = line:find(match, init, true)
+            new_line = new_line .. line:sub(init, start - 1) .. string.rep(' ', width(match))
+            init = finish + 1
+            --newline = newline .. '|' .. string.rep(' ', width(match))
         end
-        vim.api.nvim_buf_set_lines(0, row, row, false, { newline })
+        new_line = new_line .. line:sub(finish + 1)
+        vim.api.nvim_buf_set_lines(0, row, row, false, { new_line })
     end
 end
 
 M.addCol = function(offset)
-    local line = vim.api.nvim_get_current_line()
-    if M.isPartOfTable(line) then
+    local line, linenr = vim.api.nvim_get_current_line(), vim.api.nvim_win_get_cursor(0)
+    if M.isPartOfTable(line, linenr) then
         -- -1 means insert before current col; 0 means insert after current col
         offset = offset or 0
         local cursor = vim.api.nvim_win_get_cursor(0)
