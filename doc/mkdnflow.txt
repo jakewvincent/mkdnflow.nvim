@@ -35,11 +35,12 @@ CONTENTS                                                         *Mkdnflow-help*
 
 ==============================================================================
 TOP THREE LATEST FEATURES AND ANNOUNCEMENTS           *Mkdnflow-latest-features*
-1. Customize "jump patterns" for link jumping (see
+1. Improved table formatting and formatting style options (see
+|Mkdnflow-config-tables-style|)
+2. Customize "jump patterns" for link jumping (see
 |Mkdnflow-config-jump-patterns|)
-2. Completion of file links and bib-based references for nvim-cmp (see
+3. Completion of file links and bib-based references for nvim-cmp (see
 |Mkdnflow-completion|)
-3. Templates for new files (see |Mkdnflow-templates|)
 
 Announcements~
 12/12/2023: Mkdnflow no longer requires the `luautf8` lua rock as a dependency.
@@ -808,7 +809,13 @@ SAMPLE CONFIG (DEFAULTS)                               *Mkdnflow-default-config*
             trim_whitespace = true,
             format_on_move = true,
             auto_extend_rows = false,
-            auto_extend_cols = false
+            auto_extend_cols = false,
+            style = {
+                cell_padding = 1,
+                separator_padding = 1,
+                outer_pipes = true,
+                mimic_alignment = true
+            }
         },
         yaml = {
             bib = { override = false }
@@ -1089,15 +1096,32 @@ it in the list.
   MkdnTableNext/Prev/Row (default: `true`)
                                        *Mkdnflow-config-tables-auto_extend_rows*
                                        *Mkdnflow-config-tables-auto_extend_cols*
-- tables.auto_extend_rows (boolean): Whether a new row should automatically be
+- `tables.auto_extend_rows` (boolean): Whether a new row should automatically be
   added to a table when `:MkdnTableNextRow` is triggered when the cursor is in
   the final row of the table. If `false`, the cursor will simply leave the
   table for the next line. (default: `false`)
-- tables.auto_extend_cols (boolean): Whether a new column should automatically
+- `tables.auto_extend_cols` (boolean): Whether a new column should automatically
   be added to a table when `:MkdnTableNextCell` is triggered when the cursor
   is in the final column of the table. If false, the cursor will jump to the
   first cell of the next row, unless the cursor is already in the last row, in
   which case nothing will happen. (default: `false`)
+                                                  *Mkdnflow-config-tables-style*
+- `tables.style` (dictionary-like table):
+                                     *Mkdnflow-config-tables-style-cell_padding*
+    - `tables.style.cell_padding` (integer): Number of spaces to use as cell
+      padding (default: `1`)
+                                *Mkdnflow-config-tables-style-separator_padding*
+    - `tables.style.separator_padding` (integer): Number of spaces to use as
+      cell padding in the row that separates a header row from the table body,
+      if present (default: `1`)
+                                      *Mkdnflow-config-tables-style-outer_pipes*
+    - `tables.style.outer_pipes` (boolean): Whether to use (`true`) or exclude
+      (`false`) outer pipes when formatting a table or inserting a new table
+      (default: `true`)
+                                  *Mkdnflow-config-tables-style-mimic_alignment*
+    - `tables.style.mimic_alignment` (boolean): Whether to mimic the cell
+      alignment indicated in the separator row when formatting the table;
+      left-alignment always used when alignment not specified (default: `true`)
 
 `yaml (dictionary-like table)`~
                                                           *Mkdnflow-config-yaml*
