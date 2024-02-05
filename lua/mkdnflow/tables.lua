@@ -19,6 +19,8 @@ local sep_padding, cell_padding =
     string.rep(' ', config.tables.style.separator_padding or 1),
     string.rep(' ', config.tables.style.cell_padding or 1)
 
+table.unpack = table.unpack or unpack -- 5.1 compatibility
+
 local M = {}
 
 local width = vim.api.nvim_strwidth
