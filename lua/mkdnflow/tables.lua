@@ -376,6 +376,10 @@ M.moveToCell = function(row_offset, cell_offset)
     -- Figure out which cell the cursor is currently in
     local cell = which_cell(position[1], position[2])
     local row = position[1] + row_offset
+    local line_count = vim.api.nvim_buf_line_count(0)
+    if row > line_count then
+        row = line_count
+    end
     local target_line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     if is_separator_row(target_line) then
         M.moveToCell(row_offset + (row_offset < 0 and -1 or 1), cell_offset)
