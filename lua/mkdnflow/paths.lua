@@ -421,7 +421,7 @@ M.handlePath = function(path, anchor)
     if path_type == 'nb_page' then
         vim_open(path, anchor)
     elseif path_type == 'url' then
-        system_open(path .. anchor, 'url')
+        system_open(path .. (anchor or ""), 'url')
     elseif path_type == 'file' then
         handle_external_file(path)
     elseif path_type == 'anchor' then
