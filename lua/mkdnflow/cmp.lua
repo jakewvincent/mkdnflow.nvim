@@ -19,7 +19,6 @@ local cmp_explicit_link = require('mkdnflow').config.links.cmp_explicit_link
 -- Only try to load bib paths if the bib module is enabled
 local bib_paths = require('mkdnflow').bib and require('mkdnflow').bib.bib_paths or nil
 local plenary_scandir = require('plenary').scandir.scan_dir
-local plenary_path = require('plenary').path
 local cmp = require('cmp')
 local extensions = require('mkdnflow').config.filetypes
 
@@ -40,14 +39,13 @@ local function get_files_items()
     if mkdnflow_root_dir ~= nil then
         filepaths_in_root = plenary_scandir(mkdnflow_root_dir)
     else
-        filepaths_in_root = plenary_scandir(plenary_path:new('.'):absolute())
+        filepaths_in_root = plenary_scandir(vim.fn.expand('%:p:h'))
     end
     local items = {}
     -- Iterate over files in the root directory & prepare for completion (if md file)
     for _, path in ipairs(filepaths_in_root) do
-        supported, extension = ends_with_supported_extension(path)
+        local supported, extension = ends_with_supported_extension(path)
         if supported then
-            -- if vim.endswith(path, extension) then
             local item = {}
             -- Absolute path of the file
             item.path = path
