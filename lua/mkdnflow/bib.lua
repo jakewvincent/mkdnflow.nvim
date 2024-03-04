@@ -50,12 +50,13 @@ if find_in_root and root_dir then
         end
     end
     pfile:close()
-    -- Add the default bib path too
-    if type(bib_path) == 'table' then
-        M.bib_paths.default = bib_path
-    else
-        table.insert(M.bib_paths.default, bib_path)
-    end
+end
+
+-- Add the default bib path too
+if type(bib_path) == 'table' then
+    M.bib_paths.default = bib_path
+else
+    table.insert(M.bib_paths.default, bib_path)
 end
 
 local ingest_entry = function(text)
