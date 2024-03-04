@@ -13,7 +13,7 @@
 ### 🆕 Top three [latest features](#-recent-changes) and announcements
 1. [Improved table formatting and formatting style options](#tables)
 2. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
-3. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp)
+3. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmp)
 
 #### Announcements
 12/12/23: Mkdnflow no longer requires the `luautf8` lua rock as a dependency. UTF-8 characters can be used as [custom to-do symbols](#to_do-dictionary-like-table) out of the box, and table formatting will work out of the box when the table contains UTF-8 characters.
