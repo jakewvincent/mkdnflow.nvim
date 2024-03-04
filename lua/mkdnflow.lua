@@ -33,6 +33,7 @@ local default_config = {
         yaml = false,
         cmp = false,
     },
+    -- https://github.com/jakewvincent/mkdnflow.nvim?tab=readme-ov-file#-completion-for-nvim-cmp
     perspective = {
         priority = 'first',
         fallback = 'current',
@@ -50,13 +51,14 @@ local default_config = {
         find_in_root = true,
     },
     cursor = {
-        jump_patterns = nil
+        jump_patterns = nil,
     },
     links = {
         style = 'markdown',
         name_is_source = false,
         conceal = false,
         context = 0,
+        cmp_explicit_link = false,
         implicit_extension = nil,
         transform_implicit = false,
         transform_explicit = function(text)
@@ -64,7 +66,7 @@ local default_config = {
             text = text:lower()
             text = os.date('%Y-%m-%d_') .. text
             return text
-        end
+        end,
     },
     new_file_template = {
         use_template = false,
@@ -93,8 +95,8 @@ local default_config = {
             cell_padding = 1,
             separator_padding = 1,
             outer_pipes = true,
-            mimic_alignment = true
-        }
+            mimic_alignment = true,
+        },
     },
     yaml = {
         bib = { override = false },
@@ -281,7 +283,7 @@ init.setup = function(user_config)
                     '%b[]%b()',
                     '<[^<>]->',
                     '%b[] ?%b[]',
-                    '%[@[^%[%]]-%]'
+                    '%[@[^%[%]]-%]',
                 }
             elseif init.config.links.style == 'wiki' then
                 init.config.cursor.jump_patterns = {
