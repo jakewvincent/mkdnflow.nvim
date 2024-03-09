@@ -17,6 +17,7 @@
 -- Default config table (where defaults and user-provided config will be combined)
 local default_config = {
     create_dirs = true,
+    edit_dirs = false,
     silent = false,
     wrap = false,
     modules = {
