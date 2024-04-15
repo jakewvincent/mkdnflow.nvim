@@ -258,4 +258,23 @@ M.spairs = function(tbl)
     end
 end
 
+M.betterGmatch = function(text, pattern, start)
+    start = start ~= nil and start or 1
+    return function()
+        if not text then
+            return nil  -- Handle nil text gracefully
+        end
+        while start <= #text do
+            local match_start, match_end, match = string.find(text, pattern, start)
+            if match_start then
+                start = match_end + 1  -- Update the start for the next search
+                return match_start, match_end, match
+            else
+                break  -- No more matches, exit loop
+            end
+        end
+        return nil  -- Explicitly return nil when no more data to iterate
+    end
+end
+
 return M
