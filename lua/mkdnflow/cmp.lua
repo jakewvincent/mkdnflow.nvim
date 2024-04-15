@@ -15,27 +15,51 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local mkdnflow_root_dir = require('mkdnflow').root_dir
+local cmp_explicit_link = require('mkdnflow').config.links.cmp_explicit_link
 -- Only try to load bib paths if the bib module is enabled
 local bib_paths = require('mkdnflow').bib and require('mkdnflow').bib.bib_paths or nil
 local plenary_scandir = require('plenary').scandir.scan_dir
 local cmp = require('cmp')
-local extension = '.md' -- Keep the '.'
+local extensions = require('mkdnflow').config.filetypes
 
 local transform_explicit = require('mkdnflow').config.links.transform_explicit
 
+-- Check supported extension
+local function ends_with_supported_extension(path)
+    for extension, _ in pairs(extensions) do
+        if path:sub(-#extension) == extension then
+            return true, '.' .. extension
+        end
+    end
+    return false
+end
+
 local function get_files_items()
-    local filepaths_in_root = plenary_scandir(mkdnflow_root_dir)
+    local filepaths_in_root
+    if mkdnflow_root_dir ~= nil then
+        filepaths_in_root = plenary_scandir(mkdnflow_root_dir)
+    else
+        filepaths_in_root = plenary_scandir(vim.fn.expand('%:p:h'))
+    end
     local items = {}
     -- Iterate over files in the root directory & prepare for completion (if md file)
     for _, path in ipairs(filepaths_in_root) do
-        if vim.endswith(path, extension) then
+        local supported, extension = ends_with_supported_extension(path)
+        if supported then
             local item = {}
             -- Absolute path of the file
             item.path = path
             -- Anything except / and \ (\\) followed by the extension so that folders will be excluded
             -- from the label
             item.label = path:match('([^/^\\]+)' .. extension .. '$')
-            local explicit_link = transform_explicit and transform_explicit(item.label) .. extension or item.label .. extension
+            -- https://github.com/jakewvincent/mkdnflow.nvim?tab=readme-ov-file#-completion-for-nvim-cmpj
+            local explicit_link
+            if cmp_explicit_link then
+                explicit_link = transform_explicit and transform_explicit(item.label) .. extension
+                    or item.label .. extension
+            else
+                explicit_link = item.label .. extension
+            end
             -- Text should be inserted in markdown format
             item.insertText = '[' .. item.label .. '](' .. explicit_link .. ')'
             -- For beautification
@@ -125,10 +149,12 @@ function source:complete(params, callback)
                 table.insert(items, item)
             end
         end
-        for _, v in pairs(bib_paths.yaml) do
-            local bib_items_yaml = parse_bib(v)
-            for _, item in ipairs(bib_items_yaml) do
-                table.insert(items, item)
+        if bib_paths.yaml ~= nil then
+            for _, v in pairs(bib_paths.yaml) do
+                local bib_items_yaml = parse_bib(v)
+                for _, item in ipairs(bib_items_yaml) do
+                    table.insert(items, item)
+                end
             end
         end
     end
