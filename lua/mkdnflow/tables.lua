@@ -335,10 +335,9 @@ local which_cell = function(row, col)
     local cursorline = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     cursorline = cursorline:gsub('\\|', '##')
     local init, cell, cursor_cell = 1, 1, 0
-    for match in string.gmatch(cursorline, '[^|]*') do
+    for start, finish in utils.betterGmatch(cursorline, '[^|]+') do
         -- Find the indices of the match
-        local start, finish = string.find(cursorline, match, init, true)
-        if col >= start and col <= finish then
+        if col + 1 >= start and col + 1 <= finish then
             cursor_cell = cell
         end
         init = finish or init
@@ -347,24 +346,27 @@ local which_cell = function(row, col)
     return cursor_cell
 end
 
-local locate_cell = function(table_row, cellnr, locate_cell_contents)
+local locate_cell = function(table_row, target_cellnr, locate_cell_contents)
     locate_cell_contents = locate_cell_contents == nil and true or locate_cell_contents
     local init, cur_cell = 1, 0
     local start, finish
-    -- Replace escaped bars
+    -- Internally replace any escaped bars
     table_row = table_row:gsub('\\|', '  ')
-    for match in string.gmatch(table_row, '[^|]*') do
+    for match_start, match_end, match in utils.betterGmatch(table_row, '([^|]+)') do
         cur_cell = cur_cell + 1
-        start, finish = string.find(table_row, match, init, true)
-        if cur_cell == cellnr then
+        --start, finish = string.find(table_row, match, init, true)
+        if cur_cell == target_cellnr then
             -- Get the position of the non-whitespace content
-            local cell_value = string.match(string.sub(table_row, start, finish), '%s*(.*)%s*')
+            local content_start, content_end, cell_value = string.find(match, '%s*(.*)%s*')
+            -- If the cell is non-empty, find where the content starts
             if cell_value ~= '' and locate_cell_contents then
-                start, finish = string.find(table_row, cell_value, init, true)
+                match_start, match_end = match_start + content_start, match_start + content_end
+            -- Otherwise, assume the cell starts one character after the match
             elseif locate_cell_contents then
-                start = start + 1
+                match_start = match_start + 1
             end
-            break
+            --return start, finish
+            return match_start, match_end
         end
         init = finish or init
     end
@@ -376,7 +378,7 @@ M.moveToCell = function(row_offset, cell_offset)
     cell_offset = cell_offset or 0
     local position = vim.api.nvim_win_get_cursor(0)
     -- Figure out which cell the cursor is currently in
-    local cell = which_cell(position[1], position[2])
+    local cursor_cell = which_cell(position[1], position[2])
     local row = position[1] + row_offset
     local line_count = vim.api.nvim_buf_line_count(0)
     if row > line_count then
@@ -387,9 +389,12 @@ M.moveToCell = function(row_offset, cell_offset)
         M.moveToCell(row_offset + (row_offset < 0 and -1 or 1), cell_offset)
     elseif M.isPartOfTable(target_line, row) then
         local table_rows = read_table(row)
-        table_rows = config.tables.format_on_move and format_table(table_rows) or table_rows
+        if config.tables.format_on_move then
+            table_rows = format_table(table_rows)
+            target_line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+        end
         local ncols = ncol(table_rows.rowdata)[1]
-        local target_cell = cell_offset + cell
+        local target_cell = cell_offset + cursor_cell
         -- If we want to move forward, but the target cell is greater than the current number of columns
         if cell_offset > 0 and target_cell > ncols then
             if config.tables.auto_extend_cols then
@@ -406,7 +411,7 @@ M.moveToCell = function(row_offset, cell_offset)
             M.moveToCell(row_offset, cell_offset)
         else
             -- Figure out where the beginning of the cell is
-            local cell_start = locate_cell(target_line, target_cell)
+            local cell_start, _ = locate_cell(target_line, target_cell)
             vim.api.nvim_win_set_cursor(0, {
                 row,
                 cell_start - 1,
