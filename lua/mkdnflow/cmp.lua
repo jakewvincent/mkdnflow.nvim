@@ -113,22 +113,28 @@ function source:complete(params, callback)
     local items = get_files_items()
     if bib_paths then
         -- For bib files, there are three lists (tables) in mkdnflow where we might find the paths for a bib file
-        for _, v in pairs(bib_paths.default) do
-            local bib_items_default = parse_bib(v)
-            for _, item in ipairs(bib_items_default) do
-                table.insert(items, item)
+        if bib_paths.default then
+            for _, v in pairs(bib_paths.default) do
+                local bib_items_default = parse_bib(v)
+                for _, item in ipairs(bib_items_default) do
+                    table.insert(items, item)
+                end
             end
         end
-        for _, v in pairs(bib_paths.root) do
-            local bib_items_root = parse_bib(v)
-            for _, item in ipairs(bib_items_root) do
-                table.insert(items, item)
+        if bib_paths.root then
+            for _, v in pairs(bib_paths.root) do
+                local bib_items_root = parse_bib(v)
+                for _, item in ipairs(bib_items_root) do
+                    table.insert(items, item)
+                end
             end
         end
-        for _, v in pairs(bib_paths.yaml) do
-            local bib_items_yaml = parse_bib(v)
-            for _, item in ipairs(bib_items_yaml) do
-                table.insert(items, item)
+        if bib_paths.yaml then
+            for _, v in pairs(bib_paths.yaml) do
+                local bib_items_yaml = parse_bib(v)
+                for _, item in ipairs(bib_items_yaml) do
+                    table.insert(items, item)
+                end
             end
         end
     end
