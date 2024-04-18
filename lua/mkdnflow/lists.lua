@@ -113,8 +113,8 @@ local get_siblings = function(row, indentation, li_type, up)
     local list_pos = 1
     local inc = up and -1 or 1
     while not done do
-        local adj_line = (up and vim.api.nvim_buf_get_lines(0, row - 2, row - 1, false)[1])
-            or vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
+        local adj_line = ((up and row - 2 >= 0) and vim.api.nvim_buf_get_lines(0, row - 2, row - 1, true)[1])
+            or (up == false and vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]) or nil
         if adj_line then
             local adj_li_type = M.hasListType(adj_line)
             if adj_li_type then
@@ -147,25 +147,29 @@ local get_siblings = function(row, indentation, li_type, up)
                 end
             end
         else -- Found no adjacent line
-            done = true
+            if up then -- Look downwards on the next iteration
+                up, row, inc = false, orig_row, 1
+            else -- Row doesn't exist
+                done = true
+            end
         end
     end
     return sibling_linenrs, list_numbers
 end
 
 local update_numbering = function(row, indentation, li_type, up, start)
-    local siblings, numbers = get_siblings(row, indentation, li_type, up)
+    local sibling_linenrs, list_numbers = get_siblings(row, indentation, li_type, up)
     local n = start
-    for i, v in ipairs(numbers) do
+    for i, v in ipairs(list_numbers) do
         if not n then
             n = tonumber(v) + 1
         else
             if tonumber(v) ~= n then
                 -- Replace with the correct number on that line
-                local line = vim.api.nvim_buf_get_lines(0, siblings[i] - 1, siblings[i], false)[1]
+                local line = vim.api.nvim_buf_get_lines(0, sibling_linenrs[i] - 1, sibling_linenrs[i], false)[1]
                 local replacement =
                     line:gsub('^' .. indentation .. '%d+%.', indentation .. n .. '.')
-                vim.api.nvim_buf_set_lines(0, siblings[i] - 1, siblings[i], false, { replacement })
+                vim.api.nvim_buf_set_lines(0, sibling_linenrs[i] - 1, sibling_linenrs[i], false, { replacement })
             end
             n = n + 1
         end
