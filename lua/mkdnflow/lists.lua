@@ -98,16 +98,16 @@ M.hasListType = function(line)
 end
 
 local get_siblings = function(row, indentation, li_type, up)
-    up = up or true
+    up = up and true
     local orig_row = row
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     local number = M.patterns[li_type].number and line and line:match(M.patterns[li_type].number)
-    local siblings = {}
-    local info = {}
+    local sibling_linenrs = {} -- Store line numbers of sibling list items
+    local list_numbers = {} -- Store numbers of sibling list items
     if number then
-        info = { number }
+        list_numbers = { number }
     end
-    siblings = { row }
+    sibling_linenrs = { row }
     -- Look up till we find a parent or non-list-item
     local done = false
     local list_pos = 1
@@ -123,12 +123,12 @@ local get_siblings = function(row, indentation, li_type, up)
                 if adj_li_type == li_type and adj_indentation == indentation then -- Add row
                     if number then
                         table.insert(
-                            info,
-                            up and list_pos or #info + 1,
+                            list_numbers,
+                            up and list_pos or #list_numbers + 1,
                             adj_line:match(M.patterns[li_type].number)
                         )
                     end
-                    table.insert(siblings, up and list_pos or #siblings + 1, row + inc)
+                    table.insert(sibling_linenrs, up and list_pos or #sibling_linenrs + 1, row + inc)
                     row = row + inc
                 elseif #adj_indentation > #indentation then -- List item is a child; keep looking
                     row = row + inc
@@ -150,7 +150,7 @@ local get_siblings = function(row, indentation, li_type, up)
             done = true
         end
     end
-    return siblings, info
+    return sibling_linenrs, list_numbers
 end
 
 local update_numbering = function(row, indentation, li_type, up, start)
