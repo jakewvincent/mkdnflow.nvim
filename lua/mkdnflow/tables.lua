@@ -465,7 +465,7 @@ M.addRow = function(offset)
 end
 
 M.addCol = function(offset)
-    local line, linenr = vim.api.nvim_get_current_line(), vim.api.nvim_win_get_cursor(0)
+    local line, linenr = vim.api.nvim_get_current_line(), vim.api.nvim_win_get_cursor(0)[1]
     if M.isPartOfTable(line, linenr) then
         -- -1 means insert before current col; 0 means insert after current col
         offset = offset or 0
@@ -507,7 +507,12 @@ M.addCol = function(offset)
             then
                 new_cell = '|' .. new_cell
             end
-            local _, finish, match = row_text:find(pattern)
+            local _, finish, match
+            if pattern == "" then
+                finish, match = 0, ""
+            else
+                _, finish, match = row_text:find("(" .. pattern .. ")")
+            end
             -- Insert the new cell in the current row
             local replacement = match .. new_cell .. row_text:sub(finish + 1)
             table.insert(replacements, replacement)
