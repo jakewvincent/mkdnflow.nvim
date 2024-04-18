@@ -23,6 +23,7 @@ local root_dir = require('mkdnflow').root_dir
 local silent = require('mkdnflow').config.silent
 local this_os = require('mkdnflow').this_os
 local yaml = require('mkdnflow').config.yaml
+local utils = require('mkdnflow').utils
 
 local M = {}
 
@@ -49,12 +50,13 @@ if find_in_root and root_dir then
         end
     end
     pfile:close()
-    -- Add the default bib path too
-    if type(bib_path) == 'table' then
-        M.bib_paths.default = bib_path
-    else
-        table.insert(M.bib_paths.default, bib_path)
-    end
+end
+
+-- Add the default bib path too
+if type(bib_path) == 'table' then
+    M.bib_paths.default = bib_path
+else
+    table.insert(M.bib_paths.default, bib_path)
 end
 
 local ingest_entry = function(text)
@@ -81,7 +83,7 @@ local search_bib_file = function(path, citekey)
     if bib_file then
         local text = bib_file:read('*a')
         if text then
-            local start, _ = string.find(text, '\n%s?@[%a]-{%s?' .. citekey)
+            local start, _ = string.find(text, '\n%s?@[%a]-{%s?' .. utils.luaEscape(citekey))
             if start then
                 local match = text:match('%b{}', start)
                 return match

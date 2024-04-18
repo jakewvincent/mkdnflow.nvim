@@ -1,15 +1,22 @@
-<p align=center>
-<img src="assets/logo/mkdnflow_logo.png">
+<p align="center">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/logo/mkdnflow_logo_dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/logo/mkdnflow_logo_light.png">
+      <img alt="Black mkdnflow logo in light color mode and white logo in dark color mode." src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/logo/mkdnflow_logo_light.png">
+    </picture>
 </p>
 <p align=center><img src="https://camo.githubusercontent.com/dba3dd4ec5c0640974a4dad6acdef2e5fe9ef9eee3160ff309aa40dcb091b956/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f6c75612d2532333243324437322e7376673f267374796c653d666c6174266c6f676f3d6c7561266c6f676f436f6c6f723d7768697465"></p>
 <p align=center>
    <a href="#-features">Features</a> / <a href="#-installation-and-usage">Installation</a> / <a href="#-starting-a-notebook">Starting a notebook</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
 </p>
 
-### 🆕 Top three [latest features](#-recent-changes)
-1. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp)
-2. [Templates for new files](#templates-for-new-files)
-3. [Follow automatic links](#follow-links-and-citations)
+### 🆕 Top three [latest features](#-recent-changes) and announcements
+1. [Improved table formatting and formatting style options](#tables)
+2. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
+3. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmp)
+
+#### Announcements
+12/12/23: Mkdnflow no longer requires the `luautf8` lua rock as a dependency. UTF-8 characters can be used as [custom to-do symbols](#to_do-dictionary-like-table) out of the box, and table formatting will work out of the box when the table contains UTF-8 characters.
 
 ## 📝 Description
 
@@ -24,16 +31,6 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 * Linux, macOS, or Windows
 * Neovim >= 0.7.0 for all functionality (most will work with Neovim >= 0.5.0, but mappings will need to be set separately)
 * [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) is required for the new completion module.
-* Optional: If you wish to use UTF-8 symbols as [custom to-do symbols](#to_do-dictionary-like-table), in [tables that you wish to have Mkdnflow format](#tables-dictionary-like-table), or in anchor links, you'll need the luarocks module [`luautf8`](https://luarocks.org/modules/xavier-wang/luautf8). Luarocks dependencies can be installed via [Packer](#initlua) using the `rocks` key:
-
-```lua
-use({'jakewvincent/mkdnflow.nvim',
-    rocks = 'luautf8', -- Ensures optional luautf8 dependency is installed
-    config = function()
-        require('mkdnflow').setup()
-    end
-})
-```
 
 ### ➖ Differences from [Vimwiki](https://github.com/vimwiki/vimwiki)
 
@@ -53,7 +50,7 @@ use({'jakewvincent/mkdnflow.nvim',
 * See [links config](#links-dictionary-like-table)
 * Markdown link formats recognized:
     * Standard style: `[name](source)`
-    * 🆕 [Reference style](https://www.markdownguide.org/basic-syntax#reference-style-links):
+    * [Reference style](https://www.markdownguide.org/basic-syntax#reference-style-links):
         * `[name][label]` followed anywhere in the file by `[label]: source`, where `label` is an integer
         * `source` can optionally be surrounded by `<` and `>`
         * `source` can optionally be followed by a title, following any of the formats specified [here](https://www.markdownguide.org/basic-syntax#reference-style-links)
@@ -71,14 +68,14 @@ use({'jakewvincent/mkdnflow.nvim',
     * Absolute links or `.md` links relative to home open in the current window but are interpreted with absolute perspective (e.g. `[File](/home/user/file.md)`/`[File](C:\Users\user\file.md)` on Windows, or `[File](~/Documents/file.md)`)
     * Links to a file prefixed with `file:` (e.g. `[My Xournal notes](file:notes.xopp)`) open with the system's default program for that filetype
     * Links to URLs are opened in the default browser
-    * Anchor links to headings (or bracketed spans) in the current file will trigger a jump to that heading or bracketed span. (Install the `luautf8` Luarocks module if you want your anchor links to be able to include non-ascii symbols.)
+    * Anchor links to headings (or bracketed spans) in the current file will trigger a jump to that heading or bracketed span.
         * Bracketed spans can have arbitrary ID attributes; if multiple bracketed spans in a file have the same ID attribute, the first will be jumped to. If a bracketed span's ID attribute is identical to that of a heading, the bracketed span will be prioritized since it is explicitly labeled.
         * Headings must start with a hash, and the source part of the anchor link must look like the heading with (a) any spaces between the last hash mark and the beginning of the heading text removed, (b) all other spaces converted to a dash, (c) non-alphanumeric characters removed, (d) strings of multiple hashes converted into a single hash, and (e) all upper-case characters converted to lower-case characters. For example:
             * `## Bills to pay` will be jumped to if the path in the anchor link is `#bills-to-pay`
             * `#### Groceries/other things to buy` will be jumped to if the path in the anchor link is `#groceriesother-things-to-buy`
     * Links to markdown files that include an anchor (e.g. `[Link](grocery_list.md#produce)`) will open the file in the current window and jump to a bracketed span or heading matching the `#` attribute
     * Following a link to a directory (e.g. another notebook) will open a dialogue for you to select which file in the directory to open in the current window
-    * 🆕 [Automatic links](https://pandoc.org/MANUAL.html#automatic-links) (URLs enclosed in angle brackets, e.g. `<https://example.org>`) are followed directly
+    * [Automatic links](https://pandoc.org/MANUAL.html#automatic-links) (URLs enclosed in angle brackets, e.g. `<https://example.org>`) are followed directly
 * `<CR>` on citations to open associated files or websites (e.g. `@Chomsky1957`, with or without brackets around it)
     * Specify a path to a [.bib](http://www.bibtex.org/Format/) file in [your config](#default_path-string)—or if `perspective.priority` is `root`, simply place your bib files to be searched in your notebook's root directory.
     * Files are prioritized. If no file is found associated with the citation key, a URL associated with it will be opened. If no URL is found, a DOI is opened. If no DOI is found, whatever is in the `howpublished` field is opened.
@@ -133,10 +130,10 @@ Filename: {{ filename }}
 ### Create, customize, and destroy links
 * `<CR>` on the word under cursor or visual selection to create a notebook-internal link
     * Customizable path text transformations (by default, text is converted to lowercase, spaces are converted to dashes, and the date in YYYY-MM-DD format is prefixed to the filename, separated by an underscore). See the description of the [`links`](#links-dictionary-like-table) config key for customization instructions.
-* 🆕 `<leader>p` on the word under cursor or visual selection to create a link using the system clipboard's content as the source
+* `<leader>p` on the word under cursor or visual selection to create a link using the system clipboard's content as the source
 * `<M-CR>` (Alt-Enter) when your cursor is anywhere in a link to destroy it (replace it with the text in [...])
 * Create an anchor link if the visual selection starts with `#` 
-* 🆕 Tag visually selected spans of text (mapped to `<M-CR>` in visual mode) using the style specified in the [Pandoc `bracketed_spans` extension](https://pandoc.org/MANUAL.html#extension-bracketed_spans) (ID must be assigned with the ID selector—i.e. `#`): `[This is a span]{#important-span}`.
+* Tag visually selected spans of text (mapped to `<M-CR>` in visual mode) using the style specified in the [Pandoc `bracketed_spans` extension](https://pandoc.org/MANUAL.html#extension-bracketed_spans) (ID must be assigned with the ID selector—i.e. `#`): `[This is a span]{#important-span}`.
 * Create a web link if what's under the cursor is a URL (and move the cursor to enter the link name)
 * `yaa` ("yank as anchor link"; formerly `ya`) on a heading or bracketed span to add a formatted anchor link for the heading to the default register (ready to paste in the current window)
     * `yfa` to do the same, but adding the absolute path of the file before the anchor (for pasting in another buffer)
@@ -154,10 +151,12 @@ require('mkdnflow').setup({
 })
 ```
 
-### Jump to links, headings
+### Jump to links, headings, and arbitrary pattern matches
 * `<Tab>` and `<S-Tab>` jump to the next and previous links in the file 
-* `]]` and `[[` jump to the next and previous headings in the file
+    * The type of link to jump to is determined by what [`links.style`](#links-dictionary-like-table) is set to (['markdown' or 'wiki'](#markdown-or-wiki-link-styles)), but you can also define your own _jump patterns_ under the [`cursor` config table](#cursor-dictionary-like-table).
+* `]]` and `[[` jump to the next and previous headings in the file, respectively
 * "Wrap" back to the beginning/end of the file when jumping with a [config setting](#wrap-boolean)
+* 🆕 Map your own user command to `require("mkdnflow").cursor.goTo(pattern)` to jump to arbitrarily-defined Lua regex matches (see `:h Mkdnflow-cursor-goTo`)
 
 ### 🆕 Completion for [`nvim-cmp`](https://github.com/hrsh7th/nvim-cmp)
 * Autocompletion in insert mode when the word you are typing matches any of the `.md` files in the notebook.
@@ -180,10 +179,10 @@ Also, don't forget to edit your `formatting` options in `cmp.setup`.
 
 NOTE: There may be some compatibility issues with the completion module and `links.transform_explicit`/`links.transform_implicit` functions:
 
-* If you have some `transform_explicit` option for links to organizing in folders then the folder name will be inserted accordingly. **All transforms may not work**
+* If you have some `transform_explicit` option for links to organizing in folders then the folder name will be inserted accordingly. **Some transformations may not work as expected in completions**.
     * For example, if you have an implicit transformation that will make the link appear as `[author_year](author_year.md)` and you save the file as `ref_author_year.md`. The condition can be if the link name ends with *_yyyy*. Now `cmp` will complete it as `[ref_author_year](ref_author_year.md)` (without the transformation applied). Next, when you follow the link completed by `cmp`, you will go to a new file that is saved as `ref_ref_author_year.md`, which of course does not refer to the intended file.
 
-To prevent this, make sure you write sensible transform functions, preferably using it for folder organization. The other solution is to do a full text search in all the files for links.
+To prevent this, make sure you write sensible transformation functions, preferably using it for folder organization. The other solution is to do a full text search in all the files for links.
 
 Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyle/cmp-pandoc-references) and code from other completion sources when writing the `cmp` module.
 
@@ -194,7 +193,7 @@ Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyl
 * Use built-in dialog triggered by `MkdnMoveSource` (mapped to `<F2>` by default) to rename a link's source *and rename/move the linked file* simultaneously
     * [Perspective](#customizable-link-interpretation), [implicit extensions](#links-dictionary-like-table), and custom [implicit transformations](#links-dictionary-like-table) are all taken into account when moving the linked file
     * The dialog will confirm the details of the changes for you to approve/reject before taking any action
-    * 🆕 When a reference-style link is renamed, the reference line will be found and renamed accordingly without moving the cursor
+    * When a reference-style link is renamed, the reference line will be found and renamed accordingly without moving the cursor
 
 ### Backward and forward navigation through buffers
 * `<BS>` to go **backward** (to the previous file/buffer opened in the current window, like clicking the back button in a web browser)
@@ -208,14 +207,14 @@ Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyl
 * Increase/decrease heading levels (mapped to `+`/`-` by default). **Note**: *Increasing* the heading means increasing it in importance (i.e. making it bigger or more prominent when converted to HTML and rendered in a browser), which counterintuitively means *removing* a hash symbol.
 
 ### Section folding
-* 🆕 Fold a section using `<CR>` in normal mode if the cursor is on the heading of the section
+* Fold a section using `<CR>` in normal mode if the cursor is on the heading of the section
     * Unfold a folded section using `<CR>` or `<leader>F` (both are default mappings; the former maps to a wrapper function that will follow links if the cursor is not on a fold or section heading; the latter is mapped specifically to `:MkdnUnfoldSection<CR>`)
     * If you wish to create a link in a heading (normally done with `<CR>`), you'll need to do so by making a visual selection of the text you wish to create a link from and then hitting `<CR>`, or otherwise disabling the mapping for `MkdnEnter` and mapping `MkdnFollowLink` to `<CR>` in visual and normal modes.
-* 🆕 Fold the section the cursor is currently in—even if the cursor is not on the heading—using `<leader>f`
+* Fold the section the cursor is currently in—even if the cursor is not on the heading—using `<leader>f`
 
 ### Lists
 * List markers recognized: `-`, `*`, and `+`
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table) (make sure to use the [luautf8 luarock dependency](#if-you-wish-to-use-custom-utf-8-to-do-symbols-add-the-luautf8-luarock-dependency) if you want to use utf8 to-do symbols).
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
@@ -250,23 +249,25 @@ require('mkdnflow').setup({
 ```
 
 ### Tables
-* 🆕 Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
-* 🆕 Format existing tables with `:MkdnTableFormat`
-    * Make sure you have the `luautf8` rock installed if you want to format tables containing non-ascii symbols!
-* 🆕 Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
-* 🆕 Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default; jumping forward is not mapped to anything by default; see `MkdnEnter` or `MkdnTableNextRow` in [default mappings](#-commands-and-default-mappings))
-* 🆕 Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
-* 🆕 Optionally disable formatting when moving cells
-* 🆕 Add new rows or columns (before or after the current row/cell; see [default mappings](#-commands-and-default-mappings))
+* Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
+* Format existing tables with `:MkdnTableFormat`
+* Jump forward and backward between cells (mapped to `<Tab>` and `<S-Tab>` in insert mode by default)
+* Jump forward and backward between rows (the latter is mapped to `<M-CR>` in insert mode by default; jumping forward is not mapped to anything by default; see `MkdnEnter` or `MkdnTableNextRow` in [default mappings](#-commands-and-default-mappings))
+* Optionally trim extra whitespace from a cell when formatting (see [config options](#-configuration))
+* Optionally disable formatting when moving cells
+* Add new rows or columns (before or after the current row/cell; see [default mappings](#-commands-and-default-mappings))
+* 🆕 Table styling options (see [table config options](#tables-dictionary-like-table))
+    * 🆕 Customize cell padding
+    * 🆕 Customize separator row padding
+    * 🆕 Include or exclude outer pipes
+    * 🆕 Mimic column alignment (left/center/right) in markdown
 
-<p align=center><strong>More coming soon! I use this plugin daily for work have been regularly adding new features for my use cases. Please share ideas and feature requests by <a href="https://github.com/jakewvincent/mkdnflow.nvim/issues">creating an issue</a>.</strong></p>
-
-### 🆕 Disable unused modules
+### Disable unused modules
 * Individually disable any of the modules that enable all of the above functionality (see [`modules` config option descriptions](#modules-dictionary-like-table))
     * Prevents the module from being loaded (rather than simply disabling the functionality the module provides)
     * Disabling a module prevents mappings to commands that are dependent on that module from being defined
 
-### 🆕 YAML block parsing
+### YAML block parsing
 * Use YAML blocks at the very top of a markdown document to specify certain settings on a by-file basis:
     * Paths to bib files (must be absolute paths):
         * Specify as a string or a list (see examples of each below)
@@ -291,41 +292,53 @@ bib:
 
 ### init.lua
 <details>
-<summary>Install with Packer</summary><p>
+<summary>Install with <a href="https://github.com/folke/lazy.nvim">Lazy</a></summary><p>
 
 ```lua
-use({'jakewvincent/mkdnflow.nvim',
-     config = function()
-        require('mkdnflow').setup({
-            -- Config goes here; leave blank for defaults
-        })
-     end
-})
-```
-
-#### If you wish to use custom UTF-8 to-do symbols, add the luautf8 luarock dependency
-
-```lua
-use({'jakewvincent/mkdnflow.nvim',
-     rocks = 'luautf8',
-     config = function()
-        require('mkdnflow').setup({
-            -- Config goes here; leave blank for defaults
-        })
-     end
+require('lazy').setup({
+    -- Your other plugins
+    {
+        'jakewvincent/mkdnflow.nvim',
+        config = function()
+            require('mkdnflow').setup({
+                -- Config goes here; leave blank for defaults
+            })
+        end
+    }
+    -- Your other plugins
 })
 ```
 
 </p></details>
 
 <details>
-<summary>Install with Paq</summary><p>
+<summary>Install with <a href="https://github.com/lewis6991/pckr.nvim">Pckr</a></summary><p>
+
+```lua
+require('pckr').add({
+    -- Your other plugins
+    {
+        'jakewvincent/mkdnflow.nvim',
+        config = function()
+            require('mkdnflow').setup({
+                -- Config goes here; leave blank for defaults
+            })
+        end
+    }
+    -- Your other plugins
+})
+```
+
+</p></details>
+
+<details>
+<summary>Install with <a href="https://github.com/savq/paq-nvim">Paq</a></summary><p>
 
 ```lua
 require('paq')({
-    -- Your other plugins;
-    'jakewvincent/mkdnflow.nvim';
-    -- Your other plugins;
+    -- Your other plugins
+    'jakewvincent/mkdnflow.nvim',
+    -- Your other plugins
 })
 
 -- Include the setup function somewhere else in your init.lua/vim file, or the
@@ -333,6 +346,21 @@ require('paq')({
 
 require('mkdnflow').setup({
     -- Config goes here; leave blank for defaults
+})
+```
+
+</p></details>
+
+<details>
+<summary>Install with <a href="https://github.com/wbthomason/packer.nvim">Packer</a></summary><p>
+
+```lua
+use({'jakewvincent/mkdnflow.nvim',
+     config = function()
+        require('mkdnflow').setup({
+            -- Config goes here; leave blank for defaults
+        })
+     end
 })
 ```
 
@@ -396,7 +424,7 @@ require('mkdnflow').setup({
         paths = true,
         tables = true,
         yaml = false,
-        cmp = true
+        cmp = false
     },
     filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,             
@@ -413,6 +441,9 @@ require('mkdnflow').setup({
         find_in_root = true
     },
     silent = false,
+    cursor = {
+        jump_patterns = nil
+    },
     links = {
         style = 'markdown',
         name_is_source = false,
@@ -452,7 +483,13 @@ require('mkdnflow').setup({
         trim_whitespace = true,
         format_on_move = true,
         auto_extend_rows = false,
-        auto_extend_cols = false
+        auto_extend_cols = false,
+        style = {
+            cell_padding = 1,
+            separator_padding = 1,
+            outer_pipes = true,
+            mimic_alignment = true
+        }
     },
     yaml = {
         bib = { override = false }
@@ -503,7 +540,6 @@ require('mkdnflow').setup({
     * `modules.bib` (required for [parsing bib files](#follow-links-and-citations) and [following citations](#follow-links-and-citations))
     * `modules.buffers` (required for [backward and forward navigation through buffers](#backward-and-forward-navigation-through-buffers))
     * `modules.conceal` (required if you wish to enable [link concealing](#markdown-or-wiki-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to leaving this module enabled [it is enabled by default] if you wish to conceal links)
-    * `modules.cmp` (required if you wish to enable [Completion for [`nvim-cmp`](https://github.com/hrsh7th/nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp))
     * `modules.cursor` (required for [jumping to links and headings](#jump-to-links-headings); [yanking anchor links](#create-customize-and-destroy-links))
     * `modules.folds` (required for [folding by section](#section-folding))
     * `modules.links` (required for [creating and destroying links](#create-customize-and-destroy-links) and [following links](#follow-links-and-citations))
@@ -513,6 +549,7 @@ require('mkdnflow').setup({
     * `modules.tables` (required for [table navigation and formatting](#tables))
 * Modules not enabled by default:
     * `modules.yaml` (required for parsing yaml blocks)
+    * `modules.cmp` (required if you wish to enable [Completion for [`nvim-cmp`](https://github.com/hrsh7th/nvim-cmp)](#-completion-for-nvim-cmphttpsgithubcomhrsh7thnvim-cmp))
 
 #### `create_dirs` (boolean)
 * `true` (default): Directories referenced in a link will be (recursively) created if they do not exist
@@ -561,6 +598,12 @@ NOTE: This functionality references the file's extension. It does not rely on Ne
     * `true`: `MkdnMoveSource` will update references in all files in the root directory.
     * `false` (default): Just update the reference under the cursor and move the file.
 
+#### `cursor` (dictionary-like table)
+* `cursor.jump_patterns` (nil or table): A list of Lua regex patterns to jump to using `:MkdnNextLink` and `:MkdnPrevLink`
+    * `nil` (default): When `nil`, the [default jump patterns](#jump-to-links-headings) for the configured link style are used (markdown-style links by default)
+    * table of custom Lua regex patterns
+    * `{}` (empty table) to disable link jumping without disabling the `cursor` module
+
 #### `links` (dictionary-like table)
 * `links.style` (string)
     * `'markdown'` (default): Links will be expected in the standard markdown format: `[<title>](<source>)`
@@ -608,7 +651,6 @@ end
 
 #### `to_do` (dictionary-like table)
 * `to_do.symbols` (array-like table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
-    * NOTE: Native Lua support for UTF-8 characters is limited, so in order to ensure all functionality works as intended if you are using non-ascii to-do symbols, you'll need to install the luarocks module "luautf8".
 * `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
     * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
     * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
@@ -622,6 +664,11 @@ end
 * `tables.format_on_move` (boolean): Whether tables should be formatted each time the cursor is moved via MkdnTable{Next/Prev}{Cell/Row} (default: `true`)
 * `tables.auto_extend_rows` (boolean): Whether calling `MkdnTableNextRow` when the cursor is in the last row should add another row instead of leaving the table (default: `false`)
 * `tables.auto_extend_cols` (boolean): Whether calling `MkdnTableNextCol` when the cursor is in the last cell should add another column instead of jumping to the first cell of the next row (default: `false`)
+* 🆕 `tables.style` (dictionary-like table)
+    * 🆕 `tables.style.cell_padding` (integer): Number of spaces to use as cell padding (default: `1`)
+    * 🆕 `tables.style.separator_padding` (integer): Number of spaces to use as cell padding in the row that separates a header row from the table body, if present (default: `1`)
+    * 🆕 `tables.style.outer_pipes` (boolean): Whether to use (`true`) or exclude (`false`) outer pipes when formatting a table or inserting a new table (default: `true`)
+    * 🆕 `tables.style.mimic_alignment` (boolean): Whether to mimic the cell alignment indicated in the separator row when formatting the table; left-alignment always used when alignment not specified (default: `true`)
 
 #### `yaml` (dictionary-like table)
 * `yaml.bib` (dictionary-like table)
@@ -703,6 +750,7 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
     * If using an autopair plugin that automtically maps `<CR>` (e.g. [nvim-autopairs](https://github.com/windwp/nvim-autopairs)), see if it provides a way to disable its `<CR>` mapping (e.g. nvim-autopairs allows you to disable that mapping by adding `map_cr = false` to the table passed to its setup function).
 
 ## ☑️ To do
+* [ ] Add option to continuously format tables as they are being edited
 * [ ] Finalize completion module & add comments
 
 <details>
@@ -739,6 +787,9 @@ These default mappings can be disabled; see [Configuration](#%EF%B8%8F-configura
 
 
 ## 🔧 Recent changes
+* 12/20/23: Major improvements to table formatting (efficiency improvements on the backend; more customization options)
+* 12/12/23: `luautf8` no longer required for use of UTF8 symbols in customized to-do symbols or formatted tables
+* 12/12/23: Customizable jump patterns for link jumping
 * 09/11/23: Merge completion module PR for testing in dev branch
 
 <details>
@@ -836,5 +887,3 @@ end
 * [wiki.vim](https://github.com/lervag/wiki.vim/) (A lighter-weight alternative to Vimwiki, written in Vimscript)
 * [Neorg](https://github.com/nvim-neorg/neorg) (A revised [Org-mode](https://en.wikipedia.org/wiki/Org-mode) for Neovim, written in Lua)
 * [follow-md-links.nvim](https://github.com/jghauser/follow-md-links.nvim) (A simpler plugin for following markdown links, written in Lua)
-=======
-

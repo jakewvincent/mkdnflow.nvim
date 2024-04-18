@@ -18,135 +18,107 @@
 local links = require('mkdnflow').links
 local wrap = require('mkdnflow').config.wrap
 local silent = require('mkdnflow').config.silent
-local link_style = require('mkdnflow').config.links.style
 local context = require('mkdnflow').config.links.context
+local jump_patterns = require('mkdnflow').config.cursor.jump_patterns
 local utils = require('mkdnflow').utils
 
 --[[
-rev_get_line() retrieves line text and reverses it
+find_patterns() is like a more complex version of string.find that accepts a list of patterns to
+search for and permits reverse searches.
 --]]
-local rev_get_line = function(buffer, start, end_, strict_indexing)
-    local line = vim.api.nvim_buf_get_lines(buffer, start, end_, strict_indexing)
-    if line[1] then
-        line[1] = string.reverse(line[1])
-    end
-    return line
-end
-
---[[
-rev_indices() takes two indices and a string and returns the equivalent indices
-for the reversed string
---]]
-local rev_indices = function(r, l, str)
-    local right, left = nil, nil
-    if r and l then
-        right = #str + 1 - r
-        left = #str + 1 - l
+local find_patterns = function(str, patterns, reverse, init)
+    reverse = reverse or false
+    -- If the patterns arg is a string, add it to a table
+    patterns = type(patterns) == 'table' and patterns or { patterns }
+    -- Truncate the string if we're doing a reverse search
+    str = (reverse and init and string.sub(str, 1, init)) or str
+    local left, right, left_tmp, right_tmp
+    -- Look for the patterns
+    for i = 1, #patterns, 1 do
+        left_tmp, right_tmp = string.find(str, patterns[i], reverse and 1 or init)
+        if reverse then
+            local left_check, right_check = left_tmp, right_tmp
+            -- Make sure we're finding the rightmost match if we're doing a reverse search
+            while left_check do
+                left_check, right_check = string.find(str, patterns[i], left_tmp + 1)
+                if left_check then
+                    left_tmp, right_tmp = left_check, right_check
+                end
+            end
+        end
+        -- If we've found a closer match amongst the provided patterns, use that instead
+        -- (NOTE: 'closer' means closer to the beginning of the string if we're doing a forward
+        -- search and closer to the end of the string if we're doing a reverse search)
+        if left_tmp and (left == nil or ((reverse and left_tmp > left) or left_tmp < left)) then
+            left, right = left_tmp, right_tmp
+        end
     end
     return left, right
 end
 
+local M = {}
+
 --[[
-go_to() sends the cursor to the beginning of the next instance of a pattern. If
-'reverse' is 'true', it looks backwards.
+goTo() sends the cursor to the beginning of the next instance of a pattern or a list of patterns.
+If 'reverse' is 'true', it will go to the previous instance of the pattern.
 --]]
-local go_to = function(pattern, reverse)
+M.goTo = function(pattern, reverse)
     -- Get current position of cursor
     local position = vim.api.nvim_win_get_cursor(0)
     local row, col = position[1], position[2]
-    local line, line_len, rev_col, left, right, left_, right_
+    local line, line_len, left, right
     local already_wrapped = false
 
-    if reverse then
-        -- Get the line's contents
-        line = rev_get_line(0, row - 1, row, false)[1]
-        line_len = #line
-        rev_col = #line - col
-        if context > 0 and line_len > 0 then
-            for i = 1, context, 1 do
-                local following_line = rev_get_line(0, row, row + 1, false)[1]
-                line = (following_line and following_line .. line) or line
-                rev_col = (following_line and rev_col + #following_line) or rev_col
-            end
+    -- Get the line's contents
+    line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+    line_len = #line
+    if context > 0 and line_len > 0 then
+        for i = 1, context, 1 do
+            local following_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
+            line = (following_line and line .. following_line) or line
         end
-        -- Get start & end indices of match (if any)
-        right_, left_ = string.find(line, pattern)
-        left, right = rev_indices(right_, left_, line)
-    else
-        -- Get the line's contents
-        line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-        line_len = #line
-        if context > 0 and line_len > 0 then
-            for i = 1, context, 1 do
-                local following_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-                line = (following_line and line .. following_line) or line
-            end
-        end
-        -- Get start & end indices of match (if any)
-        left, right = string.find(line, pattern)
     end
+    -- Get start & end indices of match (if any)
+    left, right = find_patterns(line, pattern, reverse, col)
     -- As long as a match hasn't been found, keep looking as long as possible!
     local continue = true
-    while continue do
+    local iters = 0
+    while continue and iters < 1000 do
+        iters = iters + 1
+        if iters == 1000 then
+            vim.print('Terminated loop at 1000')
+        end
         -- See if there's a match on the current line.
         if left and right then
-            if reverse then -- If there is, see if the cursor is before the match
-                if rev_col + 1 < right_ and left <= line_len then
-                    -- If it is, send the cursor to the start of the match
-                    vim.api.nvim_win_set_cursor(0, { row, left - 1 })
-                    continue = false
-                else -- If it isn't, search after the end of the previous match.
-                    -- These values will be used on the next iteration of the loop.
-                    right_, left_ = string.find(line, pattern, right_ + 1)
-                    left, right = rev_indices(right_, left_, line)
-                end
-            else
-                if col + 1 < left and left <= line_len then -- If there is, see if the cursor is before the match
-                    -- If it is, send the cursor to the start of the match
-                    vim.api.nvim_win_set_cursor(0, { row, left - 1 })
-                    continue = false
-                else -- If it isn't, search after the end of the previous match.
-                    -- These values will be used on the next iteration of the loop.
-                    left, right = string.find(line, pattern, right)
-                end
+            -- If there is, see if the cursor is before the match (or after if rev = true)
+            if
+                ((reverse and col + 1 > left) or ((not reverse) and col + 1 < left))
+                and left <= line_len
+            then
+                -- If it is, send the cursor to the start of the match
+                vim.api.nvim_win_set_cursor(0, { row, left - 1 })
+                continue = false
+            else -- If it isn't, search after the end of the previous match (before if reverse).
+                -- These values will be used on the next iteration of the loop.
+                left, right = find_patterns(line, pattern, reverse, reverse and left or right)
             end
         else -- If there's not a match on the current line, keep checking line-by-line
             -- Update row to search next line
             row = (reverse and row - 1) or row + 1
-            -- Since we're on the next line, column position no longer matters
-            -- and we want to make sure that col is always less than left
-            if reverse then
-                rev_col = -1
-            else
-                col = -1
-            end
-            -- Get the content of the next line (if any)
-            if reverse then
-                line = rev_get_line(0, row - 1, row, false)[1]
-                line_len = line and #line
-                if line and context > 0 and line_len > 0 then
-                    for i = 1, context, 1 do
-                        local following_line = rev_get_line(0, row, row + 1, false)[1]
-                        line = (following_line and following_line .. line) or line
-                    end
-                end
-            else
-                line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-                line_len = line and #line
-                if line and context > 0 and line_len > 0 then
-                    for i = 1, context, 1 do
-                        local following_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-                        line = (following_line and line .. following_line) or line
-                    end
+            -- Get the content of the next line (if any), appending contextual lines if context > 0
+            line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+            line_len = line and #line
+            -- Since we're on the next line, cursor position no longer matters and we want to make
+            -- sure that `col` is always < left (or > if reverse == true)
+            col = reverse and line_len or -1
+            if line and context > 0 and line_len > 0 then
+                for i = 1, context, 1 do
+                    local following_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
+                    line = (following_line and line .. following_line) or line
                 end
             end
             if line then -- If it's a real line, search it
-                if reverse then
-                    right_, left_ = string.find(line, pattern)
-                    left, right = rev_indices(right_, left_, line)
-                else
-                    left, right = string.find(line, pattern)
-                end
+                left, right = find_patterns(line, pattern, reverse)
             else
                 -- If the line is nil, there is no next line and the loop should stop (unless wrapping is on)
                 if wrap == true then -- If searching backwards & user wants search to wrap, go to last line in file
@@ -280,8 +252,6 @@ local go_to_id = function(id, starting_row)
     end
 end
 
-local M = {}
-
 --[[
 changeHeadingLevel() changes the importance of a heading by adding or removing
 a hash symbol. Fewer hashes = more important.
@@ -316,13 +286,7 @@ argument. If no pattern is passed in, it looks for the default markdown link
 pattern.
 --]]
 M.toNextLink = function(pattern)
-    if link_style == 'wiki' then
-        pattern = pattern or '%[%[[^[]-%]%]'
-    else
-        -- %b special sequence looks for balanced [ and ) and everything in between them (this was a revelation)
-        pattern = pattern or '%b[][%(%[][^%[%(]-[%]%)]'
-    end
-    go_to(pattern)
+    M.goTo(jump_patterns)
 end
 
 --[[
@@ -331,13 +295,7 @@ as an argument. If no pattern is passed in, it looks for the default markdown
 link pattern.
 --]]
 M.toPrevLink = function(pattern)
-    if link_style == 'wiki' then
-        pattern = pattern or '%]%][^]]-%[%['
-    else
-        pattern = pattern or '[%]%)][^%[%(]-[%[%(]%b]['
-    end
-    -- Leave
-    go_to(pattern, true)
+    M.goTo(jump_patterns, true)
 end
 
 --[[

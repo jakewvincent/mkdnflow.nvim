@@ -59,17 +59,6 @@ M.userConfigCheck = function(user_config)
                 user_config.to_do.complete = user_config.to_do.symbols[2]
             end
         end
-        if user_config.to_do.symbols then
-            local symbols = table.concat(user_config.to_do.symbols)
-            if
-                string.len(symbols) > #user_config.to_do.symbols
-                and not utils.moduleAvailable('lua-utf8')
-            then
-                warn(
-                    '⬇️  A to-do symbol is longer than one character or may be a utf8 symbol. To-do functionality may not work as expected. If you wish to use utf8 symbols, install the lua-utf8 luarocks dependency.'
-                )
-            end
-        end
     end
 
     -- Look for default bib path
@@ -215,6 +204,19 @@ M.userConfigCheck = function(user_config)
                 end
             end
             user_config.mappings.MkdnCR = nil
+        end
+
+        --
+        local cmp, _ = pcall(require, 'cmp')
+        if user_config.modules and user_config.modules.cmp and not cmp then
+            vim.notify(
+                "⬇️  cmp module is enabled, but require('cmp') failed.",
+                vim.log.levels.WARN,
+                {
+                    title = "mkdnflow.nvim"
+                }
+            )
+            user_config.cmp = false
         end
     end
     return user_config

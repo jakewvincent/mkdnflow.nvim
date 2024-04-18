@@ -31,7 +31,7 @@ local default_config = {
         paths = true,
         tables = true,
         yaml = false,
-        cmp = true,
+        cmp = false,
     },
     perspective = {
         priority = 'first',
@@ -49,6 +49,9 @@ local default_config = {
         default_path = nil,
         find_in_root = true,
     },
+    cursor = {
+        jump_patterns = nil
+    },
     links = {
         style = 'markdown',
         name_is_source = false,
@@ -61,7 +64,7 @@ local default_config = {
             text = text:lower()
             text = os.date('%Y-%m-%d_') .. text
             return text
-        end,
+        end
     },
     paths = {
         update_link_everywhere = false,
@@ -89,6 +92,12 @@ local default_config = {
         format_on_move = true,
         auto_extend_rows = false,
         auto_extend_cols = false,
+        style = {
+            cell_padding = 1,
+            separator_padding = 1,
+            outer_pipes = true,
+            mimic_alignment = true
+        }
     },
     yaml = {
         bib = { override = false },
@@ -267,6 +276,22 @@ init.setup = function(user_config)
                         vim.api.nvim_set_current_dir(bufname:match('(.*)/.-$'))
                     end
                 end
+            end
+        end
+        if init.config.cursor.jump_patterns == nil then
+            if init.config.links.style == 'markdown' then
+                init.config.cursor.jump_patterns = {
+                    '%b[]%b()',
+                    '<[^<>]->',
+                    '%b[] ?%b[]',
+                    '%[@[^%[%]]-%]'
+                }
+            elseif init.config.links.style == 'wiki' then
+                init.config.cursor.jump_patterns = {
+                    '%[%[[^%[%]]-%]%]',
+                }
+            else
+                init.config.cursor.jump_patterns = {}
             end
         end
         -- Load modules

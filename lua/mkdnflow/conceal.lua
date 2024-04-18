@@ -15,34 +15,98 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local link_style = require('mkdnflow').config.links.style
-vim.wo.conceallevel = 2
 
-if link_style == 'markdown' then
-    vim.api.nvim_exec(
-        [[
-        call matchadd('Conceal', '\[[^[]\{-}\]\zs([^(]\{-})\ze', 0, 14, {'conceal': ''})
-        call matchadd('Conceal', '\zs\[\ze[^[]\{-}\]([^(]\{-})', 0, 15, {'conceal': ''})
-        call matchadd('Conceal', '\[[^[]\{-}\zs\]\ze([^(]\{-})', 0, 16, {'conceal': ''})
-        call matchadd('Conceal', '\[[^[]\{-}\]\zs\%[ ]\[[^[]\{-}\]\ze\%[ ]\v([^(]|$)', 0, 17, {'conceal': ''})
-        call matchadd('Conceal', '\zs\[\ze[^[]\{-}\]\%[ ]\[[^[]\{-}\]\%[ ]\v([^(]|$)', 0, 18, {'conceal': ''})
-        call matchadd('Conceal', '\[[^[]\{-}\zs\]\ze\%[ ]\[[^[]\{-}\]\%[ ]\v([^(]|$)', 0, 19, {'conceal': ''})
-        call matchadd('Conceal', '\[[^[]\{-}\]\zs\%[ ]\[[^[]\{-}\]\ze\n', 0, 20, {'conceal': ''})
-        call matchadd('Conceal', '\zs\[\ze[^[]\{-}\]\%[ ]\[[^[]\{-}\]\n', 0, 21, {'conceal': ''})
-        call matchadd('Conceal', '\[[^[]\{-}\zs\]\ze\%[ ]\[[^[]\{-}\]\n', 0, 22, {'conceal': ''})
-    ]],
-        false
-    )
-elseif link_style == 'wiki' then
-    vim.api.nvim_exec(
-        [[
-        call matchadd('Conceal', '\zs\[\[[^[]\{-}[|]\ze[^[]\{-}\]\]', 0, 14, {'conceal': ''})
-        call matchadd('Conceal', '\[\[[^[\{-}[|][^[]\{-}\zs\]\]\ze', 0, 15, {'conceal': ''})
-        call matchadd('Conceal', '\zs\[\[\ze[^[]\{-}\]\]', 0, 16, {'conceal': ''})
-        call matchadd('Conceal', '\[\[[^[]\{-}\zs\]\]\ze', 0, 17, {'conceal': ''})
-    ]],
-        false
-    )
+local start_link_concealing = function()
+    if link_style == 'markdown' then
+        vim.fn.matchadd('Conceal', '\\[[^[]\\{-}\\]\\zs([^(]\\{-})\\ze', 0, -1, { conceal = '' })
+        vim.fn.matchadd('Conceal', '\\zs\\[\\ze[^[]\\{-}\\]([^(]\\{-})', 0, -1, { conceal = '' })
+        vim.fn.matchadd('Conceal', '\\[[^[]\\{-}\\zs\\]\\ze([^(]\\{-})', 0, -1, { conceal = '' })
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[[^[]\\{-}\\]\\zs\\%[ ]\\[[^[]\\{-}\\]\\ze\\%[ ]\\v([^(]|$)',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\zs\\[\\ze[^[]\\{-}\\]\\%[ ]\\[[^[]\\{-}\\]\\%[ ]\\v([^(]|$)',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[[^[]\\{-}\\zs\\]\\ze\\%[ ]\\[[^[]\\{-}\\]\\%[ ]\\v([^(]|$)',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[[^[]\\{-}\\]\\zs\\%[ ]\\[[^[]\\{-}\\]\\ze\\n',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\zs\\[\\ze[^[]\\{-}\\]\\%[ ]\\[[^[]\\{-}\\]\\n',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[[^[]\\{-}\\zs\\]\\ze\\%[ ]\\[[^[]\\{-}\\]\\n',
+            0,
+            -1,
+            { conceal = '' }
+        )
+    elseif link_style == 'wiki' then
+        vim.fn.matchadd(
+            'Conceal',
+            '\\zs\\[\\[[^[]\\{-}[|]\\ze[^[]\\{-}\\]\\]',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd(
+            'Conceal',
+            '\\[\\[[^[\\{-}[|][^[]\\{-}\\zs\\]\\]\\ze',
+            0,
+            -1,
+            { conceal = '' }
+        )
+        vim.fn.matchadd('Conceal', '\\zs\\[\\[\\ze[^[]\\{-}\\]\\]', 0, -1, { conceal = '' })
+        vim.fn.matchadd('Conceal', '\\[\\[[^[]\\{-}\\zs\\]\\]\\ze', 0, -1, { conceal = '' })
+    end
+
+    -- Set conceal level
+    vim.wo.conceallevel = 2
+
+    -- Don't change the highlighting of concealed characters
+    vim.api.nvim_exec([[highlight Conceal ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE]], false)
 end
 
--- Don't change the highlighting of concealed characters
-vim.api.nvim_exec([[highlight Conceal ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE]], false)
+-- Set up autocommands to trigger the link concealing setup in Markdown files
+local conceal_augroup = vim.api.nvim_create_augroup('MkdnflowLinkConcealing', { clear = true })
+
+local ft_patterns = function()
+    -- Create ft pattern
+    local filetypes = require('mkdnflow').config.filetypes
+    local ft_pattern = ''
+
+    for ext, _ in pairs(filetypes) do
+        ft_pattern = ft_pattern .. '*.' .. ext .. ','
+    end
+    return ft_pattern
+end
+
+vim.api.nvim_create_autocmd({ 'FileType', 'BufRead', 'BufEnter' }, {
+    pattern = ft_patterns(),
+    callback = function()
+        start_link_concealing()
+    end,
+    group = conceal_augroup,
+})

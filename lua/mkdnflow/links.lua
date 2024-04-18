@@ -18,11 +18,6 @@
 local config = require('mkdnflow').config
 local links = config.links
 local utils = require('mkdnflow').utils
-if utils.moduleAvailable('lua-utf8') then
-    utf8 = require('lua-utf8')
-else
-    utf8 = string
-end
 
 -- Table for global functions
 local M = {}
@@ -67,7 +62,7 @@ M.getLinkUnderCursor = function(col)
             start_row, start_col, end_row, end_col, capture, match_lines =
                 utils.mFind(lines, pattern, row - links.context, init_row, init_col)
             if start_row and link_type == 'citation' then
-                local possessor = utf8.gsub(capture, "'s$", '') -- Remove Saxon genitive if it's on the end of the citekey
+                local possessor = string.gsub(capture, "'s$", '') -- Remove Saxon genitive if it's on the end of the citekey
                 if #capture > #possessor then
                     capture = possessor
                     end_col = end_col - 2
@@ -103,11 +98,11 @@ local get_ref = function(refnr, start_row)
     -- Look for reference
     while continue and row <= line_count do
         local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-        local start, finish, match = utf8.find(line, '^(%[' .. refnr .. '%]: .*)')
+        local start, finish, match = string.find(line, '^(%[' .. refnr .. '%]: .*)')
         if match then
-            local _, label_finish = utf8.find(match, '^%[.-%]: ')
+            local _, label_finish = string.find(match, '^%[.-%]: ')
             continue = false
-            return utf8.sub(match, label_finish + 1), row, label_finish + 1, finish
+            return string.sub(match, label_finish + 1), row, label_finish + 1, finish
         else
             row = row + 1
         end
@@ -134,7 +129,7 @@ M.getLinkPart = function(link_table, part)
                 citation = '(@.*)',
             },
             source = {
-                md_link = '%]%((.-)%)', -- 3 thru length of match
+                md_link = { '%](%b())', '%((.*)%)' }, -- 3 thru length of match
                 wiki_link = '%[%[(.-)|.-%]%]', -- 3 thru length of match
                 wiki_link_no_bar = '%[%[(.-)%]%]', -- 3 thru length of match
                 ref_style_link = '%]%[(.*)%]', -- 3 or 4 thru length of match
@@ -159,9 +154,9 @@ M.getLinkPart = function(link_table, part)
                             utils.mFind(match_lines, '%(<(.*)>%)', part_start_row)
                     end
                     -- Make part start and finish relative to line start, not link start
-                    local anchor_start, _, anchor = utf8.find(match, '(#.*)')
+                    local anchor_start, _, anchor = string.find(match, '(#.*)')
                     if anchor_start then
-                        match = utf8.sub(match, 1, anchor_start - 1)
+                        match = string.sub(match, 1, anchor_start - 1)
                     else
                         anchor = ''
                     end
@@ -187,9 +182,9 @@ M.getLinkPart = function(link_table, part)
                                 utils.mFind(match_lines, '%[<(.*)>|', part_start_row)
                         end
                         -- Make part start and finish relative to line start, not link start
-                        local anchor_start, _, anchor = utf8.find(match, '(#.*)')
+                        local anchor_start, _, anchor = string.find(match, '(#.*)')
                         if anchor_start then
-                            match = utf8.sub(match, 1, anchor_start - 1)
+                            match = string.sub(match, 1, anchor_start - 1)
                         else
                             anchor = ''
                         end
@@ -202,7 +197,7 @@ M.getLinkPart = function(link_table, part)
                     else
                         return match, '', part_start_row, part_start_col, part_end_row, part_end_col
                     end
-                elseif part_ == 'name' and utf8.match(match, '#') then -- If there was no match, we have a link w/ no bar; check for an anchor first
+                elseif match and part_ == 'name' and string.match(match, '#') then -- If there was no match, we have a link w/ no bar; check for an anchor first
                     part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines =
                         utils.mFind(
                             match_lines,
@@ -228,9 +223,9 @@ M.getLinkPart = function(link_table, part)
                                 utils.mFind(match_lines, '%[<(.*)>]', part_start_row)
                         end
                         -- Make part start and finish relative to line start, not link start
-                        local anchor_start, _, anchor = utf8.find(match, '(#.*)')
+                        local anchor_start, _, anchor = string.find(match, '(#.*)')
                         if anchor_start then
-                            match = utf8.sub(match, 1, anchor_start - 1)
+                            match = string.sub(match, 1, anchor_start - 1)
                         else
                             anchor = ''
                         end
@@ -251,13 +246,14 @@ M.getLinkPart = function(link_table, part)
                 if part_ == 'source' then
                     local source, source_row, source_start, _ = get_ref(match, part_start_row)
                     if source then -- If a source was found, extract the relevant information from the source line
-                        local title = utf8.match(source, '.* (["\'%(%[].*["\'%)%]])') -- Check for a title on the source line
+                        local title = string.match(source, '.* (["\'%(%[].*["\'%)%]])') -- Check for a title on the source line
                         if title then
                             local start, ref_source
                             -- Check first for sources surrounded by < ... >
-                            start, _, ref_source = utf8.find(source, '^<(.*)> ["\'%(%[].*["\'%)%]]')
+                            start, _, ref_source =
+                                string.find(source, '^<(.*)> ["\'%(%[].*["\'%)%]]')
                             if not start then
-                                start, _, source = utf8.find(source, '^(.*) ["\'%(%[].*["\'%)%]]')
+                                start, _, source = string.find(source, '^(.*) ["\'%(%[].*["\'%)%]]')
                             else
                                 start = start + 1 -- Add 1 if the source is surrounded by < ... >
                                 source = ref_source
@@ -267,9 +263,9 @@ M.getLinkPart = function(link_table, part)
                         else
                             local start, ref_source
                             -- Check first for sources surrounded by < ... >
-                            start, _, ref_source = utf8.find(source, '^<(.*)>')
+                            start, _, ref_source = string.find(source, '^<(.*)>')
                             if not start then
-                                start, _, source = utf8.find(source, '^(.-)%s*$')
+                                start, _, source = string.find(source, '^(.-)%s*$')
                             else
                                 start = start + 1
                                 source = ref_source
@@ -278,9 +274,9 @@ M.getLinkPart = function(link_table, part)
                             part_end_col = part_start_col + #source - 1
                         end
                         -- Check for an anchor
-                        local anchor_start, _, anchor = utf8.find(source, '(#.*)')
+                        local anchor_start, _, anchor = string.find(source, '(#.*)')
                         if anchor_start then
-                            source = utf8.sub(source, 1, anchor_start - 1)
+                            source = string.sub(source, 1, anchor_start - 1)
                             --return source, anchor, part_start, part_finish, source_row
                             return source,
                                 anchor,
@@ -300,9 +296,9 @@ M.getLinkPart = function(link_table, part)
                 local part_start_row, part_start_col, part_end_row, part_end_col, match, rematch_lines =
                     utils.mFind(match_lines, patterns[part_]['auto_link'], start_row)
                 if part_ == 'source' then
-                    local anchor_start, _, anchor = utf8.find(match, '(#.*)')
+                    local anchor_start, _, anchor = string.find(match, '(#.*)')
                     if anchor_start then
-                        match = utf8.sub(match, 1, anchor_start - 1)
+                        match = string.sub(match, 1, anchor_start - 1)
                     else
                         anchor = ''
                     end
@@ -311,7 +307,7 @@ M.getLinkPart = function(link_table, part)
             end,
             citation = function(part_)
                 local part_start_col, part_end_col, match =
-                    utf8.find(text, patterns[part_]['citation'])
+                    string.find(text, patterns[part_]['citation'])
                 return match, '', start_row, part_start_col, end_row, part_end_col
             end,
         }
@@ -339,7 +335,7 @@ M.getBracketedSpanPart = function(part)
     -- definition here, then call the function twice
     while continue do
         -- Get the indices of any match on the current line
-        local first, last = utf8.find(line[1], bracketed_span_pattern, prev_last)
+        local first, last = string.find(line[1], bracketed_span_pattern, prev_last)
         -- Check if there's a match that begins after the last from the previous
         -- iteration of the loop
         if first and last then
@@ -365,14 +361,14 @@ M.getBracketedSpanPart = function(part)
         -- and return it
         if part == 'text' then
             local text_pattern = '(%b[])%b{}'
-            local span = utf8.sub(line[1], indices['first'], indices['last'])
-            local text = utf8.sub(utf8.match(span, text_pattern), 2, -2)
+            local span = string.sub(line[1], indices['first'], indices['last'])
+            local text = string.sub(string.match(span, text_pattern), 2, -2)
             -- Return the text and the indices of the bracketed span
             return text, indices['first'], indices['last'], row
         elseif part == 'attr' then
             local attr_pattern = '%b[](%b{})'
-            local attr = utf8.sub(
-                utf8.match(utf8.sub(line[1], indices['first'], indices['last']), attr_pattern),
+            local attr = string.sub(
+                string.match(string.sub(line[1], indices['first'], indices['last']), attr_pattern),
                 2,
                 -2
             )
@@ -699,7 +695,7 @@ M.hasUrl = function(string, to_return, col)
     -- For each group in the match, do some stuff
     local first, last
     for pos_start, url, prot, subd, tld, colon, port, slash, path, pos_end in
-        utf8.gmatch(
+        string.gmatch(
             string,
             '()(([%w_.~!*:@&+$/?%%#-]-)(%w[-.%w]*%.)(%w+)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))()'
         )
@@ -726,7 +722,10 @@ M.hasUrl = function(string, to_return, col)
     end
     -- TODO: add comment
     for pos_start, url, prot, dom, colon, port, slash, path, pos_end in
-        utf8.gmatch(string, '()((%f[%w]%a+://)(%w[-.%w]*)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))()')
+        string.gmatch(
+            string,
+            '()((%f[%w]%a+://)(%w[-.%w]*)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))()'
+        )
     do
         if
             not finished[pos_start]
@@ -776,13 +775,13 @@ Returns a string:
 M.formatLink = function(text, source, part)
     local replacement, path_text
     -- If the text starts with a hash, format the link as an anchor link
-    if utf8.sub(text, 0, 1) == '#' and not source then
-        path_text = utf8.gsub(text, '[^%a%s%d%-_]', '')
-        text = utf8.gsub(text, '^#* *', '')
-        path_text = utf8.gsub(path_text, '^ ', '')
-        path_text = utf8.gsub(path_text, ' ', '-')
-        path_text = utf8.gsub(path_text, '%-%-', '-')
-        path_text = '#' .. utf8.lower(path_text)
+    if string.sub(text, 0, 1) == '#' and not source then
+        path_text = string.gsub(text, '[^%a%s%d%-_]', '')
+        text = string.gsub(text, '^#* *', '')
+        path_text = string.gsub(path_text, '^ ', '')
+        path_text = string.gsub(path_text, ' ', '-')
+        path_text = string.gsub(path_text, '%-%-', '-')
+        path_text = '#' .. string.lower(path_text)
     elseif not source then
         path_text = M.transformPath(text)
         -- If no path_text, end here
@@ -861,13 +860,13 @@ M.createLink = function(args)
                 return
             end
             -- Find the (first) position of the matched word in the line
-            local left, right = utf8.find(line, cursor_word, nil, true)
+            local left, right = string.find(line, cursor_word, nil, true)
             -- Make sure it's not a duplicate of the word under the cursor, and if it
             -- is, perform the search until a match is found whose right edge follows
             -- the cursor position
             if cursor_word ~= '' then
                 while right < col do
-                    left, right = utf8.find(line, cursor_word, right, true)
+                    left, right = string.find(line, cursor_word, right, true)
                 end
             else
                 left, right = col + 1, col
@@ -882,16 +881,12 @@ M.createLink = function(args)
         local vis = vim.fn.getpos('v')
         -- If the start of the visual selection is after the cursor position,
         -- use the cursor position as start and the visual position as finish
-        local inverted
-        if range then
-            inverted = false
-        else
-            inverted = vis[3] > col
-        end
+        local inverted = range and false or vis[3] > col
         local start, finish
         if range then
-            start = vim.api.nvim_buf_get_mark(0, "<")
-            finish = vim.api.nvim_buf_get_mark(0, ">")
+            start = vim.api.nvim_buf_get_mark(0, '<')
+            finish = vim.api.nvim_buf_get_mark(0, '>')
+            -- Update char offsets
             start[1] = start[1] - 1
             finish[1] = finish[1] - 1
         else
@@ -904,31 +899,55 @@ M.createLink = function(args)
         -- If inverted, use the col value from the visual selection; otherwise, use the col value
         -- from start.
         local end_col = (inverted and vis[3]) or finish[2] + 1
-        local region =
-            vim.region(0, start, finish, vim.fn.visualmode(), (vim.o.selection ~= 'exclusive'))
-        local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
-        lines[1] = lines[1]:sub(region[start[1]][1] + 1, region[start[1]][2])
-        if start[1] ~= finish[1] then
-            lines[#lines] = lines[#lines]:sub(region[finish[1]][1] + 1, region[finish[1]][2])
-        end
-        -- Save the text selection & replace spaces with dashes
-        local text = table.concat(lines)
-        local replacement
-        if from_clipboard then
-            replacement = M.formatLink(text, vim.fn.getreg('+'))
+        -- Make sure the selection is on a single line; otherwise, do nothing & throw a warning
+        if start_row == end_row then
+            local lines = vim.api.nvim_buf_get_lines(0, start[1], finish[1] + 1, false)
+
+            -- Check if last byte is part of a multibyte character & adjust end index if so
+            local is_multibyte_char =
+                utils.isMultibyteChar({ buffer = 0, row = finish[1], start_col = end_col })
+            if is_multibyte_char then
+                end_col = is_multibyte_char['finish']
+            end
+
+            -- Reduce the text only to the visual selection
+            lines[1] = lines[1]:sub(start_col + 1, end_col)
+
+            -- If start and end are on different rows, reduce the text on the last line to the visual
+            -- selection as well
+            if start[1] ~= finish[1] then
+                lines[#lines] = lines[#lines]:sub(start_col + 1, end_col)
+            end
+            -- Save the text selection & format as a link
+            local text = table.concat(lines)
+            local replacement = from_clipboard and M.formatLink(text, vim.fn.getreg('+'))
+                or M.formatLink(text)
+            -- If no replacement, end here
+            if not replacement then
+                return
+            end
+            -- Replace the visual selection w/ the formatted link replacement
+            vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, replacement)
+            -- Leave visual mode
+            vim.api.nvim_feedkeys(
+                vim.api.nvim_replace_termcodes('<esc>', true, false, true),
+                'x',
+                true
+            )
+            -- Retain original cursor position
+            vim.api.nvim_win_set_cursor(0, { row, col + 1 })
         else
-            replacement = M.formatLink(text)
+            vim.api.nvim_echo(
+                {
+                    {
+                        '⬇️  Creating links from multi-line visual selection not supported',
+                        'WarningMsg',
+                    },
+                },
+                true,
+                {}
+            )
         end
-        -- If no replacement, end here
-        if not replacement then
-            return
-        end
-        -- Replace the visual selection w/ the formatted link replacement
-        vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, replacement)
-        -- Leave visual mode
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<esc>', true, false, true), 'x', true)
-        -- Retain original cursor position
-        vim.api.nvim_win_set_cursor(0, { row, col + 1 })
     end
 end
 
@@ -981,7 +1000,7 @@ M.followLink = function(args)
             {}
         )
     else
-        M.createLink({range = range})
+        M.createLink({ range = range })
     end
 end
 
