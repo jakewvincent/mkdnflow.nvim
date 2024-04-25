@@ -536,7 +536,9 @@ M.updateNumbering = function(opts, offset)
         row = row + offset
         local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
         local li_type, indentation = M.hasListType(line)
-        update_numbering(row, indentation, li_type, true, start)
+        if li_type ~= nil then
+            update_numbering(row, indentation, li_type, true, start)
+        end
     end
 end
 
