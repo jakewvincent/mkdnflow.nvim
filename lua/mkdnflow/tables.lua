@@ -334,10 +334,10 @@ local which_cell = function(row, col)
     -- Figure out which cell the cursor is currently in
     local cursorline = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     cursorline = cursorline:gsub('\\|', '##')
-    local init, cell, cursor_cell = 1, 1, 0
+    local init, cell, cursor_cell = 1, 1, nil
     for start, finish in utils.betterGmatch(cursorline, '[^|]+') do
         -- Find the indices of the match
-        if col + 1 >= start and col + 1 <= finish then
+        if col + 1 >= start and col <= finish then
             cursor_cell = cell
         end
         init = finish or init
@@ -508,10 +508,10 @@ M.addCol = function(offset)
                 new_cell = '|' .. new_cell
             end
             local _, finish, match
-            if pattern == "" then
-                finish, match = 0, ""
+            if pattern == '' then
+                finish, match = 0, ''
             else
-                _, finish, match = row_text:find("(" .. pattern .. ")")
+                _, finish, match = row_text:find('(' .. pattern .. ')')
             end
             -- Insert the new cell in the current row
             local replacement = match .. new_cell .. row_text:sub(finish + 1)
