@@ -64,7 +64,8 @@ local default_config = {
             text = text:lower()
             text = os.date('%Y-%m-%d_') .. text
             return text
-        end
+        end,
+        create_on_follow_failure = true
     },
     new_file_template = {
         use_template = false,

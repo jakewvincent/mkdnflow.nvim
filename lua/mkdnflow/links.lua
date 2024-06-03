@@ -999,7 +999,7 @@ M.followLink = function(args)
             true,
             {}
         )
-    else
+    elseif links.create_on_follow_failure then
         M.createLink({ range = range })
     end
 end
