@@ -144,16 +144,21 @@ local go_to_heading = function(anchor_text, reverse)
     -- Record which line we're on; chances are the link goes to something later,
     -- so we'll start looking from here onwards and then circle back to the beginning
     local position = vim.api.nvim_win_get_cursor(0)
-    local starting_row, continue = position[1], true
+    local starting_row, continue, in_fenced_code_block = position[1], true, false
     local row = (reverse and starting_row - 1) or starting_row + 1
     while continue do
         local line = (reverse and vim.api.nvim_buf_get_lines(0, row - 1, row, false))
             or vim.api.nvim_buf_get_lines(0, row - 1, row, false)
         -- If the line has contents, do the thing
         if line[1] then
+            -- Are we in a code block?
+            if string.find(line[1], "^```") then
+                -- Flip the truth value
+                in_fenced_code_block = not in_fenced_code_block
+            end
             -- Does the line start with a hash?
             local has_heading = string.find(line[1], '^#')
-            if has_heading then
+            if has_heading and not in_fenced_code_block then
                 if anchor_text == nil then
                     -- Send the cursor to the heading
                     vim.api.nvim_win_set_cursor(0, { row, 0 })
@@ -191,6 +196,7 @@ local go_to_heading = function(anchor_text, reverse)
             -- If the line does not have contents, start searching from the beginning
             if anchor_text ~= nil or wrap == true then
                 row = (reverse and vim.api.nvim_buf_line_count(0)) or 1
+                in_fenced_code_block = false
             else
                 continue = nil
                 local place = (reverse and 'beginning') or 'end'
