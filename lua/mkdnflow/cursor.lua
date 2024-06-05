@@ -82,12 +82,7 @@ M.goTo = function(pattern, reverse)
     left, right = find_patterns(line, pattern, reverse, col)
     -- As long as a match hasn't been found, keep looking as long as possible!
     local continue = true
-    local iters = 0
-    while continue and iters < 1000 do
-        iters = iters + 1
-        if iters == 1000 then
-            vim.print('Terminated loop at 1000')
-        end
+    while continue do
         -- See if there's a match on the current line.
         if left and right then
             -- If there is, see if the cursor is before the match (or after if rev = true)
