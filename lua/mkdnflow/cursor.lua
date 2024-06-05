@@ -144,7 +144,8 @@ local go_to_heading = function(anchor_text, reverse)
     -- Record which line we're on; chances are the link goes to something later,
     -- so we'll start looking from here onwards and then circle back to the beginning
     local position = vim.api.nvim_win_get_cursor(0)
-    local starting_row, continue, in_fenced_code_block = position[1], true, false
+    local starting_row, continue = position[1], true
+    local in_fenced_code_block = utils.cursorInCodeBlock(starting_row, reverse)
     local row = (reverse and starting_row - 1) or starting_row + 1
     while continue do
         local line = (reverse and vim.api.nvim_buf_get_lines(0, row - 1, row, false))
