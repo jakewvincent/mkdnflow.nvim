@@ -428,6 +428,7 @@ require('mkdnflow').setup({
     },
     filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,             
+    edit_dirs = false,
     perspective = {
         priority = 'first',
         fallback = 'current',
@@ -552,6 +553,11 @@ require('mkdnflow').setup({
 #### `create_dirs` (boolean)
 * `true` (default): Directories referenced in a link will be (recursively) created if they do not exist
 * `false` No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
+
+#### `edit_dirs` (boolean)
+* `false` (default): When following a link that points to a directory, prompt the user to pick a file within that directory.
+* `true`: Call `:edit <directory>` when following a link that points to a directory.
+* `function(path)`: Call the supplied callback function when following a link that points to a directory.
 
 #### `perspective` (dictionary-like table)
 * `perspective.priority` (string): Specifies the priority perspective to take when interpreting link paths
