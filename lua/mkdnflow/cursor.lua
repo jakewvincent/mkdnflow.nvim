@@ -153,7 +153,7 @@ local go_to_heading = function(anchor_text, reverse)
         -- If the line has contents, do the thing
         if line[1] then
             -- Are we in a code block?
-            if string.find(line[1], "^```") then
+            if string.find(line[1], '^```') then
                 -- Flip the truth value
                 in_fenced_code_block = not in_fenced_code_block
             end

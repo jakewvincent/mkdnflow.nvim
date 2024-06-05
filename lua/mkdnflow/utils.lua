@@ -283,10 +283,11 @@ M.cursorInCodeBlock = function(cursor_row, reverse)
     else
         reverse = true
     end
-    local lines = reverse and vim.api.nvim_buf_get_lines(0, cursor_row - 1, -1, false) or vim.api.nvim_buf_get_lines(0, 0, cursor_row, false)
+    local lines = reverse and vim.api.nvim_buf_get_lines(0, cursor_row - 1, -1, false)
+        or vim.api.nvim_buf_get_lines(0, 0, cursor_row, false)
     local fences = 0
     for _, line_text in ipairs(lines) do
-        local _, count = string.gsub(line_text, "^```", "```")
+        local _, count = string.gsub(line_text, '^```', '```')
         fences = fences + count
     end
     if fences % 2 == 0 then

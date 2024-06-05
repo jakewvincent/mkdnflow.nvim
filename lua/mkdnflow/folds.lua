@@ -37,11 +37,13 @@ local get_section_range = function(start_row)
         while continue do
             local next_line = vim.api.nvim_buf_get_lines(0, end_row - 1, end_row, false)
             if next_line[1] then
-                if string.find(next_line[1], "^```") then
+                if string.find(next_line[1], '^```') then
                     -- Flip the truth value
                     in_fenced_code_block = not in_fenced_code_block
                 end
-                if M.getHeadingLevel(next_line[1]) <= heading_level and not in_fenced_code_block then
+                if
+                    M.getHeadingLevel(next_line[1]) <= heading_level and not in_fenced_code_block
+                then
                     continue = false
                 else
                     end_row = end_row + 1
@@ -61,7 +63,7 @@ local get_nearest_heading = function()
     local continue, in_fenced_code_block = true, utils.cursorInCodeBlock(row)
     while continue and row > 0 do
         local prev_line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-        if string.find(prev_line, "^```") then
+        if string.find(prev_line, '^```') then
             -- Flip the truth value
             in_fenced_code_block = not in_fenced_code_block
         end
