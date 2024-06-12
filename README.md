@@ -427,14 +427,14 @@ require('mkdnflow').setup({
         cmp = false
     },
     filetypes = {md = true, rmd = true, markdown = true},
-    create_dirs = true,             
+    create_dirs = true,
     perspective = {
         priority = 'first',
         fallback = 'current',
         root_tell = false,
         nvim_wd_heel = false,
         update = false
-    },    
+    },
     wrap = false,
     bib = {
         default_path = nil,
