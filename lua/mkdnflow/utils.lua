@@ -262,19 +262,38 @@ M.betterGmatch = function(text, pattern, start)
     start = start ~= nil and start or 1
     return function()
         if not text then
-            return nil  -- Handle nil text gracefully
+            return nil -- Handle nil text gracefully
         end
         while start <= #text do
             local match_start, match_end, match = string.find(text, pattern, start)
             if match_start then
-                start = match_end + 1  -- Update the start for the next search
+                start = match_end + 1 -- Update the start for the next search
                 return match_start, match_end, match
             else
-                break  -- No more matches, exit loop
+                break -- No more matches, exit loop
             end
         end
-        return nil  -- Explicitly return nil when no more data to iterate
+        return nil -- Explicitly return nil when no more data to iterate
     end
+end
+
+M.cursorInCodeBlock = function(cursor_row, reverse)
+    if reverse == nil or reverse == false then
+        reverse = false
+    else
+        reverse = true
+    end
+    local lines = reverse and vim.api.nvim_buf_get_lines(0, cursor_row - 1, -1, false)
+        or vim.api.nvim_buf_get_lines(0, 0, cursor_row, false)
+    local fences = 0
+    for _, line_text in ipairs(lines) do
+        local _, count = string.gsub(line_text, '^```', '```')
+        fences = fences + count
+    end
+    if fences % 2 == 0 then
+        return false
+    end
+    return true
 end
 
 return M

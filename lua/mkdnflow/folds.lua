@@ -15,6 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local M = {}
+local utils = require('mkdnflow').utils
 
 M.getHeadingLevel = function(line)
     local level
@@ -31,12 +32,18 @@ local get_section_range = function(start_row)
         vim.api.nvim_buf_line_count(0)
     local heading_level = M.getHeadingLevel(line)
     if heading_level > 0 then
-        local continue = true
+        local continue, in_fenced_code_block = true, utils.cursorInCodeBlock(start_row)
         local end_row = start_row + 1
         while continue do
             local next_line = vim.api.nvim_buf_get_lines(0, end_row - 1, end_row, false)
             if next_line[1] then
-                if M.getHeadingLevel(next_line[1]) <= heading_level then
+                if string.find(next_line[1], '^```') then
+                    -- Flip the truth value
+                    in_fenced_code_block = not in_fenced_code_block
+                end
+                if
+                    M.getHeadingLevel(next_line[1]) <= heading_level and not in_fenced_code_block
+                then
                     continue = false
                 else
                     end_row = end_row + 1
@@ -53,10 +60,14 @@ end
 
 local get_nearest_heading = function()
     local row = vim.api.nvim_win_get_cursor(0)[1] - 1
-    local continue = true
+    local continue, in_fenced_code_block = true, utils.cursorInCodeBlock(row)
     while continue and row > 0 do
         local prev_line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-        if M.getHeadingLevel(prev_line) < 99 then
+        if string.find(prev_line, '^```') then
+            -- Flip the truth value
+            in_fenced_code_block = not in_fenced_code_block
+        end
+        if M.getHeadingLevel(prev_line) < 99 and not in_fenced_code_block then
             continue = false
             return row
         else
@@ -66,8 +77,9 @@ local get_nearest_heading = function()
 end
 
 M.foldSection = function()
-    local line = vim.api.nvim_get_current_line()
-    if M.getHeadingLevel(line) < 99 then
+    local row, line = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_get_current_line()
+    local in_fenced_code_block = utils.cursorInCodeBlock(row)
+    if M.getHeadingLevel(line) < 99 and not in_fenced_code_block then
         local range = get_section_range()
         if range then
             vim.cmd(tostring(range[1]) .. ',' .. tostring(range[2]) .. 'fold')

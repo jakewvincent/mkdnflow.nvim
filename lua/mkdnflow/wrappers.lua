@@ -15,6 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 local config = require('mkdnflow').config
 local lists = require('mkdnflow').lists
+local utils = require('mkdnflow').utils
 local vim_indent
 if vim.api.nvim_buf_get_option(0, 'expandtab') == true then
     vim_indent = string.rep(' ', vim.api.nvim_buf_get_option(0, 'shiftwidth'))
@@ -72,20 +73,22 @@ M.followOrCreateLinksOrToggleFolds = function(args)
     local mode = args.mode or vim.api.nvim_get_mode()['mode']
     local range = args.range or false
     if config.modules.links and (mode == 'v' or range) then
-        require('mkdnflow').links.followLink({range = range})
+        require('mkdnflow').links.followLink({ range = range })
     else
         local row, line = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_get_current_line()
-        local on_fold = vim.fn.foldclosed(tostring(row)) ~= -1
+        local on_fold, in_fenced_code_block =
+            vim.fn.foldclosed(tostring(row)) ~= -1, utils.cursorInCodeBlock(row)
         if
             config.modules.folds
             and not on_fold
+            and not in_fenced_code_block
             and require('mkdnflow').folds.getHeadingLevel(line) < 99
         then
             require('mkdnflow').folds.foldSection()
         elseif config.modules.folds and on_fold then
             require('mkdnflow').folds.unfoldSection(row)
         elseif config.modules.links then
-            require('mkdnflow').links.followLink({range = range})
+            require('mkdnflow').links.followLink({ range = range })
         end
     end
 end
@@ -95,7 +98,7 @@ M.multiFuncEnter = function(args)
     local mode = vim.api.nvim_get_mode()['mode']
     local range = args.range or false
     if mode == 'n' or mode == 'v' then
-        M.followOrCreateLinksOrToggleFolds({mode = mode, range = range})
+        M.followOrCreateLinksOrToggleFolds({ mode = mode, range = range })
     elseif mode == 'i' then
         M.newListItemOrNextTableRow()
     end

@@ -427,14 +427,14 @@ require('mkdnflow').setup({
         cmp = false
     },
     filetypes = {md = true, rmd = true, markdown = true},
-    create_dirs = true,             
+    create_dirs = true,
     perspective = {
         priority = 'first',
         fallback = 'current',
         root_tell = false,
         nvim_wd_heel = false,
         update = false
-    },    
+    },
     wrap = false,
     bib = {
         default_path = nil,
@@ -456,7 +456,8 @@ require('mkdnflow').setup({
             text = text:lower()
             text = os.date('%Y-%m-%d_')..text
             return(text)
-        end
+        end,
+        create_on_follow_failure = true
     },
     new_file_template = {
         use_template = false,
@@ -631,6 +632,10 @@ function(input)
     end
 end
 ```
+
+* 🆕 `links.create_on_follow_failure` (boolean): Whether a link should be created if there is no link to follow under the cursor.
+    * `true` (default): Create a link if there's no link to follow
+    * `false`: Do not create a link if there's no link to follow
 
 #### `new_file_template` (dictionary-like table)
 * `new_file_template.use_template` (boolean)
