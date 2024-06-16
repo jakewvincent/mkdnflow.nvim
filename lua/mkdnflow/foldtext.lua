@@ -228,7 +228,8 @@ M.fold_text = function()
     local gutter_width = ffi.C.win_col_off(ffi.C.curwin)
     local visible_win_width = vim.api.nvim_win_get_width(0) - gutter_width
     -- Gather characters to use (from config)
-    local le, re, li, ri, mi =
+    local sep, le, re, li, ri, mi =
+        config.foldtext.fill_chars.separator,
         config.foldtext.fill_chars.left_edge,
         config.foldtext.fill_chars.right_edge,
         config.foldtext.fill_chars.left_inside,
@@ -245,7 +246,7 @@ M.fold_text = function()
             content_info = content_info
                 .. _object_icons[obj]
                 .. tostring(count)
-                .. (current < table_size and config.foldtext.fill_chars.separator or '')
+                .. (current < table_size and sep or '')
         end
         current = current + 1
     end
