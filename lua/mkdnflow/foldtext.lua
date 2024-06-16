@@ -245,7 +245,7 @@ M.fold_text = function()
             content_info = content_info
                 .. _object_icons[obj]
                 .. tostring(count)
-                .. (current < table_size and config.foldtext.separator or '')
+                .. (current < table_size and config.foldtext.fill_chars.separator or '')
         end
         current = current + 1
     end
