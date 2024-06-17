@@ -188,7 +188,8 @@ local object_icons = {
         todo = ' ',
         img = ' ',
         fncblk = ' ',
-        sec = '§',
+        sec = '󰚟',
+        par = '󰛘',
         link = ' ',
     },
     plain = {
@@ -198,7 +199,8 @@ local object_icons = {
         todo = '☑ ',
         img = '⧉ ',
         fncblk = '‵',
-        sec = '§ ',
+        sec = '§',
+        par = '¶',
         link = '⇔ ',
     },
     emoji = {
@@ -209,6 +211,7 @@ local object_icons = {
         img = '🖼️ ',
         fncblk = '🖥️ ',
         sec = '🏷️ ',
+        par = '📃',
         link = '🔗 ',
     },
 }
