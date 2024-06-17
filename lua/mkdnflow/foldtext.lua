@@ -245,31 +245,42 @@ M.fold_text = function()
     local fold_text = le .. mi .. mi .. ri .. _title_transformer(start_line[1])
 
     -- Add in counts of the object types found
-    local current, table_size = 1, #vim.tbl_keys(object_counts)
-    local content_info = ''
-    for obj, count in vim.spairs(object_counts) do
-        if _object_icons[obj] and count ~= nil then
-            content_info = content_info
-                .. _object_icons[obj]
-                .. tostring(count)
-                .. (current < table_size and sep or '')
+    local table_size = #vim.tbl_keys(object_counts)
+    local content_info = {
+        left = {},
+        right = {},
+    }
+    if config.foldtext.object_count == true then
+        for obj, count in vim.spairs(object_counts) do
+            if _object_icons[obj] and count ~= nil then
+                table.insert(content_info.left, _object_icons[obj] .. tostring(count))
+            end
         end
-        current = current + 1
     end
-    -- Add line count to content
-    content_info = content_info
-        .. (content_info ~= '' and li .. mi .. ri or '')
-        .. tostring(line_count)
-        .. (line_count == 1 and ' line' or ' lines')
+    -- Add line count
+    if config.foldtext.line_count == true then
+        table.insert(
+            content_info.right,
+            tostring(line_count) .. (line_count == 1 and ' line' or 'lines')
+        )
+    end
+    -- Stringify content info
+    local content_strs = {}
+    for _, key in ipairs({'left', 'right'}) do
+        if not vim.tbl_isempty(content_info[key]) then
+            table.insert(content_strs, table.concat(content_info[key], isep))
+        end
+    end
+    local content_str = table.concat(content_strs, ssep)
     -- Figure out how many fill chars are needed
-    local fill_count = visible_win_width - vim.api.nvim_strwidth(fold_text .. content_info)
+    local fill_count = visible_win_width - vim.api.nvim_strwidth(fold_text .. content_str)
     -- Create the final string
     fold_text = fold_text
         .. li
         .. string.rep(mi, fill_count - 7)
-        .. (content_info ~= '' and ri or mi)
-        .. content_info
-        .. (content_info ~= '' and li .. mi .. mi .. re or mi .. mi .. mi .. re)
+        .. (content_str ~= '' and ri or mi)
+        .. content_str
+        .. (content_str ~= '' and li .. mi .. mi .. re or mi .. mi .. mi .. re)
     return fold_text
 end
 
