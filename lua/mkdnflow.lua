@@ -48,7 +48,9 @@ local default_config = {
     },
     foldtext = {
         object_count = true,
-        object_count_icons = 'emoji',
+        object_count_icons = function()
+            return require('mkdnflow').foldtext.object_icons.emoji
+        end,
         line_count = true,
         title_transformer = nil,
         fill_chars = {
