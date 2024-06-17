@@ -31,7 +31,7 @@ local object_type = function(text)
             return true
         end
     end
-    local object = 'other'
+    local object = 'par'
     if text then
         if
             text:gsub('%[%[.-|.-%]%]', ''):match('%s*[^\\]|.*[^\\]|%s*')
@@ -56,6 +56,8 @@ local object_type = function(text)
             object = 'sec'
         elseif text:match('!%b[]%b()') then
             object = 'img'
+        elseif text:match('^%s*$') then
+            object = 'empty'
         end
     end
     return object
