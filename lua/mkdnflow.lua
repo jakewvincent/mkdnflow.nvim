@@ -52,6 +52,8 @@ local default_config = {
             return require('mkdnflow').foldtext.object_icons.emoji
         end,
         line_count = true,
+        line_percentage = true,
+        word_count = false,
         title_transformer = nil,
         fill_chars = {
             left_edge = '⢾',

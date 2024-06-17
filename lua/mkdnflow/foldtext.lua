@@ -216,6 +216,32 @@ M.object_icons = {
     },
 }
 
+local percentage = function(num, div)
+    local quo = (num / div) * 100
+    local round = string.format('%.1f', tostring(quo))
+    return round .. '%'
+end
+
+local count_words = function(lines, singular, plural)
+    local word_count = 0
+    -- Iterate through each string in the table
+    for _, str in ipairs(lines) do
+        -- Make some changes to ensure a proper word count
+        local _str = str:gsub('^%s*%d+%.%s*', '') -- Remove the number for ordered lists
+        _str = _str:gsub('%s*[-*+%d]%.?%s*%[.%]%s+', '') -- Remove to-do checkboxes, either in an ordered or unordered list
+        _str = _str:gsub('(%b[])%b()', '%1') -- Remove the source part of a markdown link
+        _str = _str:gsub('%[%[([^|]-)|([^%]-)%]%]', '[[|%2]]') -- Remove the source part of a wiki link
+        _str = _str:gsub("(%w+)['](%w+)", '%1%2') -- Remove word-internal apostrophes, dashes
+        _str = _str:gsub('([%w._-]+)@[%w]+%.[%w]+', '%1') -- Keep only the name (not the domain) of an email address
+        -- TODO: URLs, paths (ensure that each of these is only counted as a single word)
+        -- Split the string into words using the space delimiter
+        for word in _str:gmatch('%w+') do
+            word_count = word_count + 1
+        end
+    end
+    return string.format('%s %s', tostring(word_count), word_count == 1 and singular or plural)
+end
+
 -- Function to generate the text that shows up when a section is folded
 M.fold_text = function()
     local _title_transformer = config.foldtext.title_transformer or title_transformer
@@ -225,6 +251,7 @@ M.fold_text = function()
         or (type(user_icons) == 'string' and M.object_icons[user_icons] or M.object_icons.emoji)
     local fold_start, fold_end = vim.v.foldstart, vim.v.foldend
     local line_count = fold_end - fold_start
+    local total_lines = vim.api.nvim_buf_line_count(0)
     local start_line, lines =
         vim.api.nvim_buf_get_lines(0, fold_start - 1, fold_start, false),
         vim.api.nvim_buf_get_lines(0, fold_start, fold_end, false)
@@ -263,6 +290,14 @@ M.fold_text = function()
             content_info.right,
             tostring(line_count) .. (line_count == 1 and ' line' or 'lines')
         )
+    end
+    -- Add line percentage
+    if config.foldtext.line_percentage == true then
+        table.insert(content_info.right, percentage(line_count, total_lines))
+    end
+    -- Add word count
+    if config.foldtext.word_count == true then
+        table.insert(content_info.right, count_words(lines, 'word', 'words'))
     end
     -- Stringify content info
     local content_strs = {}
