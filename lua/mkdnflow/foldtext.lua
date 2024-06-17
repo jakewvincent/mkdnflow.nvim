@@ -180,7 +180,7 @@ local title_transformer = function(text)
 end
 
 -- Symbols for the objects counted in a fold
-local object_icons = {
+M.object_icons = {
     nerdfont = {
         tbl = ' ',
         ul = ' ',
@@ -221,8 +221,8 @@ M.fold_text = function()
     local _title_transformer = config.foldtext.title_transformer or title_transformer
     local user_icons = config.foldtext.object_count_icons
     local _object_icons = type(user_icons) == 'table'
-            and vim.tbl_extend('force', object_icons.emoji, user_icons)
-        or (type(user_icons) == 'string' and object_icons[user_icons] or object_icons.emoji)
+            and vim.tbl_extend('force', M.object_icons.emoji, user_icons)
+        or (type(user_icons) == 'string' and M.object_icons[user_icons] or M.object_icons.emoji)
     local fold_start, fold_end = vim.v.foldstart, vim.v.foldend
     local line_count = fold_end - fold_start
     local start_line, lines =
