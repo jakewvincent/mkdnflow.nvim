@@ -194,9 +194,9 @@ M.object_icons = {
     },
     plain = {
         tbl = '⊞ ',
-        ul = '• ',
+        ul = '•',
         ol = '① ',
-        todo = '☑ ',
+        todo = '☑',
         img = '⧉ ',
         fncblk = '‵',
         sec = '§',
