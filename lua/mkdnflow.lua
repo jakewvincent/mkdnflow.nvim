@@ -55,7 +55,9 @@ local default_config = {
         line_count = true,
         line_percentage = true,
         word_count = false,
-        title_transformer = nil,
+        title_transformer = function()
+            return require('mkdnflow').foldtext.default_title_transformer
+        end,
         fill_chars = {
             left_edge = '⢾',
             right_edge = '⡷',

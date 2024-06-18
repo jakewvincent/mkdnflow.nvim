@@ -36,7 +36,7 @@ local heading_level = function(text)
 end
 
 -- Function to remove unnecessary elements from the leading line of a fold
-local title_transformer = function(text)
+M.default_title_transformer = function(text)
     -- Get the level of the heading before we remove it
     local level = heading_level(text)
     local level_fill = 6 - level
@@ -327,7 +327,7 @@ end
 
 -- Function to generate the text that shows up when a section is folded
 M.fold_text = function()
-    local _title_transformer = config.foldtext.title_transformer or title_transformer
+    local title_transformer = config.foldtext.title_transformer()
     local fold_start, fold_end = vim.v.foldstart, vim.v.foldend
     local line_count = fold_end - fold_start
     local total_lines = vim.api.nvim_buf_line_count(0)
@@ -348,7 +348,7 @@ M.fold_text = function()
         config.foldtext.fill_chars.right_inside,
         config.foldtext.fill_chars.middle
 
-    local fold_text = le .. mi .. mi .. ri .. _title_transformer(start_line[1])
+    local fold_text = le .. mi .. mi .. ri .. title_transformer(start_line[1])
 
     -- Add in counts of the object types found
     local content_info = {
