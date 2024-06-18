@@ -144,8 +144,8 @@ M.default_count_opts = {
     todo = {
         icon = M.object_icons[icon_set].todo,
         count_method = {
-            pattern = {},
-            tally = 'line_matches',
+            pattern = {'[-+*%d]%.?%s+%[.%]'},
+            tally = 'blocks',
         },
     },
     img = {
