@@ -244,8 +244,14 @@ local inject_object_count_defaults = function(object_count_opts)
     return object_count_opts
 end
 
+-- Initialize as an empty table; will be loaded once count_objects is run for the first time
+local object_count_opts = {}
+
 local count_objects = function(lines)
-    local object_count_opts = inject_object_count_defaults(config.foldtext.object_count_opts())
+    -- Load up the object count opts into the table above the first time this function is called
+    if vim.tbl_isempty(object_count_opts) then
+        object_count_opts = inject_object_count_defaults(config.foldtext.object_count_opts())
+    end
     -- Organize the object counts by tally method
     local tally_methods = {
         blocks = {},
