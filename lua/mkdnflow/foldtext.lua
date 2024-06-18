@@ -102,7 +102,7 @@ local count_words = function(lines, singular, plural)
         local _str = str:gsub('^%s*%d+%.%s*', '') -- Remove the number for ordered lists
         _str = _str:gsub('%s*[-*+%d]%.?%s*%[.%]%s+', '') -- Remove to-do checkboxes, either in an ordered or unordered list
         _str = _str:gsub('(%b[])%b()', '%1') -- Remove the source part of a markdown link
-        _str = _str:gsub('%[%[([^|]-)|([^%]-)%]%]', '[[|%2]]') -- Remove the source part of a wiki link
+        _str = _str:gsub('%[%[([^|]-)|([^%]]-)%]%]', '[[%2]]') -- Remove the source part of a wiki link
         _str = _str:gsub("(%w+)['](%w+)", '%1%2') -- Remove word-internal apostrophes, dashes
         _str = _str:gsub('([%w._-]+)@[%w]+%.[%w]+', '%1') -- Keep only the name (not the domain) of an email address
         -- TODO: URLs, paths (ensure that each of these is only counted as a single word)
