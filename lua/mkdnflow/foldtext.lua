@@ -348,8 +348,6 @@ M.fold_text = function()
         config.foldtext.fill_chars.right_inside,
         config.foldtext.fill_chars.middle
 
-    local fold_text = le .. mi .. mi .. ri .. title_transformer(start_line[1])
-
     -- Add in counts of the object types found
     local content_info = {
         left = object_counts,
@@ -378,16 +376,15 @@ M.fold_text = function()
         end
     end
     local content_str = table.concat(content_strs, ssep)
-    -- Figure out how many fill chars are needed
-    local fill_count = visible_win_width - vim.api.nvim_strwidth(fold_text .. content_str)
-    -- Create the final string
-    fold_text = fold_text
-        .. li
-        .. string.rep(mi, fill_count - 7)
-        .. (content_str ~= '' and ri or mi)
+    -- Put together some pieces
+    local left = le .. ri .. title_transformer(start_line[1]) .. li
+    local right = (content_str ~= '' and ri or mi)
         .. content_str
-        .. (content_str ~= '' and li .. mi .. mi .. re or mi .. mi .. mi .. re)
-    return fold_text
+        .. (content_str ~= '' and li .. re or mi .. re)
+    -- Figure out how many fill chars are needed
+    local fill_count = visible_win_width - vim.api.nvim_strwidth(left .. right)
+    -- Return the final string with fill characters between the left and right parts
+    return left .. string.rep(mi, fill_count) .. right
 end
 
 vim.opt.foldtext = "v:lua.require('mkdnflow').foldtext.fold_text()"
