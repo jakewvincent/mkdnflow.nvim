@@ -224,8 +224,28 @@ local count_blocks = function(line_objs)
     return counts
 end
 
+-- Function to inject defaults for any object type for which the user didn't specify necessary
+-- information. Not using tbl_deep_extend here since we don't want to add object types that the user
+-- doesn't want, if they have specified their own count opts table.
+local inject_object_count_defaults = function(object_count_opts)
+    for k, v in pairs(object_count_opts) do
+        if M.default_count_opts[k] then
+            if not v.icon then
+                v.icon = M.default_count_opts[k].icon
+            end
+            if not v.count_method then
+                v.count_method = M.default_count_opts[k].count_method
+            else -- See if any subparts are needed
+                -- Use tbl_extend here, prioritizing user definitions
+                v.count_method = vim.tbl_extend('force', M.default_count_opts[k].count_method, v.count_method)
+            end
+        end
+    end
+    return object_count_opts
+end
+
 local count_objects = function(lines)
-    local object_count_opts = config.foldtext.object_count_opts()
+    local object_count_opts = inject_object_count_defaults(config.foldtext.object_count_opts())
     -- Organize the object counts by tally method
     local tally_methods = {
         blocks = {},
