@@ -107,7 +107,7 @@ local count_words = function(lines, singular, plural)
         _str = _str:gsub('([%w._-]+)@[%w]+%.[%w]+', '%1') -- Keep only the name (not the domain) of an email address
         -- TODO: URLs, paths (ensure that each of these is only counted as a single word)
         -- Split the string into words using the space delimiter
-        for word in _str:gmatch('%w+') do
+        for _ in _str:gmatch('%w+') do
             word_count = word_count + 1
         end
     end
