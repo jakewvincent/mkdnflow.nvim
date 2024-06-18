@@ -144,7 +144,7 @@ M.default_count_opts = {
     todo = {
         icon = M.object_icons[icon_set].todo,
         count_method = {
-            pattern = {'[-+*%d]%.?%s+%[.%]'},
+            pattern = { '[-+*%d]%.?%s+%[.%]' },
             tally = 'blocks',
         },
     },
@@ -237,7 +237,8 @@ local inject_object_count_defaults = function(object_count_opts)
                 v.count_method = M.default_count_opts[k].count_method
             else -- See if any subparts are needed
                 -- Use tbl_extend here, prioritizing user definitions
-                v.count_method = vim.tbl_extend('force', M.default_count_opts[k].count_method, v.count_method)
+                v.count_method =
+                    vim.tbl_extend('force', M.default_count_opts[k].count_method, v.count_method)
             end
         end
     end
