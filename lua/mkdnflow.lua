@@ -59,8 +59,8 @@ local default_config = {
             return require('mkdnflow').foldtext.default_title_transformer
         end,
         fill_chars = {
-            left_edge = '⢾',
-            right_edge = '⡷',
+            left_edge = '⢾⣿⣿',
+            right_edge = '⣿⣿⡷',
             item_separator = ' · ',
             section_separator = ' ⣹⣿⣏ ',
             left_inside = ' ⣹',
