@@ -114,11 +114,11 @@ local count_words = function(lines, singular, plural)
     return string.format('%s %s', tostring(word_count), word_count == 1 and singular or plural)
 end
 
-local user_icons = config.foldtext.object_count_icon_set
+local icon_set = config.foldtext.object_count_icon_set
 
 M.default_count_opts = {
     tbl = {
-        icon = M.object_icons[user_icons].tbl,
+        icon = M.object_icons[icon_set].tbl,
         count_method = {
             prep = function(text)
                 return text:gsub('%[%[.-|.-%]%]', '')
@@ -128,35 +128,35 @@ M.default_count_opts = {
         },
     },
     ul = {
-        icon = M.object_icons[user_icons].ul,
+        icon = M.object_icons[icon_set].ul,
         count_method = {
             pattern = { '^%s*[-+*]%s' },
             tally = 'blocks',
         },
     },
     ol = {
-        icon = M.object_icons[user_icons].ol,
+        icon = M.object_icons[icon_set].ol,
         count_method = {
             pattern = { '^%s-%d+%.' },
             tally = 'blocks',
         },
     },
     todo = {
-        icon = M.object_icons[user_icons].todo,
+        icon = M.object_icons[icon_set].todo,
         count_method = {
             pattern = {},
             tally = 'line_matches',
         },
     },
     img = {
-        icon = M.object_icons[user_icons].img,
+        icon = M.object_icons[icon_set].img,
         count_method = {
             pattern = { '!%b[]%b()' },
             tally = 'global_matches',
         },
     },
     fncblk = {
-        icon = M.object_icons[user_icons].fncblk,
+        icon = M.object_icons[icon_set].fncblk,
         count_method = {
             prep = function(text)
                 return text:gsub('^```', '\n```')
@@ -166,21 +166,21 @@ M.default_count_opts = {
         },
     },
     sec = {
-        icon = M.object_icons[user_icons].sec,
+        icon = M.object_icons[icon_set].sec,
         count_method = {
             pattern = { '^#+%s' },
             tally = 'line_matches',
         },
     },
     par = {
-        icon = M.object_icons[user_icons].par,
+        icon = M.object_icons[icon_set].par,
         count_method = {
             pattern = {},
             tally = 'global_matches',
         },
     },
     link = {
-        icon = M.object_icons[user_icons].link,
+        icon = M.object_icons[icon_set].link,
         count_method = {
             pattern = { '%b[]%b()', '%b[]%b[]', '%[%[.-%]%]' },
             tally = 'global_matches',
