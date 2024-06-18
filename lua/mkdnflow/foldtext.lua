@@ -353,7 +353,7 @@ M.fold_text = function()
     if config.foldtext.line_count == true then
         table.insert(
             content_info.right,
-            tostring(line_count) .. (line_count == 1 and ' line' or 'lines')
+            tostring(line_count) .. (line_count == 1 and ' line' or ' lines')
         )
     end
     -- Add line percentage
