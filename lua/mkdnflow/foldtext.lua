@@ -114,7 +114,7 @@ local count_words = function(lines, singular, plural)
     return string.format('%s %s', tostring(word_count), word_count == 1 and singular or plural)
 end
 
-local user_icons = config.foldtext.object_count_icons
+local user_icons = config.foldtext.object_count_icon_set
 
 M.default_count_opts = {
     tbl = {
