@@ -25,134 +25,6 @@ ffi.cdef([[
     extern win_T *curwin;
 ]])
 
-local object_type = function(text)
-    local is_todo = function(_text)
-        if _text and _text:match('%s*[-*+%d]%.?%s*%[.%]') then
-            return true
-        end
-    end
-    local object = 'par'
-    if text then
-        if
-            text:gsub('%[%[.-|.-%]%]', ''):match('%s*[^\\]|.*[^\\]|%s*')
-            or text:gsub('%[%[.-|.-%]%]', ''):match('[^\\]|')
-        then
-            object = 'tbl'
-        elseif text:match('^%s-%d+%.') then
-            if is_todo(text) then
-                object = 'todo'
-            else
-                object = 'ol'
-            end
-        elseif text:match('%s*[-+*]%s') then
-            if is_todo(text) then
-                object = 'todo'
-            else
-                object = 'ul'
-            end
-        elseif text:match('^```') then
-            object = 'fncblk'
-        elseif text:match('^#+%s') then
-            object = 'sec'
-        elseif text:match('!%b[]%b()') then
-            object = 'img'
-        elseif text:match('^%s*$') then
-            object = 'empty'
-        end
-    end
-    return object
-end
-
-local count_auto_links = function(text)
-    local has_url = require('mkdnflow').links.hasUrl
-    local count = 0
-    for match in string.gmatch(text, '<.->') do
-        if has_url(match:sub(2, -1)) then
-            count = count + 1
-        end
-    end
-    return count
-end
-
-local count_objects_in_lines = function(lines)
-    local objects = {}
-    -- Count the number of each type of object
-    for _, line in ipairs(lines) do
-        local cur_object = object_type(line)
-        if line and cur_object then
-            table.insert(objects, cur_object)
-        end
-    end
-    -- Add an empty item since the change from one line to the next is what we're paying attention
-    -- to for certain item types
-    table.insert(objects, '')
-    local object_counts = {}
-    -- Count occurrences of each thing
-    local last_object = { type = '', instances = 0 }
-    for _, cur_object in ipairs(objects) do
-        if cur_object == 'fncblk' then
-            if object_counts[cur_object] then
-                object_counts[cur_object] = object_counts[cur_object] + 0.5
-            else
-                object_counts[cur_object] = 0.5
-            end
-        elseif
-            (
-                cur_object == 'tbl'
-                or cur_object == 'ol'
-                or cur_object == 'ul'
-                or cur_object == 'todo'
-            ) and cur_object ~= last_object.type
-        then
-            -- Figure out if we were really in a table
-            if last_object.type == 'tbl' and last_object.instances > 1 then
-                if object_counts[cur_object] then
-                    object_counts[cur_object] = object_counts[cur_object] + 1
-                else
-                    object_counts[cur_object] = 1
-                end
-            else
-                if object_counts[cur_object] then
-                    object_counts[cur_object] = object_counts[cur_object] + 1
-                else
-                    object_counts[cur_object] = 1
-                end
-            end
-        elseif cur_object == 'img' or cur_object == 'sec' then
-            if object_counts[cur_object] then
-                object_counts[cur_object] = object_counts[cur_object] + 1
-            else
-                object_counts[cur_object] = 1
-            end
-        end
-        -- Keep track of the object type we saw in this iteration. If it's the same as what was
-        -- there before, increment the counter for the # of instances.
-        if last_object.type == cur_object then
-            last_object.instances = last_object.instances + 1
-        else
-            last_object.type = cur_object
-            last_object.instances = 0
-        end
-    end
-    -- Round the number of fenced blocks down (we counted 0.5 for each ```, and we don't want to
-    -- count an improperly closed fenced block)
-    if object_counts.fncblk then
-        object_counts.fncblk = math.floor(object_counts.fncblk)
-    end
-    -- Count certain objects based on global patterns
-    local cat = table.concat(lines)
-    -- Count links
-    local _, md_link_count = cat:gsub('%b[]%b()', '')
-    local _, ref_link_count = cat:gsub('%b[]%b[]', '')
-    local _, wiki_link_count = cat:gsub('%[%[.-%]%]', '')
-    local auto_link_count = count_auto_links(cat)
-    local link_count = md_link_count + ref_link_count + wiki_link_count + auto_link_count
-    if link_count > 0 then
-        object_counts['link'] = link_count
-    end
-    return object_counts
-end
-
 -- Function to get the level of a heading
 local heading_level = function(text)
     local count = 0
@@ -242,20 +114,201 @@ local count_words = function(lines, singular, plural)
     return string.format('%s %s', tostring(word_count), word_count == 1 and singular or plural)
 end
 
+local user_icons = config.foldtext.object_count_icons
+
+M.default_count_opts = {
+    tbl = {
+        icon = M.object_icons[user_icons].tbl,
+        count_method = {
+            prep = function(text)
+                return text:gsub('%[%[.-|.-%]%]', '')
+            end,
+            pattern = { '%s*[^\\]|.*[^\\]|%s*', '[^\\]|' },
+            tally = 'blocks',
+        },
+    },
+    ul = {
+        icon = M.object_icons[user_icons].ul,
+        count_method = {
+            pattern = { '^%s*[-+*]%s' },
+            tally = 'blocks',
+        },
+    },
+    ol = {
+        icon = M.object_icons[user_icons].ol,
+        count_method = {
+            pattern = { '^%s-%d+%.' },
+            tally = 'blocks',
+        },
+    },
+    todo = {
+        icon = M.object_icons[user_icons].todo,
+        count_method = {
+            pattern = {},
+            tally = 'line_matches',
+        },
+    },
+    img = {
+        icon = M.object_icons[user_icons].img,
+        count_method = {
+            pattern = { '!%b[]%b()' },
+            tally = 'global_matches',
+        },
+    },
+    fncblk = {
+        icon = M.object_icons[user_icons].fncblk,
+        count_method = {
+            prep = function(text)
+                return text:gsub('^```', '\n```')
+            end,
+            pattern = { '\n```.-\n```' },
+            tally = 'global_matches',
+        },
+    },
+    sec = {
+        icon = M.object_icons[user_icons].sec,
+        count_method = {
+            pattern = { '^#+%s' },
+            tally = 'line_matches',
+        },
+    },
+    par = {
+        icon = M.object_icons[user_icons].par,
+        count_method = {
+            pattern = {},
+            tally = 'global_matches',
+        },
+    },
+    link = {
+        icon = M.object_icons[user_icons].link,
+        count_method = {
+            pattern = { '%b[]%b()', '%b[]%b[]', '%[%[.-%]%]' },
+            tally = 'global_matches',
+        },
+    },
+}
+
+local count_blocks = function(line_objs)
+    local counts = {}
+    -- Function to increment the count for an object type
+    local increment = function(obj_type)
+        counts[obj_type] = counts[obj_type] == nil and 1 or (counts[obj_type] + 1)
+    end
+    -- Iterate through the main table
+    for i = 1, #line_objs do
+        local line_tbl = line_objs[i]
+        -- Iterate through object types (strings) in the current subtable
+        for _, obj_type in ipairs(line_tbl) do
+            -- If there is no preceding subtable or the preceding subtable is empty, increment the
+            -- count (we're starting a new block for this type)
+            if i == 1 or not line_objs[i - 1] or not line_objs[i - 1][1] then
+                increment(obj_type)
+            else
+                local found = false
+                -- Look through the last line objects to see if the current object is a continuation
+                -- of a block or the start of a new block
+                for _, prev_obj_type in ipairs(line_objs[i - 1]) do
+                    if obj_type == prev_obj_type then
+                        found = true
+                        break
+                    end
+                end
+                -- If we didn't find the object type in the previous table, we've reached the end of
+                -- the block and should count the block
+                if not found then
+                    increment(obj_type)
+                end
+            end
+        end
+    end
+    return counts
+end
+
+local count_objects = function(lines)
+    local object_count_opts = config.foldtext.object_count_opts()
+    -- Organize the object counts by tally method
+    local tally_methods = {
+        blocks = {},
+        line_matches = {},
+        global_matches = {},
+    }
+    local icons = {}
+    for k, v in pairs(object_count_opts) do
+        -- Get the tally method
+        tally_methods[v.count_method.tally][k] = v.count_method
+        -- Get just the icon
+        icons[k] = v.icon
+    end
+    -- Iterate over lines for blocks and line objects
+    local block_objects, object_counts = {}, {}
+    for _, line in ipairs(lines) do
+        local line_tbl = {}
+        -- Block method
+        for k, v in pairs(tally_methods.blocks) do
+            local match, _line = false, v.prep ~= nil and v.prep(line) or line
+            for _, pattern in ipairs(v.pattern) do
+                if _line:match(pattern) then
+                    match = true
+                    break -- Stop if we find a match
+                end
+            end
+            if match then
+                -- Add the name of the object to the table of matches for the line
+                table.insert(line_tbl, k)
+            end
+        end
+        -- Add the table to the block objects table
+        table.insert(block_objects, line_tbl)
+        -- Line method (direct counting)
+        for k, v in pairs(tally_methods.line_matches) do
+            local match, _line = false, v.prep ~= nil and v.prep(line) or line
+            for _, pattern in ipairs(v.pattern) do
+                if _line:match(pattern) then
+                    match = true
+                    break
+                end
+            end
+            if match then
+                -- Increment the count, or if the entry doesn't exist yet, add it
+                object_counts[k] = object_counts[k] == nil and 1 or (object_counts[k] + 1)
+            end
+        end
+    end
+    -- Add the block-count object types to the table
+    object_counts = vim.tbl_extend('error', object_counts, count_blocks(block_objects))
+    -- Global matches
+    local glom = table.concat(lines, '\n')
+    for k, v in pairs(tally_methods.global_matches) do
+        local matches, _glom = 0, v.prep ~= nil and v.prep(glom) or glom
+        for _, pattern in ipairs(v.pattern) do
+            local _, reps = _glom:gsub(pattern, '')
+            matches = matches + reps
+        end
+        if matches > 0 then
+            -- Add the count to the table
+            object_counts[k] = matches
+        end
+    end
+    -- Finally, format using the icons
+    local formatted = {}
+    for k, v in pairs(object_counts) do
+        if v > 0 then
+            table.insert(formatted, string.format('%s%s', icons[k], tostring(v)))
+        end
+    end
+    return formatted
+end
+
 -- Function to generate the text that shows up when a section is folded
 M.fold_text = function()
     local _title_transformer = config.foldtext.title_transformer or title_transformer
-    local user_icons = config.foldtext.object_count_icons
-    local _object_icons = type(user_icons) == 'table'
-            and vim.tbl_extend('force', M.object_icons.emoji, user_icons)
-        or (type(user_icons) == 'string' and M.object_icons[user_icons] or M.object_icons.emoji)
     local fold_start, fold_end = vim.v.foldstart, vim.v.foldend
     local line_count = fold_end - fold_start
     local total_lines = vim.api.nvim_buf_line_count(0)
     local start_line, lines =
         vim.api.nvim_buf_get_lines(0, fold_start - 1, fold_start, false),
         vim.api.nvim_buf_get_lines(0, fold_start, fold_end, false)
-    local object_counts = count_objects_in_lines(lines)
+    local object_counts = count_objects(lines)
     -- Get the available width to fill
     local gutter_width = ffi.C.win_col_off(ffi.C.curwin)
     local visible_win_width = vim.api.nvim_win_get_width(0) - gutter_width
@@ -272,18 +325,10 @@ M.fold_text = function()
     local fold_text = le .. mi .. mi .. ri .. _title_transformer(start_line[1])
 
     -- Add in counts of the object types found
-    local table_size = #vim.tbl_keys(object_counts)
     local content_info = {
-        left = {},
+        left = object_counts,
         right = {},
     }
-    if config.foldtext.object_count == true then
-        for obj, count in vim.spairs(object_counts) do
-            if _object_icons[obj] and count ~= nil then
-                table.insert(content_info.left, _object_icons[obj] .. tostring(count))
-            end
-        end
-    end
     -- Add line count
     if config.foldtext.line_count == true then
         table.insert(
@@ -301,7 +346,7 @@ M.fold_text = function()
     end
     -- Stringify content info
     local content_strs = {}
-    for _, key in ipairs({'left', 'right'}) do
+    for _, key in ipairs({ 'left', 'right' }) do
         if not vim.tbl_isempty(content_info[key]) then
             table.insert(content_strs, table.concat(content_info[key], isep))
         end
