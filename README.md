@@ -765,8 +765,8 @@ require('mkdnflow').setup({
         fill_chars = {
             left_edge = '╾─🖿 ─',
             right_edge = '──╼',
-            item_separator = ' / ',
-            section_separator = ' ╱ ',
+            item_separator = ' · ',
+            section_separator = ' / ',
             left_inside = ' ┝',
             right_inside = '┥ ',
             middle = '─',
