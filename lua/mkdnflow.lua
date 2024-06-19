@@ -25,6 +25,7 @@ local default_config = {
         conceal = true,
         cursor = true,
         folds = true,
+        foldtext = true,
         links = true,
         lists = true,
         maps = true,
@@ -45,12 +46,34 @@ local default_config = {
         rmd = true,
         markdown = true,
     },
+    foldtext = {
+        object_count = true,
+        object_count_icon_set = 'emoji',
+        object_count_opts = function()
+            return require('mkdnflow').foldtext.default_count_opts
+        end,
+        line_count = true,
+        line_percentage = true,
+        word_count = false,
+        title_transformer = function()
+            return require('mkdnflow').foldtext.default_title_transformer
+        end,
+        fill_chars = {
+            left_edge = '⢾⣿⣿',
+            right_edge = '⣿⣿⡷',
+            item_separator = ' · ',
+            section_separator = ' ⣹⣿⣏ ',
+            left_inside = ' ⣹',
+            right_inside = '⣏ ',
+            middle = '⣿',
+        },
+    },
     bib = {
         default_path = nil,
         find_in_root = true,
     },
     cursor = {
-        jump_patterns = nil
+        jump_patterns = nil,
     },
     links = {
         style = 'markdown',
@@ -65,7 +88,7 @@ local default_config = {
             text = os.date('%Y-%m-%d_') .. text
             return text
         end,
-        create_on_follow_failure = true
+        create_on_follow_failure = true,
     },
     new_file_template = {
         use_template = false,
@@ -94,8 +117,8 @@ local default_config = {
             cell_padding = 1,
             separator_padding = 1,
             outer_pipes = true,
-            mimic_alignment = true
-        }
+            mimic_alignment = true,
+        },
     },
     yaml = {
         bib = { override = false },
@@ -282,7 +305,7 @@ init.setup = function(user_config)
                     '%b[]%b()',
                     '<[^<>]->',
                     '%b[] ?%b[]',
-                    '%[@[^%[%]]-%]'
+                    '%[@[^%[%]]-%]',
                 }
             elseif init.config.links.style == 'wiki' then
                 init.config.cursor.jump_patterns = {
@@ -297,6 +320,7 @@ init.setup = function(user_config)
         init.bib = init.config.modules.bib and require('mkdnflow.bib')
         init.buffers = init.config.modules.buffers and require('mkdnflow.buffers')
         init.folds = init.config.modules.folds and require('mkdnflow.folds')
+        init.foldtext = init.config.modules.foldtext and require('mkdnflow.foldtext')
         init.links = init.config.modules.links and require('mkdnflow.links')
         init.cursor = init.config.modules.cursor and require('mkdnflow.cursor')
         init.lists = init.config.modules.lists and require('mkdnflow.lists')
