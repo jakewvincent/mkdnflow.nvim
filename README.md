@@ -776,13 +776,13 @@ require('mkdnflow').setup({
 })
 ```
 
-The above recipe will produce foldtext like the following:
+The above recipe will produce foldtext like the following (for an h3-level section heading called `My section`):
 
 <p align="center">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/foldtext/example_foldtext_dark.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/foldtext/example_foldtext_light.png">
-      <img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/foldtext/example_foldtext_light.png">
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/foldtext/foldtext_ex_dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/foldtext/foldtext_ex.png">
+      <img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/foldtext/foldtext_ex.png">
     </picture>
 </p>
 
