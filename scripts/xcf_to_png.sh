@@ -20,7 +20,7 @@ for file in $xcf_files_to_convert; do
                     (image (car (gimp-file-load RUN-NONINTERACTIVE \"$file\" \"$file\")))
                     (merged-layer (car (gimp-image-merge-visible-layers image CLIP-TO-BOTTOM-LAYER)))
                 )
-                (file-png-save RUN-NONINTERACTIVE image merged layer \"$output_file\" \"$output_file\" 0 9 0 0 0 0 0)
+                (file-png-save RUN-NONINTERACTIVE image merged-layer \"$output_file\" \"$output_file\" 0 9 0 0 0 0 0)
                 (gimp-image-delete image)
             )
             (gimp-quit 0)
