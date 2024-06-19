@@ -246,10 +246,12 @@ local count_objects = function(lines)
     }
     local icons = {}
     for k, v in pairs(object_count_opts) do
-        -- Get the tally method
-        tally_methods[v.count_method.tally][k] = v.count_method
-        -- Get just the icon
-        icons[k] = v.icon
+        if v then
+            -- Get the tally method
+            tally_methods[v.count_method.tally][k] = v.count_method
+            -- Get just the icon
+            icons[k] = v.icon
+        end
     end
     -- Iterate over lines for blocks and line objects
     local block_objects, object_counts = {}, {}
