@@ -260,6 +260,8 @@ local count_objects = function(lines)
         -- Block method
         for k, v in pairs(tally_methods.blocks) do
             local match, _line = false, v.prep ~= nil and v.prep(line) or line
+            -- If a string was passed in for v.pattern, place it in a table to prevent errors
+            v.pattern = type(v.pattern) == 'string' and {v.pattern} or v.pattern
             for _, pattern in ipairs(v.pattern) do
                 if _line:match(pattern) then
                     match = true
