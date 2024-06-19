@@ -175,7 +175,7 @@ M.default_count_opts = {
     par = {
         icon = M.object_icons[icon_set].par,
         count_method = {
-            pattern = {},
+            pattern = { '\n%s*\n%a' },
             tally = 'global_matches',
         },
     },
