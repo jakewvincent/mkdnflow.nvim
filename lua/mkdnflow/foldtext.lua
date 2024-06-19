@@ -225,24 +225,9 @@ local count_blocks = function(line_objs)
 end
 
 -- Function to inject defaults for any object type for which the user didn't specify necessary
--- information. Not using tbl_deep_extend here since we don't want to add object types that the user
--- doesn't want, if they have specified their own count opts table.
-local inject_object_count_defaults = function(object_count_opts)
-    for k, v in pairs(object_count_opts) do
-        if M.default_count_opts[k] then
-            if not v.icon then
-                v.icon = M.default_count_opts[k].icon
-            end
-            if not v.count_method then
-                v.count_method = M.default_count_opts[k].count_method
-            else -- See if any subparts are needed
-                -- Use tbl_extend here, prioritizing user definitions
-                v.count_method =
-                    vim.tbl_extend('force', M.default_count_opts[k].count_method, v.count_method)
-            end
-        end
-    end
-    return object_count_opts
+-- information.
+local inject_object_count_defaults = function(user_object_count_opts)
+    return vim.tbl_deep_extend('force', M.default_count_opts, user_object_count_opts)
 end
 
 -- Initialize as an empty table; will be loaded once count_objects is run for the first time
