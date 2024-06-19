@@ -747,15 +747,15 @@ require('mkdnflow').setup({
             local opts = {
                 link = false, -- Prevent links from being counted
                 blockquote = { -- Count block quotes (these aren't counted by default)
-                    icon = '❞',
+                    icon = ' ',
                     count_method = {
                         pattern = { '^>.+$' },
                         tally = 'blocks',
                     }
                 },
                 fncblk = {
-                    -- Override the icon for fenced code blocks with ∑
-                    icon = '󰘦 '
+                    -- Override the icon for fenced code blocks with 
+                    icon = ' '
                 }
             }
             return opts
