@@ -9,6 +9,4 @@ assets/logo/*.log
 assets/logo/*.pdf
 assets/logo/*.aux
 assets/logo/*.fdb_latexmk
-assets/nerdfont/*.xcf
-assets/foldtext/*.xcf
 assets/demo/sources
