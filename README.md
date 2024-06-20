@@ -1,8 +1,8 @@
 <p align="center">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/logo/mkdnflow_logo_dark.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/logo/mkdnflow_logo_light.png">
-      <img alt="Black mkdnflow logo in light color mode and white logo in dark color mode." src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/logo/mkdnflow_logo_light.png">
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/logo/mkdnflow_logo_dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/logo/mkdnflow_logo_light.png">
+      <img alt="Black mkdnflow logo in light color mode and white logo in dark color mode." src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/logo/mkdnflow_logo_light.png">
     </picture>
 </p>
 <p align=center><img src="https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white"> <img src="https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white"> <img src="https://img.shields.io/badge/NeoVim-%2357A143.svg?&style=for-the-badge&logo=neovim&logoColor=white"></p>
@@ -10,10 +10,11 @@
    <a href="#-features">Features</a> / <a href="#-installation-and-usage">Installation</a> / <a href="#-starting-a-notebook">Starting a notebook</a> / <a href="#%EF%B8%8F-configuration">Config</a> / <a href="#-commands-and-default-mappings">Commands & mappings</a> / <a href="#%EF%B8%8F-to-do">To do</a> / <a href="#-recent-changes">Recent changes</a> / <a href="#-links">Links</a>
 </p>
 
-### 🆕 Top three [latest features](#-recent-changes) and announcements
-1. [Improved table formatting and formatting style options](#tables)
-2. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
-3. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmp)
+### 🆕 [Latest features](#-recent-changes) and announcements
+1. [Custom and customizable foldtext for section folds](#section-folding)
+2. [Improved table formatting and formatting style options](#tables)
+3. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
+4. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmp)
 
 #### Announcements
 12/12/23: Mkdnflow no longer requires the `luautf8` lua rock as a dependency. UTF-8 characters can be used as [custom to-do symbols](#to_do-dictionary-like-table) out of the box, and table formatting will work out of the box when the table contains UTF-8 characters.
@@ -43,7 +44,7 @@ I keep tabs on the project's [issues](https://github.com/jakewvincent/mkdnflow.n
 ## ✨ Features
 
 <p align=center>
-<a href="https://user-images.githubusercontent.com/45184202/166573700-62cdec3b-a13f-4f9e-9d72-ab2650205042.mp4"><img src="assets/demo/demo.mp4.png" width="75%"></a>
+<a href="https://user-images.githubusercontent.com/45184202/166573700-62cdec3b-a13f-4f9e-9d72-ab2650205042.mp4"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/demo/demo.mp4.png" width="75%"></a>
 </p>
 
 ### Markdown or wiki link styles
@@ -215,22 +216,22 @@ Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyl
     * The level of the section folded
     * The section title, modified by a (customizable) transformation function
     * The number of markdown objects contained by the fold, including tables, unordered lists, ordered lists, to-do lists, links, and subsections
-        * Three icon sets are available—`emoji`, `nerdfont` (requires you to be using a nerdfont or patched font in your interface), `plain` (non-emoji unicode symbols)—and the icons are customizable/overridable (see table below).
+        * Three icon sets are available—`emoji`, `nerdfont` (requires you to be using a nerdfont or patched font in your interface), `plain` (non-emoji unicode symbols)—see the table below—and the icons are [customizable/overridable](#foldtext-dictionary-like-table).
     * The number of lines in the fold
     * The percentage of document lines the fold contains
     * The number of words in the fold
 
-| Object type               | Name     | `emoji` icon |                                                                                                                                                                                                                            `nerdfont` icon                                                                                                                                                                                                                             | `plain` icon |
-| ------------------------- | -------- | :----------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------: |
-| Table                     | `tbl`    |      📈      |     <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/tbl_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/tbl.png"><img style="width: 1em;" src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/tbl.png" width="14"></picture>      |      ⊞       |
-| Unordered (bulleted) list | `ul`     |      *️⃣       |       <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/ul_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/ul.png"><img style="width: 1em;" src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/ul.png" width="14"></picture>       |      •       |
-| Ordered (numbered) list   | `ol`     |      1️⃣       |       <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/ol_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/ol.png"><img style="width: 1em;" src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/ol.png" width="14"></picture>       |      ①       |
-| To-do list                | `todo`   |      ✅      |    <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/todo_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/todo.png"><img style="width: 1em;" src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/todo.png" width="14"></picture>    |      ☑       |
-| Image                     | `img`    |      🖼️      |     <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/img_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/img.png"><img style="width: 1em;" src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/img.png" width="14"></picture>      |      ⧉       |
-| Fenced code block         | `fncblk` |      🧮      | <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/fncblk_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/fncblk.png"><img style="width: 1em;" src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/fncblk.png" width="14"></picture> |      ‵       |
-| Section                   | `sec`    |      🏷️      |     <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/sec_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/sec.png"><img style="width: 1em;" src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/sec.png" width="14"></picture>      |      §       |
-| Paragraph                 | `par`    |      📃      |     <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/par_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/par.png"><img style="width: 1em;" src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/par.png" width="14"></picture>      |      ¶       |
-| Link                      | `link`   |      🔗      |    <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/link_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/link.png"><img style="width: 1em;" src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/nerdfont/link.png" width="14"></picture>    |      ⇔       |
+| Object type               | Name     | `emoji` icon |                                                                                                                                                                                                                              `nerdfont` icon                                                                                                                                                                                                                               | `plain` icon |
+| ------------------------- | -------- | :----------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------: |
+| Table                     | `tbl`    |      📈      |     <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/tbl_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/tbl.png"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/tbl.png" width="18"></picture>      |      ⊞       |
+| Unordered (bulleted) list | `ul`     |      *️⃣       |       <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/ul_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/ul.png"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/ul.png" width="18"></picture>       |      •       |
+| Ordered (numbered) list   | `ol`     |      1️⃣       |       <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/ol_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/ol.png"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/ol.png" width="18"></picture>       |      ①       |
+| To-do list                | `todo`   |      ✅      |    <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/todo_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/todo.png"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/todo.png" width="18"></picture>    |      ☑       |
+| Image                     | `img`    |      🖼️      |     <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/img_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/img.png"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/img.png" width="18"></picture>      |      ⧉       |
+| Fenced code block         | `fncblk` |      🧮      | <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/fncblk_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/fncblk.png"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/fncblk.png" width="18"></picture> |      ‵       |
+| Section                   | `sec`    |      🏷️      |     <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/sec_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/sec.png"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/sec.png" width="18"></picture>      |      §       |
+| Paragraph                 | `par`    |      📃      |     <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/par_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/par.png"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/par.png" width="18"></picture>      |      ¶       |
+| Link                      | `link`   |      🔗      |    <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/link_dark.png"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/link.png"><img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/nerdfont/link.png" width="18"></picture>    |      ⇔       |
 
 ### Lists
 * List markers recognized: `-`, `*`, and `+`
@@ -765,8 +766,8 @@ require('mkdnflow').setup({
         fill_chars = {
             left_edge = '╾─🖿 ─',
             right_edge = '──╼',
-            item_separator = ' / ',
-            section_separator = ' ╱ ',
+            item_separator = ' · ',
+            section_separator = ' // ',
             left_inside = ' ┝',
             right_inside = '┥ ',
             middle = '─',
@@ -780,9 +781,9 @@ The above recipe will produce foldtext like the following (for an h3-level secti
 
 <p align="center">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/foldtext/foldtext_ex_dark.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/foldtext/foldtext_ex.png">
-      <img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/main/assets/foldtext/foldtext_ex.png">
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/foldtext/foldtext_ex_dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/foldtext/foldtext_ex.png">
+      <img src="https://raw.githubusercontent.com/jakewvincent/mkdnflow.nvim/readme-media/assets/foldtext/foldtext_ex.png">
     </picture>
 </p>
 
