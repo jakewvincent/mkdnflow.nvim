@@ -98,7 +98,7 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
         mkdnflow.cursor.changeHeadingLevel('decrease')
     end, {})
     user_command('MkdnToggleToDo', function(opts)
-        mkdnflow.lists.toggleToDo(false, false, {})
+        mkdnflow.to_do.toggle_to_do()
     end, {})
     user_command('MkdnNewListItem', function(opts)
         mkdnflow.lists.newListItem(true, false, true, 'i', '<CR>')

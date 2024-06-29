@@ -1,5 +1,5 @@
 -- mkdnflow.nvim (Tools for fluent markdown notebook navigation and management)
--- Copyright (C) 2022 Jake W. Vincent <https://github.com/jakewvincent>
+-- Copyright (C) 2022-2024 Jake W. Vincent <https://github.com/jakewvincent>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -58,6 +58,14 @@ M.userConfigCheck = function(user_config)
                 user_config.to_do.in_progress = user_config.to_do.symbols[1]
                 user_config.to_do.complete = user_config.to_do.symbols[2]
             end
+        end
+        -- Update to June 2024 format
+        if not user_config.to_do.statuses then
+            user_config.to_do['statuses'] = {
+                { name = 'not_started', symbol = user_config.to_do.not_started },
+                { name = 'in_progress', symbol = user_config.to_do.in_progress },
+                { name = 'complete', symbol = user_config.to_do.complete },
+            }
         end
     end
 
@@ -213,7 +221,7 @@ M.userConfigCheck = function(user_config)
                 "⬇️  cmp module is enabled, but require('cmp') failed.",
                 vim.log.levels.WARN,
                 {
-                    title = "mkdnflow.nvim"
+                    title = 'mkdnflow.nvim',
                 }
             )
             user_config.cmp = false

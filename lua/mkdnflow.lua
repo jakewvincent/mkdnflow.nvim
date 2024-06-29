@@ -31,6 +31,7 @@ local default_config = {
         maps = true,
         paths = true,
         tables = true,
+        to_do = true,
         yaml = false,
         cmp = false,
     },
@@ -102,11 +103,12 @@ local default_config = {
         template = '# {{title}}',
     },
     to_do = {
-        symbols = { ' ', '-', 'X' },
+        statuses = {
+            { name = 'not_started', symbol = ' ' , legacy_symbols = {} },
+            { name = 'in_progress', symbol = '-', legacy_symbols = {} },
+            { name = 'complete', symbol = 'X', legacy_symbols = {} },
+        },
         update_parents = true,
-        not_started = ' ',
-        in_progress = '-',
-        complete = 'X',
     },
     tables = {
         trim_whitespace = true,
@@ -299,6 +301,7 @@ init.setup = function(user_config)
                 end
             end
         end
+        -- Set jump pattern set based on user's link type
         if init.config.cursor.jump_patterns == nil then
             if init.config.links.style == 'markdown' then
                 init.config.cursor.jump_patterns = {
@@ -329,6 +332,7 @@ init.setup = function(user_config)
         init.tables = init.config.modules.tables and require('mkdnflow.tables')
         init.yaml = init.config.modules.yaml and require('mkdnflow.yaml')
         init.cmp = init.config.modules.cmp and require('mkdnflow.cmp')
+        init.to_do = init.config.modules.to_do and require('mkdnflow.to_do')
         -- Record load status (i.e. loaded)
         init.loaded = true
     else
