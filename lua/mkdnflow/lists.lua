@@ -178,9 +178,6 @@ M.toggleToDo = function(opts)
 end
 
 M.newListItem = function(carry, above, cursor_moves, mode_after, alt, line)
-    local to_do_not_started = vim.tbl_filter(function(t)
-        return type(t) == 'table' and t.name == 'not_started'
-    end, require('mkdnflow').config.to_do.statuses)[1].symbol
     carry = (carry == nil and true) or (carry ~= nil and carry)
     above = above and true
     local current_mode = vim.api.nvim_get_mode()['mode']
@@ -215,6 +212,9 @@ M.newListItem = function(carry, above, cursor_moves, mode_after, alt, line)
             -- Add the marker
             next_line = next_line .. string.match(line, M.patterns[li_type].marker)
             if li_type == 'oltd' or li_type == 'ultd' then -- Make sure new to-do items have not_started status
+                local to_do_not_started = vim.tbl_filter(function(t)
+                    return type(t) == 'table' and t.name == 'not_started'
+                end, require('mkdnflow').config.to_do.statuses)[1].symbol
                 next_line = next_line .. '[' .. to_do_not_started .. '] '
             end
             -- The current length is where we want the cursor to go
