@@ -31,15 +31,16 @@ CONTENTS                                                         *Mkdnflow-help*
   Credits.................................|Mkdnflow-credits|
   References..............................|Mkdnflow-references|
   Breaking changes........................|Mkdnflow-changes|
-  License.................................Mkdnflow-license
+  License.................................|Mkdnflow-license|
 
 ==============================================================================
-TOP THREE LATEST FEATURES AND ANNOUNCEMENTS           *Mkdnflow-latest-features*
-1. Improved table formatting and formatting style options (see
+LATEST FEATURES AND ANNOUNCEMENTS           *Mkdnflow-latest-features*
+1. Custom and customizable foldtext for section folds (see |Mkdnflow-folding|)
+2. Improved table formatting and formatting style options (see
 |Mkdnflow-config-tables-style|)
-2. Customize "jump patterns" for link jumping (see
+3. Customize "jump patterns" for link jumping (see
 |Mkdnflow-config-jump-patterns|)
-3. Completion of file links and bib-based references for nvim-cmp (see
+4. Completion of file links and bib-based references for nvim-cmp (see
 |Mkdnflow-completion|)
 
 Announcements~
@@ -563,28 +564,22 @@ SECTION FOLDING                                               *Mkdnflow-folding*
       visual and normal modes.
 - Fold the section the cursor is currently in—even if the cursor is not on the
   heading—using `<leader>f`
+- By default, foldtext (the text displayed for a closed fold) is prettified and
+  includes useful information, including:
+    - The level of the section folded
+    - The section title, modified by a (customizable) transformation function
+    - The number of markdown objects contained by the fold, including tables,
+      unordered lists, ordered lists, to-do lists, links, and subsections
+        - Three icon sets are available—`emoji`, `nerdfont` (requires you to be
+          using a nerdfont or patched font in your interface), `plain` (non-
+          emoji unicode symbols)—see the table below—and the icons are
+          [customizable/overridable](#foldtext-dictionary-like-table).
+    - The number of lines in the fold
+    - The percentage of document lines the fold contains
+    - The number of words in the fold
 
 LISTS                                                           *Mkdnflow-lists*
-- Toggle the status of a to-do list item on the current line (mapped to
-  `<C-Space>` by default). Using the default settings, toggling will result in
-  the following changes. To-do symbols can be customized.
-    - `- [ ] ...` → `- [-] ...`
-    - `- [-] ...` → `- [X] ...`
-    - `- [X] ...` → `- [ ] ...`
-- Toggle multiple to-do items at once by selecting the lines to toggle in
-  (simple) visual mode (mapped to `<C-Space>` by default)
-- Create to-do items from plain unordered or ordered lists by toggling a
-  non-to-do-list item (`<C-Space>` by default)
-- Automatically update any parent to-dos when child to-dos are toggled.
-    - When all child to-dos have been marked complete, the parent is marked
-      complete
-    - When at least one child to-do has been marked in-progress, the parent
-      to-do is marked in-progress
-    - When a parent to-do is marked complete and one child to-do is reverted
-      to not-yet-started or in-progress, the parent to-do is marked in-progress
-    - When a parent to-do is marked complete or in-progress and all child
-      to-dos have been reverted to not-yet-started, the parent to-do is marked
-      not-yet-started.
+- List markers recognized: `-`, `*`, and `+`
 - Update numbering for the list the cursor is currently on
     - `<leader>nn` (default mapping) or `:MkdnUpdateNumbering 0<CR>`, e.g., if
       you want to start numbering at 0
@@ -605,6 +600,28 @@ LISTS                                                           *Mkdnflow-lists*
   to `o` and `O` by default, respectively) to insert new list items (or new
   lines if not in a list) and begin insert mode
 
+TO-DO LISTS                                               *Mkdnflow-to-do-lists*
+- Toggle the status of a to-do list item on the current line (mapped to
+  `<C-Space>` by default). Using the default settings, toggling will result in
+  the following changes. To-do symbols can be customized (see
+  |Mkdnflow-config-to-do|).
+    - `* [ ] ...` → `* [-] ...`
+    - `* [-] ...` → `* [X] ...`
+    - `* [X] ...` → `* [ ] ...`
+- Toggle multiple to-do items at once by selecting the lines to toggle in
+  simple visual mode (mapped to `<C-Space>` by default)
+- Create to-do items from plain unordered or ordered lists by toggling a
+  non-to-do-list item (`<C-Space>` by default)
+- Automatically update any parent to-dos when child to-dos are toggled.
+    - When all child to-dos have been marked complete, the parent is marked
+      complete
+    - When at least one child to-do has been marked in-progress, the parent
+      to-do is marked in-progress
+    - When a parent to-do is marked complete and one child to-do is reverted to
+      not-yet-started or in-progress, the parent to-do is marked in-progress
+    - When a parent to-do is marked complete or in-progress and all child to-dos
+      have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
+
 TABLES                                                         *Mkdnflow-tables*
 - Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`.
   Table headers are added automatically; to exclude headers, use
@@ -619,6 +636,11 @@ TABLES                                                         *Mkdnflow-tables*
 - Optionally disable formatting when moving cells
 - Add new rows or columns (before or after the current row/cell; see
   |Mkdnflow-commands| for default mappings to these functions
+- Table styling options (see |Mkdnflow-config-tables-style|)
+    - Customize cell padding
+    - Customize separator row padding
+    - Include or exclude outer pipes
+    - Mimic column alignment (left/center/right) in markdown
 
 DISABLE UNUSED MODULES                                        *Mkdnflow-modules*
 - Individually disable any of the modules that enable all of the above
@@ -629,6 +651,26 @@ DISABLE UNUSED MODULES                                        *Mkdnflow-modules*
       from being defined (and prevents mappings to those commands from being
       set)
 
+YAML BLOCK PARSING                 *Mkdnflow-yaml-block-parsing* *Mkdnflow-yaml*
+- Use YAML blocks at the very top of a markdown document to specify certain
+  settings on a by-file basis:
+    - Paths to bib files (must be absolute paths):
+        - Specify as a string or a list (see examples of each below)
+
+Specify one bib source:
+>
+    ---
+    bib: /home/user/Documents/Library/library.bib
+    ---
+<
+Specify multiple bib sources:
+>
+    ---
+    bib:
+      - /home/user/Documents/Library/library.bib
+      - /home/user/Projects/special_project/refs.bib
+    ---
+<
 ==============================================================================
 CAVEATS AND WARNINGS                                          *Mkdnflow-caveats*
                                                              *Mkdnflow-warnings*
@@ -748,8 +790,10 @@ SAMPLE CONFIG (DEFAULTS)                               *Mkdnflow-default-config*
             conceal = true,
             cursor = true,
             folds = true,
+            foldtext = true,
             links = true,
             lists = true,
+            to_do = true,
             maps = true,
             paths = true,
             tables = true,
@@ -799,11 +843,31 @@ SAMPLE CONFIG (DEFAULTS)                               *Mkdnflow-default-config*
             template = "# {{ title }}"
         },
         to_do = {
-            symbols = {' ', '-', 'X'},
+            statuses = {
+                { name = 'not_started', symbol = ' ', legacy_symbols = {} },
+                { name = 'in_progress', symbol = '-', legacy_symbols = {} },
+                { name = 'complete', symbol = 'X', legacy_symbols = {} },
+            },
             update_parents = true,
-            not_started = ' ',
-            in_progress = '-',
-            complete = 'X'
+        },
+        foldtext = {
+            object_count = true,
+            object_count_icons = 'emoji',
+            object_count_opts = function()
+                return require('mkdnflow').foldtext.default_count_opts()
+            end,
+            line_count = true,
+            line_percentage = true,
+            word_count = false,
+            title_transformer = nil,
+            separator = ' · ',
+            fill_chars = {
+                left_edge = '⢾',
+                right_edge = '⡷',
+                left_inside = ' ⣹',
+                right_inside = '⣏ ',
+                middle = '⣿',
+            },
         },
         tables = {
             trim_whitespace = true,
@@ -880,6 +944,7 @@ CONFIG DESCRIPTIONS                               *Mkdnflow-config-descriptions*
       anchor links)
                                                  *Mkdnflow-config-modules-folds*
     - `modules.folds` (required for folding by section)
+    - `modules.foldtext` (required for foldtext customized within the plugin)
                                                  *Mkdnflow-config-modules-links*
     - `modules.links` (required for creating and destroying links and
       following links)
@@ -1051,13 +1116,22 @@ it in the list.
 <
 `to_do` (dictionary-like table)~
                                                          *Mkdnflow-config-to-do*
-                                                 *Mkdnflow-config-to-do-symbols*
-- `to_do.symbols` (array-like table): A list of symbols (each no more than one
-  character) that represent to-do list completion statuses. `MkdnToggleToDo`
-  references these when toggling the status of a to-do item. Three are
-  expected: one representing not-yet-started to-dos (default: `' '`), one
-  representing in-progress to-dos (default: `-`), and one representing
-  complete to-dos (default: `X`).
+                                                 *Mkdnflow-config-to-do-statuses*
+- `to_do.statuses` (array-like table): A list of tables, each of which
+  represents a to-do status and minimally has a `name` key and a `symbol` key,
+  optionally also a `legacy_symbols` key with a table value. An arbitrary number
+  of to-do statuses can be provided, but built-in functionality only works with
+  recognized status names (see `to_do.statuses[].name` below, as well as
+  |Mkdnflow-to-do-lists|
+    - `to_do.statuses[].name` (string): The name of the to-do status. The
+      recognized names are `not_started`, `in_progress`, and `complete`.
+    - `to_do.statuses[].symbol` (string): The symbol to use for the status. Up
+      to four bytes are permitted, but the symbol must only be one character.
+    - `to_do.statuses[].legacy_symbols` (array-like table): A list of symbols
+      previously used for the status. This will ensure compatibility with any
+      to-do lists you have previously made with different symbols. Not providing
+      legacy symbols will mean that you may not be able to toggle the status of
+      old to-do lists that use other status symbols.
                                           *Mkdnflow-config-to-do-update_parents*
 - `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be
   updated based on child to-do status changes performed via `MkdnToggleToDo`
@@ -1065,6 +1139,19 @@ it in the list.
       automatically updated when a child to-do's status is changed
     - `false`: To-do items can be toggled, but parent to-do statuses (if any)
       will not be automatically changed
+
+DEPRECATED:
+The following to-do configuration options are deprecated. Please use the
+|Mkdnflow-config-to-do-statuses| table instead. Continued support for these
+options is temporarily provided by a compatibility layer that will be removed in
+the near future.
+                                                 *Mkdnflow-config-to-do-symbols*
+- `to_do.symbols` (array-like table): A list of symbols (each no more than one
+  character) that represent to-do list completion statuses. `MkdnToggleToDo`
+  references these when toggling the status of a to-do item. Three are
+  expected: one representing not-yet-started to-dos (default: `' '`), one
+  representing in-progress to-dos (default: `-`), and one representing
+  complete to-dos (default: `X`).
 - The following entries can be used to stipulate which symbols shall be used
   when updating a parent to-do's status when a child to-do's status is
   changed. These are **not required**: if `to_do.symbols` is customized but
@@ -1084,6 +1171,171 @@ it in the list.
     - `to_do.complete` (string):  Stipulates which symbol represents a
       complete to-do
 
+`foldtext` (dictionary-like table)~
+                                                      *Mkdnflow-config-foldtext*
+                                         *Mkdnflow-config-foldtext-object_count*
+- `foldtext.object_count` (boolean): Whether to show a count of all the objects
+  inside of a folded section (default: `true`)
+                                *Mkdnflow-config-foldtext-object_count_icon_set*
+                                                *Mkdnflow-config-foldtext-icons*
+- `foldtext.object_count_icon_set` (string or dictionary-like table): Which icon
+  set to use to represent the counted objects. The pre-packaged icon sets are
+  named `'emoji'` (default), `'plain'`, and `'nerdfont'`.
+                                    *Mkdnflow-config-foldtext-object_count_opts*
+                                 *Mkdnflow-config-foldtext-object_count_options*
+- `foldtext.object_count_opts` (function => table): A function returning a
+  dictionary-like table specifying various attributes of the objects to be
+  counted (default:
+
+>
+    function()
+        return require('mkdnflow').foldtext.default_count_opts
+    end
+<
+  , where the keys are the names of the objects to be counted. If the names are
+  one of the `{name}`s `tbl`, `ul`, `ol`, `todo`, `img`, `fncblk`, `sec`, `par`,
+  or `link`, any of the following entries will be filled in with the default
+  value if you do not provide a value for it in your custom table (see below
+  this list for a sample foldtext configuration 'recipe'):
+    - `foldtext.object_count_opts().{name}.icon` (string): The icon to use to
+      represent the counted object (default: the value for `{name}` in the emoji
+      icon set, or if another icon set is named, the value for `{name}` in
+      whichever icon set you've specified)
+    - `foldtext.object_count_opts().{name}.count_method.prep` (function =>
+      string): A function that performs any preprocessing manipulations to the
+      text before the pattern is used to count objects according to the tallying
+      method specified. This may be useful if it helps you write a simpler
+      pattern (default: Only `tbl` \[table\] and `fncblk` \[fenced code block\]
+      have default preprocessing functions:
+        - `tbl`'s preprocessor strips wiki-style links from the document so that
+          the vertical bar is not counted as part of a table
+        - `fncblk`'s preprocessor adds a newline character to the beginning of
+          the section if the section starts immediately with a fenced code
+          block).
+    - `foldtext.object_count_opts().{name}.count_method.pattern` (table): An
+      array-like table of strings (Lua patterns). Used differently depending on
+      the object type's corresponding tally method (see below).
+    - `foldtext.object_count_opts().{name}.count_method.tally` (string): One of
+      three tallying methods to use for the object type: `'blocks'`,
+      `'line_matches'`, or `'global_matches'`. The effects of each of these are
+      as follows:
+        - `'blocks'`: If this tally method is used for an object type, all
+          contiguous _blocks_ of lines matching the pattern(s) for a particular
+          type are counted. (Patterns for this method need to cause a successful
+          match if part of a multi-line object occurs on the line—for instance,
+          `'^[-*] '` will match a line with an unordered list item using `*` or
+          `-` as an item marker.) `tbl`, `ul`, `ol`, and `todo` use this method
+          by default.
+        - `'line_matches'`: If this tally method is used for an object type, one
+          or more matches on a line will count as one match. (Patterns for this
+          method need to cause a successful match if the object occurs on the
+          line—for instance, `'^#+%s'` will match a section heading beginning
+          with at least one hash.) `sec` uses this method by default.
+        - `'global_matches'`: If this tally method is used for an object type,
+          every match of an instance across the entire fold section is counted
+          individually. Patterns may take multiple lines into account because
+          the string searched is a concatenation of all lines in the folded
+          section (separated by newlines characters `\n`). (Patterns for this
+          method should match every individual occurrence of the object—for
+          instance, `'%b[]%b()'` will match every markdown-style link.) `img`,
+          `fncblk`, `par`, and `link` use this method by default.
+                                           *Mkdnflow-config-foldtext-line_count*
+- `foldtext.line_count` (boolean): Whether to show the count of lines contained
+  in the fold (default: `true`)
+                                      *Mkdnflow-config-foldtext-line_percentage*
+- `foldtext.line_percentage` (boolean): Whether to show the percentage of
+  document lines contained in the fold (default: `true`)
+                                           *Mkdnflow-config-foldtext-word_count*
+- `foldtext.word_count` (boolean): Whether to show the count of words contained
+  in the fold (default: `false`)
+                                    *Mkdnflow-config-foldtext-title_transformer*
+- `foldtext.title_transformer` (function => \[function => string\]): A function
+  that returns a function that returns a string. This function accepts a string
+  (the text of the first line in the fold \[a section heading\]) and returns a
+  transformed string for use in the foldtext. This is the default:
+
+>
+    function()
+        require('mkdnflow').foldtext.default_title_transformer
+    end
+<
+                                           *Mkdnflow-config-foldtext-fill_chars*
+                                      *Mkdnflow-config-foldtext-fill_characters*
+- `foldtext.fill_chars` (dictionary-like table)
+    - `foldtext.fill_chars.left_edge` (string): The character(s) to use at the
+      very left edge of the foldtext, adjacent to the left edge of the window
+      (default: `'⢾⣿⣿'`)
+    - `foldtext.fill_chars.right_edge` (string): The character(s) to use at the
+      very right edge of the foldtext, adjacent to the right edge of the window
+      (default: `'⣿⣿⡷'`)
+    - `foldtext.fill_chars.item_separator` (string): The character(s) used to
+      separate the items within a section, such as the various object counts
+      (default: `' · '`)
+    - `foldtext.fill_chars.section_separator` (string): The character(s) used to
+      separate _adjacent_ sections (default: `' ⣹⣿⣏ '`). At time of writing, the
+      only adjacent sections are the item-count section and the line- and
+      word-count section (both on the right end of the foldtext). The section
+      title is a separate section (on the left) but is not adjacent to any other
+      sections.
+    - `foldtext.fill_chars.left_inside` (string): The character(s) used to
+      separate  (default: `' ⣹'`)
+    - `foldtext.fill_chars.right_inside` (string): (default: `'⣏ '`)
+    - `foldtext.fill_chars.middle` (string): (default: `'⣿'`)
+
+                                 *Mkdnflow-config-foldtext-sample-config-recipe*
+>
+    -- SAMPLE FOLDTEXT CONFIGURATION RECIPE WITH COMMENTS
+    require('mkdnflow').setup({
+        -- Other config options
+        foldtext = {
+            title_transformer = function()
+                local function my_title_transformer(text)
+                    local updated_title = text:gsub('%b{}', '')
+                    updated_title = updated_title:gsub('^%s*', '')
+                    updated_title = updated_title:gsub('%s*$', '')
+                    updated_title = updated_title:gsub('^######', '░░░░░▓')
+                    updated_title = updated_title:gsub('^#####', '░░░░▓▓')
+                    updated_title = updated_title:gsub('^####', '░░░▓▓▓')
+                    updated_title = updated_title:gsub('^###', '░░▓▓▓▓')
+                    updated_title = updated_title:gsub('^##', '░▓▓▓▓▓')
+                    updated_title = updated_title:gsub('^#', '▓▓▓▓▓▓')
+                    return updated_title
+                end
+                return my_title_transformer
+            end,
+            object_count_icon_set = 'nerdfont', -- Use/fall back on the nerdfont icon set
+            object_count_opts = function()
+                local opts = {
+                    link = false, -- Prevent links from being counted
+                    blockquote = { -- Count block quotes (these aren't counted by default)
+                        icon = ' ',
+                        count_method = {
+                            pattern = { '^>.+$' },
+                            tally = 'blocks',
+                        }
+                    },
+                    fncblk = {
+                        -- Override the icon for fenced code blocks with 
+                        icon = ' '
+                    }
+                }
+                return opts
+            end,
+            line_count = false, -- Prevent lines from being counted
+            word_count = true, -- Count the words in the section
+            fill_chars = {
+                left_edge = '╾─🖿 ─',
+                right_edge = '──╼',
+                item_separator = ' · ',
+                section_separator = ' // ',
+                left_inside = ' ┝',
+                right_inside = '┥ ',
+                middle = '─',
+            },
+        },
+        -- Other config options
+    })
+<
 `tables` (dictionary-like table)~
                                                         *Mkdnflow-config-tables*
                                         *Mkdnflow-config-tables-trim_whitespace*

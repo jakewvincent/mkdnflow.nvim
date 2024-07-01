@@ -235,17 +235,6 @@ Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyl
 
 ### Lists
 * List markers recognized: `-`, `*`, and `+`
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table).
-    * `* [ ] ...` → `* [-] ...`
-    * `* [-] ...` → `* [X] ...`
-    * `* [X] ...` → `* [ ] ...`
-* Toggle multiple to-do items at once by selecting the lines to toggle in (simple) visual mode (mapped to `<C-Space>` by default)
-* Create to-do items from plain unordered or ordered lists by toggling a non-to-do-list item (`<C-Space>` by default)
-* Automatically update any parent to-dos when child to-dos are toggled.
-    * When all child to-dos have been marked complete, the parent is marked complete
-    * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
-    * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
-    * When a parent to-do is marked complete or in-progress and all child to-dos have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
 * Update numbering for the list the cursor is currently on
     * `<leader>nn` (default mapping) or `:MkdnUpdateNumbering 0<CR>`, e.g., if you want to start numbering at 0
 * Smart(er) behavior when `<CR>`ing in lists (NOTE: currently not enabled by default. See below.)
@@ -256,6 +245,7 @@ Credit: We heavily referenced [cmp-pandoc-references](https://github.com/jc-doyl
     * Automatically indent a new list item when the current one ends in a colon
     * Demote empty indented list items by reducing the indentation by one level
 * Add new list items using the list type of the current line without any of the fancy stuff listed above (see [MkdnExtendList](#-commands-and-default-mappings))
+* Use `:MkdnNewListItemBelowInsert` and `:MkdnNewListItemAboveInsert` (mapped to `o` and `O` by default, respectively) to insert new list items (or new lines if not in a list) and begin insert mode
 
 ```lua
 require('mkdnflow').setup({
@@ -268,6 +258,19 @@ require('mkdnflow').setup({
     }
 })
 ```
+
+### To-do lists
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table).
+    * `* [ ] ...` → `* [-] ...`
+    * `* [-] ...` → `* [X] ...`
+    * `* [X] ...` → `* [ ] ...`
+* Toggle multiple to-do items at once by selecting the lines to toggle in (simple) visual mode (mapped to `<C-Space>` by default)
+* Create to-do items from plain unordered or ordered lists by toggling a non-to-do-list item (`<C-Space>` by default)
+* Automatically update any parent to-dos when child to-dos are toggled.
+    * When all child to-dos have been marked complete, the parent is marked complete
+    * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
+    * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
+    * When a parent to-do is marked complete or in-progress and all child to-dos have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
 
 ### Tables
 * Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
@@ -442,11 +445,12 @@ require('mkdnflow').setup({
         foldtext = true,
         links = true,
         lists = true,
+        to_do = true,
         maps = true,
         paths = true,
         tables = true,
         yaml = false,
-        cmp = false
+        cmp = false,
     },
     filetypes = {md = true, rmd = true, markdown = true},
     create_dirs = true,
@@ -493,11 +497,12 @@ require('mkdnflow').setup({
         template = "# {{ title }}"
     },
     to_do = {
-        symbols = {' ', '-', 'X'},
+        statuses = {
+            { name = 'not_started', symbol = ' ', legacy_symbols = {} },
+            { name = 'in_progress', symbol = '-', legacy_symbols = {} },
+            { name = 'complete', symbol = 'X', legacy_symbols = {} },
+        },
         update_parents = true,
-        not_started = ' ',
-        in_progress = '-',
-        complete = 'X'
     },
     foldtext = {
         object_count = true,
@@ -581,8 +586,10 @@ require('mkdnflow').setup({
     * `modules.conceal` (required if you wish to enable [link concealing](#markdown-or-wiki-link-styles); note that you must declare [`links.conceal` as `true`](#links-dictionary-like-table) in addition to leaving this module enabled [it is enabled by default] if you wish to conceal links)
     * `modules.cursor` (required for [jumping to links and headings](#jump-to-links-headings); [yanking anchor links](#create-customize-and-destroy-links))
     * `modules.folds` (required for [folding by section](#section-folding))
+    * `modules.foldtext` (required for foldtext [customized within the plugin](#section-folding))
     * `modules.links` (required for [creating and destroying links](#create-customize-and-destroy-links) and [following links](#follow-links-and-citations))
-    * `modules.lists` (required for [manipulating lists, toggling to-do list items, etc.](#lists))
+    * `modules.lists` (required for [working in and manipulating lists, etc.](#lists))
+    * `modules.to_do` (required for [manipulating to-do statuses/lists, toggling to-do list items, etc.](#lists))
     * `modules.maps` (required for [setting mappings via the mappings table](#keybindings); set to `false` if you wish to set mappings outside of the plugin)
     * `modules.paths` (required for [link interpretation](#customizable-link-interpretation) and [following links](#follow-links-and-citations))
     * `modules.tables` (required for [table navigation and formatting](#tables))
@@ -688,14 +695,21 @@ end
 * `new_file_template.template` (string) A string, optionally containing placeholder names, that will be inserted into new buffers
 
 #### `to_do` (dictionary-like table)
-* `to_do.symbols` (array-like table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
+* `to_do.statuses` (array-like table): A list of tables, each of which represents a to-do status and minimally has a `name` key and a `symbol` key, optionally also a `legacy_symbols` key with a table value. An arbitrary number of to-do statuses can be provided, but built-in functionality only works with recognized status names (see `to_do.statuses[].name` below, as well as [To-do lists](#to-do-lists))
+    * `to_do.statuses[].name` (string): The name of the to-do status. The recognized names are `not_started`, `in_progress`, and `complete`.
+    * `to_do.statuses[].symbol` (string): The symbol to use for the status. Up to four bytes are permitted, but the symbol must only be one character.
+    * `to_do.statuses[].legacy_symbols` (array-like table): A list of symbols previously used for the status. This will ensure compatibility with any to-do lists you have previously made with different symbols. Not providing legacy symbols will mean that you may not be able to toggle the status of old to-do lists that use other status symbols.
 * `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
     * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
     * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
-* The following entries can be used to stipulate which symbols shall be used when updating a parent to-do's status when a child to-do's status is changed. These are **not required**: if `to_do.symbols` is customized but these options are not provided, the plugin will attempt to infer what the meanings of the symbols in your list are by their order. For example, if you set `to_do.symbols` as `{' ', '⧖', '✓'}`, `' '` will be assiged to `to_do.not_started`, '⧖' will be assigned to `to_do.in_progress`, etc. If more than three symbols are specified, the first will be used as `not_started`, the second will be used as `in_progress`, and the last will be used as `complete`. If two symbols are provided (e.g. `' ', '✓'`), the first will be used as both `not_started` and `in_progress`, and the second will be used as `complete`.
-    * `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do (default: `' '`)
-    * `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do (default: `'-'`)
-    * `to_do.complete` (string):  Stipulates which symbol represents a complete to-do (default: `'X'`)
+
+> [!WARNING]
+> **The following to-do configuration options are deprecated. Please use the `to_do.statuses` table instead. Continued support for these options is temporarily provided by a compatibility layer that will be removed in the near future.**
+> * `to_do.symbols` (array-like table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
+> * The following entries can be used to stipulate which symbols shall be used when updating a parent to-do's status when a child to-do's status is changed. These are **not required**: if `to_do.symbols` is customized but these options are not provided, the plugin will attempt to infer what the meanings of the symbols in your list are by their order. For example, if you set `to_do.symbols` as `{' ', '⧖', '✓'}`, `' '` will be assiged to `to_do.not_started`, '⧖' will be assigned to `to_do.in_progress`, etc. If more than three symbols are specified, the first will be used as `not_started`, the second will be used as `in_progress`, and the last will be used as `complete`. If two symbols are provided (e.g. `' ', '✓'`), the first will be used as both `not_started` and `in_progress`, and the second will be used as `complete`.
+>    * `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do (default: `' '`)
+>    * `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do (default: `'-'`)
+>    * `to_do.complete` (string):  Stipulates which symbol represents a complete to-do (default: `'X'`)
 
 #### `foldtext` (dictionary-like table)
 * `foldtext.object_count` (boolean): Whether to show a count of all the objects inside of a folded section (default: `true`)
