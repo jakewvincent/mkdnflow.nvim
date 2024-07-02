@@ -227,6 +227,8 @@ end
 
 --- Method to find and register the ancestors of a to-do item in itself
 function to_do_item:add_ancestors()
+    -- Of all the ancestors, only the children will be a complete (sub-) to-do list
+    local children = to_do_list:new()
     -- Only look for parents and siblings if we have an indentation
     if self.level > 0 then
         -- Look up for the parent (and siblings)
@@ -256,7 +258,8 @@ function to_do_item:add_ancestors()
             if candidate.level == self.level then -- Sibling
                 table.insert(self.siblings, candidate)
             elseif candidate.level == self.level + 1 then -- Child
-                table.insert(self.children, candidate)
+                children:add_item(candidate)
+                -- Skip valid candidates w/ a level > self's level + 1; these would be grandchildren
             end
             cur_line = cur_line + 1
             candidate = self:read(cur_line, false)
@@ -273,6 +276,8 @@ function to_do_item:add_ancestors()
             child = candidate.level == (self.level + 1)
         end
     end
+    -- Add the sub-list of children to the children field
+    self.children = children
 end
 
 --- Method to get the status object for a target status
