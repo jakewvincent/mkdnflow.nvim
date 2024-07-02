@@ -201,6 +201,30 @@ function to_do_item:read(line_nr, find_ancestors)
     return new_to_do_item
 end
 
+--- Method for a to-do item to update itself (e.g. if it is only partially complete)
+--- @param find_ancestors? boolean Whether or not to look for ancestors of the to-do item
+function to_do_item:update(find_ancestors)
+    find_ancestors = find_ancestors == nil and true or find_ancestors
+    -- Check if we have a valid to-do list new_to_do_item
+    local valid_str = self.content:match('^%s-[-+*%d]+%.?%s-%[..?.?.?%]') -- Up to 4 bytes for the status
+    if valid_str then
+        -- Retrieve the symbol from the matching string
+        local symbol = valid_str:match('%[(..?.?.?)%]')
+        -- Record validity, status
+        self.valid, self.status = true, to_do_statuses:get(symbol) or self.status
+
+        -- Figure out the level of the current to-do item (based on indentation)
+        _, self.level = string.gsub(self.content:match('^%s*'), vim_indent, '')
+
+        -- Identify parents, siblings, and children
+        if find_ancestors then
+            self:add_ancestors()
+        end
+    else
+        self.valid = false
+    end
+end
+
 --- Method to find and register the ancestors of a to-do item in itself
 function to_do_item:add_ancestors()
     -- Only look for parents and siblings if we have an indentation
