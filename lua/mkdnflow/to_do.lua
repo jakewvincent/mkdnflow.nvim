@@ -371,7 +371,7 @@ end
 --- the list, and the function will identify the start and end of the list independently.
 --- @param line_nr? integer A line number of an item in the list
 --- @return to_do_list # A filled-in to-do list
-function to_do_list:get(line_nr)
+function to_do_list:find(line_nr)
     line_nr = line_nr ~= nil and line_nr or vim.api.nvim_win_get_cursor(0)[1]
     -- Prepare a table for the to-do list
     local new_to_do_list = to_do_list:new()
@@ -422,7 +422,7 @@ end
 --- @return to_do_list # A complete to-do list
 function M.get_to_do_list(line_nr)
     line_nr = line_nr or vim.api.nvim_win_get_cursor(0)[1] -- Use cur. line if no line provided
-    local list = to_do_list:get(line_nr)
+    local list = to_do_list:find(line_nr)
     return list
 end
 
