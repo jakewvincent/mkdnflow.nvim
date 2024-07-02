@@ -374,13 +374,61 @@ end
 function to_do_list:find(line_nr)
     line_nr = line_nr ~= nil and line_nr or vim.api.nvim_win_get_cursor(0)[1]
     -- Prepare a table for the to-do list
-    local new_to_do_list = to_do_list:new()
-    -- Look up, adding lines that are valid to-do list items into the list
+    local new_list = to_do_list:new()
+    -- The current line
     local cur_line_nr, item = line_nr, to_do_item:read(line_nr)
-    while cur_line_nr >= 0 and item.valid do
-        table.insert(new_to_do_list.items, 1, item)
-        cur_line_nr = cur_line_nr - 1
-        item = to_do_item:read(cur_line_nr)
+    if item.valid then
+        -- See if there are any siblings above this item
+        if not vim.tbl_isempty(item.siblings) then
+            local siblings_above = item.line_nr - item.siblings[1].line_nr
+            for sib = 1, siblings_above do
+                table.insert(new_list.items, sib, item.siblings[sib])
+            end
+            -- And see if there are any siblings below
+            local siblings_below = (not vim.tbl_isempty(item.siblings))
+                    and item.siblings[#item.siblings].line_nr - item.line_nr
+                or 0
+            for sib = (#item.siblings - siblings_below), #item.siblings do
+                table.insert(new_list.items, item.siblings[sib])
+            end
+        end
+    end
+    -- Identify the range of the list
+    new_list.line_range.start = new_list.items[1].line_nr
+    if not new_list.items[#new_list.items].children:is_empty() then
+        -- If the last item has children, use the last child as the finish
+        new_list.line_range.finish = new_list.items[#new_list.items].children.line_range.finish
+    else
+        -- Otherwise, use the line number of the last item
+        new_list.line_range.finish = new_list.items[#new_list.items].line_nr
+    end
+    return new_list
+end
+
+--- Method to get a valid to-do list within a range of lines
+--- @param start_line_nr integer The line number the list is supposed to start on
+--- @param finish_line_nr integer The line number the list is supposed to end on
+--- @return to_do_list # A valid to-do list
+function to_do_list:get_range(start_line_nr, finish_line_nr)
+    local lines = vim.api.nvim_buf_get_lines(0, start_line_nr - 1, finish_line_nr, false)
+    local instance, base_level = to_do_list:new(), 0
+    for i, line in ipairs(lines) do
+        local line_nr = start_line_nr - 1 + i
+        local item = to_do_item:new({ line_nr = line_nr, content = line })
+        item:update()
+        if i == 1 then
+            -- Let the first item in the list determine the base level for the list
+            base_level = item.level
+        end
+        -- Only add items to the current list if they are siblings of the first item. Items in the
+        -- list that have a lower level than the base level will result in the loop terminating.
+        -- That is sensible since that would mean we've encountered an auncle or cousin (which will
+        -- always mean we've reached the end of the current (sub-)to-do list).
+        if item.valid and item.level == base_level then
+            instance:add_item(item)
+        elseif item.valid and item.level < base_level then
+            break
+        end
     end
     -- Record the starting line of the to-do list
     new_to_do_list.line_range[1] = #new_to_do_list.items > 0 and new_to_do_list.items[1].line_nr
