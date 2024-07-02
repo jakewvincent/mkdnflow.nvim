@@ -144,23 +144,26 @@ end
 --- @field status.legacy_symbols? table A list of legacy (previously-used) symbols
 --- @field valid boolean Whether the line contains a recognized to-do item
 --- @field parent to_do_item The closest item in the list that has a level one less than the child item
---- @field children table[] A list of to-do items one level higher beneath the main item
+--- @field children to_do_list A list of to-do items one level higher beneath the main item
 --- @field siblings table[] A list of same-level to-do items adjacent to the current item
 local to_do_item = {}
 to_do_item.__index = to_do_item
+to_do_item.__className = 'to_do_item'
 
 --- Constructor method for to-do items
+--- @param opts? table # A table of possible options with values for the instance
 --- @return to_do_item # A skeletal to-do item
-function to_do_item:new()
+function to_do_item:new(opts)
+    opts = opts or {}
     local instance = {
-        line_nr = -1,
-        level = -1,
-        content = '',
-        status = {},
-        valid = false,
-        parent = {},
-        children = {},
-        siblings = {},
+        line_nr = opts.line_nr or -1,
+        level = opts.level or -1,
+        content = opts.content or '',
+        status = opts.status or {},
+        valid = opts.valid or false,
+        parent = opts.parent or {},
+        children = opts.children or to_do_list:new(),
+        siblings = opts.siblings or {},
     }
     setmetatable(instance, self)
     return instance
