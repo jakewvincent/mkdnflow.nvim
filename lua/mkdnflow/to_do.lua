@@ -461,12 +461,13 @@ function to_do_list:add_item(item)
     end
 end
 
+--- Method to diagnose a to-do list as empty
+--- @return boolean # A truth value indicating whether the current to-do list is empty or not
+function to_do_list:is_empty()
+    if vim.tbl_isempty(self.items) then
+        return true
     end
-    -- Record the ending line of the to-do list
-    new_to_do_list.line_range[2] = #new_to_do_list.items > 0
-            and new_to_do_list.items[#new_to_do_list.items].line_nr
-        or 0
-    return new_to_do_list
+    return false
 end
 
 --- The to_do module table
