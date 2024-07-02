@@ -112,6 +112,27 @@ function to_do_statuses:next(status)
     end
 end
 
+--- To-do lists
+--- @class to_do_list A class for a complete to-do list (series of same-level to-do items)
+--- @field items table[] A list of same-level to-do items
+--- @field line_range table A table containing the start and end line numbers of the list
+--- @field line_range.start integer The line number on which the to-do list starts
+--- @field line_range.finish integer The line number on which the to-do list ends
+local to_do_list = {}
+to_do_list.__index = to_do_list
+to_do_list.__className = 'to_do_list'
+
+--- Constructor method for to-do lists
+--- @return to_do_list # A skeletal to-do list
+function to_do_list:new()
+    local instance = {
+        items = {},
+        line_range = { start = 0, finish = 0 },
+    }
+    setmetatable(instance, self)
+    return instance
+end
+
 --- A class for individual to-do items
 --- @class to_do_item
 --- @field line_nr integer The (one-based) line number on which the to-do item can be found
@@ -310,28 +331,10 @@ function to_do_item:update_parent()
     end
 end
 
---- To-do lists
---- @class to_do_list A class for a complete to-do list (series of same-level to-do items)
---- @field items table[] A list of same-level to-do items
---- @field line_range table A table containing the start and end line numbers of the list
---- @field line_range.start integer The line number on which the to-do list starts
---- @field line_range.finish integer The line number on which the to-do list ends
-local to_do_list = {}
-to_do_list.__index = to_do_list
-
---- Constructor method for to-do lists
---- @return to_do_list # A skeletal to-do list
-function to_do_list:new()
-    local instance = {
-        items = {},
-        line_range = { start = 0, finish = 0 },
-    }
-    setmetatable(instance, self)
-    return instance
-end
-
---- Method to read in a to-do list, starting with the line passed in or the line of the cursor
---- @param line_nr integer? A line number (or nothing, in which case the cursor row will be used)
+--- Method to read in a to-do list. If `end_line_nr` is passed in, `line_nr` should be the line
+--- number of the first item in the list. Otherwise, `line_nr` can be the line number of any item in
+--- the list, and the function will identify the start and end of the list independently.
+--- @param line_nr? integer A line number of an item in the list
 --- @return to_do_list # A filled-in to-do list
 function to_do_list:get(line_nr)
     line_nr = line_nr ~= nil and line_nr or vim.api.nvim_win_get_cursor(0)[1]
