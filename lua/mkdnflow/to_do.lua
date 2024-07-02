@@ -373,6 +373,8 @@ end
 --- @return to_do_list # A filled-in to-do list
 function to_do_list:find(line_nr)
     line_nr = line_nr ~= nil and line_nr or vim.api.nvim_win_get_cursor(0)[1]
+    -- TODO: Efficiently look upward until we find the top of the to-do list, then use `get_range`
+    -- to get the entire list
     -- Prepare a table for the to-do list
     local new_list = to_do_list:new()
     -- The current line
@@ -430,17 +432,9 @@ function to_do_list:get_range(start_line_nr, finish_line_nr)
             break
         end
     end
-    -- Record the starting line of the to-do list
-    new_to_do_list.line_range[1] = #new_to_do_list.items > 0 and new_to_do_list.items[1].line_nr
-        or 0
+    return instance
+end
 
-    -- Look down...
-    local line_count = vim.api.nvim_buf_line_count(0)
-    cur_line_nr, item = line_nr + 1, to_do_item:read(line_nr + 1)
-    while cur_line_nr <= line_count and item.valid do
-        table.insert(new_to_do_list.items, item)
-        cur_line_nr = cur_line_nr + 1
-        item = to_do_item:read(cur_line_nr)
 
 --- Method to add a to-do item to an (internal) to-do list
 --- @param item to_do_item A valid to-do item
