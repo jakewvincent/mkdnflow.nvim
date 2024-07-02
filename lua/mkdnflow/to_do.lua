@@ -25,9 +25,20 @@ local vim_indent = vim.api.nvim_buf_get_option(0, 'expandtab') == true
 --- @param symbol string A to-do status symbol
 --- @return string|nil # The name of a to-do status symbol
 function to_do_statuses:name(symbol)
+    -- Look for the symbol first in the primary symbols
     for _, v in ipairs(self) do
         if v.symbol == symbol then
             return v.name
+        end
+    end
+    -- If the name has not been found yet, look in legacy symbols
+    for _, v in ipairs(self) do
+        if not vim.tbl_isempty(v.legacy_symbols) then
+            for _, v_ in ipairs(v.legacy_symbols) do
+                if v_ == symbol then
+                    return v.name
+                end
+            end
         end
     end
 end
@@ -53,6 +64,16 @@ function to_do_statuses:index(status)
             return i
         end
     end
+    -- If the status has not been found yet, look in legacy symbols
+    for i, v in ipairs(self) do
+        if not vim.tbl_isempty(v.legacy_symbols) then
+            for _, v_ in ipairs(v.legacy_symbols) do
+                if v_ == status then
+                    return i
+                end
+            end
+        end
+    end
 end
 
 --- Method to get a status table (includes name and symbol) based on a name or symbol
@@ -63,6 +84,16 @@ function to_do_statuses:get(status)
     for _, v in ipairs(self) do
         if v.name == status or v.symbol == status then
             return v
+        end
+    end
+    -- If the status has not been found yet, look in legacy symbols
+    for _, v in ipairs(self) do
+        if not vim.tbl_isempty(v.legacy_symbols) then
+            for _, v_ in ipairs(v.legacy_symbols) do
+                if v_ == status then
+                    return v
+                end
+            end
         end
     end
 end
