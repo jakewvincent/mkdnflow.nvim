@@ -393,6 +393,26 @@ function to_do_list:find(line_nr)
         table.insert(new_to_do_list.items, item)
         cur_line_nr = cur_line_nr + 1
         item = to_do_item:read(cur_line_nr)
+
+--- Method to add a to-do item to an (internal) to-do list
+--- @param item to_do_item A valid to-do item
+function to_do_list:add_item(item)
+    if item.valid then
+        -- Figure out which spot it should be inserted at (beginning or end)
+        if item.line_nr < self.line_range.start then
+            table.insert(self.items, 1, item)
+            self.line_range.start = item.line_nr
+        elseif item.line_nr > self.line_range.finish then
+            table.insert(self.items, item)
+            if not item.children:is_empty() then
+                self.line_range.finish = item.children.line_range.finish
+            else
+                self.line_range.finish = item.line_nr
+            end
+        end
+    end
+end
+
     end
     -- Record the ending line of the to-do list
     new_to_do_list.line_range[2] = #new_to_do_list.items > 0
