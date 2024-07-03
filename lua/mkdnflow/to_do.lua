@@ -234,55 +234,46 @@ function to_do_item:add_ancestors(opts)
     opts = opts ~= nil and vim.tbl_extend('force', default_opts, opts) or default_opts
     -- Of all the ancestors, only the children will be a complete (sub-) to-do list
     local children = to_do_list:new()
-    -- Only look for parents and siblings if we have an indentation
-    if self.level > 0 then
-        -- Look up for the parent (and siblings)
-        local cur_line = self.line_nr - 1
-        local candidate = self:read(cur_line, false)
-        local parent_sib_or_cous = (candidate.level == self.level - 1)
-            or candidate.level >= self.level
-        -- Keep checking as long as we have a valid candidate that is a parent or a sibling
-        while candidate.valid and cur_line > 0 and parent_sib_or_cous do
-            if candidate.valid and candidate.level < self.level then
-                self.parent = candidate
-                break -- Leave the while-loop if we've found the parent
-            elseif candidate.valid and candidate.level == self.level then
-                -- Take the opportunity to record any siblings we find
+    -- Look up for a potential parent and/or siblings
+    local cur_line = self.line_nr - 1
+    local candidate = self:read(cur_line, false)
+    local parent_sib_or_cous = (candidate.level == self.level - 1) or candidate.level >= self.level
+    -- Keep checking as long as we have a valid candidate that is a parent or a sibling
+    while candidate.valid and cur_line > 0 and parent_sib_or_cous do
+        if candidate.valid and candidate.level < self.level then
+            self.parent = opts.parent and candidate or {}
+            break -- Leave the while-loop if we've found the parent
+        elseif candidate.valid and candidate.level == self.level then
+            -- Take the opportunity to record any siblings we find
+            if opts.siblings then
                 table.insert(self.siblings, 1, candidate)
-                -- Skip valid candidates w/ a level greater than self's level; these would be cousins
             end
-            -- Get the next candidate
-            cur_line = cur_line - 1
-            candidate = self:read(cur_line, false)
-            parent_sib_or_cous = (candidate.level == self.level - 1)
-                or candidate.level >= self.level
+            -- Skip valid candidates w/ a level greater than self's level; these would be cousins
         end
-        -- Now look down for children or siblings
-        cur_line = self.line_nr + 1
+        -- Get the next candidate
+        cur_line = cur_line - 1
         candidate = self:read(cur_line, false)
-        local descendant_or_sib = candidate.level >= self.level
-        -- Stop when the candidate is invalid or has a lower level than the current item
-        while candidate.valid and descendant_or_sib do
-            if candidate.level == self.level then -- Sibling
+        parent_sib_or_cous = (candidate.level == self.level - 1) or candidate.level >= self.level
+    end
+    -- Now look down for children or siblings
+    cur_line = self.line_nr + 1
+    candidate = self:read(cur_line, false)
+    local descendant_or_sib = candidate.level >= self.level
+    -- Stop when the candidate is invalid or has a lower level than the current item
+    while candidate.valid and descendant_or_sib do
+        if candidate.level == self.level then -- Sibling
+            if opts.siblings then
                 table.insert(self.siblings, candidate)
-            elseif candidate.level == self.level + 1 then -- Child
-                children:add_item(candidate)
-                -- Skip valid candidates w/ a level > self's level + 1; these would be grandchildren
             end
-            cur_line = cur_line + 1
-            candidate = self:read(cur_line, false)
-            descendant_or_sib = candidate.level >= self.level
+        elseif candidate.level == self.level + 1 then -- Child
+            if opts.children then
+                children:add_item(candidate)
+            end
+            -- Skip valid candidates w/ a level > self's level + 1; these would be grandchildren
         end
-    else -- If the level is 0, we still need to look for children
-        local cur_line = self.line_nr + 1
-        local candidate = self:read(cur_line, false)
-        local descendant = candidate.level > self.level
-        while candidate.valid and descendant do
-            children:add_item(candidate)
-            cur_line = cur_line + 1
-            candidate = self:read(cur_line, false)
-            descendant = candidate.level > self.level
-        end
+        cur_line = cur_line + 1
+        candidate = self:read(cur_line, false)
+        descendant_or_sib = candidate.level >= self.level
     end
     -- Add the sub-list of children to the children field
     self.children = children
