@@ -385,9 +385,11 @@ end
 
 --- Method to get a valid to-do list within a range of lines
 --- @param start_line_nr integer The line number the list is supposed to start on
---- @param finish_line_nr integer The line number the list is supposed to end on
+--- @param finish_line_nr? integer The line number the list is supposed to end on
 --- @return to_do_list # A valid to-do list
 function to_do_list:get_range(start_line_nr, finish_line_nr)
+    -- If finish_line_nr is not provided, use the last line of the buffer
+    finish_line_nr = finish_line_nr or vim.api.nvim_buf_line_count(0)
     local lines = vim.api.nvim_buf_get_lines(0, start_line_nr - 1, finish_line_nr, false)
     local instance, base_level = to_do_list:new(), 0
     for i, line in ipairs(lines) do
