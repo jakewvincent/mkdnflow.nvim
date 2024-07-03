@@ -362,6 +362,27 @@ function to_do_item:update_parent()
     end
 end
 
+function to_do_item:has_siblings()
+    if not vim.tbl_isempty(self.siblings) then
+        return true
+    end
+    return false
+end
+
+function to_do_item:has_children()
+    if not self.children:is_empty() then
+        return true
+    end
+    return false
+end
+
+function to_do_item:has_parent()
+    if not vim.tbl_isempty(self.parent) then
+        return true
+    end
+    return false
+end
+
 --- Method to read in a to-do list. If `end_line_nr` is passed in, `line_nr` should be the line
 --- number of the first item in the list. Otherwise, `line_nr` can be the line number of any item in
 --- the list, and the function will identify the start and end of the list independently.
