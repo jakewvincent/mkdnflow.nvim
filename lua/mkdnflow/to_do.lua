@@ -171,10 +171,13 @@ end
 
 --- Method to read a to-do item from a line number
 --- @param line_nr integer A (one-based) line number from which to read the to-do item
---- @param find_ancestors? boolean Whether or not to look for and register ancestors of the to-do item
+--- @param find_ancestors? table|boolean Which ancestors to look for, or false if none
 --- @return to_do_item # A complete to-do item
 function to_do_item:read(line_nr, find_ancestors)
-    find_ancestors = find_ancestors == nil and true or find_ancestors
+    find_ancestors = find_ancestors == false
+            and { children = false, parents = false, siblings = false }
+        or (type(find_ancestors) == 'table' and find_ancestors)
+        or {}
     local new_to_do_item = to_do_item:new() -- Create a new instance
     -- Get the line
     local line = vim.api.nvim_buf_get_lines(0, line_nr - 1, line_nr, false)
@@ -192,9 +195,7 @@ function to_do_item:read(line_nr, find_ancestors)
         _, new_to_do_item.level = string.gsub(new_to_do_item.content:match('^%s*'), vim_indent, '')
 
         -- Identify parents, siblings, and children
-        if find_ancestors then
-            new_to_do_item:add_ancestors()
-        end
+        new_to_do_item:add_ancestors(find_ancestors)
     else
         new_to_do_item.valid = false
     end
@@ -202,9 +203,12 @@ function to_do_item:read(line_nr, find_ancestors)
 end
 
 --- Method for a to-do item to update itself (e.g. if it is only partially complete)
---- @param find_ancestors? boolean Whether or not to look for ancestors of the to-do item
+--- @param find_ancestors? table|boolean Which ancestors to look for, or false if none
 function to_do_item:update(find_ancestors)
-    find_ancestors = find_ancestors == nil and true or find_ancestors
+    find_ancestors = find_ancestors == false
+            and { children = false, parents = false, siblings = false }
+        or (type(find_ancestors) == 'table' and find_ancestors)
+        or {}
     -- Check if we have a valid to-do list new_to_do_item
     local valid_str = self.content:match('^%s-[-+*%d]+%.?%s-%[..?.?.?%]') -- Up to 4 bytes for the status
     if valid_str then
@@ -217,16 +221,17 @@ function to_do_item:update(find_ancestors)
         _, self.level = string.gsub(self.content:match('^%s*'), vim_indent, '')
 
         -- Identify parents, siblings, and children
-        if find_ancestors then
-            self:add_ancestors()
-        end
+        self:add_ancestors(find_ancestors)
     else
         self.valid = false
     end
 end
 
 --- Method to find and register the ancestors of a to-do item in itself
-function to_do_item:add_ancestors()
+--- @param opts table A table indicating which ancestors to register
+function to_do_item:add_ancestors(opts)
+    local default_opts = { children = true, parent = true, siblings = true }
+    opts = opts ~= nil and vim.tbl_extend('force', default_opts, opts) or default_opts
     -- Of all the ancestors, only the children will be a complete (sub-) to-do list
     local children = to_do_list:new()
     -- Only look for parents and siblings if we have an indentation
@@ -451,7 +456,7 @@ function M.get_to_do_item(opts)
     -- Use the current (cursor) line if no line number was provided
     local line_nr, find_ancestors =
         opts and opts.line_nr or vim.api.nvim_win_get_cursor(0)[1], -- Use cur. line if no line provided
-        opts and opts.find_ancestors or nil -- Use nil if no find_ancestors value provided
+        opts and opts.find_ancestors or {} -- Use defaults if no find_ancestors table provided
     -- If we have a visual selection spanning multiple lines, take a different approach
     local item = to_do_item:read(line_nr, find_ancestors)
     return item
