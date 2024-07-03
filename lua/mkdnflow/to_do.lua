@@ -362,6 +362,8 @@ function to_do_item:update_parent()
     end
 end
 
+--- Method to identify whether a to-do item has registered siblings or not
+--- @return boolean
 function to_do_item:has_siblings()
     if not vim.tbl_isempty(self.siblings) then
         return true
@@ -369,6 +371,8 @@ function to_do_item:has_siblings()
     return false
 end
 
+--- Method to identify whether a to-do item has registered children or not
+--- @return boolean
 function to_do_item:has_children()
     if not self.children:is_empty() then
         return true
@@ -376,6 +380,8 @@ function to_do_item:has_children()
     return false
 end
 
+--- Method to identify whether a to-do item has a registered parent or not
+--- @return boolean
 function to_do_item:has_parent()
     if not vim.tbl_isempty(self.parent) then
         return true
@@ -383,6 +389,8 @@ function to_do_item:has_parent()
     return false
 end
 
+--- Method to flatten a to-do item's descendants into one table
+--- @return table[] # A list of descendant to-do items, empty if the item has no descendants
 function to_do_item:flat_descendants()
     local descendants = {}
     local function traverse_children(item)
