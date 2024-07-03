@@ -186,7 +186,7 @@ function to_do_item:read(line_nr, find_ancestors)
         local symbol = valid_str:match('%[(..?.?.?)%]')
         -- Record line nr, status
         new_to_do_item.valid, new_to_do_item.line_nr, new_to_do_item.status =
-            true, line_nr, to_do_statuses:get(symbol)
+            true, line_nr, to_do_statuses:get(symbol) or {}
 
         -- Figure out the level of the new_to_do_item (based on indentation)
         _, new_to_do_item.level = string.gsub(new_to_do_item.content:match('^%s*'), vim_indent, '')
@@ -435,6 +435,7 @@ function to_do_list:get_range(start_line_nr, finish_line_nr)
     return instance
 end
 
+function to_do_list:sort() end
 
 --- Method to add a to-do item to an (internal) to-do list
 --- @param item to_do_item A valid to-do item
