@@ -406,14 +406,12 @@ function to_do_list:get_range(start_line_nr, finish_line_nr)
         -- always mean we've reached the end of the current (sub-)to-do list).
         if item.valid and item.level == base_level then
             instance:add_item(item)
-        elseif item.valid and item.level < base_level then
+        elseif (item.valid and item.level < base_level) or not item.valid then
             break
         end
     end
     return instance
 end
-
-function to_do_list:sort() end
 
 --- Method to add a to-do item to an (internal) to-do list
 --- @param item to_do_item A valid to-do item
