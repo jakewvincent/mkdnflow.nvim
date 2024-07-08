@@ -472,10 +472,10 @@ function M.toggle_to_do()
         -- Use the lower value for `first` and the higher value for `last`
         local first, last = (pos_a < pos_b and pos_a) or pos_b, (pos_b > pos_a and pos_b) or pos_a
         if first == 0 or last == 0 then
-            M.get_to_do_item({ line_nr = pos_b }):cycle_status()
+            M.get_to_do_item(pos_b):cycle_status()
         else
             for line_nr = first, last do
-                M.get_to_do_item({ line_nr = line_nr }):cycle_status()
+                M.get_to_do_item(line_nr):cycle_status()
             end
         end
     elseif string.lower(mode):match('v') then
