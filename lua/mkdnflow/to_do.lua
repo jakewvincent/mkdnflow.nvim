@@ -169,6 +169,93 @@ function to_do_item:new(opts)
     return instance
 end
 
+--- A method to read a to-do list at the level of the item at the line number passed in
+--- @param line_nr integer A line number where a to-do item can be found
+--- @return to_do_list # A filled-in to-do list instance
+function to_do_list:read(line_nr)
+    local item, line_count = to_do_item:read(line_nr), vim.api.nvim_buf_line_count(0)
+    if item.valid then
+        self:add_item(item)
+        self.base_level = item.level
+        -- Look up for siblings
+        for _line_nr = item.line_nr - 1, 1, -1 do
+            local candidate = to_do_item:read(_line_nr)
+            if candidate.level < self.base_level then
+                break
+            end
+            if candidate.valid and candidate.level == self.base_level then
+                self:add_item(candidate)
+            end
+        end
+        -- Look down for siblings
+        for _line_nr = item.line_nr + 1, line_count, 1 do
+            local candidate = to_do_item:read(_line_nr)
+            if candidate.level < self.base_level then
+                break
+            end
+            if candidate.valid and candidate.level == self.base_level then
+                self:add_item(candidate)
+            end
+        end
+        -- Set the index of the requester
+        for i, sibling in ipairs(self.items) do
+            if sibling.line_nr == line_nr then
+                self.requester_idx = i
+                break
+            end
+        end
+    end
+    return self:add_relatives()
+end
+
+--- A method to identify all relationships within a to-do list
+--- @param parent? to_do_item The parent that all list members descend from
+--- @return to_do_list # A to-do list with relationships identified
+function to_do_list:add_relatives(parent)
+    -- Look for a parent
+    if self.base_level > 0 then
+        parent = parent or to_do_item:read(self.line_range.start - 1)
+        if parent.valid then
+            parent.children = self
+            self.parent = parent
+            for _, child in ipairs(self.items) do
+                child.parent = self.parent
+            end
+        end
+    end
+    -- Register any children
+    for i, sibling in ipairs(self.items) do
+        -- If there is space between the next item and the current item, there must be children
+        if self.items[i + 1] and self.items[i + 1].line_nr > sibling.line_nr + 1 then
+            local children = to_do_list:new():read(sibling.line_nr + 1)
+            sibling.children = children
+        else -- We're at the last sibling; check below it
+            local candidate = to_do_item:read(sibling.line_nr + 1)
+            if candidate.valid and candidate.level == sibling.level + 1 then
+                local children = to_do_list:new():read(sibling.line_nr + 1)
+                sibling.children = children
+            end
+        end
+    end
+    self.relatives_added = true
+    self.line_range.finish = self:terminus().line_nr
+    return self
+end
+
+--- A method to identify the last to-do item in a to-do list, including the most deeply embedded
+--- descendant of the last list item, if any
+--- @return to_do_item # The last to-do item in the list
+function to_do_list:terminus()
+    local function last_item(list)
+        local last_sib = list.items[#list.items]
+        if last_sib:has_children() then
+            last_sib = last_item(last_sib.children)
+        end
+        return last_sib
+    end
+    return last_item(self)
+end
+
 --- Method to read a to-do item from a line number
 --- @param line_nr integer A (one-based) line number from which to read the to-do item
 --- @param find_ancestors? table|boolean Which ancestors to look for, or false if none
@@ -277,6 +364,9 @@ function to_do_item:add_ancestors(opts)
     end
     -- Add the sub-list of children to the children field
     self.children = children
+function to_do_item:get(line_nr)
+    local list = to_do_list:new():read(line_nr)
+    return list.items[list.requester_idx]
 end
 
 --- Method to get the status object for a target status
