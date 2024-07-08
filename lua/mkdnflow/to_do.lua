@@ -184,7 +184,7 @@ function to_do_list:read(line_nr)
         -- Look up for siblings
         for _line_nr = item.line_nr - 1, 1, -1 do
             local candidate = to_do_item:read(_line_nr)
-            if candidate.level < self.base_level then
+            if candidate.level < self.base_level or not candidate.valid then
                 break
             end
             if candidate.valid and candidate.level == self.base_level then
@@ -194,7 +194,7 @@ function to_do_list:read(line_nr)
         -- Look down for siblings
         for _line_nr = item.line_nr + 1, line_count, 1 do
             local candidate = to_do_item:read(_line_nr)
-            if candidate.level < self.base_level then
+            if candidate.level < self.base_level or not candidate.valid then
                 break
             end
             if candidate.valid and candidate.level == self.base_level then
