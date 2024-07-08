@@ -400,18 +400,19 @@ function to_do_item:has_parent()
 end
 
 --- Method to flatten a to-do item's descendants into one table
+--- @param content_only boolean Whether to return just the content of the flattened lines or the
+--- full to-do items
 --- @return table[] # A list of descendant to-do items, empty if the item has no descendants
-function to_do_item:flat_descendants()
-    local descendants = {}
-    local function traverse_children(item)
-        for _, child in ipairs(item.children.items) do
-            table.insert(descendants, child)
-            traverse_children(child)
+function to_do_list:flatten(content_only)
+    local flattened = {}
+    local function flatten_item(item)
+        table.insert(flattened, content_only and item.content or item)
+        if item:has_children() then
+            for _, child in ipairs(item.children.items) do
+                flatten_item(child)
+            end
         end
     end
-    traverse_children(self)
-    return descendants
-end
 
 --- Method to read in a to-do list. If `end_line_nr` is passed in, `line_nr` should be the line
 --- number of the first item in the list. Otherwise, `line_nr` can be the line number of any item in
@@ -456,8 +457,10 @@ function to_do_list:get_range(start_line_nr, finish_line_nr)
         elseif (item.valid and item.level < base_level) or not item.valid then
             break
         end
+    for _, item in ipairs(self.items) do
+        flatten_item(item)
     end
-    return instance
+    return flattened
 end
 
 --- Method to add a to-do item to an (internal) to-do list
