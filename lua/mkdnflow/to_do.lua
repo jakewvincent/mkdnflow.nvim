@@ -115,9 +115,10 @@ end
 --- To-do lists
 --- @class to_do_list A class for a complete to-do list (series of same-level to-do items)
 --- @field items table[] A list of same-level to-do items
---- @field line_range table A table containing the start and end line numbers of the list
---- @field line_range.start integer The line number on which the to-do list starts
---- @field line_range.finish integer The line number on which the to-do list ends
+--- @field relatives_added boolean
+--- @field line_range{start: integer, finish:integer} A table containing the start and end line numbers of the list
+--- @field base_level integer
+--- @field requester_idx integer
 local to_do_list = {}
 to_do_list.__index = to_do_list
 to_do_list.__className = 'to_do_list'
@@ -127,7 +128,11 @@ to_do_list.__className = 'to_do_list'
 function to_do_list:new()
     local instance = {
         items = {},
+        relatives_added = false,
+        parent = {},
         line_range = { start = 0, finish = 0 },
+        base_level = -1,
+        requester_idx = -1,
     }
     setmetatable(instance, self)
     return instance
