@@ -277,9 +277,10 @@ function to_do_item:read(line_nr)
 
         -- Figure out the level of the new_to_do_item (based on indentation)
         _, new_to_do_item.level = string.gsub(new_to_do_item.content:match('^%s*'), vim_indent, '')
-    else
-        new_to_do_item.valid = false
+        -- TODO: Add this to-do item to a cache
+        return new_to_do_item
     end
+    new_to_do_item.valid = false
     return new_to_do_item
 end
 
