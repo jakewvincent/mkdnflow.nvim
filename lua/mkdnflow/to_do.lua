@@ -449,6 +449,7 @@ function to_do_list:add_item(item)
             if self.items[i].line_nr > item.line_nr then
                 table.insert(self.items, i, item)
                 added = true
+                break
             end
         end
         if not added then
