@@ -148,6 +148,7 @@ end
 --- @field parent to_do_item The closest item in the list that has a level one less than the child item
 --- @field children to_do_list A list of to-do items one level higher beneath the main item
 --- @field siblings table[] A list of same-level to-do items adjacent to the current item
+--- @field host_list to_do_list The to-do list that contains the item
 local to_do_item = {}
 to_do_item.__index = to_do_item
 to_do_item.__className = 'to_do_item'
@@ -166,6 +167,7 @@ function to_do_item:new(opts)
         parent = opts.parent or {},
         children = opts.children or to_do_list:new(),
         siblings = opts.siblings or {},
+        host_list = opts.host_list or {}
     }
     setmetatable(instance, self)
     return instance
@@ -286,7 +288,9 @@ end
 
 function to_do_item:get(line_nr)
     local list = to_do_list:new():read(line_nr)
-    return list.items[list.requester_idx]
+    local item = list.items[list.requester_idx]
+    item.host_list = list
+    return item
 end
 
 --- Method to get the status object for a target status
