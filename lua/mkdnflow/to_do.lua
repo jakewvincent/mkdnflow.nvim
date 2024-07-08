@@ -303,7 +303,7 @@ function to_do_item:set_status(target)
         1
     )
     vim.api.nvim_buf_set_lines(0, self.line_nr - 1, self.line_nr, false, { new_line })
-    -- Update status
+    -- Update status (or keep the same if no target was found)
     self.status = target_status ~= nil and target_status or self.status
     -- Update parents if possible and desired
     if not vim.tbl_isempty(self.parent) and require('mkdnflow').config.to_do.update_parents then
