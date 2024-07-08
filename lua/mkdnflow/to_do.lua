@@ -383,7 +383,7 @@ end
 --- Method to identify whether a to-do item has registered children or not
 --- @return boolean
 function to_do_item:has_children()
-    if not self.children:is_empty() then
+    if not vim.tbl_isempty(self.children.items) then
         return true
     end
     return false
@@ -476,15 +476,6 @@ function to_do_list:add_item(item)
             end
         end
     end
-end
-
---- Method to diagnose a to-do list as empty
---- @return boolean # A truth value indicating whether the current to-do list is empty or not
-function to_do_list:is_empty()
-    if vim.tbl_isempty(self.items) then
-        return true
-    end
-    return false
 end
 
 --- The to_do module table
