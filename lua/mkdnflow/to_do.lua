@@ -448,9 +448,9 @@ local M = {}
 --- @return to_do_item # A processed to-do item
 function M.get_to_do_item(line_nr)
     -- Use the current (cursor) line if no line number was provided
-    -- If we have a visual selection spanning multiple lines, take a different approach
-    local item = to_do_item:read(line_nr, find_ancestors)
     line_nr = line_nr or vim.api.nvim_win_get_cursor(0)[1] -- Use cur. line if no line provided
+    -- TODO If we have a visual selection spanning multiple lines, take a different approach
+    local item = to_do_item:get(line_nr)
     return item
 end
 
@@ -459,7 +459,7 @@ end
 --- @return to_do_list # A complete to-do list
 function M.get_to_do_list(line_nr)
     line_nr = line_nr or vim.api.nvim_win_get_cursor(0)[1] -- Use cur. line if no line provided
-    local list = to_do_list:find(line_nr)
+    local list = to_do_list:new():read(line_nr)
     return list
 end
 
