@@ -147,7 +147,6 @@ end
 --- @field valid boolean Whether the line contains a recognized to-do item
 --- @field parent to_do_item The closest item in the list that has a level one less than the child item
 --- @field children to_do_list A list of to-do items one level higher beneath the main item
---- @field siblings table[] A list of same-level to-do items adjacent to the current item
 --- @field host_list to_do_list The to-do list that contains the item
 local to_do_item = {}
 to_do_item.__index = to_do_item
@@ -166,7 +165,6 @@ function to_do_item:new(opts)
         valid = opts.valid or false,
         parent = opts.parent or {},
         children = opts.children or to_do_list:new(),
-        siblings = opts.siblings or {},
         host_list = opts.host_list or {}
     }
     setmetatable(instance, self)
@@ -346,8 +344,8 @@ function to_do_item:update_parent_line()
     if self.status.name == 'complete' then
         -- Check if all the siblings are also complete
         local sibs_complete = true
-        for _, sib in ipairs(self.siblings) do
-            if sib.status.name ~= 'complete' then
+        for _, sib in ipairs(self.host_list.items) do
+            if sib.line_nr ~= self.line_nr and sib.status.name ~= 'complete' then
                 sibs_complete = false
             end
         end
@@ -369,8 +367,8 @@ function to_do_item:update_parent_line()
     elseif self.status.name == 'not_started' then
         -- Check if any of the siblings are either complete or in progress
         local sibs_not_started = true
-        for _, sib in ipairs(self.siblings) do
-            if sib.status.name ~= 'not_started' then
+        for _, sib in ipairs(self.host_list.items) do
+            if sib.line_nr ~= self.line_nr and sib.status.name ~= 'not_started' then
                 sibs_not_started = false
             end
         end
@@ -395,7 +393,8 @@ end
 --- Method to identify whether a to-do item has registered siblings or not
 --- @return boolean
 function to_do_item:has_siblings()
-    if not vim.tbl_isempty(self.siblings) then
+    -- The item will have siblings as long as it is not the only item in the host list
+    if #self.host_list.items > 1 then
         return true
     end
     return false
