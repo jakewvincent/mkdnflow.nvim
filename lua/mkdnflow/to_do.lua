@@ -307,7 +307,7 @@ function to_do_item:set_status(target)
     self.status = target_status ~= nil and target_status or self.status
     -- Update parents if possible and desired
     if not vim.tbl_isempty(self.parent) and require('mkdnflow').config.to_do.update_parents then
-        self:update_parent()
+        self:update_parent_line()
     end
 end
 
@@ -333,7 +333,7 @@ function to_do_item:in_progress()
 end
 
 --- Method to update parents in response to children status changes
-function to_do_item:update_parent()
+function to_do_item:update_parent_line()
     if self.status.name == 'complete' then
         -- Check if all the siblings are also complete
         local sibs_complete = true
