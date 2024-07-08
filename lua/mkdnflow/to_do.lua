@@ -269,10 +269,10 @@ function to_do_item:read(line_nr)
     local line = vim.api.nvim_buf_get_lines(0, line_nr - 1, line_nr, false)
     new_to_do_item.content = (not vim.tbl_isempty(line)) and line[1] or ''
     -- Check if we have a valid to-do list new_to_do_item
-    local valid_str = new_to_do_item.content:match('^%s-[-+*%d]+%.?%s-%[..?.?.?%]') -- Up to 4 bytes for the status
+    local valid_str = new_to_do_item.content:match('^%s-[-+*%d]+%.?%s-%[..?.?.?.?.?%]') -- Up to 6 bytes for the status
     if valid_str then
         -- Retrieve the symbol from the matching string
-        local symbol = valid_str:match('%[(..?.?.?)%]')
+        local symbol = valid_str:match('%[(..?.?.?.?.?)%]')
         -- Record line nr, status
         new_to_do_item.valid, new_to_do_item.line_nr, new_to_do_item.status =
             true, line_nr, to_do_statuses:get(symbol) or {}
