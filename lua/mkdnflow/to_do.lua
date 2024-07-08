@@ -334,6 +334,11 @@ end
 
 --- Method to update parents in response to children status changes
 function to_do_item:update_parent_line()
+    -- Don't do anything if the item has no parent
+    if not self:has_parent() then
+        return
+    end
+    local parent_updated = false
     if self.status.name == 'complete' then
         -- Check if all the siblings are also complete
         local sibs_complete = true
@@ -346,13 +351,16 @@ function to_do_item:update_parent_line()
         -- progress
         if sibs_complete then
             self.parent:complete()
+            parent_updated = true
         else
             self.parent:in_progress()
+            parent_updated = true
         end
     elseif self.status.name == 'in_progress' then
         -- In this case, the parent should also be in progress, regardless of the status of the sibs
         if self.parent.status.name ~= 'in_progress' then
             self.parent:in_progress()
+            parent_updated = true
         end
     elseif self.status.name == 'not_started' then
         -- Check if any of the siblings are either complete or in progress
@@ -366,9 +374,17 @@ function to_do_item:update_parent_line()
         -- the parent as in progress
         if sibs_not_started then
             self.parent:not_started()
+            parent_updated = true
         else
             self.parent:in_progress()
+            parent_updated = true
         end
+    end
+    if parent_updated then
+        local parent_line_nr = self.parent.line_nr
+        -- Get parent to-do list
+        local parent = to_do_item:get(parent_line_nr)
+        parent:update_parent_line()
     end
 end
 
