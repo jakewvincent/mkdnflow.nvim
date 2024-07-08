@@ -424,18 +424,19 @@ end
 --- @param item to_do_item A valid to-do item
 function to_do_list:add_item(item)
     if item.valid then
-        -- Figure out which spot it should be inserted at (beginning or end)
-        if item.line_nr < self.line_range.start then
-            table.insert(self.items, 1, item)
-            self.line_range.start = item.line_nr
-        elseif item.line_nr > self.line_range.finish then
-            table.insert(self.items, item)
-            if not item.children:is_empty() then
-                self.line_range.finish = item.children.line_range.finish
-            else
-                self.line_range.finish = item.line_nr
+        local added = false
+        for i = 1, #self.items, 1 do
+            if self.items[i].line_nr > item.line_nr then
+                table.insert(self.items, i, item)
+                added = true
             end
         end
+        if not added then
+            table.insert(self.items, item)
+        end
+        -- Update line range
+        self.line_range.start = self.items[1].line_nr
+        self.line_range.finish = self.items[#self.items].line_nr
     end
 end
 
