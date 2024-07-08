@@ -414,49 +414,6 @@ function to_do_list:flatten(content_only)
         end
     end
 
---- Method to read in a to-do list. If `end_line_nr` is passed in, `line_nr` should be the line
---- number of the first item in the list. Otherwise, `line_nr` can be the line number of any item in
---- the list, and the function will identify the start and end of the list independently.
---- @param line_nr? integer A line number of an item in the list
---- @return to_do_list # A filled-in to-do list
-function to_do_list:find(line_nr)
-    line_nr = line_nr ~= nil and line_nr or vim.api.nvim_win_get_cursor(0)[1]
-    -- The current line
-    local cur_line_nr, item = line_nr, to_do_item:read(line_nr, false)
-    while item.valid and cur_line_nr > 0 do
-        cur_line_nr = cur_line_nr - 1
-        item = to_do_item:read(cur_line_nr, false)
-    end
-    local new_list = self:get_range(cur_line_nr + 1)
-    return new_list
-end
-
---- Method to get a valid to-do list within a range of lines
---- @param start_line_nr integer The line number the list is supposed to start on
---- @param finish_line_nr? integer The line number the list is supposed to end on
---- @return to_do_list # A valid to-do list
-function to_do_list:get_range(start_line_nr, finish_line_nr)
-    -- If finish_line_nr is not provided, use the last line of the buffer
-    finish_line_nr = finish_line_nr or vim.api.nvim_buf_line_count(0)
-    local lines = vim.api.nvim_buf_get_lines(0, start_line_nr - 1, finish_line_nr, false)
-    local instance, base_level = to_do_list:new(), 0
-    for i, line in ipairs(lines) do
-        local line_nr = start_line_nr - 1 + i
-        local item = to_do_item:new({ line_nr = line_nr, content = line })
-        item:update()
-        if i == 1 then
-            -- Let the first item in the list determine the base level for the list
-            base_level = item.level
-        end
-        -- Only add items to the current list if they are siblings of the first item. Items in the
-        -- list that have a lower level than the base level will result in the loop terminating.
-        -- That is sensible since that would mean we've encountered an auncle or cousin (which will
-        -- always mean we've reached the end of the current (sub-)to-do list).
-        if item.valid and item.level == base_level then
-            instance:add_item(item)
-        elseif (item.valid and item.level < base_level) or not item.valid then
-            break
-        end
     for _, item in ipairs(self.items) do
         flatten_item(item)
     end
