@@ -143,10 +143,7 @@ end
 --- @field line_nr integer The (one-based) line number on which the to-do item can be found
 --- @field level integer The indentation-based level of the to-do item (0 == the item has no indentation and no parents)
 --- @field content string The text of the entire line stored under line_nr
---- @field status table A to-do status table
---- @field status.name string The to-do status name (e.g. 'completed')
---- @field status.symbol string The to-do status symbol (e.g. 'x')
---- @field status.legacy_symbols? table A list of legacy (previously-used) symbols
+--- @field status {name: string, symbol: string, legacy_symbols: string[], sort: {section: integer, position: string}} A to-do status table
 --- @field valid boolean Whether the line contains a recognized to-do item
 --- @field parent to_do_item The closest item in the list that has a level one less than the child item
 --- @field children to_do_list A list of to-do items one level higher beneath the main item
@@ -262,8 +259,7 @@ function to_do_list:terminus()
 end
 
 --- Method to read a to-do item from a line number
---- @param line_nr integer A (one-based) line number from which to read the to-do item
---- @param find_ancestors? table|boolean Which ancestors to look for, or false if none
+--- @param line_nr integer A (one-based) buffer line number from which to read the to-do item
 --- @return to_do_item # A complete to-do item
 function to_do_item:read(line_nr, find_ancestors)
     find_ancestors = find_ancestors == false
