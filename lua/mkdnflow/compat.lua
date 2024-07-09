@@ -60,6 +60,7 @@ M.userConfigCheck = function(user_config)
             end
         end
         -- Update to June 2024 format
+        -- Removal will be breaking
         if not user_config.to_do.statuses then
             user_config.to_do['statuses'] = {
                 { name = 'not_started', symbol = user_config.to_do.not_started },
@@ -68,6 +69,7 @@ M.userConfigCheck = function(user_config)
             }
         end
         -- Propagation (added July 2024)
+        -- Removal will be breaking
         if user_config.to_do.update_parents ~= nil then
             user_config.to_do['status_propagation'] = {
                 up = user_config.to_do.update_parents
