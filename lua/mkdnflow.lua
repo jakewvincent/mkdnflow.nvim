@@ -128,9 +128,9 @@ local default_config = {
             on_status_change = false,
             recursive = false,
             cursor_behavior = {
-                track = true
-            }
-        }
+                track = true,
+            },
+        },
     },
     tables = {
         trim_whitespace = true,
