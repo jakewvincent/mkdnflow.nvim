@@ -109,18 +109,69 @@ local default_config = {
                 symbol = ' ',
                 legacy_symbols = {},
                 sort = { section = 2, position = 'top' },
+                propagate = {
+                    up = function(host_list)
+                        local no_items_started = true
+                        for _, item in ipairs(host_list.items) do
+                            if item.status.name ~= 'not_started' then
+                                no_items_started = false
+                            end
+                        end
+                        if no_items_started then
+                            return 'not_started'
+                        else
+                            return 'in_progress'
+                        end
+                    end,
+                    down = function(child_list)
+                        local target_statuses = {}
+                        for _, item in ipairs(child_list.items) do
+                            table.insert(target_statuses, 'not_started')
+                        end
+                        return target_statuses
+                    end,
+                },
             },
             {
                 name = 'in_progress',
                 symbol = '-',
                 legacy_symbols = {},
                 sort = { section = 1, position = 'bottom' },
+                propagate = {
+                    up = function(host_list)
+                        return 'in_progress'
+                    end,
+                    down = function(child_list)
+                    end,
+                },
             },
             {
                 name = 'complete',
                 symbol = 'X',
                 legacy_symbols = { 'x' },
                 sort = { section = 3, position = 'top' },
+                propagate = {
+                    up = function(host_list)
+                        local all_items_complete = true
+                        for _, item in ipairs(host_list.items) do
+                            if item.status.name ~= 'complete' then
+                                all_items_complete = false
+                            end
+                        end
+                        if all_items_complete then
+                            return 'complete'
+                        else
+                            return 'in_progress'
+                        end
+                    end,
+                    down = function(child_list)
+                        local target_statuses = {}
+                        for _, item in ipairs(child_list.items) do
+                            table.insert(target_statuses, 'complete')
+                        end
+                        return target_statuses
+                    end,
+                },
             },
         },
         update_parents = true,
