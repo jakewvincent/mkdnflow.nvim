@@ -11,10 +11,11 @@
 </p>
 
 ### 🆕 [Latest features](#-recent-changes) and announcements
-1. [Custom and customizable foldtext for section folds](#section-folding)
-2. [Improved table formatting and formatting style options](#tables)
-3. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
-4. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmp)
+1. [To-do list enhancements: sorting, custom status propagation, etc.](#to-do-lists)
+2. [Custom and customizable foldtext for section folds](#section-folding)
+3. [Improved table formatting and formatting style options](#tables)
+4. [Customize "jump patterns" for link jumping](#cursor-dictionary-like-table)
+5. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmp)
 
 #### Announcements
 12/12/23: Mkdnflow no longer requires the `luautf8` lua rock as a dependency. UTF-8 characters can be used as [custom to-do symbols](#to_do-dictionary-like-table) out of the box, and table formatting will work out of the box when the table contains UTF-8 characters.
@@ -266,11 +267,16 @@ require('mkdnflow').setup({
     * `* [X] ...` → `* [ ] ...`
 * Toggle multiple to-do items at once by selecting the lines to toggle in (simple) visual mode (mapped to `<C-Space>` by default)
 * Create to-do items from plain unordered or ordered lists by toggling a non-to-do-list item (`<C-Space>` by default)
-* Automatically update any parent to-dos when child to-dos are toggled.
-    * When all child to-dos have been marked complete, the parent is marked complete
-    * When at least one child to-do has been marked in-progress, the parent to-do is marked in-progress
-    * When a parent to-do is marked complete and one child to-do is reverted to not-yet-started or in-progress, the parent to-do is marked in-progress
-    * When a parent to-do is marked complete or in-progress and all child to-dos have been reverted to not-yet-started, the parent to-do is marked not-yet-started.
+* Automatically propagate status changes to parent to-do items when child to-do items are changed.
+    * When all child to-do items have been marked `'complete'`, the parent to-do item is marked `'complete'`
+    * When at least one child to-do item has been marked `'in_progress'`, the parent to-do item is marked `'in_progress'`
+    * When a parent to-do item is marked `'complete'` and one child to-do item is reverted to `'not_started'` or `'in_progress'`, the parent to-do item is marked `'in_progress'`
+    * When a parent to-do item is marked `'complete'` or `'in_progress'` and all child to-do items have been reverted to `'not_started'`, the parent to-do item is marked `'not_started'`.
+    * 🆕 Customizable status propagation logic (see [`to_do` configuration](#to_do-dictionary-like-table))
+* 🆕 Automatically propagate status changes to child to-do items when a parent to-do item is changed.
+    * When a parent to-do item is marked `'complete'`, all child to-do items are marked `'complete'`
+    * When a parent to-do item is marked `'not started'`, all child to-do items are marked `'not_started'`
+* 🆕 Sort (sub-)to-do lists based on status changes (see [`to_do` configuration](#to_do-dictionary-like-table)). Not enabled by default.
 
 ### Tables
 * Create a markdown table of `x` columns and `y` rows with `:MkdnTable x y`. Table headers are added automatically; to exclude headers, use `:MkdnTable x y noh`
@@ -498,11 +504,86 @@ require('mkdnflow').setup({
     },
     to_do = {
         statuses = {
-            { name = 'not_started', symbol = ' ', legacy_symbols = {} },
-            { name = 'in_progress', symbol = '-', legacy_symbols = {} },
-            { name = 'complete', symbol = 'X', legacy_symbols = {} },
+            {
+                name = 'not_started',
+                symbol = ' ',
+                legacy_symbols = {},
+                sort = { section = 2, position = 'top' },
+                propagation = {
+                    up = function(host_list)
+                        local no_items_started = true
+                        for _, item in ipairs(host_list.items) do
+                            if item.status.name ~= 'not_started' then
+                                no_items_started = false
+                            end
+                        end
+                        if no_items_started then
+                            return 'not_started'
+                        else
+                            return 'in_progress'
+                        end
+                    end,
+                    down = function(child_list)
+                        local target_statuses = {}
+                        for _ = 1, #child_list.items, 1 do
+                            table.insert(target_statuses, 'not_started')
+                        end
+                        return target_statuses
+                    end,
+                },
+            },
+            {
+                name = 'in_progress',
+                symbol = '-',
+                legacy_symbols = {},
+                sort = { section = 1, position = 'bottom' },
+                propagation = {
+                    up = function(host_list)
+                        return 'in_progress'
+                    end,
+                    down = function(child_list) end,
+                },
+            },
+            {
+                name = 'complete',
+                symbol = 'X',
+                legacy_symbols = {},
+                sort = { section = 3, position = 'top' },
+                propagation = {
+                    up = function(host_list)
+                        local all_items_complete = true
+                        for _, item in ipairs(host_list.items) do
+                            if item.status.name ~= 'complete' then
+                                all_items_complete = false
+                            end
+                        end
+                        if all_items_complete then
+                            return 'complete'
+                        else
+                            return 'in_progress'
+                        end
+                    end,
+                    down = function(child_list)
+                        local target_statuses = {}
+                        for _ = 1, #child_list.items, 1 do
+                            table.insert(target_statuses, 'complete')
+                        end
+                        return target_statuses
+                    end,
+                },
+            },
         },
-        update_parents = true,
+        status_propagation = {
+            up = true,
+            down = true,
+        },
+        sort = {
+            on_status_change = false,
+            recursive = false,
+            cursor_behavior = {
+                track = true
+            }
+        }
     },
     foldtext = {
         object_count = true,
@@ -696,20 +777,38 @@ end
 
 #### `to_do` (dictionary-like table)
 * `to_do.statuses` (array-like table): A list of tables, each of which represents a to-do status and minimally has a `name` key and a `symbol` key, optionally also a `legacy_symbols` key with a table value. An arbitrary number of to-do statuses can be provided, but built-in functionality only works with recognized status names (see `to_do.statuses[].name` below, as well as [To-do lists](#to-do-lists))
-    * `to_do.statuses[].name` (string): The name of the to-do status. The recognized names are `not_started`, `in_progress`, and `complete`.
-    * `to_do.statuses[].symbol` (string): The symbol to use for the status. Up to four bytes are permitted, but the symbol must only be one character.
-    * `to_do.statuses[].legacy_symbols` (array-like table): A list of symbols previously used for the status. This will ensure compatibility with any to-do lists you have previously made with different symbols. Not providing legacy symbols will mean that you may not be able to toggle the status of old to-do lists that use other status symbols.
-* `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
-    * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
-    * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
+    * `to_do.statuses[n].name` (string): The name of the to-do status. The recognized names are `not_started`, `in_progress`, and `complete`.
+    * `to_do.statuses[n].symbol` (string): The symbol to use for the status. Up to four bytes are permitted, but the symbol must only be one character.
+    * `to_do.statuses[n].legacy_symbols` (array-like table): A list of symbols previously used for the status. This will ensure compatibility with any to-do lists you have previously made with different symbols. Not providing legacy symbols will mean that you may not be able to toggle the status of old to-do lists that use other status symbols.
+    * `to_do.statuses[n].sort` (dictionary-like table)
+        * `to_do.statuses[n].sort.section` (integer): The section in which items of this status should be placed when sorted. A section refers to a segment of a to-do list. If you want items with the `'in_progress'` status to be first in the list, you would set this option to `1` for the status (this is the default section for `'in_progress'` status items).
+        * `to_do.statuses[n].sort.position` (string)
+            * `'top'`: Place the item whose status was just changed at the top of its corresponding section.
+            * `'bottom'`: Place the item whose status was just changed at the bottom of its corresponding section.
+            * `'relative'`: Maintain the order of the item whose status was just changed (relative to the other members of its section). For example, if an item at the bottom of a to-do list is changed `'not_started'` and there are already `'not_started'` items at the top of the list, a position option of `'relative'` for `'not_started'` will bring the bottom of the `'not_started'` section. With the same setting, an item located above other `'not_started'` items would be placed at the top of the `'not_started'` section.
+    * `to_do.statuses[n].propagate` (dictionary-like table)
+        * `to_do.statuses[n].propagate.up` (function): A function that will accept one argument (an instance of the to-do list class) and return a valid to-do status (a status name that matches the name of a status in the `to_do.statuses` table). The list that is passed into this function is the list that hosts the to-do item whose status was just changed. The return value should be the desired value of the parent, based on whatever logic is provided in the function. `nil` should be returned if the desired outcome is to leave the parent's status as is.
+        * `to_do.statuses[n].propagate.down` (function): A function that will accept one argument (an instance of the to-do list class) and return a list of valid to-do status names (status names must match the name of a status in the `to_do.statuses` table). The list that is passed into this function is the child list of the to-do item whose status was just changed. The list of return values should be the desired values of each child in the list, based on whatever logic is provided in the function. `nil` or an empty table should be returned if the desired outcome is to leave the children's status as is.
+* `to_do.sort` (dictionary-like table)
+    * `to_do.sort.on_status_change` (boolean): Whether to sort a to-do list (or sub-to-do list) on a status change that is completed using the plugin's functionality.
+    * `to_do.sort.recursive` (boolean): (not yet implemented) Whether the sort should apply to parent items whose statuses are updated when a child is updated.
+        * `true`: Recursively sort the host list of the parent until the root of the list is reached.
+        * `false`: Only sort the (sub-)list that immediately hosts the to-do item whose status was just changed.
+    * `to_do.sort.cursor_behavior` (dictionary-like table)
+    * `to_do.sort.cursor_behavior.track` (boolean): Whether to move the cursor so that it remains on the same to-do item, even after a to-do list sort relocates the item.
+* `to_do.status_propagation` (dictionary-like table)
+    * `to_do.status_propagation.up` (boolean): Whether a status change should propagate upwards along the to-do item's parental lineage. If `true`, the logic provided in `to_do.statuses[n].propagate.up` will be used to determine the target status of the parent item. Applies recursively.
+    * `to_do.status_propagation.down` (boolean): Whether a status change should propagate downwards to the descendants of the to-do item. If `true`, the logic provided in `to_do.statuses[n].propagate.down` will be used to determine the target statuses of the children. Applies recursively.
 
 > [!WARNING]
 > **The following to-do configuration options are deprecated. Please use the `to_do.statuses` table instead. Continued support for these options is temporarily provided by a compatibility layer that will be removed in the near future.**
 > * `to_do.symbols` (array-like table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
-> * The following entries can be used to stipulate which symbols shall be used when updating a parent to-do's status when a child to-do's status is changed. These are **not required**: if `to_do.symbols` is customized but these options are not provided, the plugin will attempt to infer what the meanings of the symbols in your list are by their order. For example, if you set `to_do.symbols` as `{' ', '⧖', '✓'}`, `' '` will be assiged to `to_do.not_started`, '⧖' will be assigned to `to_do.in_progress`, etc. If more than three symbols are specified, the first will be used as `not_started`, the second will be used as `in_progress`, and the last will be used as `complete`. If two symbols are provided (e.g. `' ', '✓'`), the first will be used as both `not_started` and `in_progress`, and the second will be used as `complete`.
->    * `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do (default: `' '`)
->    * `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do (default: `'-'`)
->    * `to_do.complete` (string):  Stipulates which symbol represents a complete to-do (default: `'X'`)
+> * `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do (default: `' '`)
+> * `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do (default: `'-'`)
+> * `to_do.complete` (string):  Stipulates which symbol represents a complete to-do (default: `'X'`)
+> * `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
+>    * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
+>    * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
 
 #### `foldtext` (dictionary-like table)
 * `foldtext.object_count` (boolean): Whether to show a count of all the objects inside of a folded section (default: `true`)
