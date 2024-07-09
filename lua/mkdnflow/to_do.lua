@@ -293,7 +293,8 @@ end
 
 --- Method to get the status object for a target status
 --- @param target string|table A string (to-do symbol or to-do name) or a table containing both
-function to_do_item:set_status(target)
+function to_do_item:set_status(target, dependent_call)
+    dependent_call = dependent_call == nil and false or dependent_call
     -- Create the new line, substituting the current status with the target status
     -- Get the status object
     local target_status = type(target) == 'table' and target or to_do_statuses:get(target)
@@ -314,24 +315,28 @@ function to_do_item:set_status(target)
 end
 
 --- Method to change a to-do item's status to the next status in the config list
-function to_do_item:cycle_status()
+function to_do_item:cycle_status(dependent_call)
+    dependent_call = dependent_call == nil and false or dependent_call
     local next_status = to_do_statuses:next(self.status)
-    self:set_status(next_status)
+    self:set_status(next_status, dependent_call)
 end
 
 --- Shortcut method to change a to-do item's status to 'complete'
-function to_do_item:complete()
-    self:set_status('complete')
+function to_do_item:complete(dependent_call)
+    dependent_call = dependent_call == nil and false or dependent_call
+    self:set_status('complete', dependent_call)
 end
 
 --- Shortcut method to change a to-do item's status to 'not_started'
-function to_do_item:not_started()
-    self:set_status('not_started')
+function to_do_item:not_started(dependent_call)
+    dependent_call = dependent_call == nil and false or dependent_call
+    self:set_status('not_started', dependent_call)
 end
 
 --- Shortcut method to change a to-do item's status to 'in_progress'
-function to_do_item:in_progress()
-    self:set_status('in_progress')
+function to_do_item:in_progress(dependent_call)
+    dependent_call = dependent_call == nil and false or dependent_call
+    self:set_status('in_progress', dependent_call)
 end
 
 --- Method to update parents in response to children status changes
@@ -352,16 +357,16 @@ function to_do_item:update_parent_line()
         -- Complete the parent if all the sibs are complete; otherwise, mark the parent as in
         -- progress
         if sibs_complete then
-            self.parent:complete()
+            self.parent:complete(true)
             parent_updated = true
         else
-            self.parent:in_progress()
+            self.parent:in_progress(true)
             parent_updated = true
         end
     elseif self.status.name == 'in_progress' then
         -- In this case, the parent should also be in progress, regardless of the status of the sibs
         if self.parent.status.name ~= 'in_progress' then
-            self.parent:in_progress()
+            self.parent:in_progress(true)
             parent_updated = true
         end
     elseif self.status.name == 'not_started' then
@@ -375,10 +380,10 @@ function to_do_item:update_parent_line()
         -- Mark the parent as not started if none of the sibs are started either; otherwise, mark
         -- the parent as in progress
         if sibs_not_started then
-            self.parent:not_started()
+            self.parent:not_started(true)
             parent_updated = true
         else
-            self.parent:in_progress()
+            self.parent:in_progress(true)
             parent_updated = true
         end
     end
