@@ -119,7 +119,7 @@ local default_config = {
             {
                 name = 'complete',
                 symbol = 'X',
-                legacy_symbols = {},
+                legacy_symbols = { 'x' },
                 sort = { section = 3, position = 'top' },
             },
         },
