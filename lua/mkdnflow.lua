@@ -125,7 +125,7 @@ local default_config = {
                     end,
                     down = function(child_list)
                         local target_statuses = {}
-                        for _, item in ipairs(child_list.items) do
+                        for _ = 1, #child_list.items, 1 do
                             table.insert(target_statuses, 'not_started')
                         end
                         return target_statuses
@@ -165,7 +165,7 @@ local default_config = {
                     end,
                     down = function(child_list)
                         local target_statuses = {}
-                        for _, item in ipairs(child_list.items) do
+                        for _ = 1, #child_list.items, 1 do
                             table.insert(target_statuses, 'complete')
                         end
                         return target_statuses
