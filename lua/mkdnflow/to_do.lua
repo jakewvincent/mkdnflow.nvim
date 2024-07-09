@@ -314,6 +314,10 @@ function to_do_item:set_status(target, dependent_call)
     if not vim.tbl_isempty(self.parent) and require('mkdnflow').config.to_do.update_parents then
         self:update_parent_line()
     end
+    -- Sort the to-do list if desired
+    if require('mkdnflow').config.to_do.sort.on_status_change and not dependent_call then
+        self.host_list:sort(self)
+    end
 end
 
 --- Method to change a to-do item's status to the next status in the config list
@@ -464,6 +468,78 @@ function to_do_list:add_item(item)
         -- Update line range
         self.line_range.start = self.items[1].line_nr
         self.line_range.finish = self.items[#self.items].line_nr
+    end
+end
+
+--- Method to sort a to-do list
+--- @param target_item? to_do_item The item whose status change triggered the sort call
+function to_do_list:sort(target_item)
+    local sections, cursor = {}, { new_line = 0, old_position = vim.api.nvim_win_get_cursor(0) }
+    -- Put the siblings in their respective section
+    local hold = {}
+    for _, item in ipairs(self.items) do
+        if not sections[item.status.sort.section] then
+            sections[item.status.sort.section] = {}
+        end
+        if
+            target_item
+            and target_item.line_nr == item.line_nr
+            and (item.status.sort.position == 'top' or item.status.sort.position == 'bottom')
+        then
+            table.insert(hold, item)
+        else
+            table.insert(sections[item.status.sort.section], item)
+        end
+    end
+    -- Now add the held items (if any)
+    for _, item in ipairs(hold) do
+        if not sections[item.status.sort.section] then
+            sections[item.status.sort.section] = {}
+        end
+        if item.status.sort.position == 'top' then
+            table.insert(sections[item.status.sort.section], 1, item)
+        elseif item.status.sort.position == 'bottom' then
+            table.insert(sections[item.status.sort.section], item)
+        end
+    end
+    local replacement_lines = {}
+    -- Gather the sections, flattening any descendants
+    local cur_replacee_line = self.line_range.start
+    for _, tbl in vim.spairs(sections) do
+        for _, item in ipairs(tbl) do
+            table.insert(replacement_lines, item.content)
+            if item.line_nr == cursor.old_position[1] then
+                cursor.new_line = cur_replacee_line
+            end
+            cur_replacee_line = cur_replacee_line + 1
+            if item:has_children() then
+                local descendants = item.children:flatten()
+                for _, item_ in ipairs(descendants) do
+                    if item_.line_nr == cursor.old_position[1] then
+                        cursor.new_line = cur_replacee_line
+                    end
+                    cur_replacee_line = cur_replacee_line + 1
+                    table.insert(replacement_lines, item_.content)
+                end
+            end
+        end
+    end
+    -- Replace the lines in the buffer
+    vim.api.nvim_buf_set_lines(
+        0,
+        self.line_range.start - 1,
+        self.line_range.finish,
+        false,
+        replacement_lines
+    )
+    -- Move the cursor if desired
+    -- TODO: Account for unicode bytes
+    if
+        require('mkdnflow').config.to_do.sort.on_status_change
+        and require('mkdnflow').config.to_do.sort.cursor_behavior.track
+        and cursor.new_line > 0
+    then
+        vim.api.nvim_win_set_cursor(0, { cursor.new_line, cursor.old_position[2] })
     end
 end
 
