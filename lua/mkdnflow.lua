@@ -104,9 +104,24 @@ local default_config = {
     },
     to_do = {
         statuses = {
-            { name = 'not_started', symbol = ' ' , legacy_symbols = {} },
-            { name = 'in_progress', symbol = '-', legacy_symbols = {} },
-            { name = 'complete', symbol = 'X', legacy_symbols = {} },
+            {
+                name = 'not_started',
+                symbol = ' ',
+                legacy_symbols = {},
+                sort = { section = 2, position = 'top' },
+            },
+            {
+                name = 'in_progress',
+                symbol = '-',
+                legacy_symbols = {},
+                sort = { section = 1, position = 'bottom' },
+            },
+            {
+                name = 'complete',
+                symbol = 'X',
+                legacy_symbols = {},
+                sort = { section = 3, position = 'top' },
+            },
         },
         update_parents = true,
     },
