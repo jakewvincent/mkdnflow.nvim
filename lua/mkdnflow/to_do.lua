@@ -293,8 +293,9 @@ end
 
 --- Method to get the status object for a target status
 --- @param target string|table A string (to-do symbol or to-do name) or a table containing both
-function to_do_item:set_status(target, dependent_call)
+function to_do_item:set_status(target, dependent_call, propagation_direction)
     dependent_call = dependent_call == nil and false or dependent_call
+    local config = require('mkdnflow').config.to_do
     -- Create the new line, substituting the current status with the target status
     -- Get the status object
     local target_status = type(target) == 'table' and target or to_do_statuses:get(target)
@@ -311,11 +312,14 @@ function to_do_item:set_status(target, dependent_call)
     -- Update the item's content attribute
     self.content = new_line
     -- Update parents if possible and desired
-    if not vim.tbl_isempty(self.parent) and require('mkdnflow').config.to_do.update_parents then
-        self:update_parent_line()
+    if
+        not vim.tbl_isempty(self.parent) and config.status_propagation.up
+        or config.status_propagation.down
+    then
+        self:propagate_status(dependent_call, propagation_direction)
     end
     -- Sort the to-do list if desired
-    if require('mkdnflow').config.to_do.sort.on_status_change and not dependent_call then
+    if config.sort.on_status_change and not dependent_call then
         self.host_list:sort(self)
     end
 end
@@ -328,76 +332,57 @@ function to_do_item:cycle_status(dependent_call)
 end
 
 --- Shortcut method to change a to-do item's status to 'complete'
-function to_do_item:complete(dependent_call)
+function to_do_item:complete(dependent_call, propagation_direction)
     dependent_call = dependent_call == nil and false or dependent_call
-    self:set_status('complete', dependent_call)
+    self:set_status('complete', dependent_call, propagation_direction)
 end
 
 --- Shortcut method to change a to-do item's status to 'not_started'
-function to_do_item:not_started(dependent_call)
+function to_do_item:not_started(dependent_call, propagation_direction)
     dependent_call = dependent_call == nil and false or dependent_call
-    self:set_status('not_started', dependent_call)
+    self:set_status('not_started', dependent_call, propagation_direction)
 end
 
 --- Shortcut method to change a to-do item's status to 'in_progress'
-function to_do_item:in_progress(dependent_call)
+function to_do_item:in_progress(dependent_call, propagation_direction)
     dependent_call = dependent_call == nil and false or dependent_call
-    self:set_status('in_progress', dependent_call)
+    self:set_status('in_progress', dependent_call, propagation_direction)
 end
 
 --- Method to update parents in response to children status changes
-function to_do_item:update_parent_line()
+function to_do_item:propagate_status(dependent_call, direction)
+    local config = require('mkdnflow').config.to_do
     -- Don't do anything if the item has no parent
-    if not self:has_parent() then
+    if config.status_propagation.up == false and config.status_propagation.down == false then
         return
     end
-    local parent_updated = false
-    if self.status.name == 'complete' then
-        -- Check if all the siblings are also complete
-        local sibs_complete = true
-        for _, sib in ipairs(self.host_list.items) do
-            if sib.line_nr ~= self.line_nr and sib.status.name ~= 'complete' then
-                sibs_complete = false
-            end
-        end
-        -- Complete the parent if all the sibs are complete; otherwise, mark the parent as in
-        -- progress
-        if sibs_complete then
-            self.parent:complete(true)
-            parent_updated = true
-        else
-            self.parent:in_progress(true)
+    -- Update parental lineage first
+    if config.status_propagation.up and self:has_parent() and direction ~= 'down' then
+        local parent_updated = false
+        local target_status = self.status.propagate.up(self.host_list)
+        if target_status and self.parent.status.name ~= target_status then
+            self.parent:set_status(target_status, true, 'up')
             parent_updated = true
         end
-    elseif self.status.name == 'in_progress' then
-        -- In this case, the parent should also be in progress, regardless of the status of the sibs
-        if self.parent.status.name ~= 'in_progress' then
-            self.parent:in_progress(true)
-            parent_updated = true
-        end
-    elseif self.status.name == 'not_started' then
-        -- Check if any of the siblings are either complete or in progress
-        local sibs_not_started = true
-        for _, sib in ipairs(self.host_list.items) do
-            if sib.line_nr ~= self.line_nr and sib.status.name ~= 'not_started' then
-                sibs_not_started = false
-            end
-        end
-        -- Mark the parent as not started if none of the sibs are started either; otherwise, mark
-        -- the parent as in progress
-        if sibs_not_started then
-            self.parent:not_started(true)
-            parent_updated = true
-        else
-            self.parent:in_progress(true)
-            parent_updated = true
+        if parent_updated then
+            local parent_line_nr = self.parent.line_nr
+            -- Get parent to-do list
+            local parent = to_do_item:get(parent_line_nr)
+            parent:propagate_status(true, 'up')
         end
     end
-    if parent_updated then
-        local parent_line_nr = self.parent.line_nr
-        -- Get parent to-do list
-        local parent = to_do_item:get(parent_line_nr)
-        parent:update_parent_line()
+    -- Update children
+    if config.status_propagation.down and self:has_children() then
+        -- Get a list of target statuses
+        local target_statuses = self.status.propagate.down(self.children)
+        if target_statuses and #target_statuses ~= #self.children.items then
+            -- TODO: Issue a warning
+        end
+        if target_statuses and not vim.tbl_isempty(target_statuses) then
+            for i, child in ipairs(self.children.items) do
+                child:set_status(target_statuses[i], true, 'down')
+            end
+        end
     end
 end
 

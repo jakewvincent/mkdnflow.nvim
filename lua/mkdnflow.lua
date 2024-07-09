@@ -174,7 +174,10 @@ local default_config = {
                 },
             },
         },
-        update_parents = true,
+        status_propagation = {
+            up = true,
+            down = true
+        },
         sort = {
             on_status_change = false,
             recursive = false,
