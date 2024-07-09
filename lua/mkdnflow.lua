@@ -124,6 +124,13 @@ local default_config = {
             },
         },
         update_parents = true,
+        sort = {
+            on_status_change = false,
+            recursive = false,
+            cursor_behavior = {
+                track = true
+            }
+        }
     },
     tables = {
         trim_whitespace = true,
