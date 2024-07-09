@@ -141,8 +141,7 @@ local default_config = {
                     up = function(host_list)
                         return 'in_progress'
                     end,
-                    down = function(child_list)
-                    end,
+                    down = function(child_list) end,
                 },
             },
             {
@@ -176,7 +175,7 @@ local default_config = {
         },
         status_propagation = {
             up = true,
-            down = true
+            down = true,
         },
         sort = {
             on_status_change = false,
