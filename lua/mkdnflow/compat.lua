@@ -67,6 +67,12 @@ M.userConfigCheck = function(user_config)
                 { name = 'complete', symbol = user_config.to_do.complete },
             }
         end
+        -- Propagation (added July 2024)
+        if user_config.to_do.update_parents ~= nil then
+            user_config.to_do['status_propagation'] = {
+                up = user_config.to_do.update_parents
+            }
+        end
     end
 
     -- Look for default bib path
