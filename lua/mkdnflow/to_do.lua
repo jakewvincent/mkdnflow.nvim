@@ -165,7 +165,7 @@ function to_do_item:new(opts)
         valid = opts.valid or false,
         parent = opts.parent or {},
         children = opts.children or to_do_list:new(),
-        host_list = opts.host_list or {}
+        host_list = opts.host_list or {},
     }
     setmetatable(instance, self)
     return instance
