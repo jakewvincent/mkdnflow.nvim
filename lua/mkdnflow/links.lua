@@ -865,7 +865,7 @@ M.createLink = function(args)
             -- is, perform the search until a match is found whose right edge follows
             -- the cursor position
             if cursor_word ~= '' then
-                for _left, _right in utils.betterGmatch(line, cursor_word) do
+                for _left, _right in utils.gmatch(line, cursor_word) do
                     if _right >= col then
                         left = _left
                         right = _right

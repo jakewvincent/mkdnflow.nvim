@@ -335,7 +335,7 @@ local which_cell = function(row, col)
     local cursorline = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
     cursorline = cursorline:gsub('\\|', '##')
     local init, cell, cursor_cell = 1, 1, nil
-    for start, finish in utils.betterGmatch(cursorline, '[^|]+') do
+    for start, finish in utils.gmatch(cursorline, '[^|]+') do
         -- Find the indices of the match
         if col + 1 >= start and col <= finish then
             cursor_cell = cell
@@ -352,7 +352,7 @@ local locate_cell = function(table_row, target_cellnr, locate_cell_contents)
     local start, finish
     -- Internally replace any escaped bars
     table_row = table_row:gsub('\\|', '  ')
-    for match_start, match_end, match in utils.betterGmatch(table_row, '([^|]+)') do
+    for match_start, match_end, match in utils.gmatch(table_row, '([^|]+)') do
         cur_cell = cur_cell + 1
         --start, finish = string.find(table_row, match, init, true)
         if cur_cell == target_cellnr then

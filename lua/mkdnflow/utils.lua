@@ -258,7 +258,7 @@ M.spairs = function(tbl)
     end
 end
 
-M.betterGmatch = function(text, pattern, start)
+M.gmatch = function(text, pattern, start)
     start = start ~= nil and start or 1
     return function()
         if not text then
