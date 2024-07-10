@@ -164,7 +164,7 @@ end
 --- @field line_nr integer The (one-based) line number on which the to-do item can be found
 --- @field level integer The indentation-based level of the to-do item (0 == the item has no indentation and no parents)
 --- @field content string The text of the entire line stored under line_nr
---- @field status {name: string, symbol: string, legacy_symbols: string[], sort: {section: integer, position: string}, propagate: {up: fun(host_list: to_do_list):string|nil, down: fun(children_list: to_do_list): string|nil}} A to-do status table
+--- @field status {name: string, symbol: string|string[], sort: {section: integer, position: string}, propagate: {up: fun(host_list: to_do_list):string|nil, down: fun(children_list: to_do_list): string|nil}} A to-do status table
 --- @field valid boolean Whether the line contains a recognized to-do item
 --- @field parent to_do_item The closest item in the list that has a level one less than the child item
 --- @field children to_do_list A list of to-do items one level higher beneath the main item
