@@ -318,6 +318,12 @@ function to_do_item:get_symbol()
     return self.status:get_symbol()
 end
 
+--- Method to retrieve the current/active symbol of a to-do item
+--- @return string # The current to-do status symbol (from the `content` attribute)
+function to_do_item:current_symbol()
+    return self.content:match('%s*[-+*%d]+%.?%s*%[(.-)%]')
+end
+
 --- Method to get any and all legacy/extra symbols from a to-do status table
 --- @return string[] # A list of strings
 function to_do_item:get_extra_symbols()
@@ -334,9 +340,9 @@ function to_do_item:set_status(target, dependent_call, propagation_direction)
     local target_status = type(target) == 'table' and target or to_do_statuses:get(target)
     -- Prep the updated text for the line
     local new_line = self.content:gsub(
-        string.format('%%[(%s)%%]', self.status.symbol), -- The current symbol
-        -- Recycle the current symbol if the target status is not regognized
-        string.format('%%[%s%%]', target_status ~= nil and target_status.symbol or '%1'),
+        string.format('%%[(%s)%%]', self:current_symbol()), -- The current symbol
+        -- Recycle the current symbol if the target status is not recognized
+        string.format('%%[%s%%]', target_status ~= nil and target_status:get_symbol() or '%1'),
         1
     )
     vim.api.nvim_buf_set_lines(0, self.line_nr - 1, self.line_nr, false, { new_line })
