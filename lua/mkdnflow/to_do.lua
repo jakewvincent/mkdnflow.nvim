@@ -565,7 +565,7 @@ function to_do_list:sort(target_item)
         and require('mkdnflow').config.to_do.sort.cursor_behavior.track
         and cursor.new_line > 0
     then
-        vim.api.nvim_win_set_cursor(0, { cursor.new_line, cursor.old_position[2] })
+        vim.api.nvim_win_set_cursor(0, { cursor.new_line, 1 })
     end
 end
 
