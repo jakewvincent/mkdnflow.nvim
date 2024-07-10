@@ -128,7 +128,7 @@ function to_do_statuses:next(status)
         if count > #self then
             return self[idx]
         end
-    until not self[next_idx].exclude_from_cycle
+    until not self[next_idx].exclude_from_rotation
 
     return self[next_idx]
 end
@@ -364,7 +364,7 @@ function to_do_item:set_status(target, dependent_call, propagation_direction)
 end
 
 --- Method to change a to-do item's status to the next status in the config list
-function to_do_item:cycle_status(dependent_call)
+function to_do_item:rotate_status(dependent_call)
     dependent_call = dependent_call == nil and false or dependent_call
     local next_status = to_do_statuses:next(self.status)
     self:set_status(next_status, dependent_call)
@@ -601,10 +601,10 @@ function M.toggle_to_do()
         -- Use the lower value for `first` and the higher value for `last`
         local first, last = (pos_a < pos_b and pos_a) or pos_b, (pos_b > pos_a and pos_b) or pos_a
         if first == 0 or last == 0 then
-            M.get_to_do_item(pos_b):cycle_status()
+            M.get_to_do_item(pos_b):rotate_status()
         else
             for line_nr = first, last do
-                M.get_to_do_item(line_nr):cycle_status()
+                M.get_to_do_item(line_nr):rotate_status()
             end
         end
     elseif string.lower(mode):match('v') then
@@ -616,7 +616,7 @@ function M.toggle_to_do()
             )
         end
     else
-        M.get_to_do_item():cycle_status()
+        M.get_to_do_item():rotate_status()
     end
 end
 

@@ -108,7 +108,7 @@ local default_config = {
                 name = 'not_started',
                 symbol = ' ',
                 sort = { section = 2, position = 'top' },
-                exclude_from_cycle = false,
+                exclude_from_rotation = false,
                 propagate = {
                     up = function(host_list)
                         local no_items_started = true
@@ -136,7 +136,7 @@ local default_config = {
                 name = 'in_progress',
                 symbol = '-',
                 sort = { section = 1, position = 'bottom' },
-                exclude_from_cycle = false,
+                exclude_from_rotation = false,
                 propagate = {
                     up = function(host_list)
                         return 'in_progress'
@@ -148,7 +148,7 @@ local default_config = {
                 name = 'complete',
                 symbol = { 'X', 'x' },
                 sort = { section = 3, position = 'top' },
-                exclude_from_cycle = false,
+                exclude_from_rotation = false,
                 propagate = {
                     up = function(host_list)
                         local all_items_complete = true
