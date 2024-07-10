@@ -144,7 +144,7 @@ local default_config = {
             },
             {
                 name = 'complete',
-                symbol = {'X', 'x'},
+                symbol = { 'X', 'x' },
                 sort = { section = 3, position = 'top' },
                 propagate = {
                     up = function(host_list)
