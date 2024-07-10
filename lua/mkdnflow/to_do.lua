@@ -116,9 +116,21 @@ end
 --- @param status string|table A name or symbol by which to retrieve a status table from the config
 --- @return table # A status table (containing the name and symbol of the status)
 function to_do_statuses:next(status)
-    local name = type(status) == 'table' and (status.name or status[1]) or status
-    local idx = self:index(name)
-    return self[(idx % #self) + 1]
+    local cur_status = type(status) == 'table' and (status.name or status[1]) or status
+    local idx = self:index(cur_status) -- Index of the current status
+    local next_idx = idx
+    local count = 0
+
+    repeat
+        next_idx = (next_idx % #self) + 1
+        count = count + 1
+        -- Failure => recycle the current status
+        if count > #self then
+            return self[idx]
+        end
+    until not self[next_idx].exclude_from_cycle
+
+    return self[next_idx]
 end
 
 --- To-do lists
