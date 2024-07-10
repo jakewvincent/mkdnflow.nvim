@@ -107,7 +107,6 @@ local default_config = {
             {
                 name = 'not_started',
                 symbol = ' ',
-                legacy_symbols = {},
                 sort = { section = 2, position = 'top' },
                 propagate = {
                     up = function(host_list)
@@ -135,7 +134,6 @@ local default_config = {
             {
                 name = 'in_progress',
                 symbol = '-',
-                legacy_symbols = {},
                 sort = { section = 1, position = 'bottom' },
                 propagate = {
                     up = function(host_list)
@@ -146,8 +144,7 @@ local default_config = {
             },
             {
                 name = 'complete',
-                symbol = 'X',
-                legacy_symbols = { 'x' },
+                symbol = {'X', 'x'},
                 sort = { section = 3, position = 'top' },
                 propagate = {
                     up = function(host_list)
