@@ -398,7 +398,8 @@ function to_do_item:propagate_status(dependent_call, direction)
     -- Update parental lineage first
     if config.status_propagation.up and self:has_parent() and direction ~= 'down' then
         local parent_updated = false
-        local target_status = self.status.propagate.up(self.host_list)
+        local target_status = (self.status.propagate and self.status.propagate.up)
+            and self.status.propagate.up(self.host_list)
         if target_status and self.parent.status.name ~= target_status then
             self.parent:set_status(target_status, true, 'up')
             parent_updated = true
@@ -413,7 +414,8 @@ function to_do_item:propagate_status(dependent_call, direction)
     -- Update children
     if config.status_propagation.down and self:has_children() then
         -- Get a list of target statuses
-        local target_statuses = self.status.propagate.down(self.children)
+        local target_statuses = (self.status.propagate and self.status.propagate.down)
+            and self.status.propagate.down(self.children)
         if target_statuses and #target_statuses ~= #self.children.items then
             -- TODO: Issue a warning
         end
