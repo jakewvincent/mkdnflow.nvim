@@ -21,24 +21,46 @@ local vim_indent = vim.api.nvim_buf_get_option(0, 'expandtab') == true
         and string.rep(' ', vim.api.nvim_buf_get_option(0, 'shiftwidth'))
     or '\t'
 
+local status_methods = {
+    __index = {
+        get_symbol = function(self)
+            if type(self.symbol) == 'table' then
+                return self.symbol[1]
+            else
+                return self.symbol
+            end
+        end,
+        get_extra_symbols = function(self)
+            local symbols = {}
+            if type(self.symbol) == 'table' then
+                for i = 2, #self.symbol do
+                    table.insert(symbols, self.symbol[i])
+                end
+            end
+            return symbols
+        end,
+    },
+}
+
+-- Set the methods for each status table
+for _, status in ipairs(to_do_statuses) do
+    setmetatable(status, status_methods)
+end
+
 --- Method to get the name of a to-do symbol
 --- @param symbol string A to-do status symbol
 --- @return string|nil # The name of a to-do status symbol
 function to_do_statuses:name(symbol)
     -- Look for the symbol first in the primary symbols
-    for _, v in ipairs(self) do
-        if v.symbol == symbol then
-            return v.name
+    for _, status_tbl in ipairs(self) do
+        if status_tbl:get_symbol() == symbol then
+            return status_tbl.name
         end
     end
     -- If the name has not been found yet, look in legacy symbols
-    for _, v in ipairs(self) do
-        if not vim.tbl_isempty(v.legacy_symbols) then
-            for _, v_ in ipairs(v.legacy_symbols) do
-                if v_ == symbol then
-                    return v.name
-                end
-            end
+    for _, status_tbl in ipairs(self) do
+        if vim.list_contains(status_tbl:get_extra_symbols(), symbol) then
+            return status_tbl.name
         end
     end
 end
@@ -46,10 +68,10 @@ end
 --- Method to get the symbol for a to-do status name
 --- @param name string A to-do status name
 --- @return string|nil # The corresponding symbol, or nil if there is no corresponding symbol
-function to_do_statuses:symbol(name)
-    for _, v in ipairs(self) do
-        if v.name == name then
-            return v.symbol
+function to_do_statuses:get_symbol(name)
+    for _, status_tbl in ipairs(self) do
+        if status_tbl.name == name then
+            return status_tbl:get_symbol()
         end
     end
 end
@@ -59,19 +81,15 @@ end
 --- @return integer|nil # The index of the status in the list of statuses
 function to_do_statuses:index(status)
     status = type(status) == 'table' and status.name or status
-    for i, v in ipairs(self) do
-        if v.name == status or v.symbol == status then
+    for i, status_tbl in ipairs(self) do
+        if status_tbl.name == status or status_tbl:get_symbol() == status then
             return i
         end
     end
     -- If the status has not been found yet, look in legacy symbols
-    for i, v in ipairs(self) do
-        if not vim.tbl_isempty(v.legacy_symbols) then
-            for _, v_ in ipairs(v.legacy_symbols) do
-                if v_ == status then
-                    return i
-                end
-            end
+    for i, status_tbl in ipairs(self) do
+        if vim.list_contains(status_tbl:get_extra_symbols(), status) then
+            return i
         end
     end
 end
@@ -81,19 +99,15 @@ end
 --- @return table|nil # A table containing at least the name and symbol for a status
 function to_do_statuses:get(status)
     status = type(status) == 'table' and status.name or status
-    for _, v in ipairs(self) do
-        if v.name == status or v.symbol == status then
-            return v
+    for _, status_tbl in ipairs(self) do
+        if status_tbl.name == status or status_tbl:get_symbol() == status then
+            return status_tbl
         end
     end
     -- If the status has not been found yet, look in legacy symbols
-    for _, v in ipairs(self) do
-        if not vim.tbl_isempty(v.legacy_symbols) then
-            for _, v_ in ipairs(v.legacy_symbols) do
-                if v_ == status then
-                    return v
-                end
-            end
+    for _, status_tbl in ipairs(self) do
+        if vim.list_contains(status_tbl:get_extra_symbols(), status) then
+            return status_tbl
         end
     end
 end
@@ -103,6 +117,13 @@ end
 --- @return table # A status table (containing the name and symbol of the status)
 function to_do_statuses:next(status)
     status = type(status) == 'table' and status.name or status
+    if type(status) == 'table' then
+        if status.name then
+            status = status.name
+        else
+            status = status[1]
+        end
+    end
     local idx = self:index(status)
     -- If we're at the last index, return the first item
     if idx == #self then
@@ -289,6 +310,18 @@ function to_do_item:get(line_nr)
     local item = list.items[list.requester_idx]
     item.host_list = list
     return item
+end
+
+--- Method to retrieve the default symbol of a to-do status
+--- @return string # The to-do status symbol, as a string
+function to_do_item:get_symbol()
+    return self.status:get_symbol()
+end
+
+--- Method to get any and all legacy/extra symbols from a to-do status table
+--- @return string[] # A list of strings
+function to_do_item:get_extra_symbols()
+    return self.status:get_extra_symbols()
 end
 
 --- Method to get the status object for a target status
