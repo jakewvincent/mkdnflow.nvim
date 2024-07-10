@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v1.2.0...v1.2.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* Prevent infinite loop by using custom gmatch iterator ([#237](https://github.com/jakewvincent/mkdnflow.nvim/issues/237)) ([e856877](https://github.com/jakewvincent/mkdnflow.nvim/commit/e85687784a5549c59f5f90f2d2c324a8ce7f8d8b))
+
 ## [1.2.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v1.1.2...v1.2.0) (2024-06-20)
 
 
