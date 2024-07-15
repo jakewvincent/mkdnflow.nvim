@@ -412,25 +412,9 @@ Most features are highly configurable. Study the default config first and read t
         <code>modules = {...</code>
     </summary>
 
-| Option             | Type    | Default | Description                                                               | Note                |
-| ------------------ | ------- | ------- | ------------------------------------------------------------------------- | ------------------- |
-| `modules.bib`      | boolean | `true`  | Required for parsing `.bib` files and following citations                 |                     |
-| `modules.buffers`  | boolean | `true`  | Required for backward and forward navigation through buffers              |                     |
-| `modules.conceal`  | boolean | `true`  | Required if you wish to enable link concealing                            | See `links.conceal` |
-| `modules.cursor`   | boolean | `true`  | Required for cursor navigation (jumping to links, headings, etc.)         |                     |
-| `modules.folds`    | boolean | `true`  | Required for folding by section                                           |                     |
-| `modules.foldtext` | boolean | `true`  | Required for prettified foldtext                                          |                     |
-| `modules.links`    | boolean | `true`  | Required for creating, destroying, and following links                    |                     |
-| `modules.lists`    | boolean | `true`  | Required for working in and manipulating lists, etc.                      |                     |
-| `modules.to_do`    | boolean | `true`  | Required for mnipulating to-do statuses/lists, toggling to-do items, etc. |                     |
-| `modules.paths`    | boolean | `true`  | Required for link interpretation, link following, etc.                    |                     |
-| `modules.tables`   | boolean | `true`  | Required for table management, navigation, formatting, etc.               |                     |
-| `modules.yaml`     | boolean | `false` | Required for parsing yaml blocks                                          |                     |
-| `modules.cmp`      | boolean | `false` | Required if you wish to enable completion for `nvim-cmp`                  |                     |
-
 <details>
     <summary>
-        View defaults
+        View as Lua table
     </summary>
 
 ```lua
@@ -454,11 +438,70 @@ modules = {
 
 </details>
 
+
+| Option             | Type    | Default | Description                                                               | Note                |
+| ------------------ | ------- | ------- | ------------------------------------------------------------------------- | ------------------- |
+| `modules.bib`      | boolean | `true`  | Required for parsing `.bib` files and following citations                 |                     |
+| `modules.buffers`  | boolean | `true`  | Required for backward and forward navigation through buffers              |                     |
+| `modules.conceal`  | boolean | `true`  | Required if you wish to enable link concealing                            | See `links.conceal` |
+| `modules.cursor`   | boolean | `true`  | Required for cursor navigation (jumping to links, headings, etc.)         |                     |
+| `modules.folds`    | boolean | `true`  | Required for folding by section                                           |                     |
+| `modules.foldtext` | boolean | `true`  | Required for prettified foldtext                                          |                     |
+| `modules.links`    | boolean | `true`  | Required for creating, destroying, and following links                    |                     |
+| `modules.lists`    | boolean | `true`  | Required for working in and manipulating lists, etc.                      |                     |
+| `modules.to_do`    | boolean | `true`  | Required for mnipulating to-do statuses/lists, toggling to-do items, etc. |                     |
+| `modules.paths`    | boolean | `true`  | Required for link interpretation, link following, etc.                    |                     |
+| `modules.tables`   | boolean | `true`  | Required for table management, navigation, formatting, etc.               |                     |
+| `modules.yaml`     | boolean | `false` | Required for parsing yaml blocks                                          |                     |
+| `modules.cmp`      | boolean | `false` | Required if you wish to enable completion for `nvim-cmp`                  |                     |
+
+</details>
+
+<details>
+    <summary>
+        <code>create_dirs = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
 </details>
 
 #### `create_dirs` (boolean)
 * `true` (default): Directories referenced in a link will be (recursively) created if they do not exist
 * `false` No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
+
+<details>
+    <summary>
+        <code>perspective = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
 
 #### `perspective` (dictionary-like table)
 * `perspective.priority` (string): Specifies the priority perspective to take when interpreting link paths
@@ -478,15 +521,78 @@ modules = {
     * `true` (default): Perspective will be updated when following a link to a file in a separate notebook/wiki (or navigating backwards to a file in another notebook/wiki).
     * `false`: Perspective will be not updated when following a link to a file in a separate notebook/wiki. Under the hood, links in the file in the separate notebook/wiki will be interpreted relative to the original notebook/wiki.
 
+<details>
+    <summary>
+        <code>filetypes = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
+
 #### `filetypes` (dictionary-like table)
 * `<any arbitrary filetype extension>` (boolean value)
     * `true`: A matching extension will enable the plugin's functionality for a file with that extension
 
 NOTE: This functionality references the file's extension. It does not rely on Neovim's filetype recognition. The extension must be provided in lower case because the plugin converts file names to lowercase. Any arbitrary extension can be supplied. Setting an extension to `false` is the same as not including it in the list.
 
+<details>
+    <summary>
+        <code>wrap = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
+
 #### `wrap` (boolean)
 * `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
 * `false` (default): When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
+
+<details>
+    <summary>
+        <code>bib = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
 
 #### `bib` (dictionary-like table)
 * `bib.default_path` (string or `nil`): Specifies a path to a default .bib file to look for citation keys in (need not be in root directory of notebook)
@@ -494,15 +600,78 @@ NOTE: This functionality references the file's extension. It does not rely on Ne
     * `true` (default): When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.
     * `false`: The notebook's root directory will not be searched for bib files.
 
+<details>
+    <summary>
+        <code>wrap = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
+
 #### `silent` (boolean)
 * `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
 * `false` (default): The plugin will display messages to the console (all messages from the plugin start with ⬇️ )
+
+<details>
+    <summary>
+        <code>cursor = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
 
 #### `cursor` (dictionary-like table)
 * `cursor.jump_patterns` (nil or table): A list of Lua regex patterns to jump to using `:MkdnNextLink` and `:MkdnPrevLink`
     * `nil` (default): When `nil`, the [default jump patterns](#jump-to-links-headings) for the configured link style are used (markdown-style links by default)
     * table of custom Lua regex patterns
     * `{}` (empty table) to disable link jumping without disabling the `cursor` module
+
+<details>
+    <summary>
+        <code>links = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
 
 #### `links` (dictionary-like table)
 * `links.style` (string)
@@ -544,6 +713,27 @@ end
     * `true` (default): Create a link if there's no link to follow
     * `false`: Do not create a link if there's no link to follow
 
+<details>
+    <summary>
+        <code>new_file_template = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
+
 #### `new_file_template` (dictionary-like table)
 * `new_file_template.use_template` (boolean)
     * `true`: the template is filled in (if it contains placeholders) and inserted into any new buffers entered by following a link to a buffer that doesn't exist yet
@@ -552,6 +742,27 @@ end
     * `new_file_template.placeholders.before` (dictionary-like table) A table whose keys are placeholder names pointing to functions to be evaluated immediately before the buffer is opened in the current window
     * `new_file_template.placeholders.after` (dictionary-like table) A table hose keys are placeholder names pointing to functions to be evaluated immediately after the buffer is opened in the current window
 * `new_file_template.template` (string) A string, optionally containing placeholder names, that will be inserted into new buffers
+
+<details>
+    <summary>
+        <code>to_do = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
 
 #### `to_do` (dictionary-like table)
 * `to_do.statuses` (array-like table): A list of tables, each of which represents a to-do status and minimally has a `name` key and a `symbol` key, optionally also a `legacy_symbols` key with a table value. An arbitrary number of to-do statuses can be provided, but built-in functionality only works with recognized status names (see `to_do.statuses[].name` below, as well as [To-do lists](#to-do-lists))
@@ -587,6 +798,27 @@ end
 > * `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
 >    * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
 >    * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
+
+<details>
+    <summary>
+        <code>foldtext = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
 
 #### `foldtext` (dictionary-like table)
 * `foldtext.object_count` (boolean): Whether to show a count of all the objects inside of a folded section (default: `true`)
@@ -678,6 +910,27 @@ The above recipe will produce foldtext like the following (for an h3-level secti
     </picture>
 </p>
 
+<details>
+    <summary>
+        <code>tables = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
+
 #### `tables` (dictionary-like table)
 * `tables.trim_whitespace` (boolean): Whether extra whitespace should be trimmed from the end of a table cell when a table is formatted (default: `true`)
 * `tables.format_on_move` (boolean): Whether tables should be formatted each time the cursor is moved via MkdnTable{Next/Prev}{Cell/Row} (default: `true`)
@@ -689,9 +942,51 @@ The above recipe will produce foldtext like the following (for an h3-level secti
     * 🆕 `tables.style.outer_pipes` (boolean): Whether to use (`true`) or exclude (`false`) outer pipes when formatting a table or inserting a new table (default: `true`)
     * 🆕 `tables.style.mimic_alignment` (boolean): Whether to mimic the cell alignment indicated in the separator row when formatting the table; left-alignment always used when alignment not specified (default: `true`)
 
+<details>
+    <summary>
+        <code>yaml = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
+
 #### `yaml` (dictionary-like table)
 * `yaml.bib` (dictionary-like table)
     * `yaml.bib.override` (boolean): Whether or not a bib path specified in a yaml block should be the only source considered for bib references in that file (default: `false`)
+
+<details>
+    <summary>
+        <code>mappings = {...</code>
+    </summary>
+
+<details>
+    <summary>
+        View as Lua table
+    </summary>
+
+```lua
+```
+
+</details>
+
+| Option | Type | Default | Description | Note |
+| ------ | ---- | ------- | ----------- | ---- |
+|        |      |         |             |      |
+
+</details>
 
 #### `mappings` (dictionary-like table)
 * `mappings.<name of command>` (array-like table or `false`)
