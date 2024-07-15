@@ -15,13 +15,12 @@
 1. [🚀 Introduction](#-introduction)
 2. [✨ Features](#-features)
 3. [💾 Installation and configuration](#-installation-and-configuration)
-    1. [🏃 Quick Start](#-quick-start)
+    1. [⚡ Quick Start](#-quick-start)
     2. [⚙️  Advanced configuration](#-advanced-configuration)
-        1. [🔧 Default settings](#-default-settings)
-        2. [🎨 Configuration options](#-configuration-options)
+        1. [🎨 Configuration options](#-configuration-options)
 4. [🔍 Usage](#-usage)
     1. [🛠️ Commands](#-commands)
-    2. [⌨️  Keymaps](#-keymaps)
+    2. [⌨️  Mappings](#-mappings)
 5. [❓ Frequently asked questions](#-frequently-asked-questions)
 6. [🤝 Contributing](#-contributing)
 7. [📜 License](#-license)
@@ -410,7 +409,7 @@ Most features are highly configurable. Study the default config first and read t
 
 <details>
     <summary>
-        `modules = {...`
+        <code>modules = {...</code>
     </summary>
 
 | Option             | Type    | Default | Description                                                               | Note                |
@@ -706,7 +705,7 @@ NOTE: `<name of command>` should be the name of a commands defined in `mkdnflow.
 
 ### 🛠️ Commands
 
-### ⌨️  Keymaps
+### ⌨️  Mappings
 
 ## ❓ Frequently asked questions
 
