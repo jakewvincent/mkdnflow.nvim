@@ -32,7 +32,6 @@ local default_config = {
         paths = true,
         tables = true,
         to_do = true,
-        to_do_hl = true,
         yaml = false,
         cmp = false,
     },
@@ -104,13 +103,14 @@ local default_config = {
         template = '# {{title}}',
     },
     to_do = {
+        highlight = false,
         statuses = {
             {
                 name = 'not_started',
                 symbol = ' ',
                 colors = {
-                    marker = { link = "Todo" },
-                    content = nil,
+                    marker = { link = 'Conceal' },
+                    content = { link = 'Conceal' },
                 },
                 sort = { section = 2, position = 'top' },
                 exclude_from_rotation = false,
@@ -141,8 +141,8 @@ local default_config = {
                 name = 'in_progress',
                 symbol = '-',
                 colors = {
-                    marker = { link = "WarningMsg" },
-                    content = nil,
+                    marker = { link = 'WarningMsg' },
+                    content = { bold = true },
                 },
                 sort = { section = 1, position = 'bottom' },
                 exclude_from_rotation = false,
@@ -157,8 +157,8 @@ local default_config = {
                 name = 'complete',
                 symbol = { 'X', 'x' },
                 colors = {
-                    marker = { link = "String" },
-                    content = { link = "Comment" },
+                    marker = { link = 'String' },
+                    content = { link = 'Conceal' },
                 },
                 sort = { section = 3, position = 'top' },
                 exclude_from_rotation = false,
@@ -421,7 +421,6 @@ init.setup = function(user_config)
         init.yaml = init.config.modules.yaml and require('mkdnflow.yaml')
         init.cmp = init.config.modules.cmp and require('mkdnflow.cmp')
         init.to_do = init.config.modules.to_do and require('mkdnflow.to_do')
-        init.to_do_hl = init.config.modules.to_do_hl and require('mkdnflow.to_do_hl')
         -- Record load status (i.e. loaded)
         init.loaded = true
     else
