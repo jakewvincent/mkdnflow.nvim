@@ -103,10 +103,15 @@ local default_config = {
         template = '# {{title}}',
     },
     to_do = {
+        highlight = false,
         statuses = {
             {
                 name = 'not_started',
                 symbol = ' ',
+                colors = {
+                    marker = { link = 'Conceal' },
+                    content = { link = 'Conceal' },
+                },
                 sort = { section = 2, position = 'top' },
                 exclude_from_rotation = false,
                 propagate = {
@@ -135,6 +140,10 @@ local default_config = {
             {
                 name = 'in_progress',
                 symbol = '-',
+                colors = {
+                    marker = { link = 'WarningMsg' },
+                    content = { bold = true },
+                },
                 sort = { section = 1, position = 'bottom' },
                 exclude_from_rotation = false,
                 propagate = {
@@ -147,6 +156,10 @@ local default_config = {
             {
                 name = 'complete',
                 symbol = { 'X', 'x' },
+                colors = {
+                    marker = { link = 'String' },
+                    content = { link = 'Conceal' },
+                },
                 sort = { section = 3, position = 'top' },
                 exclude_from_rotation = false,
                 propagate = {
@@ -239,11 +252,11 @@ local default_config = {
     },
 }
 
-local init = {} -- Init functions & variables
+local init = {}       -- Init functions & variables
 init.utils = require('mkdnflow.utils')
 init.user_config = {} -- For user config
-init.config = {} -- For merged configs
-init.loaded = nil -- For load status
+init.config = {}      -- For merged configs
+init.loaded = nil     -- For load status
 
 init.command_deps = {
     MkdnGoBack = { 'buffers' },
