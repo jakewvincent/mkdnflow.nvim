@@ -91,14 +91,6 @@ function M.init()
         end,
         group = todo_augroup,
     })
-    vim.api.nvim_create_autocmd('BufWritePost', {
-        -- TODO: Use filetypes provided in config here
-        pattern = '*.md',
-        callback = function()
-            highlight_to_dos()
-        end,
-        group = todo_augroup,
-    })
 end
 
 return M
