@@ -21,11 +21,9 @@ function string.pascal(str)
     return str:gsub('[_ ](.)', function(char) return char:upper() end):gsub('^%l', string.upper)
 end
 
-local M = {}
-
 local match_ids = {}
 
-M.set_highlights = function(to_do_statuses)
+local function set_highlights(to_do_statuses)
     for _, status in ipairs(to_do_statuses) do
         if status.colors.marker then
             vim.api.nvim_set_hl(0, string.format('MkdnflowToDoMarker%s', status.name:pascal()),
@@ -45,9 +43,9 @@ local function clear_syntax_matches()
     match_ids = {}
 end
 
-function M.highlight_to_dos()
+local function highlight_to_dos()
     local statuses = require('mkdnflow').config.to_do.statuses
-    M.set_highlights(statuses)
+    set_highlights(statuses)
     clear_syntax_matches()
     for _, status in ipairs(statuses) do
         local marker_pattern = string.format('\\v(^[ \\t]*[-*+]\\s+)\\zs\\[%s\\]\\ze',
@@ -63,12 +61,13 @@ function M.highlight_to_dos()
     end
 end
 
+local M = {}
 function M.init()
     local todo_augroup = vim.api.nvim_create_augroup('MkdnflowToDoStatuses', { clear = true })
     vim.api.nvim_create_autocmd('FileType', {
         pattern = 'markdown',
         callback = function()
-            M.highlight_to_dos()
+            highlight_to_dos()
         end,
         group = todo_augroup,
     })
@@ -76,7 +75,7 @@ function M.init()
         -- TODO: Use filetypes provided in config here
         pattern = '*.md',
         callback = function()
-            M.highlight_to_dos()
+            highlight_to_dos()
         end,
         group = todo_augroup,
     })
