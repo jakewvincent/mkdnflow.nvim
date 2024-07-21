@@ -23,8 +23,11 @@ function string.pascal(str)
     end):gsub('^%l', string.upper)
 end
 
+--- Table to keep track of match IDs generated (for the purpose of clearing them later)
 local match_ids = {}
 
+--- Function to create highlight groups
+--- @param to_do_statuses table[] A table of to-do status tables (from the config)
 local function set_highlights(to_do_statuses)
     for _, status in ipairs(to_do_statuses) do
         if status.colors.marker then
@@ -38,6 +41,7 @@ local function set_highlights(to_do_statuses)
     end
 end
 
+--- Function to clear existing matches
 local function clear_syntax_matches()
     for _, id in ipairs(match_ids) do
         vim.fn.matchdelete(id)
@@ -45,6 +49,7 @@ local function clear_syntax_matches()
     match_ids = {}
 end
 
+--- Function to perform highlighting on matches
 local function highlight_to_dos()
     local statuses = require('mkdnflow').config.to_do.statuses
     set_highlights(statuses)
@@ -76,6 +81,7 @@ end
 
 local M = {}
 
+--- Function to initialize highlighting
 function M.init()
     local todo_augroup = vim.api.nvim_create_augroup('MkdnflowToDoStatuses', { clear = true })
     vim.api.nvim_create_autocmd('FileType', {
