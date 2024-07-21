@@ -1,3 +1,22 @@
+-- mkdnflow.nvim (Tools for fluent markdown notebook navigation and management)
+-- Copyright (C) 2024 Jake W. Vincent <https://github.com/jakewvincent>
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+--- Add a method to the `string` class to turn a string into a Pascal-cased string
+--- @param str string A string to convert
+--- @return string
 function string.pascal(str)
     return str:gsub('[_ ](.)', function(char) return char:upper() end):gsub('^%l', string.upper)
 end
