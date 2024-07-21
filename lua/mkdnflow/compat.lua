@@ -33,7 +33,7 @@ since been migrated to another setting or another format. It returns an equiva-
 lent user config that is upgraded to the new format.
 --]]
 M.userConfigCheck = function(user_config)
-    -- Check if to-do symbols are being customized but no values were provided
+    -- Check if to-do markers are being customized but no values were provided
     -- for not_started, in_progress, and complete
     if user_config.to_do then
         if
@@ -63,9 +63,9 @@ M.userConfigCheck = function(user_config)
         -- Removal will be breaking
         if not user_config.to_do.statuses then
             user_config.to_do['statuses'] = {
-                { name = 'not_started', symbol = user_config.to_do.not_started },
-                { name = 'in_progress', symbol = user_config.to_do.in_progress },
-                { name = 'complete', symbol = user_config.to_do.complete },
+                { name = 'not_started', marker = user_config.to_do.not_started },
+                { name = 'in_progress', marker = user_config.to_do.in_progress },
+                { name = 'complete', marker = user_config.to_do.complete },
             }
         end
         -- Propagation (added July 2024)

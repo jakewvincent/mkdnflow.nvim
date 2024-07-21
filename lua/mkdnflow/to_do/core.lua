@@ -23,21 +23,21 @@ local vim_indent = vim.api.nvim_buf_get_option(0, 'expandtab') == true
 
 local status_methods = {
     __index = {
-        get_symbol = function(self)
-            if type(self.symbol) == 'table' then
-                return self.symbol[1]
+        get_marker = function(self)
+            if type(self.marker) == 'table' then
+                return self.marker[1]
             else
-                return self.symbol
+                return self.marker
             end
         end,
-        get_extra_symbols = function(self)
-            local symbols = {}
-            if type(self.symbol) == 'table' then
-                for i = 2, #self.symbol do
-                    table.insert(symbols, self.symbol[i])
+        get_extra_markers = function(self)
+            local markers = {}
+            if type(self.marker) == 'table' then
+                for i = 2, #self.marker do
+                    table.insert(markers, self.marker[i])
                 end
             end
-            return symbols
+            return markers
         end,
     },
 }
@@ -47,74 +47,74 @@ for _, status in ipairs(to_do_statuses) do
     setmetatable(status, status_methods)
 end
 
---- Method to get the name of a to-do symbol
---- @param symbol string A to-do status symbol
---- @return string|nil # The name of a to-do status symbol
-function to_do_statuses:name(symbol)
-    -- Look for the symbol first in the primary symbols
+--- Method to get the name of a to-do marker
+--- @param marker string A to-do status marker
+--- @return string|nil # The name of a to-do status marker
+function to_do_statuses:name(marker)
+    -- Look for the marker first in the primary markers
     for _, status_tbl in ipairs(self) do
-        if status_tbl:get_symbol() == symbol then
+        if status_tbl:get_marker() == marker then
             return status_tbl.name
         end
     end
-    -- If the name has not been found yet, look in legacy symbols
+    -- If the name has not been found yet, look in legacy markers
     for _, status_tbl in ipairs(self) do
-        if vim.list_contains(status_tbl:get_extra_symbols(), symbol) then
+        if vim.list_contains(status_tbl:get_extra_markers(), marker) then
             return status_tbl.name
         end
     end
 end
 
---- Method to get the symbol for a to-do status name
+--- Method to get the marker for a to-do status name
 --- @param name string A to-do status name
---- @return string|nil # The corresponding symbol, or nil if there is no corresponding symbol
-function to_do_statuses:get_symbol(name)
+--- @return string|nil # The corresponding marker, or nil if there is no corresponding marker
+function to_do_statuses:get_marker(name)
     for _, status_tbl in ipairs(self) do
         if status_tbl.name == name then
-            return status_tbl:get_symbol()
+            return status_tbl:get_marker()
         end
     end
 end
 
 --- Method to get the index of a to-do status name
---- @param status string|table A to-do status name or symbol, or a status table
+--- @param status string|table A to-do status name or marker, or a status table
 --- @return integer|nil # The index of the status in the list of statuses
 function to_do_statuses:index(status)
     status = type(status) == 'table' and status.name or status
     for i, status_tbl in ipairs(self) do
-        if status_tbl.name == status or status_tbl:get_symbol() == status then
+        if status_tbl.name == status or status_tbl:get_marker() == status then
             return i
         end
     end
-    -- If the status has not been found yet, look in legacy symbols
+    -- If the status has not been found yet, look in legacy markers
     for i, status_tbl in ipairs(self) do
-        if vim.list_contains(status_tbl:get_extra_symbols(), status) then
+        if vim.list_contains(status_tbl:get_extra_markers(), status) then
             return i
         end
     end
 end
 
---- Method to get a status table (includes name and symbol) based on a name or symbol
---- @param status string|table A name or symbol by which to retrieve a status table from the config
---- @return table|nil # A table containing at least the name and symbol for a status
+--- Method to get a status table (includes name and marker) based on a name or marker
+--- @param status string|table A name or marker by which to retrieve a status table from the config
+--- @return table|nil # A table containing at least the name and marker for a status
 function to_do_statuses:get(status)
     status = type(status) == 'table' and status.name or status
     for _, status_tbl in ipairs(self) do
-        if status_tbl.name == status or status_tbl:get_symbol() == status then
+        if status_tbl.name == status or status_tbl:get_marker() == status then
             return status_tbl
         end
     end
-    -- If the status has not been found yet, look in legacy symbols
+    -- If the status has not been found yet, look in legacy markers
     for _, status_tbl in ipairs(self) do
-        if vim.list_contains(status_tbl:get_extra_symbols(), status) then
+        if vim.list_contains(status_tbl:get_extra_markers(), status) then
             return status_tbl
         end
     end
 end
 
---- Method to get the next symbol
---- @param status string|table A name or symbol by which to retrieve a status table from the config
---- @return table # A status table (containing the name and symbol of the status)
+--- Method to get the next marker
+--- @param status string|table A name or marker by which to retrieve a status table from the config
+--- @return table # A status table (containing the name and marker of the status)
 function to_do_statuses:next(status)
     local cur_status = type(status) == 'table' and (status.name or status[1]) or status
     local idx = self:index(cur_status) -- Index of the current status
@@ -164,7 +164,7 @@ end
 --- @field line_nr integer The (one-based) line number on which the to-do item can be found
 --- @field level integer The indentation-based level of the to-do item (0 == the item has no indentation and no parents)
 --- @field content string The text of the entire line stored under line_nr
---- @field status {name: string, symbol: string|string[], sort: {section: integer, position: string}, propagate: {up: fun(host_list: to_do_list):string|nil, down: fun(children_list: to_do_list): string|nil}} A to-do status table
+--- @field status {name: string, marker: string|string[], sort: {section: integer, position: string}, propagate: {up: fun(host_list: to_do_list):string|nil, down: fun(children_list: to_do_list): string|nil}} A to-do status table
 --- @field valid boolean Whether the line contains a recognized to-do item
 --- @field parent to_do_item The closest item in the list that has a level one less than the child item
 --- @field children to_do_list A list of to-do items one level higher beneath the main item
@@ -290,11 +290,11 @@ function to_do_item:read(line_nr)
     -- Check if we have a valid to-do list new_to_do_item
     local valid_str = new_to_do_item.content:match('^%s-[-+*%d]+%.?%s-%[..?.?.?.?.?%]') -- Up to 6 bytes for the status
     if valid_str then
-        -- Retrieve the symbol from the matching string
-        local symbol = valid_str:match('%[(..?.?.?.?.?)%]')
+        -- Retrieve the marker from the matching string
+        local marker = valid_str:match('%[(..?.?.?.?.?)%]')
         -- Record line nr, status
         new_to_do_item.valid, new_to_do_item.line_nr, new_to_do_item.status =
-            true, line_nr, to_do_statuses:get(symbol) or {}
+            true, line_nr, to_do_statuses:get(marker) or {}
 
         -- Figure out the level of the new_to_do_item (based on indentation)
         _, new_to_do_item.level = string.gsub(new_to_do_item.content:match('^%s*'), vim_indent, '')
@@ -312,26 +312,26 @@ function to_do_item:get(line_nr)
     return item
 end
 
---- Method to retrieve the default symbol of a to-do status
---- @return string # The to-do status symbol, as a string
-function to_do_item:get_symbol()
-    return self.status:get_symbol()
+--- Method to retrieve the default marker of a to-do status
+--- @return string # The to-do status marker, as a string
+function to_do_item:get_marker()
+    return self.status:get_marker()
 end
 
---- Method to retrieve the current/active symbol of a to-do item
---- @return string # The current to-do status symbol (from the `content` attribute)
-function to_do_item:current_symbol()
+--- Method to retrieve the current/active marker of a to-do item
+--- @return string # The current to-do status marker (from the `content` attribute)
+function to_do_item:current_marker()
     return self.content:match('%s*[-+*%d]+%.?%s*%[(.-)%]')
 end
 
---- Method to get any and all legacy/extra symbols from a to-do status table
+--- Method to get any and all legacy/extra markers from a to-do status table
 --- @return string[] # A list of strings
-function to_do_item:get_extra_symbols()
-    return self.status:get_extra_symbols()
+function to_do_item:get_extra_markers()
+    return self.status:get_extra_markers()
 end
 
 --- Method to get the status object for a target status
---- @param target string|table A string (to-do symbol or to-do name) or a table containing both
+--- @param target string|table A string (to-do marker or to-do name) or a table containing both
 function to_do_item:set_status(target, dependent_call, propagation_direction)
     dependent_call = dependent_call == nil and false or dependent_call
     local config = require('mkdnflow').config.to_do
@@ -340,9 +340,9 @@ function to_do_item:set_status(target, dependent_call, propagation_direction)
     local target_status = type(target) == 'table' and target or to_do_statuses:get(target)
     -- Prep the updated text for the line
     local new_line = self.content:gsub(
-        string.format('%%[(%s)%%]', self:current_symbol()), -- The current symbol
-        -- Recycle the current symbol if the target status is not recognized
-        string.format('%%[%s%%]', target_status ~= nil and target_status:get_symbol() or '%1'),
+        string.format('%%[(%s)%%]', self:current_marker()), -- The current marker
+        -- Recycle the current marker if the target status is not recognized
+        string.format('%%[%s%%]', target_status ~= nil and target_status:get_marker() or '%1'),
         1
     )
     vim.api.nvim_buf_set_lines(0, self.line_nr - 1, self.line_nr, false, { new_line })
@@ -592,7 +592,7 @@ function M.get_to_do_list(line_nr)
     return list
 end
 
---- Function to cycle through the to-do status symbols for the item on the current line
+--- Function to cycle through the to-do status markers for the item on the current line
 function M.toggle_to_do()
     local mode = vim.api.nvim_get_mode()['mode']
     -- If we're in visual mode, toggle the to-do items on all selected lines

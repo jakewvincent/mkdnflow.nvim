@@ -58,7 +58,7 @@ local function highlight_to_dos()
         -- Marker highlighting
         local marker_pattern = string.format(
             '\\v(^[ \\t]*[-*+]\\s+)\\zs\\[%s\\]\\ze',
-            status:get_symbol(), status:get_symbol()
+            status:get_marker(), status:get_marker()
         )
         local marker_id = vim.fn.matchadd(
             string.format('MkdnflowToDoMarker%s', status.name:pascal()),
@@ -67,7 +67,7 @@ local function highlight_to_dos()
         -- Content highlighting
         local content_pattern = string.format(
             '\\v(^[ \\t]*[-*+]\\s+\\[%s\\]\\s+\\zs.+)',
-            status:get_symbol()
+            status:get_marker()
         )
         local content_id = vim.fn.matchadd(
             string.format('MkdnflowToDoContent%s', status.name:pascal()),

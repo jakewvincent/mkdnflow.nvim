@@ -18,7 +18,7 @@
 5. [Completion of file links and bib-based references (for nvim-cmp)](#-completion-for-nvim-cmp)
 
 #### Announcements
-12/12/23: Mkdnflow no longer requires the `luautf8` lua rock as a dependency. UTF-8 characters can be used as [custom to-do symbols](#to_do-dictionary-like-table) out of the box, and table formatting will work out of the box when the table contains UTF-8 characters.
+12/12/23: Mkdnflow no longer requires the `luautf8` lua rock as a dependency. UTF-8 characters can be used as [custom to-do markers](#to_do-dictionary-like-table) out of the box, and table formatting will work out of the box when the table contains UTF-8 characters.
 
 ## 📝 Description
 
@@ -261,7 +261,7 @@ require('mkdnflow').setup({
 ```
 
 ### To-do lists
-* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do symbols [can be customized](#to_do-dictionary-like-table).
+* Toggle the status of a to-do list item on the current line (mapped to `<C-Space>` by default). Using the default settings, toggling will result in the following changes. To-do markers [can be customized](#to_do-dictionary-like-table).
     * `* [ ] ...` → `* [-] ...`
     * `* [-] ...` → `* [X] ...`
     * `* [X] ...` → `* [ ] ...`
@@ -506,8 +506,7 @@ require('mkdnflow').setup({
         statuses = {
             {
                 name = 'not_started',
-                symbol = ' ',
-                legacy_symbols = {},
+                marker = ' ',
                 sort = { section = 2, position = 'top' },
                 propagation = {
                     up = function(host_list)
@@ -534,8 +533,7 @@ require('mkdnflow').setup({
             },
             {
                 name = 'in_progress',
-                symbol = '-',
-                legacy_symbols = {},
+                marker = '-',
                 sort = { section = 1, position = 'bottom' },
                 propagation = {
                     up = function(host_list)
@@ -546,8 +544,7 @@ require('mkdnflow').setup({
             },
             {
                 name = 'complete',
-                symbol = 'X',
-                legacy_symbols = {},
+                marker = 'X',
                 sort = { section = 3, position = 'top' },
                 propagation = {
                     up = function(host_list)
@@ -776,10 +773,9 @@ end
 * `new_file_template.template` (string) A string, optionally containing placeholder names, that will be inserted into new buffers
 
 #### `to_do` (dictionary-like table)
-* `to_do.statuses` (array-like table): A list of tables, each of which represents a to-do status and minimally has a `name` key and a `symbol` key, optionally also a `legacy_symbols` key with a table value. An arbitrary number of to-do statuses can be provided, but built-in functionality only works with recognized status names (see `to_do.statuses[].name` below, as well as [To-do lists](#to-do-lists))
+* `to_do.statuses` (array-like table): A list of tables, each of which represents a to-do status and minimally has a `name` key and a `marker` key. An arbitrary number of to-do statuses can be provided, but built-in functionality only works with recognized status names (see `to_do.statuses[].name` below, as well as [To-do lists](#to-do-lists))
     * `to_do.statuses[n].name` (string): The name of the to-do status. The recognized names are `not_started`, `in_progress`, and `complete`.
-    * `to_do.statuses[n].symbol` (string): The symbol to use for the status. Up to four bytes are permitted, but the symbol must only be one character.
-    * `to_do.statuses[n].legacy_symbols` (array-like table): A list of symbols previously used for the status. This will ensure compatibility with any to-do lists you have previously made with different symbols. Not providing legacy symbols will mean that you may not be able to toggle the status of old to-do lists that use other status symbols.
+    * `to_do.statuses[n].marker` (string|table): The character to use for the status. Up to six bytes are permitted, but the marker must only be one character.
     * `to_do.statuses[n].sort` (dictionary-like table)
         * `to_do.statuses[n].sort.section` (integer): The section in which items of this status should be placed when sorted. A section refers to a segment of a to-do list. If you want items with the `'in_progress'` status to be first in the list, you would set this option to `1` for the status (this is the default section for `'in_progress'` status items).
         * `to_do.statuses[n].sort.position` (string)
@@ -802,10 +798,10 @@ end
 
 > [!WARNING]
 > **The following to-do configuration options are deprecated. Please use the `to_do.statuses` table instead. Continued support for these options is temporarily provided by a compatibility layer that will be removed in the near future.**
-> * `to_do.symbols` (array-like table): A list of symbols (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
-> * `to_do.not_started` (string): Stipulates which symbol represents a not-yet-started to-do (default: `' '`)
-> * `to_do.in_progress` (string):  Stipulates which symbol represents an in-progress to-do (default: `'-'`)
-> * `to_do.complete` (string):  Stipulates which symbol represents a complete to-do (default: `'X'`)
+> * `to_do.symbols` (array-like table): A list of markers (each no more than one character) that represent to-do list completion statuses. `MkdnToggleToDo` references these when toggling the status of a to-do item. Three are expected: one representing not-yet-started to-dos (default: `' '`), one representing in-progress to-dos (default: `-`), and one representing complete to-dos (default: `X`).
+> * `to_do.not_started` (string): Stipulates which marker represents a not-yet-started to-do (default: `' '`)
+> * `to_do.in_progress` (string):  Stipulates which marker represents an in-progress to-do (default: `'-'`)
+> * `to_do.complete` (string):  Stipulates which marker represents a complete to-do (default: `'X'`)
 > * `to_do.update_parents` (boolean): Whether parent to-dos' statuses should be updated based on child to-do status changes performed via `MkdnToggleToDo`
 >    * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
 >    * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
