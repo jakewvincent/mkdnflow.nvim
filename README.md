@@ -75,6 +75,7 @@ Mkdnflow is designed for the *fluent* navigation and management of [markdown](ht
 * [x] Status propagation
 * [x] To-do list sorting
 * [x] Create to-do items from plain ordered or unordered list items
+* [x] [Highlighting](#-highlighting)
 
 ### 📁 File management
 
@@ -110,7 +111,7 @@ Mkdnflow is designed for the *fluent* navigation and management of [markdown](ht
 
 #### 🖍️ Highlighting
 
-* [ ] Highlight completed to-do items
+* [ ] Highlight to-do items
 
 ### ⚙️ Configurability
 
@@ -270,7 +271,7 @@ Most features are highly configurable. Study the default config first and read t
             {
                 name = 'not_started',
                 symbol = ' ',
-                sort = { section = 2, position = 'top' },
+                sort = { section = 1, position = 'relative' },
                 exclude_from_rotation = false,
                 propagate = {
                     up = function(host_list)
@@ -298,7 +299,7 @@ Most features are highly configurable. Study the default config first and read t
             {
                 name = 'in_progress',
                 symbol = '-',
-                sort = { section = 1, position = 'bottom' },
+                sort = { section = 1, position = 'relative' },
                 exclude_from_rotation = false,
                 propagate = {
                     up = function(host_list)
@@ -310,7 +311,7 @@ Most features are highly configurable. Study the default config first and read t
             {
                 name = 'complete',
                 symbol = { 'X', 'x' },
-                sort = { section = 3, position = 'top' },
+                sort = { section = 2, position = 'top' },
                 exclude_from_rotation = false,
                 propagate = {
                     up = function(host_list)
@@ -418,22 +419,24 @@ Most features are highly configurable. Study the default config first and read t
     </summary>
 
 ```lua
-modules = {
-    bib = true,
-    buffers = true,
-    conceal = true,
-    cursor = true,
-    folds = true,
-    foldtext = true,
-    links = true,
-    lists = true,
-    maps = true,
-    paths = true,
-    tables = true,
-    to_do = true,
-    yaml = false,
-    cmp = false,
-}
+require('mkdnflow').setup({
+    modules = {
+        bib = true,
+        buffers = true,
+        conceal = true,
+        cursor = true,
+        folds = true,
+        foldtext = true,
+        links = true,
+        lists = true,
+        maps = true,
+        paths = true,
+        tables = true,
+        to_do = true,
+        yaml = false,
+        cmp = false,
+    }
+})
 ```
 
 </details>
@@ -468,19 +471,18 @@ modules = {
     </summary>
 
 ```lua
+require('mkdnflow').setup({
+    create_dirs = true,
+})
 ```
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option        | Type    | Default | Description                                                             | Possible values                                                                                                                                                                                                                                                               | Note |
+| ------------- | ------- | ------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| `create_dirs` | boolean | `true`  | Whether missing directories will be created when following a local link | `true`: Directories referenced in a link will be (recursively) created if they do not exist<br>`false` No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file. |      |
 
 </details>
-
-#### `create_dirs` (boolean)
-* `true` (default): Directories referenced in a link will be (recursively) created if they do not exist
-* `false` No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file.
 
 <details>
     <summary>
@@ -493,33 +495,28 @@ modules = {
     </summary>
 
 ```lua
+require('mkdnflow').setup({
+    perspective = {
+        priority = 'first',
+        fallback = 'current',
+        root_tell = false,
+        nvim_wd_heel = false,
+        update = false,
+    },
+})
 ```
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option                     | Type            | Default     | Description                                                                                                                                                                                                                                  | Possible values                                                                                                                                                                                                                                                                                                                                                                                    | Note |
+| -------------------------- | --------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| `perspective.priority`     | string          | `'first'`   | Specifies the priority perspective to take when interpreting link paths                                                                                                                                                                      | `'first'`: Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)<br>`'current'`: Links will be interpreted relative to the current file<br>`'root'`: Links will be interpreted relative to the root directory of the current notebook (requires `perspective.root_tell` to be specified)                                                   |      |
+| `perspective.fallback`     | string          | `'current'` | Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)                                                                                                                  | `'first'`: (see above)<br>`'current'` (default): (see above)<br>`'root'`: (see above)                                                                                                                                                                                                                                                                                                              |      |
+| `perspective.root_tell`    | string\|boolean | `false`     | Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`. | Any filename                                                                                                                                                                                                                                                                                                                                                                                       |      |
+| `perspective.nvim_wd_heel` | boolean         | `false`     | Specifies whether changes in perspective will result in corresponding changes to Neovim's working directory                                                                                                                                  | `true`: Changes in perspective will be reflected in the nvim working directory. (In other words, the working directory will "heel" to the plugin's perspective.) This helps ensure (at least) that path completions (if using a completion plugin with support for paths) will be accurate and usable.<br>`false`: Neovim's working directory will not be affected by Mkdnflow.                    |      |
+| `perspective.update`       | update          | `false`     | Determines whether the plugin looks to determine if a followed link is in a different notebook/wiki than before. If it is, the perspective will be updated. Requires `root_tell` to be defined and `priority` to be `root`.                  | `true`: Perspective will be updated when following a link to a file in a separate notebook/wiki (or navigating backwards to a file in another notebook/wiki).<br>`false`: Perspective will be not updated when following a link to a file in a separate notebook/wiki. Under the hood, links in the file in the separate notebook/wiki will be interpreted relative to the original notebook/wiki. |      |
 
 </details>
-
-#### `perspective` (dictionary-like table)
-* `perspective.priority` (string): Specifies the priority perspective to take when interpreting link paths
-    * `'first'` (default): Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started)
-    * `'current'`: Links will be interpreted relative to the current file
-    * `'root'`: Links will be interpreted relative to the root directory of the current notebook (requires `perspective.root_tell` to be specified)
-* `perspective.root_tell` (string or boolean)
-    * `'<any file name>'`: Any arbitrary filename by which the plugin can uniquely identify the root directory of the current notebook. If `false` is used instead, the plugin will never search for a root directory, even if `perspective.priority` is set to `root`.
-* `perspective.fallback` (string): Specifies the backup perspective to take if priority isn't possible (e.g. if it is `'root'` but no root directory is found)
-    * `'first'`: (see above)
-    * `'current'` (default): (see above)
-    * `'root'`: (see above)
-* `perspective.nvim_wd_heel` (boolean): Specifies whether changes in perspective will result in corresponding changes to Neovim's working directory
-    * `true`: Changes in perspective will be reflected in the nvim working directory. (In other words, the working directory will "heel" to the plugin's perspective.) This helps ensure (at least) that path completions (if using a completion plugin with support for paths) will be accurate and usable.
-    * `false` (default): Neovim's working directory will not be affected by Mkdnflow.
-* `perspective.update` (boolean): Determines whether the plugin looks to determine if a followed link is in a different notebook/wiki than before. If it is, the perspective will be updated. Requires `root_tell` to be defined and `priority` to be `root`.
-    * `true` (default): Perspective will be updated when following a link to a file in a separate notebook/wiki (or navigating backwards to a file in another notebook/wiki).
-    * `false`: Perspective will be not updated when following a link to a file in a separate notebook/wiki. Under the hood, links in the file in the separate notebook/wiki will be interpreted relative to the original notebook/wiki.
 
 <details>
     <summary>
@@ -532,21 +529,27 @@ modules = {
     </summary>
 
 ```lua
+require('mkdnflow').setup({
+    filetypes = {
+        md = true,
+        rmd = true,
+        markdown = true,
+    },
+)
 ```
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
-
-</details>
-
-#### `filetypes` (dictionary-like table)
-* `<any arbitrary filetype extension>` (boolean value)
-    * `true`: A matching extension will enable the plugin's functionality for a file with that extension
+| Option               | Type    | Default | Description                                                         | Possible values                                                                                                                          | Note |
+| -------------------- | ------- | ------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| `filetypes.md`       | boolean | true    | Whether the plugin should activate for markdown files               | `true`: The plugin will be enabled for files with the extension<br>`false`: The plugin will remain disabled for files with the extension |      |
+| `filetypes.rmd`      | boolean | true    | Whether the plugin should activate for rmarkdown files              | (see above)                                                                                                                              |      |
+| `filetypes.markdown` | boolean | true    | Whether the plugin should activate for markdown files               | (see above)                                                                                                                              |      |
+| `filetypes.<ext>`    | boolean | N/A     | Whether the plugin should activate for files with extension `<ext>` | (see above)                                                                                                                                         |      |
 
 NOTE: This functionality references the file's extension. It does not rely on Neovim's filetype recognition. The extension must be provided in lower case because the plugin converts file names to lowercase. Any arbitrary extension can be supplied. Setting an extension to `false` is the same as not including it in the list.
+
+</details>
 
 <details>
     <summary>
@@ -559,19 +562,18 @@ NOTE: This functionality references the file's extension. It does not rely on Ne
     </summary>
 
 ```lua
+require('mkdnflow').setup({
+    wrap = true,
+})
 ```
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option | Type    | Default | Description                                                                                                                                                 | Possible values                                                                                                                                                                                                                                                     | Note |
+| ------ | ------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| `wrap` | boolean | `false` | Whether the cursor should jump back to the beginning of the document when jumping to links or other objects and the last such object in the file is reached | `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file<br>`false` (default): When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file |      |
 
 </details>
-
-#### `wrap` (boolean)
-* `true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file
-* `false` (default): When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file
 
 <details>
     <summary>
@@ -584,25 +586,26 @@ NOTE: This functionality references the file's extension. It does not rely on Ne
     </summary>
 
 ```lua
+require('mkdnflow').setup({
+    bib = {
+        default_path = nil,
+        find_in_root = true,
+    },
+})
 ```
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option             | Type        | Default | Description                                                                                                      | Possible values                                                                                                                                                                                                                                                                                                                                                                                                                                     | Note |
+| ------------------ | ----------- | ------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| `bib.default_path` | string\|nil | `nil`   | Specifies a path to a default .bib file to look for citation keys in (need not be in root directory of notebook) | A path                                                                                                                                                                                                                                                                                                                                                                                                                                              |      |
+| `bib.find_in_root` | boolean     | `true`  | Whether Mkdnflow should look for .bib files in the notebook's root directory (where `root_tell` is)              | `true` (default): When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.<br>`false`: The notebook's root directory will not be searched for bib files. |      |
 
 </details>
 
-#### `bib` (dictionary-like table)
-* `bib.default_path` (string or `nil`): Specifies a path to a default .bib file to look for citation keys in (need not be in root directory of notebook)
-* `bib.find_in_root` (boolean)
-    * `true` (default): When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook's top-level directory. If `bib.default_path` is also specified, the default path will be appended to the list of bib files found in the top level directory so that it will also be searched.
-    * `false`: The notebook's root directory will not be searched for bib files.
-
 <details>
     <summary>
-        <code>wrap = {...</code>
+        <code>silent = {...</code>
     </summary>
 
 <details>
@@ -611,19 +614,18 @@ NOTE: This functionality references the file's extension. It does not rely on Ne
     </summary>
 
 ```lua
+require('mkdnflow').setup({
+    silent = false,
+})
 ```
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option   | Type    | Default | Description                                                       | Possible values                                                                                                                                                                                                                         | Note |
+| -------- | ------- | ------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| `silent` | boolean | `false` | Whether the plugin will display various notifications or warnings | `true`: The plugin will not display any messages in the console except compatibility warnings related to your config<br>`false` (default): The plugin will display messages to the console (all messages from the plugin start with ⬇️ ) |      |
 
 </details>
-
-#### `silent` (boolean)
-* `true`: The plugin will not display any messages in the console except compatibility warnings related to your config
-* `false` (default): The plugin will display messages to the console (all messages from the plugin start with ⬇️ )
 
 <details>
     <summary>
@@ -636,21 +638,20 @@ NOTE: This functionality references the file's extension. It does not rely on Ne
     </summary>
 
 ```lua
+require('mkdnflow').setup({
+    cursor = {
+        jump_patterns = nil,
+    },
+})
 ```
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option                 | Type       | Default | Description                                                                       | Possible values                                                                                                                                                                                                                                                                      | Note |
+| ---------------------- | ---------- | ------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- |
+| `cursor.jump_patterns` | table\|nil | `nil`   | A list of Lua regex patterns to jump to using `:MkdnNextLink` and `:MkdnPrevLink` | `nil` (default): When `nil`, the [default jump patterns](#jump-to-links-headings) for the configured link style are used (markdown-style links by default)<br>table of custom Lua regex patterns<br>`{}` (empty table) to disable link jumping without disabling the `cursor` module |      |
 
 </details>
-
-#### `cursor` (dictionary-like table)
-* `cursor.jump_patterns` (nil or table): A list of Lua regex patterns to jump to using `:MkdnNextLink` and `:MkdnPrevLink`
-    * `nil` (default): When `nil`, the [default jump patterns](#jump-to-links-headings) for the configured link style are used (markdown-style links by default)
-    * table of custom Lua regex patterns
-    * `{}` (empty table) to disable link jumping without disabling the `cursor` module
 
 <details>
     <summary>
@@ -663,55 +664,64 @@ NOTE: This functionality references the file's extension. It does not rely on Ne
     </summary>
 
 ```lua
+require('mkdnflow').setup({
+    links = {
+        style = 'markdown',
+        name_is_source = false,
+        conceal = false,
+        context = 0,
+        implicit_extension = nil,
+        transform_implicit = false,
+        transform_explicit = function(text)
+            text = text:gsub(" ", "-")
+            text = text:lower()
+            text = os.date('%Y-%m-%d_') .. text
+            return(text)
+        end,
+        create_on_follow_failure = true,
+    },
+})
 ```
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option                           | Type              | Default                                                                                                                                                                     | Description                                                                                                                                                                                                                      | Possible values                                                                                                                                                                                                                                                                                                                                     | Note |
+| -------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| `links.style`                    | string            | `'markdown'`                                                                                                                                                                |                                                                                                                                                                                                                                  | `'markdown'`: Links will be expected in the standard markdown format: `[<title>](<source>)`<br>`'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>\|<title>]]`.                                                                    |      |
+| `links.name_is_source`           | boolean           | `false`                                                                                                                                                                     |                                                                                                                                                                                                                                  | `true`: Wiki-style links will be created with the source and name being the same (e.g. `[[Link]]` will display as "Link" and go to a file named "Link.md")<br>`false` (default): Wiki-style links will be created with separate name and source (e.g. `[[link-to-source\|Link]]` will display as "Link" and go to a file named "link-to-source.md") |      |
+| `links.conceal`                  | boolean           | `false`                                                                                                                                                                     |                                                                                                                                                                                                                                  | `true`: Link sources and delimiters will be concealed (depending on which link style is selected)<br>`false` (default): Link sources and delimiters will not be concealed by mkdnflow                                                                                                                                                               |      |
+| `links.context`                  | integer           | `0`                                                                                                                                                                         |                                                                                                                                                                                                                                  | `<n>`: When following or jumping to links, consider `<n>` lines before and after a given line (useful if you ever permit links to be interrupted by a hard line break)                                                                                                                                                                              |      |
+| `links.implicit_extension`       | string            | `nil`                                                                                                                                                                       | A string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) how to create new links from the word under cursor or text selection.                                            | `nil` (default): Extensions will be explicit when a link is created and must be explicit in any notebook link.<br>`<any extension>` (e.g. `'md'`): Links without an extension (e.g. `[Homepage](index)`) will be interpreted with the implicit extension (e.g. `index.md`), and new links will be created without an extension.                     |      |
+| `links.transform_explicit`       | function\|boolean | <pre lang='lua'>function(text)&#13;    text = text:gsub(" ", "-")&#13;    text = text:lower()&#13;    text = os.date('%Y-%m-%d_') .. text&#13;    return text&#13;end</pre> | A function that transforms the text to be inserted as the source/path of a link when a link is created. Anchor links are not currently customizable. For an example, see the sample recipes.                                     | A function or `false`                                                                                                                                                                                                                                                                                                                               |      |
+| `links.transform_implicit`       | function\|boolean | `false`                                                                                                                                                                     | A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For an example, see the sample recipe below. | A function or `false`                                                                                                                                                                                                                                                                                                                               |      |
+| `links.create_on_follow_failure` | boolean           | `true`                                                                                                                                                                      | Whether a link should be created if there is no link to follow under the cursor.                                                                                                                                                 | `true`: Create a link if there's no link to follow<br>`false`: Do not create a link if there's no link to follow                                                                                                                                                                                                                                    |      |
+
+
+<details>
+    <summary>Sample `link` recipes</summary>
+
+```lua
+require('mkdnflow').setup({
+    links = {
+        -- If you want all link paths to be explicitly prefixed with the year and for the path to be converted to uppercase, you could provide the following function under the `transform_explicit` key:
+        transform_explicit = function(input)
+            return(string.upper(os.date('%Y-')..input))
+        end
+        -- Link paths that match a date pattern can be opened in a `journals` subdirectory of your notebook, and all others can be opened in a `pages` subdirectory, using the following function:
+        transform_implicit = function(input)
+            if input:match('%d%d%d%d%-%d%d%-%d%d') then
+                return('journals/'..input)
+            else
+                return('pages/'..input)
+        end
+end
+    }
+})
+```
 
 </details>
 
-#### `links` (dictionary-like table)
-* `links.style` (string)
-    * `'markdown'` (default): Links will be expected in the standard markdown format: `[<title>](<source>)`
-    * `'wiki'`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>|<title>]]`.
-* `links.name_is_source` (boolean)
-    * `true`: Wiki-style links will be created with the source and name being the same (e.g. `[[Link]]` will display as "Link" and go to a file named "Link.md")
-    * `false` (default): Wiki-style links will be created with separate name and source (e.g. `[[link-to-source|Link]]` will display as "Link" and go to a file named "link-to-source.md")
-* `links.conceal` (boolean)
-    * `true`: Link sources and delimiters will be concealed (depending on which link style is selected)
-    * `false` (default): Link sources and delimiters will not be concealed by mkdnflow
-* `links.context` (number)
-    * `0` (default): When following or jumping to links, assume no link will be split over multiple lines
-    * `n` (an integer): When following or jumping to links, consider `n` lines before and after a given line (useful if you ever permit links to be interrupted by a hard line break)
-* `links.implicit_extension` (string) A string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) how to create new links from the word under cursor or text selection.
-    * `nil` (default): Extensions will be explicit when a link is created and must be explicit in any notebook link.
-    * `<any extension>` (e.g. `'md'`): Links without an extension (e.g. `[Homepage](index)`) will be interpreted with the implicit extension (e.g. `index.md`), and new links will be created without an extension.
-* `links.transform_explicit` (function or `false`): A function that transforms the text to be inserted as the source/path of a link when a link is created. Anchor links are not currently customizable. If you want all link paths to be explicitly prefixed with the year, for instance, and for the path to be converted to uppercase, you could provide the following function under this key. (FYI: The previous functionality specified under the `prefix` key has been migrated here to provide greater flexibility.)
-
-```lua
-function(input)
-    return(string.upper(os.date('%Y-')..input))
-end
-```
-
-* `links.transform_implicit` (function or `false`): A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For instance, link paths that match a date pattern can be opened in a `journals` subdirectory of your notebook, and all others can be opened in a `pages` subdirectory, using the following function:
-
-```lua
-function(input)
-    if input:match('%d%d%d%d%-%d%d%-%d%d') then
-        return('journals/'..input)
-    else
-        return('pages/'..input)
-    end
-end
-```
-
-* 🆕 `links.create_on_follow_failure` (boolean): Whether a link should be created if there is no link to follow under the cursor.
-    * `true` (default): Create a link if there's no link to follow
-    * `false`: Do not create a link if there's no link to follow
+</details>
 
 <details>
     <summary>
@@ -724,24 +734,31 @@ end
     </summary>
 
 ```lua
+require('mkdnflow').setup({
+    new_file_template = {
+        use_template = false,
+        placeholders = {
+            before = {
+                title = 'link_title',
+                date = 'os_date',
+            },
+            after = {},
+        },
+        template = '# {{ title }}',
+    },
+})
 ```
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option                                  | Type                    | Default                                                                              | Description                                                                                                                                  | Possible values                                                                                                                                                                                                                       | Note |
+| --------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| `new_file_template.use_template`        | boolean                 | `false`                                                                              |                                                                                                                                              | `true`: the template is filled in (if it contains placeholders) and inserted into any new buffers entered by following a link to a buffer that doesn't exist yet<br>`false`: no templates are filled in and inserted into new buffers |      |
+| `new_file_template.placeholders.before` | table (dictionary-like) | <pre lang='lua'>{&#13;    title = 'link_title',&#13;    date = 'os_date'&#13;}</pre> | A table whose keys are placeholder names pointing to functions to be evaluated immediately before the buffer is opened in the current window |                                                                                                                                                                                                                                       |      |
+| `new_file_template.placeholders.after`  | table (dictionary-like) | `{}`                                                                                 | A table hose keys are placeholder names pointing to functions to be evaluated immediately after the buffer is opened in the current window   |                                                                                                                                                                                                                                       |      |
+| `new_file_template.template`            | string                  | `'# {{ title }}'`                                                                    | A string, optionally containing placeholder names, that will be inserted into new buffers                                                    |                                                                                                                                                                                                                                       |      |
 
 </details>
-
-#### `new_file_template` (dictionary-like table)
-* `new_file_template.use_template` (boolean)
-    * `true`: the template is filled in (if it contains placeholders) and inserted into any new buffers entered by following a link to a buffer that doesn't exist yet
-    * `false`: no templates are filled in and inserted into new buffers
-* `new_file_template.placeholders` (dictionary-like table)
-    * `new_file_template.placeholders.before` (dictionary-like table) A table whose keys are placeholder names pointing to functions to be evaluated immediately before the buffer is opened in the current window
-    * `new_file_template.placeholders.after` (dictionary-like table) A table hose keys are placeholder names pointing to functions to be evaluated immediately after the buffer is opened in the current window
-* `new_file_template.template` (string) A string, optionally containing placeholder names, that will be inserted into new buffers
 
 <details>
     <summary>
@@ -758,9 +775,9 @@ end
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option | Type | Default | Description | Possible values | Note |
+| ------ | ---- | ------- | ----------- | --------------- | ---- |
+|        |      |         |             |                 |      |
 
 </details>
 
@@ -814,9 +831,9 @@ end
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option | Type | Default | Description | Possible values | Note |
+| ------ | ---- | ------- | ----------- | --------------- | ---- |
+|        |      |         |             |                 |      |
 
 </details>
 
@@ -925,9 +942,9 @@ The above recipe will produce foldtext like the following (for an h3-level secti
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option | Type | Default | Description | Possible values | Note |
+| ------ | ---- | ------- | ----------- | --------------- | ---- |
+|        |      |         |             |                 |      |
 
 </details>
 
@@ -957,9 +974,9 @@ The above recipe will produce foldtext like the following (for an h3-level secti
 
 </details>
 
-| Option | Type | Default | Description | Note |
-| ------ | ---- | ------- | ----------- | ---- |
-|        |      |         |             |      |
+| Option | Type | Default | Description | Possible values | Note |
+| ------ | ---- | ------- | ----------- | --------------- | ---- |
+|        |      |         |             |                 |      |
 
 </details>
 
