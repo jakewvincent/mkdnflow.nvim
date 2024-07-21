@@ -18,7 +18,9 @@
 --- @param str string A string to convert
 --- @return string
 function string.pascal(str)
-    return str:gsub('[_ ](.)', function(char) return char:upper() end):gsub('^%l', string.upper)
+    return str:gsub('[_ ](.)', function(char)
+        return char:upper()
+    end):gsub('^%l', string.upper)
 end
 
 local match_ids = {}
@@ -48,20 +50,32 @@ local function highlight_to_dos()
     set_highlights(statuses)
     clear_syntax_matches()
     for _, status in ipairs(statuses) do
-        local marker_pattern = string.format('\\v(^[ \\t]*[-*+]\\s+)\\zs\\[%s\\]\\ze',
-            status:get_symbol(), status:get_symbol())
-        local content_pattern = string.format('\\v(^[ \\t]*[-*+]\\s+\\[%s\\]\\s+\\zs.+)',
-            status:get_symbol())
-        local marker_id = vim.fn.matchadd(string.format('MkdnflowToDoMarker%s', status.name:pascal()),
-            marker_pattern)
-        local content_id = vim.fn.matchadd(string.format('MkdnflowToDoContent%s', status.name:pascal()),
-            content_pattern)
+        -- Marker highlighting
+        local marker_pattern = string.format(
+            '\\v(^[ \\t]*[-*+]\\s+)\\zs\\[%s\\]\\ze',
+            status:get_symbol(), status:get_symbol()
+        )
+        local marker_id = vim.fn.matchadd(
+            string.format('MkdnflowToDoMarker%s', status.name:pascal()),
+            marker_pattern
+        )
+        -- Content highlighting
+        local content_pattern = string.format(
+            '\\v(^[ \\t]*[-*+]\\s+\\[%s\\]\\s+\\zs.+)',
+            status:get_symbol()
+        )
+        local content_id = vim.fn.matchadd(
+            string.format('MkdnflowToDoContent%s', status.name:pascal()),
+            content_pattern
+        )
+        -- Save the match IDs
         table.insert(match_ids, marker_id)
         table.insert(match_ids, content_id)
     end
 end
 
 local M = {}
+
 function M.init()
     local todo_augroup = vim.api.nvim_create_augroup('MkdnflowToDoStatuses', { clear = true })
     vim.api.nvim_create_autocmd('FileType', {
