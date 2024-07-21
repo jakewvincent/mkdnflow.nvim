@@ -63,7 +63,7 @@ function M.highlight_to_dos()
     end
 end
 
-M.highlight = function()
+function M.init()
     local todo_augroup = vim.api.nvim_create_augroup('MkdnflowToDoStatuses', { clear = true })
     vim.api.nvim_create_autocmd('FileType', {
         pattern = 'markdown',
