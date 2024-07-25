@@ -108,7 +108,7 @@ local default_config = {
             {
                 name = 'not_started',
                 marker = ' ',
-                colors = {
+                highlight = {
                     marker = { link = 'Conceal' },
                     content = { link = 'Conceal' },
                 },
@@ -140,7 +140,7 @@ local default_config = {
             {
                 name = 'in_progress',
                 marker = '-',
-                colors = {
+                highlight = {
                     marker = { link = 'WarningMsg' },
                     content = { bold = true },
                 },
@@ -156,7 +156,7 @@ local default_config = {
             {
                 name = 'complete',
                 marker = { 'X', 'x' },
-                colors = {
+                highlight = {
                     marker = { link = 'String' },
                     content = { link = 'Conceal' },
                 },

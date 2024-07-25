@@ -30,13 +30,13 @@ local match_ids = {}
 --- @param to_do_statuses table[] A table of to-do status tables (from the config)
 local function set_highlights(to_do_statuses)
     for _, status in ipairs(to_do_statuses) do
-        if status.colors.marker then
+        if status.highlight.marker then
             vim.api.nvim_set_hl(0, string.format('MkdnflowToDoMarker%s', status.name:pascal()),
-                status.colors.marker)
+                status.highlight.marker)
         end
-        if status.colors.content then
+        if status.highlight.content then
             vim.api.nvim_set_hl(0, string.format('MkdnflowToDoContent%s', status.name:pascal()),
-                status.colors.content)
+                status.highlight.content)
         end
     end
 end
