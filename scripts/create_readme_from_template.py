@@ -51,7 +51,7 @@ def replace_placeholders(template):
 
         # Replace the placeholder if there's a matching csv file in ../data
         if f"{match}.csv" in files:
-            csv_data = read_csv(os.path.join("../data", f"{match}.csv"))
+            csv_data = read_csv(os.path.join("data", f"{match}.csv"))
             md_table = format_as_md(csv_data)
 
             # Perform one replacement
@@ -63,15 +63,15 @@ def replace_placeholders(template):
 
 if __name__ == "__main__":
     # Read in the README template
-    with open("../README.template.md", "r") as f:
+    with open("README.template.md", "r") as f:
         readme_template = f.read()
 
     # List the files in the data directory
-    files = os.listdir("../data/")
+    files = os.listdir("data/")
 
     # Format the README template
     formatted_readme = replace_placeholders(readme_template)
 
     # Write out the formatted README
-    with open("../README.md", "w") as f:
+    with open("README.md", "w") as f:
         f.write(formatted_readme)
