@@ -1,0 +1,23 @@
+# .git/hooks/pre-push
+#!/bin/bash
+
+echo "  Running pre-push hook..."
+
+# Run xcf-to-png conversion script
+scripts/xcf_to_png.sh
+
+# Check for unstaged changes to png files and untracked png files
+unstaged_png=$(git ls-files --modified --exclude-standard "*.png")
+untracked_png=$(git ls-files --others --exclude-standard "*.png")
+
+# Stage and commit any unstaged/untracked png changes/files
+if [ -n "$unstaged_png" ] || [ -n "$untracked_png" ]; then
+    git add *.png
+    echo "  Staged png files."
+    # Double check that there are staged/newly tracked files
+    if git diff --cached --name-only | grep -q "\.png$"; then
+        # Commit the changes
+        git commit -m "chore: Convert .xcf to .png"
+        echo "  Committed converted .png files."
+    fi
+fi
