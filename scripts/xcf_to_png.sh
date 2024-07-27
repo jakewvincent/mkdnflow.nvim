@@ -25,7 +25,8 @@ for file in $xcf_files_to_convert; do
             )
             (gimp-quit 0)
         "
-        echo "  Converted $file to $base_name.png"
+        echo "       ∙ Converted $file to $base_name.png."
     fi
 done
 
+exit 0
