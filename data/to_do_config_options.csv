@@ -1,0 +1,32 @@
+Option,Type,Description
+`to_do.highlight`,`boolean`,"`true`: Apply highlighting to to-do status markers and/or content (as defined in `to_do.statuses[*].highlight`).
+`false`*: Do not apply any highlighting."
+`to_do.status_propagation.up`,`boolean`,"`true`*: Update ancestor statuses (recursively) when a descendant status is changed. Updated according to logic provided in `to_do.statuses[*].propagate.up`.
+`false`: Ancestor statuses are not affected by descendant status changes."
+`to_do.status_propagation.down`,`boolean`,"`true`*: Update descendant statuses (recursively) when an ancestor’s status is changed. Updated according to logic provided in `to_do.statuses[*].propagate.down`.
+`false`: Descendant statuses are not affected by ancestor status changes."
+`to_do.sort_on_status_change`,`boolean`,"`true`: Sort a to-do list when an item’s status is changed.
+`false`*: Leave all to-do items in their current position when an item’s status is changed.
+NOTE: This will not apply if the to-do item’s status is changed manually (i.e. by typing or pasting in the status marker)."
+`to_do.sort.recursive`,`boolean`,"`true`: `sort_on_status_change` applies recursively, sorting the host list of each successive parent until the root of the list is reached.
+`false`*: `sort_on_status_change` only applies at the current to-do list level (not to the host list of the parent to-do item)."
+`to_do.sort.cursor_behavior.track`,`boolean`,"`true`*: Move the cursor so that it remains on the same to-do item, even after a to-do list sort relocates the item.
+`false`: The cursor remains on its current line number, even if the to-do item is relocated by sorting."
+`to_do.statuses`,`table (array-like)`,"A list of tables, each of which represents a to-do status. See options in the following rows. An arbitrary number of to-do status tables can be provided. See default statuses in the settings table."
+`to_do.statuses[*].name`,`string`,The designated name of the to-do status.
+`to_do.statuses[*].marker`,"`string`
+`table`",The marker symbol to use for the status. The marker’s string width must be 1.
+`to_do.statuses[*].highlight.marker`,`table` (a highlight definition map),"A table of highlight definitions to apply to a status marker, including brackets. See the `{val}` parameter of `:h nvim_set_hl` for possible options."
+`to_do.statuses[*].highlight.content`,`table` (a highlight definition map),A table of highlight definitions to apply to the to-do item content (everything following the status marker). See the `{val}` parameter of `:h nvim_set-hl` for possible options.
+`to_do.statuses[*].exclude_from_rotation`,`boolean`,"`true`: When toggling/rotating a to-do item’s status, exclude the current symbol from the list of symbols used.
+`false`: Leave the symbol in the rotation.
+NOTE: This setting is useful if, e.g., there is a status marker that you never want to manually set and only want to apply when automatically updating ancestors or descendants. See the `complete_pending` status in the sample recipe for an example."
+`to_do.statuses[*].sort.section`,`integer`,"The integer should represent the linear section of the list in which items of this status should be placed when sorted. A section refers to a segment of a to-do list. If you want items with the `'in_progress'` status to be first in the list, you would set this option to `1` for the status (this is the default section for `'in_progress'` status items).
+NOTE: Sections are not visually delineated in any way other than items with the same section number occurring on adjacent lines in the list."
+`to_do.statuses[*].sort.position`,`string`,"Where in its assigned section a to-do item should be placed:
+`'top'`: Place a sorted item at the top of its corresponding section.
+`'bottom'`: Place a sorted item at the bottom of its corresponding section.
+`'relative'`: Maintain the current relative order of the sorted item whose status was just changed (vs. other list items). For example, if an item at the bottom of a to-do list is changed to `'not_started'` and there are already `'not_started'` items at the top of the list, the `'relative'` option for `'not_started'` will bring the sorted item to the bottom of the `'not_started'` section. With the same setting, an item located above other `'not_started'` items would be placed at the top of the `'not_started'` section."
+`to_do.statuses[*].propagate.up`,"`fun(table: to_do_list): string`
+`nil`","A function that will accept one argument (an instance of the to-do list class) and return a valid to-do status name (a status name that matches the name of a status in the `to_do.statuses` table). The list that is passed into this function is the list that hosts the to-do item whose status was just changed. The return value should be the desired value of the parent, based on whatever logic is provided in the function. `nil` should be returned if the desired outcome is to leave the parent's status as is."
+`to_do.statuses[*].propagate.down`,`function(table: to_do_list): string[]`,"A function that will accept one argument (an instance of the to-do list class) and return a **list** of valid to-do status names (status names must match the name of some status in the `to_do.statuses` table). The list that is passed into this function will be the child list of the to-do item whose status was just changed. The list of return values should be the desired values of each child in the list, based on whatever logic is provided in the function. `nil` or an empty table should be returned if the desired outcome is to leave the children's status as is."
