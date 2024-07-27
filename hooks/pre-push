@@ -3,21 +3,74 @@
 
 echo "  Running pre-push hook..."
 
+#################################################
+### Convert any new or modified images to png ###
+#################################################
+
+echo "    ⤷ Checking for modified xcf (GIMP) files."
 # Run xcf-to-png conversion script
 scripts/xcf_to_png.sh
 
-# Check for unstaged changes to png files and untracked png files
+# See if any unstaged changes to png files or any untracked png files
 unstaged_png=$(git ls-files --modified --exclude-standard "*.png")
 untracked_png=$(git ls-files --others --exclude-standard "*.png")
 
 # Stage and commit any unstaged/untracked png changes/files
 if [ -n "$unstaged_png" ] || [ -n "$untracked_png" ]; then
     git add *.png
-    echo "  Staged png files."
+    echo "       ∙ Staged png files"
     # Double check that there are staged/newly tracked files
     if git diff --cached --name-only | grep -q "\.png$"; then
         # Commit the changes
-        git commit -m "chore: Convert .xcf to .png"
-        echo "  Committed converted .png files."
+        git commit -m "chore: Auto-convert .xcf files to .png."
+        echo "       ∙ Committed converted .png files."
     fi
 fi
+
+###################################
+### Compile README if necessary ###
+###################################
+
+echo "    ⤷ Checking for modified README tables..."
+# Find the common ancestor of HEAD and the upstream branch
+MERGE_BASE=$(git merge-base HEAD @{u} 2>/dev/null)
+
+if [ -n "$MERGE_BASE" ]; then
+    # If we found a common ancestor, use it as the starting point
+    RANGE="${MERGE_BASE}..HEAD"
+else
+    # If we couldn't find a common ancestor (e.g., new branch), check all commits
+    RANGE=$(git rev-list --max-parents=0 HEAD)..HEAD
+fi
+
+# Check if any changes to CSV files in that range
+CSV_CHANGES=$(git diff --name-only $RANGE -- './data/*.csv')
+
+if [ -n "$CSV_CHANGES" ]; then
+    echo "       ∙ Changes detected in CSV files. Running README generator..."
+    
+    # Run the script to create README from template
+    python3 ./scripts/create_readme_from_template.py
+    
+    # Check if README.md has unstaged changes
+    if git diff --quiet README.md; then
+        echo "       ∙ No changes to README."
+    else
+        echo "       ∙ README has been updated. Staging and committing changes..."
+        git add README.md
+        git commit -m "chore: Auto-update README.md based on CSV changes"
+        
+        # If the commit was successful, inform the user
+        if [ $? -eq 0 ]; then
+            echo "       ∙ Committed updated README."
+        else
+            echo "       ∙ Failed to commit README. Review and commit manually."
+            exit 1
+        fi
+    fi
+else
+    echo "       ∙ No changes to CSV files in ./data directory."
+fi
+
+echo "    ⤷ Done."
+exit 0
