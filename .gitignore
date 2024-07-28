@@ -10,3 +10,4 @@ assets/logo/*.pdf
 assets/logo/*.aux
 assets/logo/*.fdb_latexmk
 assets/demo/sources
+data/*.csv#
