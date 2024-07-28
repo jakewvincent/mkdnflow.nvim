@@ -12,6 +12,10 @@ def read_csv(path):
     return data
 
 
+def replace_smart_quotes(text):
+    return text.replace('“', '"').replace('”', '"').replace("’", "'").replace("‘", "'")
+
+
 # Function to format csv data as a nicely-aligned markdown table
 def format_as_md(lst):
     # Get column names
@@ -39,6 +43,9 @@ def format_as_md(lst):
             cell = f"| {cols[name][i]} {' ' * (max_widths[j] - len(cols[name][i]))}"
             table += cell
         table += "|\n"
+
+    # Strip smart quotes from CSV editor
+    table = replace_smart_quotes(table)
 
     # Return the table w/o any adjacent whitespace
     return table.strip()
