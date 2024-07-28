@@ -22,7 +22,7 @@ def format_as_md(lst):
     colnames = list(lst[0])
 
     # Organize data by column (so it's easy to get the max char width for each column)
-    cols = {col: [row[col].replace("\n", "<br>") for row in lst] for col in colnames}
+    cols = {col: [row[col].replace("\n", "<br>").strip() for row in lst] for col in colnames}
     max_widths = [max([len(cell) for cell in cols[col]] + [len(col)]) for col in cols]
     table = ""  # Initialize the string for the table
 
