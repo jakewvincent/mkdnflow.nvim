@@ -1,16 +1,16 @@
 Option,Type,Description
 `to_do.highlight`,`boolean`,"`true`: Apply highlighting to to-do status markers and/or content (as defined in `to_do.statuses[*].highlight`).
-`false`*: Do not apply any highlighting."
-`to_do.status_propagation.up`,`boolean`,"`true`*: Update ancestor statuses (recursively) when a descendant status is changed. Updated according to logic provided in `to_do.statuses[*].propagate.up`.
+**`false`***: Do not apply any highlighting."
+`to_do.status_propagation.up`,`boolean`,"**`true`***: Update ancestor statuses (recursively) when a descendant status is changed. Updated according to logic provided in `to_do.statuses[*].propagate.up`.
 `false`: Ancestor statuses are not affected by descendant status changes."
-`to_do.status_propagation.down`,`boolean`,"`true`*: Update descendant statuses (recursively) when an ancestor’s status is changed. Updated according to logic provided in `to_do.statuses[*].propagate.down`.
+`to_do.status_propagation.down`,`boolean`,"**`true`***: Update descendant statuses (recursively) when an ancestor’s status is changed. Updated according to logic provided in `to_do.statuses[*].propagate.down`.
 `false`: Descendant statuses are not affected by ancestor status changes."
 `to_do.sort_on_status_change`,`boolean`,"`true`: Sort a to-do list when an item’s status is changed.
-`false`*: Leave all to-do items in their current position when an item’s status is changed.
+**`false`***: Leave all to-do items in their current position when an item’s status is changed.
 NOTE: This will not apply if the to-do item’s status is changed manually (i.e. by typing or pasting in the status marker)."
 `to_do.sort.recursive`,`boolean`,"`true`: `sort_on_status_change` applies recursively, sorting the host list of each successive parent until the root of the list is reached.
-`false`*: `sort_on_status_change` only applies at the current to-do list level (not to the host list of the parent to-do item)."
-`to_do.sort.cursor_behavior.track`,`boolean`,"`true`*: Move the cursor so that it remains on the same to-do item, even after a to-do list sort relocates the item.
+**`false`***: `sort_on_status_change` only applies at the current to-do list level (not to the host list of the parent to-do item)."
+`to_do.sort.cursor_behavior.track`,`boolean`,"**`true`***: Move the cursor so that it remains on the same to-do item, even after a to-do list sort relocates the item.
 `false`: The cursor remains on its current line number, even if the to-do item is relocated by sorting."
 `to_do.statuses`,`table (array-like)`,"A list of tables, each of which represents a to-do status. See options in the following rows. An arbitrary number of to-do status tables can be provided. See default statuses in the settings table."
 `to_do.statuses[*].name`,`string`,The designated name of the to-do status.
