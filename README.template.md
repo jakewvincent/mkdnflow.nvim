@@ -946,10 +946,9 @@ require('mkdnflow').setup({
 })
 ```
 
-> [!NOTE]
-> `<name of command>` should be the name of a commands defined in `mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
-
 See descriptions of commands and mappings below.
+
+🛈 **Note**: `<command>` should be the name of a command defined in `mkdnflow.nvim/plugin/mkdnflow.lua` (see :h Mkdnflow-commands for a list).
 
 {{ mappings_config_options }}
 
