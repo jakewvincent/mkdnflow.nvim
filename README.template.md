@@ -16,7 +16,7 @@
     2. [⚙️  Advanced configuration](#%EF%B8%8F--advanced-configuration)
         1. [🎨 Configuration options](#-configuration-options)
 4. [🔍 Usage](#-usage)
-    1. [🛠️ Commands & mappings](#-commands-mappings)
+    1. [🛠️ Commands & mappings](#%EF%B8%8F-commands--mappings)
     2. [🔌 API](#-api)
 5. [🤝 Contributing](#-contributing)
 6. [🐛 Troubleshooting](#-troubleshooting)
@@ -491,7 +491,7 @@ require('mkdnflow').setup({
 
 {{ filetypes_config_options }}
 
-> ![NOTE]
+> [!NOTE]
 > This functionality references the file's extension. It does not rely on Neovim's filetype recognition. The extension must be provided in lower case because the plugin converts file names to lowercase. Any arbitrary extension can be supplied. Setting an extension to `false` is the same as not including it in the list.
 
 ---
@@ -750,6 +750,7 @@ require('mkdnflow').setup({
 >    * `true` (default): Parent to-do statuses will be inferred and automatically updated when a child to-do's status is changed
 >    * `false`: To-do items can be toggled, but parent to-do statuses (if any) will not be automatically changed
 
+
 ---
 
 </details>
@@ -789,7 +790,7 @@ require('mkdnflow').setup({
 {{ foldtext_config_options }}
 
 <details>
-    <summary>Sample `foldtext` recipes</summary>
+    <summary>Sample <code>foldtext</code> recipes</summary>
 
 ```lua
 -- SAMPLE FOLDTEXT CONFIGURATION RECIPE WITH COMMENTS
@@ -956,7 +957,6 @@ See descriptions of commands and mappings below.
 
 
 ## 🔍 Usage
-[🛠️ Commands & mappings](#-commands-mappings)
 ### 🛠️ Commands & mappings
 
 Below are descriptions of the user commands defined by Mkdnflow. For the default mappings to these commands, see the `mappings = ...` section of [🎨 Configuration options](#-configuration-options).
@@ -966,8 +966,8 @@ Below are descriptions of the user commands defined by Mkdnflow. For the default
 > [!TIP]
 > The back-end function for `:MkdnGoBack`, `require('mkdnflow').buffers.goBack()`, returns a boolean indicating the success of `goBack()` (thanks, @pbogut!). This is useful if the user wishes to remap `<BS>` so that when `goBack()` is unsuccessful, another function is performed.
 
-> ![NOTE]
-> There is no insert-mode mapping for this command by default since some may find its effects intrusive. To enable the insert-mode functionality, add to the mappings table: `MkdnEnter = {{'i', 'n', 'v'}, '}`
+> [!NOTE]
+> There is no insert-mode mapping for this command by default since some may find its effects intrusive. To enable the insert-mode functionality, add to the mappings table: `MkdnEnter = {{'i', 'n', 'v'}, '}`.
 
 > [!NOTE]
 > If you are attempting to (re)map `<CR>` in insert mode but can't get it to work, try inspecting your current insert mode mappings and seeing if anything is overriding your mapping. Possible candidates are completion plugins and auto-pair plugins.
