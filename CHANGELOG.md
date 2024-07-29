@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/jakewvincent/mkdnflow.nvim/compare/v1.2.1...v1.2.2) (2024-07-29)
+
+
+### Bug Fixes
+
+* foldtext option changed locally instead of globally ([85747d3](https://github.com/jakewvincent/mkdnflow.nvim/commit/85747d3da3fc2c8c076ee4edf7bd04553d053758))
+
 ## [1.2.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v1.2.0...v1.2.1) (2024-07-10)
 
 
