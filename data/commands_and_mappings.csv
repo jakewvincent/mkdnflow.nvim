@@ -1,12 +1,12 @@
 Command,Default mapping,Description
 `MkdnEnter`,--,"Triggers a wrapper function which will (a) infer your editor mode, and then if in normal or visual mode, either follow a link, create a new link from the word under the cursor or visual selection, or fold a section (if cursor is on a section heading); if in insert mode, it will create a new list item (if cursor is in a list), go to the next row in a table (if cursor is in a table), or behave normally (if cursor is not in a list or a table).
-  **Note**: There is no insert-mode mapping for this command by default since some may find its effects intrusive. To enable the insert-mode functionality, add to the mappings table: `MkdnEnter = {{'i', 'n', 'v'}, '}`."
+🛈  **Note**: There is no insert-mode mapping for this command by default since some may find its effects intrusive. To enable the insert-mode functionality, add to the mappings table: `MkdnEnter = {{'i', 'n', 'v'}, '}`."
 `MkdnNextLink`,"`{ 'n', '<Tab>' }`",Move cursor to the beginning of the next link (if there is a next link).
 `MkdnPrevLink`,"`{ 'n', '<S-Tab>' }`",Move the cursor to the beginning of the previous link (if there is one).
 `MkdnNextHeading`,"`{ 'n', ']]' }`",Move the cursor to the beginning of the next heading (if there is one).
 `MkdnPrevHeading`,"`{ 'n', '[[' }`",Move the cursor to the beginning of the previous heading (if there is one).
 `MkdnGoBack`,"`{ 'n', '<BS>' }`","Open the historically last-active buffer in the current window.
-  **Note**: The back-end function for `:MkdnGoBack` (`require('mkdnflow').buffers.goBack()`), returns a boolean indicating the success of `goBack()`. This may be useful if the user wishes to remap `<BS>` such that when `goBack()` is unsuccessful, another function is performed."
+🛈  **Note**: The back-end function for `:MkdnGoBack` (`require('mkdnflow').buffers.goBack()`), returns a boolean indicating the success of `goBack()`. This may be useful if the user wishes to remap `<BS>` such that when `goBack()` is unsuccessful, another function is performed."
 `MkdnGoForward`,"`{ 'n', '<Del>' }`",Open the buffer that was historically navigated away from in the current window.
 `MkdnCreateLink`,--,Create a link from the word under the cursor (in normal mode) or from the visual selection (in visual mode).
 `MkdnCreateLinkFromClipboard`,"`{ { 'n', 'v' }, '<leader>p' }`","Create a link, using the content from the system clipboard (e.g. a URL) as the source and the word under cursor or visual selection as the link text."
