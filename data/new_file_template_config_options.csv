@@ -1,0 +1,11 @@
+Option,Type,Description
+`new_file_template.use_template`       ,`boolean`                ,"`true`: Use the new-file template when opening a new file by following a link.
+`false`*: Don’t use the new-file template when opening a new file by following a link."
+`new_file_template.placeholders.before`,"`table<placeholderName: string,  string\|fun(): string>`","A table whose keys are placeholder names mapped either to a function (to be evaluated immediately before the buffer is opened in the current window) or to one of a limited set of recognized strings:
+
+`’link_title’`: The title of the link that was followed to get to the just-opened file.
+`’os_date’` The current date, according to the OS.
+
+<details><summary>View default value</summary><pre lang='lua'>{&#13;    title = 'link_title',&#13;    date = 'os_date'&#13;}</pre></details>"
+`new_file_template.placeholders.after` ,`table (dictionary-like)`,A table whose keys are placeholder names mapped either to a function (to be evaluated immediately _after_ the buffer is opened in the current window) or to one of a limited set of recognized strings (see above). Default: `{}`
+`new_file_template.template`           ,`string`                 ,"A string, optionally containing placeholder names, that will be inserted into a new file. Default: `’# {{ title }}’`"

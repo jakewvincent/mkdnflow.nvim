@@ -1,0 +1,3 @@
+Option,Type,Description
+`create_dirs`,`boolean`,"**`true`***: Directories referenced in a link will be (recursively) created if they do not exist.
+`false`: No action will be taken when directories referenced in a link do not exist. Neovim will open a new file, but you will get an error when you attempt to write the file."

@@ -1,0 +1,3 @@
+Option,Type,Description
+`yaml.bib.override`,`boolean`,"`true`: A bib path specified in a markdown file’s yaml header should be the only source considered for bib references in that file.
+`false`*: All known bib paths will be considered, whether specified in the yaml header or in your configuration settings."

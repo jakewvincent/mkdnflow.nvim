@@ -1,0 +1,6 @@
+Option,Type,Description
+`bib.default_path`,"`string`
+`nil`","**`nil`***: No default/fallback bib file will be used to search for citation keys.
+`string`: A path to a default .bib file to look for citation keys in when attempting to follow a reference. The path need not be in the root directory of the notebook."
+`bib.find_in_root`,`boolean`    ,"**`true`***: When `perspective.priority` is also set to `root` (and a root directory was found), the plugin will search for bib files to reference in the notebook's top-level directory. If `bib.default_path` is also specified, the default path will be added to the list of bib files found in the top-level directory so that it will also be searched.
+`false`: The notebook's root directory will not be searched for bib files."

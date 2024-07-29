@@ -1,0 +1,9 @@
+Option,Type,Description
+`filetypes.md`      ,`boolean`,"**`true`***: The plugin activates for files with a `.md` extension.
+`false`: The plugin does not activate for files with a `.md` extension."
+`filetypes.rmd`     ,`boolean`,"**`true`***: The plugin activates for files with a `.rmd` (rmarkdown) extension.
+`false`: The plugin does not activate for files with a `.rmd` extension."
+`filetypes.markdown`,`boolean`,"**`true`***: The plugin activates for files with a `.markdown` extension.
+`false`: The plugin does not activate for files with a `.markdown` extension."
+`filetypes.<ext>`   ,`boolean`,"`true`: The plugin activates for files with the specified extension.
+`false`: The plugin does not activate for files with the specified extension."

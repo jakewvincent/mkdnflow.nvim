@@ -1,0 +1,21 @@
+Option,Type,Description
+`links.style`,`string`,"**`’markdown’`***: Links will be expected in the standard markdown format: `[<title>](<source>)`
+`’wiki’`: Links will be expected in the unofficial wiki-link style, specifically the [title-after-pipe format](https://github.com/jgm/pandoc/pull/7705): `[[<source>\|<title>]]`."
+`links.name_is_source`,`boolean`,"`true`: Wiki-style links will be created with the source and name being the same (e.g. `[[Link]]` will display as ""Link"" and go to a file named ""Link.md"").
+**`false`***: Wiki-style links will be created with separate name and source (e.g. `[[link-to-source\|Link]]` will display as ""Link"" and go to a file named ""link-to-source.md"")."
+`links.conceal`,`boolean`,"`true`: Link sources and delimiters will be concealed (depending on which link style is selected).
+**`false`***: Link sources and delimiters will not be concealed by mkdnflow."
+`links.context`,`integer`,"When following or jumping to links, consider *`n`* lines before and after a given line (useful if you ever permit links to be interrupted by a hard line break). Default: **`0`**."
+`links.implicit_extension`,`string`,"A string that instructs the plugin (a) how to _interpret_ links to files that do not have an extension, and (b) how to create new links from the word under cursor or text selection.
+
+**`nil`***: Extensions will be explicit when a link is created and must be explicit in any notebook link.
+`’<any extension>’` (e.g. `'md'`): Links without an extension (e.g. `[Homepage](index)`) will be interpreted with the implicit extension (e.g. `index.md`), and new links will be created without an extension."
+`links.transform_explicit`,"`fun(string): string`
+`boolean`","`false`: No transformations are applied to the text to be turned into the name of the link source/path.
+**`fun(string): string`***: A function that transforms the text to be inserted as the source/path of a link when a link is created. Anchor links are not currently customizable. For an example, see the sample recipes beneath this table. 
+<details><summary>See default function</summary><pre lang='lua'>function(text)&#13;    text = text:gsub("" "", ""-"")&#13;    text = text:lower()&#13;    text = os.date('%Y-%m-%d_') .. text&#13;    return text&#13;end</pre></details>"
+`links.transform_implicit`  ,"`fun(string): string`
+`boolean`","**`false`***: Do not perform any implicit transformations on the link’s source.
+`fun(string): string`: A function that transforms the path of a link immediately before interpretation. It does not transform the actual text in the buffer but can be used to modify link interpretation. For an example, see the sample recipe below."
+`links.create_on_follow_failure`,`boolean`,"**`true`***: Try to create a link from the word under the cursor if there is no link under the cursor to follow.
+`false`: Do nothing if trying to follow a link and a link can’t be found under the cursor."

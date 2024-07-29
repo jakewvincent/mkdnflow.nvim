@@ -1,0 +1,3 @@
+Option,Type,Description
+`wrap`,`boolean`,"`true`: When jumping to next/previous links or headings, the cursor will continue searching at the beginning/end of the file.
+**`false`***: When jumping to next/previous links or headings, the cursor will stop searching at the end/beginning of the file."

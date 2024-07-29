@@ -1,0 +1,14 @@
+Option,Type,Description
+`perspective.priority`    ,`string`         ,"**`'first'`***: Links will be interpreted relative to the first-opened file (when the current instance of Neovim was started).
+`'current'`: Links will always be interpreted relative to the current file.
+`'root'`: Links will be always interpreted relative to the root directory of the current notebook (requires `perspective.root_tell` to be specified)."
+`perspective.fallback`    ,`string`         ,"`'first'`: (see above)
+**`'current'`***: (see above)
+`'root'`: (see above)"
+`perspective.root_tell`   ,"`string`
+`boolean`","**`false`***: The plugin does not look for the notebook root.
+`string`: The name of a file (not a full path) by which a notebook’s root directory can be identified. For instance, `’.root’` or `’index.md’`."
+`perspective.nvim_wd_heel`,`boolean`        ,"`true`: Changes in perspective will be reflected in the nvim working directory. (In other words, the working directory will ""heel"" to the plugin's perspective.) This helps ensure (at least) that path completions (if using a completion plugin with support for paths) will be accurate and usable.
+**`false`***: Neovim's working directory will not be affected by Mkdnflow."
+`perspective.update`      ,`boolean`        ,"`true`: Perspective will be updated when following a link to a file in a separate notebook/wiki (or navigating backwards to a file in another notebook/wiki).
+**`false`***: Perspective will be not updated when following a link to a file in a separate notebook/wiki. (Links in the file in the separate notebook/wiki will be interpreted relative to the original notebook/wiki.)"

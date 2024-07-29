@@ -1,0 +1,3 @@
+Option,Type,Description
+`silent`,`boolean`,"`true`: The plugin will not display any messages in the console except compatibility warnings related to your config.
+**`false`***: The plugin will display messages to the console."

@@ -1,0 +1,2 @@
+Option,Type,Description
+`mappings.<command>`,"`[string|string[], string]`","The first item is a string or an array of strings representing the mode(s) that the mapping should apply in (`'n'`, `'v'`, etc.). The second item is a string representing the mapping (in the expected format for vim; see examples in [Commands & mappings](#-commands-mappings))."

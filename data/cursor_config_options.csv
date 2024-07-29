@@ -1,0 +1,4 @@
+Option,Type,Description
+`cursor.jump_patterns`,"`table`
+`nil`","**`nil`***: The [default jump patterns](#jump-to-links-headings) for the configured link style are used (markdown-style links by default)<br>table of custom Lua regex patterns
+`{}` (empty table) to disable link jumping without disabling the `cursor` module"

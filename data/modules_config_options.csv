@@ -1,0 +1,27 @@
+Option,Type,Description
+`modules.bib`     ,`boolean`,"**`true`***: `bib` module is enabled (required for parsing `.bib` files and following citations).
+`false`: Disable `bib` module functionality."
+`modules.buffers` ,`boolean`,"**`true`***: `buffers` module is enabled (required for backward and forward navigation through buffers).
+`false`: Disable `buffers` module functionality.         "
+`modules.conceal` ,`boolean`,"**`true`***: `conceal` module is enabled (required if you wish to enable link concealing. This does not automatically enable conceal behavior; see `links.conceal`.)
+`false`: Disable `conceal` module functionality."
+`modules.cursor`  ,`boolean`,"**`true`***: `cursor` module is enabled (required for cursor movements: jumping to links, headings, etc.).
+`false`: Disable `cursor` module functionality."
+`modules.folds`   ,`boolean`,"**`true`***: `folds` module is enabled (required for section folding).
+`false`: Disable `folds` module functionality."
+`modules.foldtext`,`boolean`,"**`true`***: `foldtext` module is enabled (required for prettified foldtext).
+`false`: Disable `foldtext` module functionality."
+`modules.links`   ,`boolean`,"**`true`***: `links` module is enabled (required for creating, destroying, and following links).
+`false`: Disable `links` module functionality."
+`modules.lists`   ,`boolean`,"**`true`***: `lists` module is enabled (required for working in and manipulating lists, etc.).
+`false`: Disable `lists` module functionality."
+`modules.to_do`   ,`boolean`,"**`true`***: `to_do` module is enabled (required for manipulating to-do statuses/lists, toggling to-do items, to-do list sorting, etc.)
+`false`: Disable `to_do` module functionality."
+`modules.paths`   ,`boolean`,"**`true`***: `paths` module is enabled (required for link interpretation, link following, etc.).
+`false`: Disable `paths` module functionality."
+`modules.tables`  ,`boolean`,"**`true`**: `tables` module is enabled (required for table management, navigation, formatting, etc.).
+`false`: Disable `tables` module functionality."
+`modules.yaml`    ,`boolean`,"`true`: `yaml` module is enabled (required for parsing yaml headers).
+**`false`***: Disable `yaml` module functionality.                                "
+`modules.cmp`     ,`boolean`,"`true`: `cmp` module is enabled (required if you wish to enable completion for `nvim-cmp`).
+**`false`***: Disable `cmp` module functionality."
