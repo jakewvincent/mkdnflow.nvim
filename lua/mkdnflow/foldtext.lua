@@ -377,6 +377,6 @@ M.fold_text = function()
     return left .. string.rep(mi, fill_count) .. right
 end
 
-vim.opt.foldtext = "v:lua.require('mkdnflow').foldtext.fold_text()"
+vim.opt_local.foldtext = "v:lua.require('mkdnflow').foldtext.fold_text()"
 
 return M
