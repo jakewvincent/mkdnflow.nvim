@@ -1,17 +1,17 @@
 Option,Type,Description
-`tables.trim_whitespace`        ,`boolean`,"`true`*: Trim extra whitespace from the end of a table cell when a table is formatted.
+`tables.trim_whitespace`        ,`boolean`,"**`true`***: Trim extra whitespace from the end of a table cell when a table is formatted.
 `false`: Leave whitespace at the end of a table cell when formatting."
-`tables.format_on_move`         ,`boolean`,"`true`*: Format the table each time the cursor is moved to the next/previous cell/row using the plugin’s API.
+`tables.format_on_move`         ,`boolean`,"**`true`***: Format the table each time the cursor is moved to the next/previous cell/row using the plugin’s API.
 `false`: Don’t format the table when the cursor is moved."
 `tables.auto_extend_rows`       ,`boolean`,"`true`: Add another row when attempting to jump to the next row using the plugin’s API and the row doesn’t exist.
-`false`*: Leave the table when attempting to jump to the next row using the plugin’s API and the row doesn’t exist."
+**`false`***: Leave the table when attempting to jump to the next row using the plugin’s API and the row doesn’t exist."
 `tables.auto_extend_cols`       ,`boolean`,"`true`: Add another column when attempting to jump to the next column using the plugin’s API and the column doesn’t exist.
-`false`*: Go to the first cell of the next row when attempting to jump to the next column using the plugin’s API and the column doesn’t exist."
-`tables.style.cell_padding`     ,`integer`,"`1`*: Use one space as padding at the beginning and end of each cell.
+**`false`***: Go to the first cell of the next row when attempting to jump to the next column using the plugin’s API and the column doesn’t exist."
+`tables.style.cell_padding`     ,`integer`,"**`1`***: Use one space as padding at the beginning and end of each cell.
 `<n>`: Use `<n>` spaces as cell padding at the beginning and end of each cell."
-`tables.style.separator_padding`,`integer`,"`1`*: Use one space as padding for the beginning and end of each cell in the separator row (the row beneath the column header row).
+`tables.style.separator_padding`,`integer`,"**`1`***: Use one space as padding for the beginning and end of each cell in the separator row (the row beneath the column header row).
 `<n>`: Use `<n>` spaces as padding for the beginning and end of each cell in the separator row."
-`tables.style.outer_pipes`      ,`boolean`,"`true`*: Include outer pipes when formatting a table or inserting a new table.
+`tables.style.outer_pipes`      ,`boolean`,"**`true`***: Include outer pipes when formatting a table or inserting a new table.
 `false`: Do not use outer pipes when formatting a table or inserting a new table."
-`tables.style.mimic_alignment`  ,`boolean`,"`true`*: Mimic the cell alignment indicated in the separator row when formatting the table (default to left alignment if alignment is not specified).
+`tables.style.mimic_alignment`  ,`boolean`,"**`true`***: Mimic the cell alignment indicated in the separator row when formatting the table (default to left alignment if alignment is not specified).
 `false`: Always visually left-align cell contents when formatting a table, regardless of the alignment specified in the separator row."

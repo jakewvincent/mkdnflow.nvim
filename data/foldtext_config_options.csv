@@ -1,24 +1,24 @@
 Option,Type,Description
-`foldtext.object_count`                                          ,`boolean`                         ,"`true`*: Show a count of all objects inside of a folded section.
+`foldtext.object_count`                                          ,`boolean`                         ,"**`true`***: Show a count of all objects inside of a folded section.
 `false`: Do not show a count of any objects inside of a folded section."
 `foldtext.object_count_icon_set`                                 ,"`string`
-`table (array-like)`      ","`’emoji’`*: Use pre-defined emojis as icons for counted objects.
+`table (array-like)`      ","**`’emoji’`***: Use pre-defined emojis as icons for counted objects.
 `’plain’`: Use pre-defined plaintext UTF-8 characters as icons for counted objects.
 `’nerdfont’`: Use pre-defined nerdfont characters as icons for counted objects. Requires a nerdfont.
 `table<string, string>`: Use custom mapping of object names to icons, object names being one of the keys in the table returned by `foldtext.object_count_opts()`."
-`foldtext.object_count_opts`                                     ,"`fun(): table<string, table>`","`function() return require(‘mkdnflow’).foldtext.default_count_opts end`*: The default options table, which defines the final attributes of the objects to be counted, including its icon (taken from `foldtext.object_count_icon_set`) and a table defining how the object type should be counted (see below). The pre-defined object types are `tbl`, `ul`, `ol`, `todo`, `img`, `fncblk`, `sec`, `par`, and `link`."
+`foldtext.object_count_opts`                                     ,"`fun(): table<string, table>`","**`function() return require(‘mkdnflow’).foldtext.default_count_opts end`***: The default options table, which defines the final attributes of the objects to be counted, including its icon (taken from `foldtext.object_count_icon_set`) and a table defining how the object type should be counted (see below). The pre-defined object types are `tbl`, `ul`, `ol`, `todo`, `img`, `fncblk`, `sec`, `par`, and `link`."
 `foldtext.object_count_opts().<object_name>.icon`                ,`string`                          ,"The icon used to represent the object in the counts area of the custom foldtext. By default, this is a reference to the icon specified for `<object_name>` in `foldtext.object_count_icon_set`, as long as `<object_name>` is one of `tbl`, `ul`, `ol`, `todo`, `img`, `fncblk`, `sec`, `par`, and `link`. Otherwise, the icon will need to be defined here."
 `foldtext.object_count_opts().<object_name>.count_method.prep`   ,`fun(text: string): string`                   ,"A function that (optionally) performs preprocessing manipulations to the text before `pattern` is used to count objects according to the tallying method specified. The text passed into this function depends on the value of `tally` (see below). Only `tbl` (table) and `fncblk` (fenced code block) have default preprocessing functions (see `M.default_count_opts` in the `foldtext` module). A preprocessing function may be useful if it helps you write a simpler pattern, for instance."
 `foldtext.object_count_opts().<object_name>.count_method.pattern`,`table (array-like)`              ,An array-like table of strings (Lua patterns) that are used to count objects according to the object’s specified `tally` method (see below).
 `foldtext.object_count_opts().<object_name>.count_method.tally`  ,`string`                          ,"`’blocks’`: The count is the number of line _clusters_ in the buffer in which each sub-line matches a pattern in `<object_name>`’s `pattern`. Objects counted using this method by default include `tbl`, `ul`, `ol`, and `todo`.
 `’line_matches’`: The count is the number of lines that one of `<object_name>`’s patterns matches. Multiple matches on the line are not counted. The object counted using this method by default is `sec`.
 `’global_matches’`: The count is the number of times the pattern is matched across the whole buffer. Objects counted using this method by default include `img`, `fncblk`, `par`, and `link`."
-`foldtext.line_count`,`boolean`                     ,"`true`*: Show a count of the lines contained in the folded section.
+`foldtext.line_count`,`boolean`                     ,"**`true`***: Show a count of the lines contained in the folded section.
 `false`: Don’t show a line count."
-`foldtext.line_percentage`,`boolean`                         ,"`true`*: Show the percentage of document (buffer) lines contained in the folded section.
+`foldtext.line_percentage`,`boolean`                         ,"**`true`***: Show the percentage of document (buffer) lines contained in the folded section.
 `false`: Don’t show the percentage."
 `foldtext.word_count`,`boolean`                         ,"`true`: Show a count of the _paragraph_ words in the folded section, ignoring words inside of other objects.
-`false`*: Don’t show a word count."
+**`false`***: Don’t show a word count."
 `foldtext.title_transformer`,`fun(): fun(line: string): string`,"A function _f_ that returns a function _g_, _g_ being a function that accepts a string and returns a potentially modified string. The string passed into the function will be the text of the first line in the fold (a section heading)."
 `foldtext.fill_chars.left_edge`,`string`                          ,"The character(s) to use at the very left edge of the foldtext, adjacent to the left edge of the window. Default: `'⢾⣿⣿'`."
 `foldtext.fill_chars.right_edge`,`string`,"The character(s) to use at the very right edge of the foldtext, adjacent to the right edge of the window. Default: `'⣿⣿⡷'`"
