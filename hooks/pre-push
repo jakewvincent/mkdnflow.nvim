@@ -31,7 +31,7 @@ fi
 ### Compile README if necessary ###
 ###################################
 
-echo "    ⤷ Checking for modified README tables..."
+echo "    ⤷ Checking if README needs regenerating..."
 # Find the common ancestor of HEAD and the upstream branch
 MERGE_BASE=$(git merge-base HEAD @{u} 2>/dev/null)
 
@@ -43,11 +43,15 @@ else
     RANGE=$(git rev-list --max-parents=0 HEAD)..HEAD
 fi
 
-# Check if any changes to CSV files in that range
-CSV_CHANGES=$(git diff --name-only $RANGE -- './data/*.csv')
+# Get the last modification time of the README and the README template
+README_MOD_TIME=$(git log -1 --format=%ct README.md 2>/dev/null)
+TEMPLATE_MOD_TIME=$(git log -1 --format=%ct README.template.md 2>/dev/null)
 
-if [ -n "$CSV_CHANGES" ]; then
-    echo "       ∙ Changes detected in CSV files. Running README generator..."
+# Check if any changes to CSV files or to the README template in that range
+CHANGES=$(git diff --name-only $RANGE -- './data/*.csv' 'README.template.md')
+
+if [ -n "$CHANGES" ] || [ "$TEMPLATE_MOD_TIME" -gt "$README_MOD_TIME" ]; then
+    echo "       ∙ Changes detected to README template or CSV data. Regenerating README..."
     
     # Run the script to create README from template
     python3 ./scripts/create_readme_from_template.py
@@ -69,7 +73,7 @@ if [ -n "$CSV_CHANGES" ]; then
         fi
     fi
 else
-    echo "       ∙ No changes to CSV files in ./data directory."
+    echo "       ∙ No changes to README template or CSV data."
 fi
 
 echo "    ⤷ Done."
