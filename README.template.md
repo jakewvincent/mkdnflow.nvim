@@ -80,6 +80,7 @@ Mkdnflow is designed for the *fluent* navigation and management of [markdown](ht
 
 * [x] Section folding and fold toggling
 * [ ] YAML block folding
+* [x] [🗂️ Enhanced foldtext](#%EF%B8%8F-enhanced-foldtext)
 
 ### 🔮 Completion
 
@@ -105,7 +106,7 @@ Mkdnflow is designed for the *fluent* navigation and management of [markdown](ht
 
 #### 🖍️ Highlighting
 
-* [ ] Highlight to-do items
+* [ ] Custom(izable) highlighting for to-do status markers and content
 
 ### ⚙️ Configurability
 
