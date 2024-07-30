@@ -15,13 +15,13 @@
     1. [⚡ Quick Start](#-quick-start)
     2. [⚙️  Advanced configuration](#%EF%B8%8F--advanced-configuration)
         1. [🎨 Configuration options](#-configuration-options)
+        2. [🔮 Completion setup](#-completion-setup)
 4. [🔍 Usage](#-usage)
     1. [🛠️ Commands & mappings](#%EF%B8%8F-commands--mappings)
     2. [🔌 API](#-api)
 5. [🤝 Contributing](#-contributing)
-6. [🐛 Troubleshooting](#-troubleshooting)
-7. [🔢 Version information](#-version-information)
-8. [🔗 Related projects](#-related-projects)
+6. [🔢 Version information](#-version-information)
+7. [🔗 Related projects](#-related-projects)
 
 ## 🚀 Introduction
 
@@ -80,6 +80,7 @@ Mkdnflow is designed for the *fluent* navigation and management of [markdown](ht
 
 * [x] Section folding and fold toggling
 * [ ] YAML block folding
+* [x] [🗂️ Enhanced foldtext](#%EF%B8%8F-enhanced-foldtext)
 
 ### 🔮 Completion
 
@@ -105,7 +106,7 @@ Mkdnflow is designed for the *fluent* navigation and management of [markdown](ht
 
 #### 🖍️ Highlighting
 
-* [ ] Highlight to-do items
+* [ ] Custom(izable) highlighting for to-do status markers and content
 
 ### ⚙️ Configurability
 
@@ -1054,6 +1055,37 @@ See descriptions of commands and mappings below.
 </details>
 
 
+#### 🔮 Completion setup
+
+To enable completion via `cmp` using the provided source, add `mkdnflow` as a source in your `cmp` setup function. You may also want to modify the formatting to see which completions are coming from Mkdnflow:
+
+```lua
+cmp.setup({
+    -- Add 'mkdnflow' as a completion source
+	sources = cmp.config.sources({
+		{ name = 'mkdnflow' },
+	}),
+    -- Completion source attribution
+    formatting = {
+        format = function(entry, vim_item)
+            vim_item.menu = ({
+                -- Other attributions
+                mkdnflow = '[Mkdnflow]',
+            })[entry.source_name]
+            return vim_item
+        end
+    }
+})
+```
+
+> [!WARNING]
+> There may be some compatibility issues with the completion module and `links.transform_explicit`/`links.transform_implicit` functions:
+>
+> * If you have some `transform_explicit` option for links to organizing in folders then the folder name will be inserted accordingly. **Some transformations may not work as expected in completions**.
+>     * For example, if you have an implicit transformation that will make the link appear as `[author_year](author_year.md)` and you save the file as `ref_author_year.md`. The condition can be if the link name ends with *_yyyy*. Now `cmp` will complete it as `[ref_author_year](ref_author_year.md)` (without the transformation applied). Next, when you follow the link completed by `cmp`, you will go to a new file that is saved as `ref_ref_author_year.md`, which of course does not refer to the intended file.
+>
+> To prevent this, make sure you write sensible transformation functions, preferably using it for folder organization. The other solution is to do a full text search in all the files for links.
+
 ## 🔍 Usage
 ### 🛠️ Commands & mappings
 
@@ -1108,8 +1140,6 @@ Below are descriptions of the user commands defined by Mkdnflow. For the default
 ### 🔌 API
 
 ## 🤝 Contributing
-
-## 🐛 Troubleshooting
 
 ## 🔢 Version information
 
