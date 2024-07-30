@@ -20,9 +20,8 @@
     1. [🛠️ Commands & mappings](#%EF%B8%8F-commands--mappings)
     2. [🔌 API](#-api)
 5. [🤝 Contributing](#-contributing)
-6. [🐛 Troubleshooting](#-troubleshooting)
-7. [🔢 Version information](#-version-information)
-8. [🔗 Related projects](#-related-projects)
+6. [🔢 Version information](#-version-information)
+7. [🔗 Related projects](#-related-projects)
 
 ## 🚀 Introduction
 
@@ -1002,8 +1001,6 @@ Below are descriptions of the user commands defined by Mkdnflow. For the default
 ### 🔌 API
 
 ## 🤝 Contributing
-
-## 🐛 Troubleshooting
 
 ## 🔢 Version information
 
