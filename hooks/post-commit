@@ -1,7 +1,7 @@
-# .git/hooks/pre-push
+# .git/hooks/post-commit
 #!/bin/bash
 
-echo "  Running pre-push hook..."
+echo "  Running post-commit hook..."
 
 #################################################
 ### Convert any new or modified images to png ###
@@ -32,23 +32,13 @@ fi
 ###################################
 
 echo "    ⤷ Checking if README needs regenerating..."
-# Find the common ancestor of HEAD and the upstream branch
-MERGE_BASE=$(git merge-base HEAD @{u} 2>/dev/null)
-
-if [ -n "$MERGE_BASE" ]; then
-    # If we found a common ancestor, use it as the starting point
-    RANGE="${MERGE_BASE}..HEAD"
-else
-    # If we couldn't find a common ancestor (e.g., new branch), check all commits
-    RANGE=$(git rev-list --max-parents=0 HEAD)..HEAD
-fi
 
 # Get the last modification time of the README and the README template
 README_MOD_TIME=$(git log -1 --format=%ct README.md 2>/dev/null)
 TEMPLATE_MOD_TIME=$(git log -1 --format=%ct README.template.md 2>/dev/null)
 
 # Check if any changes to CSV files or to the README template in that range
-CHANGES=$(git diff --name-only $RANGE -- './data/*.csv' 'README.template.md')
+CHANGES=$(git diff-tree --no-commit-id --name-only -r HEAD -- './data/*.csv' 'README.template.md')
 
 if [ -n "$CHANGES" ] || [ "$TEMPLATE_MOD_TIME" -gt "$README_MOD_TIME" ]; then
     echo "       ∙ Changes detected to README template or CSV data. Regenerating README..."
@@ -76,5 +66,5 @@ else
     echo "       ∙ No changes to README template or CSV data."
 fi
 
-echo "    ⤷ Done."
+echo "    ⤷ Post-commit tasks completed."
 exit 0
