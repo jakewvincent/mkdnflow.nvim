@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.1.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.0.0...v2.1.0) (2026-01-31)
+
+
+### Features
+
+* only trigger suggestions for bib if @ is typed ([c82ce65](https://github.com/jakewvincent/mkdnflow.nvim/commit/c82ce65bf20c0d0e982d1224f62a5ce609069645))
+* only trigger suggestions for bib if @ is typed ([5f32b78](https://github.com/jakewvincent/mkdnflow.nvim/commit/5f32b7852b20b8b024abc53e02989362d895c0e8))
+
+
+### Bug Fixes
+
+* Also trigger bib completions at start of line ([c70a8b8](https://github.com/jakewvincent/mkdnflow.nvim/commit/c70a8b88668e43316036efb397c724509940adac))
+* **bib:** return nil for empty citation key ([cfab8ac](https://github.com/jakewvincent/mkdnflow.nvim/commit/cfab8acf58588d2fd3e5adc2dd5a04ba4b74f549))
+* **paths:** handle nil replacement in formatTemplate ([3f19ec7](https://github.com/jakewvincent/mkdnflow.nvim/commit/3f19ec74910b9e589e622a3a7f6e88ed3093b685))
+* **yaml:** fix crashes and colon parsing in YAML frontmatter ([d2bad25](https://github.com/jakewvincent/mkdnflow.nvim/commit/d2bad25c4fe01d419cb8e487cd9aaada0d9c4854))
+
 ## [2.0.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v1.2.4...v2.0.0) (2026-01-31)
 
 
