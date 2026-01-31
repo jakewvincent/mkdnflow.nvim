@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.0.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v1.2.4...v2.0.0) (2026-01-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* The `symbol` and `colors` keys in to_do.statuses configuration have been renamed to `marker` and `highlight`. The old keys are deprecated and will be removed in a future major version.
+
+### Features
+
+* Add backwards compatibility for deprecated to_do config keys ([46ca5bc](https://github.com/jakewvincent/mkdnflow.nvim/commit/46ca5bcc2a4840fd49631262a53b2ad19b64bfd9))
+* Add to-do item caching to improve performance ([9aae1ca](https://github.com/jakewvincent/mkdnflow.nvim/commit/9aae1ca4abfa89403b6737c1ba230077ce5330bd))
+* Add Version information section and improve README generator script ([596f9a2](https://github.com/jakewvincent/mkdnflow.nvim/commit/596f9a2855d3f4489e5e23736afec2cd49d1d444))
+
+
+### Bug Fixes
+
+* Add deprecation warning and guard for individual keys migration ([353e90f](https://github.com/jakewvincent/mkdnflow.nvim/commit/353e90f7c20f06f034039e297a87d3aa678ae8a3))
+* Add deprecation warning for update_parents config key ([ca8946e](https://github.com/jakewvincent/mkdnflow.nvim/commit/ca8946ed4438ff5c47b6898b410d563d2fcbe4a8))
+* Address off-by-one cursor position error with blank markers ([7d67410](https://github.com/jakewvincent/mkdnflow.nvim/commit/7d6741053a62cbbc57daaf532f9779dc2a6e2bfc))
+* Handle edge cases in table navigation ([250e562](https://github.com/jakewvincent/mkdnflow.nvim/commit/250e562f367dab3518e55769ff07852e5719cd52))
+* Handle non-to-do lines gracefully in to-do functions ([fcbf8cb](https://github.com/jakewvincent/mkdnflow.nvim/commit/fcbf8cb0eb7b54eb62ead65551aa5efb196421ea))
+* Improve cursor positioning during to-do list sorting ([5c305bf](https://github.com/jakewvincent/mkdnflow.nvim/commit/5c305bfa47006d801485cd09a7d4d860a415408f))
+* Treat incomplete tables as normal text for navigation ([ff1b0bb](https://github.com/jakewvincent/mkdnflow.nvim/commit/ff1b0bb2e57838451b4975632782b61c49714ba0))
+* Use vim.tbl_contains for Neovim 0.9.x compatibility ([2dae94e](https://github.com/jakewvincent/mkdnflow.nvim/commit/2dae94e6266c8653374de985f61dc2501d845260))
+
 ## [1.2.4](https://github.com/jakewvincent/mkdnflow.nvim/compare/v1.2.3...v1.2.4) (2024-08-25)
 
 
