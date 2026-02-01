@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.1.1...v2.2.0) (2026-02-01)
+
+
+### Features
+
+* **links:** add image link support ([#220](https://github.com/jakewvincent/mkdnflow.nvim/issues/220)) ([3d17309](https://github.com/jakewvincent/mkdnflow.nvim/commit/3d17309ab65767fc5122fb37cad51975b8a1d2bf))
+* **links:** add Unicode anchor link support ([#221](https://github.com/jakewvincent/mkdnflow.nvim/issues/221)) ([b69011d](https://github.com/jakewvincent/mkdnflow.nvim/commit/b69011d094e2e59aab4e905aba52a962d7c4c0e7))
+
+
+### Bug Fixes
+
+* **folds:** handle non-manual foldmethod gracefully ([#254](https://github.com/jakewvincent/mkdnflow.nvim/issues/254)) ([191b6df](https://github.com/jakewvincent/mkdnflow.nvim/commit/191b6df17746a0cfeca7e6db8c1ee72e52fae953))
+
 ## [2.1.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.1.0...v2.1.1) (2026-02-01)
 
 
