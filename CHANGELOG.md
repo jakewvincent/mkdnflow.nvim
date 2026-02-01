@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.2.0...v2.2.1) (2026-02-01)
+
+
+### Bug Fixes
+
+* **tests:** add mock clipboard for headless CI environments ([3c95720](https://github.com/jakewvincent/mkdnflow.nvim/commit/3c95720180fefe1182caf2ecc20a4e3d41319b22))
+
 ## [2.2.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.1.1...v2.2.0) (2026-02-01)
 
 
