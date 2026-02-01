@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.1.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.1.0...v2.1.1) (2026-02-01)
+
+
+### Bug Fixes
+
+* **links:** prevent crash when following link in task list ([#269](https://github.com/jakewvincent/mkdnflow.nvim/issues/269)) ([04e138b](https://github.com/jakewvincent/mkdnflow.nvim/commit/04e138b35ecb59e7d9130b18f0ec3bbaed1fc5e7))
+* **links:** use non-greedy patterns for link part extraction ([#252](https://github.com/jakewvincent/mkdnflow.nvim/issues/252)) ([552998e](https://github.com/jakewvincent/mkdnflow.nvim/commit/552998e52a9e089eb4fd9d31d3e5c6ef265743f8))
+* **links:** use visual selection marks when range=true ([#258](https://github.com/jakewvincent/mkdnflow.nvim/issues/258)) ([80d5c30](https://github.com/jakewvincent/mkdnflow.nvim/commit/80d5c30cedd07a4e390dabe1c45d4096a99d757d))
+* **plugin:** prevent crash when commands called before setup ([#255](https://github.com/jakewvincent/mkdnflow.nvim/issues/255)) ([36af02d](https://github.com/jakewvincent/mkdnflow.nvim/commit/36af02d2dbace62846fe5c9a004d5a36710177b0))
+* **tables:** preserve escaped pipes when adding columns ([#244](https://github.com/jakewvincent/mkdnflow.nvim/issues/244)) ([90b10fc](https://github.com/jakewvincent/mkdnflow.nvim/commit/90b10fc4827c23b56671caf49470d6480bcc35e4))
+
 ## [2.1.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.0.0...v2.1.0) (2026-01-31)
 
 
