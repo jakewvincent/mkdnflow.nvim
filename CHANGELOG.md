@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.5.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.4.0...v2.5.0) (2026-02-02)
+
+
+### Features
+
+* **cursor:** add range support and dot-repeatable heading operators ([#256](https://github.com/jakewvincent/mkdnflow.nvim/issues/256)) ([da5dac1](https://github.com/jakewvincent/mkdnflow.nvim/commit/da5dac1ee1a153139c73fc6ce230b7d8d2bc0671))
+
+
+### Bug Fixes
+
+* **config:** replace array-like tables instead of merging ([#268](https://github.com/jakewvincent/mkdnflow.nvim/issues/268)) ([408185c](https://github.com/jakewvincent/mkdnflow.nvim/commit/408185ca02fa59f493f6556a47fc870a25c7b18a))
+
 ## [2.4.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.3.0...v2.4.0) (2026-02-02)
 
 
