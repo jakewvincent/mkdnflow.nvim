@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.2.1...v2.3.0) (2026-02-02)
+
+
+### Features
+
+* **to_do:** add MkdnSortToDoList command ([#209](https://github.com/jakewvincent/mkdnflow.nvim/issues/209)) ([cc190dd](https://github.com/jakewvincent/mkdnflow.nvim/commit/cc190ddb18e965c0075e6978d9f84d0c25ed1674))
+
 ## [2.2.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.2.0...v2.2.1) (2026-02-01)
 
 
