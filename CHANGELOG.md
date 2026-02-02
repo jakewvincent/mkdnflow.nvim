@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.4.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.3.0...v2.4.0) (2026-02-02)
+
+
+### Features
+
+* **cursor:** add configurable yank register ([#224](https://github.com/jakewvincent/mkdnflow.nvim/issues/224)) ([62930a3](https://github.com/jakewvincent/mkdnflow.nvim/commit/62930a3200ac347881c62ce42353dbbcd5ee296b))
+* **maps:** add descriptions to keymaps for which-key ([#259](https://github.com/jakewvincent/mkdnflow.nvim/issues/259)) ([a147b26](https://github.com/jakewvincent/mkdnflow.nvim/commit/a147b26d90ed9dc185bb0efdb971d6a15bf7b567))
+
 ## [2.3.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.2.1...v2.3.0) (2026-02-02)
 
 
