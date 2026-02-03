@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.6.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.5.0...v2.6.0) (2026-02-03)
+
+
+### Features
+
+* **tables:** add inline line break splitting during format ([0762f91](https://github.com/jakewvincent/mkdnflow.nvim/commit/0762f9126a378b495fae57f2c25460cf270d1451)), closes [#243](https://github.com/jakewvincent/mkdnflow.nvim/issues/243)
+* **tables:** add multiline row support with backslash continuation ([6d93dc3](https://github.com/jakewvincent/mkdnflow.nvim/commit/6d93dc3d5d7c734011e3de5f152e17a9d45c1f07)), closes [#243](https://github.com/jakewvincent/mkdnflow.nvim/issues/243)
+
+
+### Bug Fixes
+
+* **lists:** respect expandtab and shiftwidth for list indentation ([a2c2c2d](https://github.com/jakewvincent/mkdnflow.nvim/commit/a2c2c2d4d7db1a24b75cf9ad9b105758e7ac841b)), closes [#267](https://github.com/jakewvincent/mkdnflow.nvim/issues/267)
+* **tables:** correct multiline cell width calculation and navigation ([5dc2cb2](https://github.com/jakewvincent/mkdnflow.nvim/commit/5dc2cb2fd2597a7c362c61c0781ed65e484b0934))
+* **tables:** position cursor on cell content, not padding ([313e333](https://github.com/jakewvincent/mkdnflow.nvim/commit/313e3333ec1faffc2de27bf8ba9e0d23eaa12da0))
+
 ## [2.5.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.4.0...v2.5.0) (2026-02-02)
 
 
