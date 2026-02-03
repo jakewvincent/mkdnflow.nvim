@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.6.0...v2.7.0) (2026-02-03)
+
+
+### Features
+
+* **tables:** add row and column deletion commands ([a913d5b](https://github.com/jakewvincent/mkdnflow.nvim/commit/a913d5b89a0978ae3d9e454633732f5f12e61394))
+
 ## [2.6.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.5.0...v2.6.0) (2026-02-03)
 
 
