@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.7.2](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.7.1...v2.7.2) (2026-02-04)
+
+
+### Bug Fixes
+
+* **foldtext:** use autocmd for buffer-local foldtext setting ([8a87f12](https://github.com/jakewvincent/mkdnflow.nvim/commit/8a87f12e83699c2f7b388558cade025192c650eb))
+* **foldtext:** use global wrapper for v:lua compatibility ([6a64127](https://github.com/jakewvincent/mkdnflow.nvim/commit/6a64127696ebfeb2e9e88a2c74c548a01cdb5e12))
+* **tests:** ignore highlight attrs in screenshot tests ([90fd255](https://github.com/jakewvincent/mkdnflow.nvim/commit/90fd255aa0ee665afd05496b13d163e7568a9f8d))
+
 ## [2.7.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.7.0...v2.7.1) (2026-02-04)
 
 
