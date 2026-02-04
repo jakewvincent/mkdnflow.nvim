@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.8.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.7.2...v2.8.0) (2026-02-04)
+
+
+### Features
+
+* **links:** add support for Pandoc-style bracketed citations ([ec99c43](https://github.com/jakewvincent/mkdnflow.nvim/commit/ec99c433d527d024c3abd112f57dcb850f85a947)), closes [#285](https://github.com/jakewvincent/mkdnflow.nvim/issues/285)
+
+
+### Bug Fixes
+
+* **docs:** remove duplicate help tag in vimdoc ([3c9236c](https://github.com/jakewvincent/mkdnflow.nvim/commit/3c9236cbe2a5b8ec815edf6cf713b69fb8ced88e)), closes [#288](https://github.com/jakewvincent/mkdnflow.nvim/issues/288)
+
 ## [2.7.2](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.7.1...v2.7.2) (2026-02-04)
 
 
