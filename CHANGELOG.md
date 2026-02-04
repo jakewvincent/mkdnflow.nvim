@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.7.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.7.0...v2.7.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* **maps:** enable dot-repeat for +/- in visual mode ([41a636d](https://github.com/jakewvincent/mkdnflow.nvim/commit/41a636dda479b9df03bf4c717c0c5e7d9f900dd4))
+* **maps:** use feedkeys fallback instead of expr mappings ([9c084a9](https://github.com/jakewvincent/mkdnflow.nvim/commit/9c084a9b89df2839221941a4401d4022530b6f83))
+* **test:** mock clipboard for CI environments ([d6d9a37](https://github.com/jakewvincent/mkdnflow.nvim/commit/d6d9a3710dd90d256bfac732b8eceaa666d3a308))
+
 ## [2.7.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.6.0...v2.7.0) (2026-02-03)
 
 
