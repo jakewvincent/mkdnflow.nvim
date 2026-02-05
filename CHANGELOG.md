@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.8.0...v2.8.1) (2026-02-05)
+
+
+### Bug Fixes
+
+* **ci:** install pyyaml for docs generation ([bbe640f](https://github.com/jakewvincent/mkdnflow.nvim/commit/bbe640f0b036298299c026ca392e1002c9d080a2))
+
 ## [2.8.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.7.2...v2.8.0) (2026-02-04)
 
 
