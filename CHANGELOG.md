@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.9.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.8.1...v2.9.0) (2026-02-07)
+
+
+### Features
+
+* **tables:** add column alignment commands ([b052e28](https://github.com/jakewvincent/mkdnflow.nvim/commit/b052e287c82c66ca6a2fde9047c1fbe5698c146d))
+* **tables:** add MkdnTableAlignDefault command to remove alignment ([29fcb86](https://github.com/jakewvincent/mkdnflow.nvim/commit/29fcb86199ec0d7be8c8ee8865e165578f27be9f))
+* **tables:** add MkdnTableCellNewLine command for in-cell line breaks ([390f937](https://github.com/jakewvincent/mkdnflow.nvim/commit/390f937e990e5613c36f10b261820d766ac1fbad))
+* **tables:** add Pandoc grid table support ([78045ca](https://github.com/jakewvincent/mkdnflow.nvim/commit/78045caae3199ea469fc07c0ad01ee565a3e185a)), closes [#278](https://github.com/jakewvincent/mkdnflow.nvim/issues/278)
+
+
+### Bug Fixes
+
+* **tables:** remove pipe-table multiline cell support ([b7b5917](https://github.com/jakewvincent/mkdnflow.nvim/commit/b7b59178dd0da5709d8db1542279ce96a1a677ae))
+
 ## [2.8.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.8.0...v2.8.1) (2026-02-05)
 
 
