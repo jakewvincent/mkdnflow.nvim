@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.4](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.3...v2.9.4) (2026-02-09)
+
+
+### Bug Fixes
+
+* **paths:** use correct config key for new file template injection ([b115777](https://github.com/jakewvincent/mkdnflow.nvim/commit/b115777f80b143f7d2bd35902aaf9f7c6c18d53a))
+
 ## [2.9.3](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.2...v2.9.3) (2026-02-09)
 
 
