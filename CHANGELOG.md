@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.0...v2.9.1) (2026-02-09)
+
+
+### Bug Fixes
+
+* **to_do:** restore list item to to-do conversion on toggle ([#292](https://github.com/jakewvincent/mkdnflow.nvim/issues/292)) ([361b476](https://github.com/jakewvincent/mkdnflow.nvim/commit/361b476102d0aa34397f861ab7c5cf47f697961e))
+
 ## [2.9.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.8.1...v2.9.0) (2026-02-07)
 
 
