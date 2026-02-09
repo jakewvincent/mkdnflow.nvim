@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.4...v2.10.0) (2026-02-09)
+
+
+### Features
+
+* **links:** add on_create_new callback for delegating file creation ([3cace55](https://github.com/jakewvincent/mkdnflow.nvim/commit/3cace55fc083d8cde5ad11cfc158a8f62a34c597)), closes [#261](https://github.com/jakewvincent/mkdnflow.nvim/issues/261)
+
 ## [2.9.4](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.3...v2.9.4) (2026-02-09)
 
 
