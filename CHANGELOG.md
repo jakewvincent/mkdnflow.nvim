@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.3](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.2...v2.9.3) (2026-02-09)
+
+
+### Bug Fixes
+
+* **tables:** fix Tab navigation on continuation lines and reuse empty cells on S-CR ([bbafb96](https://github.com/jakewvincent/mkdnflow.nvim/commit/bbafb96b19964edb9ecd8425a60ecac5cfb4f88d))
+
 ## [2.9.2](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.1...v2.9.2) (2026-02-09)
 
 
