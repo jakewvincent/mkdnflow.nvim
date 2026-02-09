@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.2](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.1...v2.9.2) (2026-02-09)
+
+
+### Bug Fixes
+
+* **paths:** resolve nil initial_dir when plugin loaded via keymap ([#293](https://github.com/jakewvincent/mkdnflow.nvim/issues/293)) ([0b7a668](https://github.com/jakewvincent/mkdnflow.nvim/commit/0b7a668046f2496e4d3573d6a8e96f3c2a68a000))
+
 ## [2.9.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.0...v2.9.1) (2026-02-09)
 
 
