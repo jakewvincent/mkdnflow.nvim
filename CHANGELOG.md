@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.12.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.11.0...v2.12.0) (2026-02-11)
+
+
+### Features
+
+* **demos:** add optional VARIANT arg to demos target ([907e00f](https://github.com/jakewvincent/mkdnflow.nvim/commit/907e00f6fb59f12ca9f7824adb37152b9776a2c8))
+
+
+### Bug Fixes
+
+* **demos:** update dark variant margin color to match GitHub dark mode ([48e5994](https://github.com/jakewvincent/mkdnflow.nvim/commit/48e5994469c89cdf8b3a778c93a92ebd705af428))
+
 ## [2.11.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.10.0...v2.11.0) (2026-02-11)
 
 
