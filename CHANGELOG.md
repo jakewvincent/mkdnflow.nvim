@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.11.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.10.0...v2.11.0) (2026-02-11)
+
+
+### Features
+
+* **demos:** add VHS tape scripts and recording infrastructure ([a79413f](https://github.com/jakewvincent/mkdnflow.nvim/commit/a79413fe24babcaa253f63ddc7a3f46ab1b5d2d2))
+* **to_do:** support converting plain list items via visual toggle ([870d8e2](https://github.com/jakewvincent/mkdnflow.nvim/commit/870d8e2e8849106f694cd793c90ea623012139f3))
+
+
+### Bug Fixes
+
+* **lists:** restore bidirectional sibling scan on promotion renumbering ([4bc0475](https://github.com/jakewvincent/mkdnflow.nvim/commit/4bc0475dedb9007cb0aeb1f7be1cc2a7bcbe6987))
+* **to_do:** restore visual mode multi-line toggle via &lt;C-Space&gt; ([0a82739](https://github.com/jakewvincent/mkdnflow.nvim/commit/0a82739f69876417249b625fffb567914b25e4f2))
+* **to_do:** skip children in visual range toggle when parent is selected ([d2b6ea0](https://github.com/jakewvincent/mkdnflow.nvim/commit/d2b6ea0dbae28d785d9c909a18bbce841d2ea8c6))
+* **to_do:** support all visual modes in direct-call toggle path ([a5e4887](https://github.com/jakewvincent/mkdnflow.nvim/commit/a5e48878d6ff4bd562e92ff627853df87eeda697))
+
 ## [2.10.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.9.4...v2.10.0) (2026-02-09)
 
 
