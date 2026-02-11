@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.13.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.12.0...v2.13.0) (2026-02-11)
+
+
+### Features
+
+* add getNotebook() API for statusline integration ([295e4a5](https://github.com/jakewvincent/mkdnflow.nvim/commit/295e4a5b12799f396dd506b09c5d4a19b57aeefb))
+* **links:** visual selection on citation creates link instead of following ([759762e](https://github.com/jakewvincent/mkdnflow.nvim/commit/759762e75e0532fe18cb1e9bc569830af24006d7)), closes [#163](https://github.com/jakewvincent/mkdnflow.nvim/issues/163)
+* **paths:** support nested collections with dynamic root re-evaluation ([268f538](https://github.com/jakewvincent/mkdnflow.nvim/commit/268f5381becc374413f156d3794115af2823bd13)), closes [#118](https://github.com/jakewvincent/mkdnflow.nvim/issues/118)
+
+
+### Bug Fixes
+
+* **links:** skip citation detection when @ is preceded by alphanumeric char ([237ab81](https://github.com/jakewvincent/mkdnflow.nvim/commit/237ab8167e0023419e6150cf94508c43f681c9f3))
+
 ## [2.12.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.11.0...v2.12.0) (2026-02-11)
 
 
