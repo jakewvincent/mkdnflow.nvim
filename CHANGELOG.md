@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.14.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.13.0...v2.14.0) (2026-02-13)
+
+
+### Features
+
+* **health:** add :checkhealth diagnostics and :MkdnCleanConfig command ([8bed591](https://github.com/jakewvincent/mkdnflow.nvim/commit/8bed59167ce0394b1e0ba9e451477ce5e89bbcf0))
+* **health:** display MkdnCleanConfig in a floating window ([3ddb5af](https://github.com/jakewvincent/mkdnflow.nvim/commit/3ddb5af7d4983f9ae7423fb06598409e3f8e18fc))
+* **lists:** add MkdnChangeListType command ([e9e71bc](https://github.com/jakewvincent/mkdnflow.nvim/commit/e9e71bc9af9106e6920693c2ec1724bbb70ff9d4)), closes [#216](https://github.com/jakewvincent/mkdnflow.nvim/issues/216)
+* **lists:** add MkdnIndentListItem and MkdnDedentListItem commands ([a31727b](https://github.com/jakewvincent/mkdnflow.nvim/commit/a31727b2eeef74c4f68cbce36e5421c270d8b95c))
+* **tables:** add MkdnTablePaste and MkdnTableFromSelection commands ([79b2b01](https://github.com/jakewvincent/mkdnflow.nvim/commit/79b2b01709f7471e9e3b4d5adbd99bc71df94546))
+* **yaml:** accept `bibliography` as alias for `bib` in frontmatter ([d9caf3c](https://github.com/jakewvincent/mkdnflow.nvim/commit/d9caf3c670cf9f1b5f2ff9588b44e888a49982da))
+
+
+### Bug Fixes
+
+* **build:** make docs-verify compare file contents instead of git state ([b0dc478](https://github.com/jakewvincent/mkdnflow.nvim/commit/b0dc478b269ae3a6c05886b30ceb466efb379c19))
+* **compat:** update_parents migration now merges instead of clobbering ([0130c0a](https://github.com/jakewvincent/mkdnflow.nvim/commit/0130c0ac9d8dcfc24b0d04d842c155569eff8b23))
+* **links:** open non-notebook files with system viewer ([#188](https://github.com/jakewvincent/mkdnflow.nvim/issues/188)) ([08085a3](https://github.com/jakewvincent/mkdnflow.nvim/commit/08085a3a837c76916264b9e0dfe1f1cd5ae89d47))
+
 ## [2.13.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.12.0...v2.13.0) (2026-02-11)
 
 
