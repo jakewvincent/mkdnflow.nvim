@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.15.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.14.0...v2.15.0) (2026-02-13)
+
+
+### Features
+
+* **to_do:** convert plain text lines to to-do items with &lt;C-Space&gt; ([07546b8](https://github.com/jakewvincent/mkdnflow.nvim/commit/07546b8db20de5bbd5e1655750fcc1c0f6564b3b)), closes [#299](https://github.com/jakewvincent/mkdnflow.nvim/issues/299)
+
+
+### Bug Fixes
+
+* restore Neovim 0.9.5 compatibility for vim.keycode and vim.health ([bafc201](https://github.com/jakewvincent/mkdnflow.nvim/commit/bafc201ac96a7c4f17d3adb5842c376aa2dda312))
+
 ## [2.14.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.13.0...v2.14.0) (2026-02-13)
 
 
