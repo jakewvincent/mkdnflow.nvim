@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.16.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.15.0...v2.16.0) (2026-02-14)
+
+
+### Features
+
+* add config validation at setup time and in :checkhealth ([37a9cf6](https://github.com/jakewvincent/mkdnflow.nvim/commit/37a9cf6329b302a7879748bc562d22638b726637)), closes [#230](https://github.com/jakewvincent/mkdnflow.nvim/issues/230)
+* **cursor:** use detection-based jumping for toNextLink/toPrevLink ([ba052f6](https://github.com/jakewvincent/mkdnflow.nvim/commit/ba052f64b8dd31a8d52b101ee9c9a2d4b9a06d28)), closes [#111](https://github.com/jakewvincent/mkdnflow.nvim/issues/111)
+* **links:** add footnote renumbering and refresh commands ([f2aced0](https://github.com/jakewvincent/mkdnflow.nvim/commit/f2aced0635d0c5174fc0afaf9683418c4b786ef7)), closes [#111](https://github.com/jakewvincent/mkdnflow.nvim/issues/111)
+* **links:** add virtual text hints for reference links ([13de530](https://github.com/jakewvincent/mkdnflow.nvim/commit/13de5300b1b7ecbfb79bae57f34620908686f6cc)), closes [#208](https://github.com/jakewvincent/mkdnflow.nvim/issues/208)
+* **links:** smart footnote placement after word and trailing punctuation ([f1404fb](https://github.com/jakewvincent/mkdnflow.nvim/commit/f1404fbe71979fb70e9d2bfabaea5f9bbabe4e9a)), closes [#111](https://github.com/jakewvincent/mkdnflow.nvim/issues/111)
+* **links:** support multi-line (setext) footnote headings ([c1c0603](https://github.com/jakewvincent/mkdnflow.nvim/commit/c1c06035871b44b6e95f7cd2aebd1ab118649311)), closes [#111](https://github.com/jakewvincent/mkdnflow.nvim/issues/111)
+* **links:** support shortcut reference links, definition lines, and collapsed refs ([af2c215](https://github.com/jakewvincent/mkdnflow.nvim/commit/af2c215918e48bd051c230240e353b184f33d2c6)), closes [#208](https://github.com/jakewvincent/mkdnflow.nvim/issues/208)
+* **links:** use &lt;cWORD&gt; for link creation to capture paths and punctuated text ([e8c5918](https://github.com/jakewvincent/mkdnflow.nvim/commit/e8c591868508157fb5524d9e80be7d08172e4ddf)), closes [#206](https://github.com/jakewvincent/mkdnflow.nvim/issues/206)
+* **templates:** flatten placeholders config and add ctx fields ([e017177](https://github.com/jakewvincent/mkdnflow.nvim/commit/e017177e0cf73f01cda58144b5107e18fd801191)), closes [#300](https://github.com/jakewvincent/mkdnflow.nvim/issues/300) [#240](https://github.com/jakewvincent/mkdnflow.nvim/issues/240)
+* **templates:** support function placeholders with context table ([a80c8d3](https://github.com/jakewvincent/mkdnflow.nvim/commit/a80c8d31e11cfab5cb5f6384a919330f022f6c55)), closes [#300](https://github.com/jakewvincent/mkdnflow.nvim/issues/300) [#240](https://github.com/jakewvincent/mkdnflow.nvim/issues/240)
+* **to_do:** propagate parent status when new to-do item is added ([2a6c057](https://github.com/jakewvincent/mkdnflow.nvim/commit/2a6c057b7c2fe4bf3d1c36b32b2859c46a84bc34)), closes [#146](https://github.com/jakewvincent/mkdnflow.nvim/issues/146)
+
+
+### Bug Fixes
+
+* **docs:** preserve paragraph breaks in vimdoc config/command descriptions ([5096563](https://github.com/jakewvincent/mkdnflow.nvim/commit/5096563162da3abc56490fe405b9138802057727))
+
 ## [2.15.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.14.0...v2.15.0) (2026-02-13)
 
 
