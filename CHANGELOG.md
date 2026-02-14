@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.16.0...v2.16.1) (2026-02-14)
+
+
+### Bug Fixes
+
+* **cmp:** handle missing bib file in parse_bib ([fd1dc3a](https://github.com/jakewvincent/mkdnflow.nvim/commit/fd1dc3a7f50b67462ac08accc5da6c7a9ed3b52c)), closes [#203](https://github.com/jakewvincent/mkdnflow.nvim/issues/203)
+
 ## [2.16.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.15.0...v2.16.0) (2026-02-14)
 
 
