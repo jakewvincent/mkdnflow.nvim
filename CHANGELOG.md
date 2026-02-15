@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.18.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.17.0...v2.18.0) (2026-02-15)
+
+
+### Features
+
+* **commands:** add :Mkdnflow subcommand dispatcher ([fdc7dfb](https://github.com/jakewvincent/mkdnflow.nvim/commit/fdc7dfb22abd9724815672ed579d82fea0f4d3e9)), closes [#233](https://github.com/jakewvincent/mkdnflow.nvim/issues/233)
+* **links:** add per-call style override for link creation ([814a476](https://github.com/jakewvincent/mkdnflow.nvim/commit/814a4768d39efe414f165331e11494d63684cfa3)), closes [#264](https://github.com/jakewvincent/mkdnflow.nvim/issues/264)
+* **links:** add transform_scope option for directory-aware link creation ([#223](https://github.com/jakewvincent/mkdnflow.nvim/issues/223)) ([9d63637](https://github.com/jakewvincent/mkdnflow.nvim/commit/9d63637de542b1125dd71c8e5e6c490e4309d386))
+* **maps:** add on_attach callback and custom mappings docs ([#210](https://github.com/jakewvincent/mkdnflow.nvim/issues/210), [#232](https://github.com/jakewvincent/mkdnflow.nvim/issues/232)) ([47c98b2](https://github.com/jakewvincent/mkdnflow.nvim/commit/47c98b21a9f0420a7600b7139495ba6cb835b9ac))
+
+
+### Bug Fixes
+
+* **cmp:** use plugin path resolution for file completions ([2f84d79](https://github.com/jakewvincent/mkdnflow.nvim/commit/2f84d79f426f0762cd2385103db98b5802195eac)), closes [#197](https://github.com/jakewvincent/mkdnflow.nvim/issues/197)
+* **demos:** set LetterSpacing 0 in tapes and update deprecated config ([f879485](https://github.com/jakewvincent/mkdnflow.nvim/commit/f87948514263b9728d0b139cb8d3856d8c70d5fa))
+
 ## [2.17.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.16.1...v2.17.0) (2026-02-15)
 
 
