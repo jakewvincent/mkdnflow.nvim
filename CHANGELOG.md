@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.17.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.16.1...v2.17.0) (2026-02-15)
+
+
+### Features
+
+* **cursor:** yank file anchor links relative to resolution base ([5eef9da](https://github.com/jakewvincent/mkdnflow.nvim/commit/5eef9da276bd70562e7f1a7816347c272c67e06d)), closes [#201](https://github.com/jakewvincent/mkdnflow.nvim/issues/201)
+* **links:** add custom URI scheme handlers ([7a96480](https://github.com/jakewvincent/mkdnflow.nvim/commit/7a96480a9956678ef30fa740741055965f877265)), closes [#167](https://github.com/jakewvincent/mkdnflow.nvim/issues/167)
+
+
+### Bug Fixes
+
+* **links:** join multi-line link names with spaces on destroy ([#85](https://github.com/jakewvincent/mkdnflow.nvim/issues/85)) ([7e3d004](https://github.com/jakewvincent/mkdnflow.nvim/commit/7e3d0040d3f0f780718809210f0810ff2a8a7a17))
+* **links:** use correct config key for multi-line link detection ([#85](https://github.com/jakewvincent/mkdnflow.nvim/issues/85)) ([f93cafd](https://github.com/jakewvincent/mkdnflow.nvim/commit/f93cafd771a818744d33e615e1424e2b11c5cebb))
+
 ## [2.16.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.16.0...v2.16.1) (2026-02-14)
 
 
