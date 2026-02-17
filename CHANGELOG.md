@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.19.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.18.0...v2.19.0) (2026-02-17)
+
+
+### Features
+
+* **cmp:** add footnote completion on [^ trigger ([c0f97d0](https://github.com/jakewvincent/mkdnflow.nvim/commit/c0f97d07d1832e2e4526b20d6e8e45d32d9c2950)), closes [#307](https://github.com/jakewvincent/mkdnflow.nvim/issues/307)
+* **cmp:** add heading/anchor completions on ](# and [[# triggers ([eb335ef](https://github.com/jakewvincent/mkdnflow.nvim/commit/eb335ef73990bcbd6963f11e4cb414fa4da5e2fc)), closes [#307](https://github.com/jakewvincent/mkdnflow.nvim/issues/307)
+* **cmp:** async file scanning and bib reading in completion source ([2bc3669](https://github.com/jakewvincent/mkdnflow.nvim/commit/2bc3669f46d4f734ddba2b5bd45f307bdd93680d)), closes [#307](https://github.com/jakewvincent/mkdnflow.nvim/issues/307)
+* **cmp:** improve bib completion previews ([1443039](https://github.com/jakewvincent/mkdnflow.nvim/commit/144303905fe294ebf1545113611091d980818165)), closes [#307](https://github.com/jakewvincent/mkdnflow.nvim/issues/307)
+* **cmp:** offer undefined footnote refs at line-start [^ trigger ([954fdcd](https://github.com/jakewvincent/mkdnflow.nvim/commit/954fdcd354b75eddbc74d7e552b12f324e1b83c7)), closes [#307](https://github.com/jakewvincent/mkdnflow.nvim/issues/307)
+
 ## [2.18.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.17.0...v2.18.0) (2026-02-15)
 
 
