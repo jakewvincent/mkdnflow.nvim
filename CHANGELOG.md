@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.2](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.19.1...v2.19.2) (2026-02-17)
+
+
+### Bug Fixes
+
+* **folds:** delete stale folds before recreating to fix range drift ([1b364ed](https://github.com/jakewvincent/mkdnflow.nvim/commit/1b364edc8c5c54d05d815e76233d6a41bf70deae)), closes [#162](https://github.com/jakewvincent/mkdnflow.nvim/issues/162)
+
 ## [2.19.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.19.0...v2.19.1) (2026-02-17)
 
 
