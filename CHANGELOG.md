@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.19.0...v2.19.1) (2026-02-17)
+
+
+### Bug Fixes
+
+* **folds:** prevent duplicate folds from stacking on repeated toggle ([3735409](https://github.com/jakewvincent/mkdnflow.nvim/commit/3735409448addce4f957df03680e90ce58905e8c)), closes [#162](https://github.com/jakewvincent/mkdnflow.nvim/issues/162)
+
 ## [2.19.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.18.0...v2.19.0) (2026-02-17)
 
 
