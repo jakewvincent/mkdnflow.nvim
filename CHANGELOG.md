@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.20.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.19.2...v2.20.0) (2026-02-18)
+
+
+### Features
+
+* **links:** add edit_dirs option for directory link behavior ([b384cd3](https://github.com/jakewvincent/mkdnflow.nvim/commit/b384cd35097046d7513f0223abfc6c1821600f74))
+* **notebook:** add shared cross-file scanning primitives ([89c3a4e](https://github.com/jakewvincent/mkdnflow.nvim/commit/89c3a4ea0527fbfb54be34620934dfab6b2f58c6)), closes [#315](https://github.com/jakewvincent/mkdnflow.nvim/issues/315)
+* **to_do:** migrate statuses config from array to dict ([ba26d08](https://github.com/jakewvincent/mkdnflow.nvim/commit/ba26d08fc88e61dcaf8798454017327332fc6774)), closes [#207](https://github.com/jakewvincent/mkdnflow.nvim/issues/207)
+
+
+### Bug Fixes
+
+* **links:** preserve parentheses in markdown link paths ([#316](https://github.com/jakewvincent/mkdnflow.nvim/issues/316)) ([0acb9c4](https://github.com/jakewvincent/mkdnflow.nvim/commit/0acb9c4d7031dfdd0b8de696e8a60a0c8e0caaa9))
+
 ## [2.19.2](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.19.1...v2.19.2) (2026-02-17)
 
 
