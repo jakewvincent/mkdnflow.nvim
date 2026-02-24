@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.21.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.20.1...v2.21.0) (2026-02-24)
+
+
+### Features
+
+* **backlinks:** add backlinks panel with rich-line rendering ([c5eac02](https://github.com/jakewvincent/mkdnflow.nvim/commit/c5eac0208a0fbc0488b864c021843c35a8774e2d))
+* **panels:** add shared panel infrastructure for splits and floats ([7ff43ce](https://github.com/jakewvincent/mkdnflow.nvim/commit/7ff43ceeda557672c3270f160318b3962cbda15e))
+* **paths:** add dead link detection ([b61fdab](https://github.com/jakewvincent/mkdnflow.nvim/commit/b61fdab53a3d3c0ca63bf206270dd13392178785))
+* **paths:** add descriptive title to moveSource quickfix list ([efb7c90](https://github.com/jakewvincent/mkdnflow.nvim/commit/efb7c9095ae3295f27c196dab67666ddf83c9de9))
+* **paths:** guard moveSource against non-file link types ([2338c22](https://github.com/jakewvincent/mkdnflow.nvim/commit/2338c22c7a304a29b18e56ff6eed887359b87f47))
+* **paths:** notify user before opening reference review quickfix ([0fcfbe6](https://github.com/jakewvincent/mkdnflow.nvim/commit/0fcfbe6061fe18532ea4b2b63454568f8764d9df))
+* **paths:** scan notebook for stale links after MkdnMoveSource ([1687dc4](https://github.com/jakewvincent/mkdnflow.nvim/commit/1687dc4365170347dfdbb6886d853c9b9d38506f))
+
+
+### Bug Fixes
+
+* **notebook:** deduplicate symlinked files in scan results ([5af7aa1](https://github.com/jakewvincent/mkdnflow.nvim/commit/5af7aa110f001fdfdb33f076605ec40c9146eb5c))
+* **paths:** check basename in extension detection for relative paths ([bac2cd6](https://github.com/jakewvincent/mkdnflow.nvim/commit/bac2cd6ac235500d705772ad69220e4a9792a176))
+* **paths:** complete rename after creating goal directory ([ebd3323](https://github.com/jakewvincent/mkdnflow.nvim/commit/ebd3323c372df25a5184730cdbc6ded5e8fd87f6))
+* **paths:** compute correct relative paths for out-of-notebook files ([0945be2](https://github.com/jakewvincent/mkdnflow.nvim/commit/0945be21de08325883aa1ef7b65a79392a34f5f9))
+* **paths:** read from loaded buffers when scanning for references ([9b9ff07](https://github.com/jakewvincent/mkdnflow.nvim/commit/9b9ff072996e2ae31fb0115e2e04d1df802777d4))
+* **paths:** resolve parent-relative links from file directory ([814710b](https://github.com/jakewvincent/mkdnflow.nvim/commit/814710b1fff27ac67c627e0b9e4e084abd7c4ac4))
+* **paths:** update buffer name after moveSource renames file ([f1ed1cc](https://github.com/jakewvincent/mkdnflow.nvim/commit/f1ed1cc217c7a43e655b9d28c8651adae75979a7))
+* **paths:** use eol virtual text for quickfix keybinding legend ([cea532c](https://github.com/jakewvincent/mkdnflow.nvim/commit/cea532cd38299643e99ec8b043b19bd2763f59e7))
+* **setup:** allow re-initialization when setup() is called again ([d2971cd](https://github.com/jakewvincent/mkdnflow.nvim/commit/d2971cdd24b9736f5dfaec28ef8381b921ec9737))
+
 ## [2.20.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.20.0...v2.20.1) (2026-02-18)
 
 
