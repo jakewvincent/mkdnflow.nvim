@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.22.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.22.0...v2.22.1) (2026-02-25)
+
+
+### Bug Fixes
+
+* **validate:** allow 'current' as a valid path_resolution.primary value ([af7f645](https://github.com/jakewvincent/mkdnflow.nvim/commit/af7f645422a6bfd061f3e14cef38a9e5d1114c95)), closes [#331](https://github.com/jakewvincent/mkdnflow.nvim/issues/331)
+
 ## [2.22.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.21.1...v2.22.0) (2026-02-25)
 
 
