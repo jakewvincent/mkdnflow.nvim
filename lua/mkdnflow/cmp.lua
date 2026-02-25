@@ -703,6 +703,10 @@ function source:complete(params, callback)
     if not base or base == '' then
         base = vim.fn.getcwd()
     end
+    -- Normalize backslashes to forward slashes so that relative_to()'s
+    -- prefix comparison works on Windows, where root_dir / initial_dir
+    -- use native '\' but async_scan_dir joins paths with '/'.
+    base = base:gsub('\\', '/')
 
     local extensions = config.notebook_extensions or { md = true }
     local implicit_ext = config.links.implicit_extension
