@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.21.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.21.0...v2.21.1) (2026-02-25)
+
+
+### Bug Fixes
+
+* **tests:** ensure compatibility with Neovim 0.9.5 ([6598a00](https://github.com/jakewvincent/mkdnflow.nvim/commit/6598a0025f6e5c2b1a0c1b1fdb2ac1bdf4b1b27e))
+
 ## [2.21.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.20.1...v2.21.0) (2026-02-24)
 
 
