@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.22.0](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.21.1...v2.22.0) (2026-02-25)
+
+
+### Features
+
+* **to_do:** add create_on_toggle option to disable checkbox creation ([0174ac1](https://github.com/jakewvincent/mkdnflow.nvim/commit/0174ac191fa653b861901ab577ca75461493a6b8)), closes [#321](https://github.com/jakewvincent/mkdnflow.nvim/issues/321)
+* **to_do:** return boolean from toggle_to_do ([6be3f78](https://github.com/jakewvincent/mkdnflow.nvim/commit/6be3f78e4ccefc9c360781d9f458909c16d9d561))
+
 ## [2.21.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.21.0...v2.21.1) (2026-02-25)
 
 
