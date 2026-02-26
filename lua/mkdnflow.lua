@@ -583,10 +583,10 @@ local function activate()
                     vim.api.nvim_set_current_dir(init.initial_dir)
                 else
                     local bufname = vim.api.nvim_buf_get_name(0)
-                    if init.this_os:match('Windows') then
-                        vim.api.nvim_set_current_dir(bufname:match('(.*)\\.-$'))
-                    else
-                        vim.api.nvim_set_current_dir(bufname:match('(.*)/.-$'))
+                    local dir = init.this_os:match('Windows') and bufname:match('(.*)\\.-$')
+                        or bufname:match('(.*)/.-$')
+                    if dir then
+                        vim.api.nvim_set_current_dir(dir)
                     end
                 end
             end
@@ -602,10 +602,10 @@ local function activate()
             else
                 -- Set working directory
                 local bufname = vim.api.nvim_buf_get_name(0)
-                if init.this_os:match('Windows') then
-                    vim.api.nvim_set_current_dir(bufname:match('(.*)\\.-$'))
-                else
-                    vim.api.nvim_set_current_dir(bufname:match('(.*)/.-$'))
+                local dir = init.this_os:match('Windows') and bufname:match('(.*)\\.-$')
+                    or bufname:match('(.*)/.-$')
+                if dir then
+                    vim.api.nvim_set_current_dir(dir)
                 end
             end
         end
