@@ -23,9 +23,6 @@ function string.pascal(str)
     end):gsub('^%l', string.upper)
 end
 
---- Table to keep track of match IDs generated (for the purpose of clearing them later)
-local match_ids = {}
-
 --- Function to create highlight groups
 --- @param to_do_statuses table[] A table of to-do status tables (from the config)
 local function set_highlights(to_do_statuses)
@@ -47,13 +44,14 @@ local function set_highlights(to_do_statuses)
     end
 end
 
---- Clear all previously added to-do syntax matches
+--- Clear all previously added to-do syntax matches in the current window
 ---@private
 local function clear_syntax_matches()
-    for _, id in ipairs(match_ids) do
+    local ids = vim.w.mkdnflow_todo_match_ids or {}
+    for _, id in ipairs(ids) do
         vim.fn.matchdelete(id)
     end
-    match_ids = {}
+    vim.w.mkdnflow_todo_match_ids = nil
 end
 
 --- Apply syntax highlighting to to-do items based on their status
@@ -62,6 +60,7 @@ local function highlight_to_dos()
     local statuses = require('mkdnflow').config.to_do.statuses
     set_highlights(statuses)
     clear_syntax_matches()
+    local ids = {}
     for _, status in ipairs(statuses) do
         -- Marker highlighting
         local marker_pattern = string.format(
@@ -81,9 +80,10 @@ local function highlight_to_dos()
             content_pattern
         )
         -- Save the match IDs
-        table.insert(match_ids, marker_id)
-        table.insert(match_ids, content_id)
+        table.insert(ids, marker_id)
+        table.insert(ids, content_id)
     end
+    vim.w.mkdnflow_todo_match_ids = ids
 end
 
 local M = {}
