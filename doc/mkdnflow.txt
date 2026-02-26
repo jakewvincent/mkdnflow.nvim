@@ -281,7 +281,7 @@ the documentation for the configuration options below or in the help files.
             templates = true,
             to_do = true,
             yaml = false,
-            cmp = false,
+            completion = false,
         },
         create_dirs = true,
         silent = false,
@@ -651,13 +651,14 @@ modules.yaml                                    *Mkdnflow-config-modules-yaml*
 
     `false`: (default): Disable `yaml` module functionality.
 
-modules.cmp                                      *Mkdnflow-config-modules-cmp*
+modules.completion                        *Mkdnflow-config-modules-completion*
     Type: boolean
 
-    `true`: `cmp` module is enabled (required if you wish to enable completion
-    for `nvim-cmp`).
+    `true`: Completion module is enabled. Automatically registers with `nvim-
+    cmp` if installed; `blink.cmp` users should also set this to `true` (see
+    completion setup below).
 
-    `false`: (default): Disable `cmp` module functionality.
+    `false`: (default): Disable completion module functionality.
 
 modules.notebook                            *Mkdnflow-config-modules-notebook*
     Type: boolean
@@ -1953,26 +1954,58 @@ mappings.<command>                        *Mkdnflow-config-mappings-<command>*
 
 COMPLETION SETUP~
 
-To enable completion via `cmp` using the provided source, add `mkdnflow` as a
-source in your `cmp` setup function. You may also want to modify the
-formatting to see which completions are coming from Mkdnflow:
+Mkdnflow provides completion for file links, bib citations (`@`), footnotes
+(`^`), and heading anchors (`. Both nvim-cmp and blink.cmp are supported.
+
+#### nvim-cmp
+
+Set `modules.completion = true` in your mkdnflow config, then add `mkdnflow`
+as a source in your `cmp` setup:
 
 >
+    -- mkdnflow setup
+    require('mkdnflow').setup({
+        modules = { completion = true },
+    })
+    
+    -- nvim-cmp setup
     cmp.setup({
-        -- Add 'mkdnflow' as a completion source
         sources = cmp.config.sources({
             { name = 'mkdnflow' },
         }),
-        -- Completion source attribution
         formatting = {
             format = function(entry, vim_item)
                 vim_item.menu = ({
-                    -- Other attributions
                     mkdnflow = '[Mkdnflow]',
                 })[entry.source_name]
                 return vim_item
             end
         }
+    })
+<
+
+#### blink.cmp
+
+Set `modules.completion = true` in your mkdnflow config, then register the
+source in your blink.cmp setup:
+
+>
+    -- mkdnflow setup
+    require('mkdnflow').setup({
+        modules = { completion = true },
+    })
+    
+    -- blink.cmp setup
+    require('blink.cmp').setup({
+        sources = {
+            default = { 'lsp', 'mkdnflow' },
+            providers = {
+                mkdnflow = {
+                    name = 'Mkdnflow',
+                    module = 'mkdnflow.completion.blink',
+                },
+            },
+        },
     })
 <
 

@@ -446,17 +446,25 @@ function M.check()
     -- == Optional dependencies ==
     vim.health.start('mkdnflow: optional dependencies')
 
-    if modules and modules.cmp then
+    if modules and modules.completion then
         local cmp_ok, _ = pcall(require, 'cmp')
-        if cmp_ok then
-            vim.health.ok('nvim-cmp is available (cmp module enabled)')
+        local blink_ok, _ = pcall(require, 'blink.cmp')
+        if cmp_ok or blink_ok then
+            local engines = {}
+            if cmp_ok then
+                table.insert(engines, 'nvim-cmp')
+            end
+            if blink_ok then
+                table.insert(engines, 'blink.cmp')
+            end
+            vim.health.ok('Completion engine available: ' .. table.concat(engines, ', '))
         else
-            vim.health.warn('cmp module is enabled but nvim-cmp is not installed', {
-                'Install nvim-cmp or disable the cmp module',
+            vim.health.warn('Completion module is enabled but no engine found', {
+                'Install nvim-cmp or blink.cmp, or disable the completion module',
             })
         end
     else
-        vim.health.ok('nvim-cmp not required (cmp module disabled)')
+        vim.health.ok('Completion module disabled')
     end
 end
 

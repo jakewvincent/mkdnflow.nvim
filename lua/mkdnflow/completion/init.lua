@@ -14,12 +14,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local cmp = require('cmp')
 -- TODO: Use vim.uv directly when v0.9.5 support is dropped
 local uv = vim.uv or vim.loop
 
 --- Generation counter for cancelling stale async completion requests.
---- Incremented on each source:complete() call; the deferred callback bails
+--- Incremented on each complete() call; the deferred callback bails
 --- if its captured generation no longer matches.
 local generation = 0
 
@@ -28,6 +27,10 @@ local MAX_SCAN_DEPTH = 20
 --- Pattern matching footnote definition lines: `[^label]: ` with up to 3 leading spaces.
 --- Captures the label. Used by scan_footnote_defs() and scan_undefined_refs().
 local DEF_PAT = '^%s?%s?%s?%[%^(.-)%]:%s'
+
+--- LSP constants (replaces cmp.lsp.* references for engine-agnostic use)
+local CompletionItemKind = { File = 17, Reference = 18 }
+local MarkupKind = { Markdown = 'markdown' }
 
 --- Recursively scan a directory for files matching a predicate, asynchronously.
 ---
@@ -200,13 +203,13 @@ local function format_entry_type(entry_type)
     return labels[entry_type:lower()] or entry_type
 end
 
---- Parse bib entries from a string and build nvim-cmp completion items.
+--- Parse bib entries from a string and build completion items.
 --- Extracts rich metadata for the documentation preview: title, author, year,
 --- venue, entry type, and the link that would open on MkdnFollowLink (matching
 --- the priority in bib.core: file > url > doi > howpublished).
 ---@param bibentries string The raw contents of a .bib file
 ---@param bib_source? string Basename of the source .bib file (shown when multiple bib files)
----@return table[] items Array of nvim-cmp completion items
+---@return table[] items Array of completion items
 ---@private
 local function parse_bib_string(bibentries, bib_source)
     local items = {}
@@ -286,11 +289,11 @@ local function parse_bib_string(bibentries, bib_source)
         end
 
         item.documentation = {
-            kind = cmp.lsp.MarkupKind.Markdown,
+            kind = MarkupKind.Markdown,
             value = table.concat(doc, '\n'),
         }
         item.label = '@' .. bibentry:match('@%w+{(.-),')
-        item.kind = cmp.lsp.CompletionItemKind.Reference
+        item.kind = CompletionItemKind.Reference
         item.insertText = item.label
 
         table.insert(items, item)
@@ -301,7 +304,7 @@ end
 --- Scan the current buffer for footnote definitions and build completion items.
 --- Footnote definitions have the form `[^label]: content` with up to 3 leading spaces.
 --- Only the first line of each definition is used for the documentation preview.
----@return table[] items Array of nvim-cmp completion items
+---@return table[] items Array of completion items
 ---@private
 local function scan_footnote_defs()
     local items = {}
@@ -317,9 +320,8 @@ local function scan_footnote_defs()
                 label = '[^' .. label .. ']',
                 insertText = '^' .. label .. ']',
                 filterText = '^' .. label,
-                kind = cmp.lsp.CompletionItemKind.Reference,
-                documentation = content ~= ''
-                        and { kind = cmp.lsp.MarkupKind.Markdown, value = content }
+                kind = CompletionItemKind.Reference,
+                documentation = content ~= '' and { kind = MarkupKind.Markdown, value = content }
                     or nil,
             })
         end
@@ -332,7 +334,7 @@ end
 --- For each undefined reference, builds a completion item with the definition syntax
 --- (`[^label]: `) as insertText and a truncated preview of the line where the
 --- reference first appears.
----@return table[] items Array of nvim-cmp completion items
+---@return table[] items Array of completion items
 ---@private
 local function scan_undefined_refs()
     local items = {}
@@ -367,9 +369,9 @@ local function scan_undefined_refs()
                         label = '[^' .. label .. ']',
                         insertText = '^' .. label .. ']: ',
                         filterText = '^' .. label,
-                        kind = cmp.lsp.CompletionItemKind.Reference,
+                        kind = CompletionItemKind.Reference,
                         documentation = {
-                            kind = cmp.lsp.MarkupKind.Markdown,
+                            kind = MarkupKind.Markdown,
                             value = preview,
                         },
                     })
@@ -449,7 +451,7 @@ end
 ---@param compact boolean Whether wiki links use compact style (wiki only)
 ---@param title_insert_col? integer 0-indexed column to insert title (for additionalTextEdits)
 ---@param cursor_row_0? integer 0-indexed cursor row (for additionalTextEdits)
----@return table[] items Array of nvim-cmp completion items
+---@return table[] items Array of completion items
 ---@private
 local function build_heading_items(
     headings,
@@ -475,10 +477,10 @@ local function build_heading_items(
         local item = {
             label = h.display,
             filterText = '#' .. h.display,
-            kind = cmp.lsp.CompletionItemKind.Reference,
+            kind = CompletionItemKind.Reference,
             detail = 'H' .. h.level,
             documentation = {
-                kind = cmp.lsp.MarkupKind.Markdown,
+                kind = MarkupKind.Markdown,
                 value = table.concat(doc, '\n'),
             },
         }
@@ -525,7 +527,7 @@ end
 ---@param base string Base directory captured before async (for relative path computation)
 ---@param implicit_ext string|nil Implicit extension config value
 ---@param links_mod table The links module (for formatLink)
----@return table[] items Array of nvim-cmp completion items
+---@return table[] items Array of completion items
 ---@private
 local function build_items(file_paths, bib_results, bib_count, base, implicit_ext, links_mod)
     local items = {}
@@ -557,9 +559,8 @@ local function build_items(file_paths, bib_results, bib_count, base, implicit_ex
                 table.insert(items, {
                     label = label,
                     insertText = formatted[1],
-                    kind = cmp.lsp.CompletionItemKind.File,
-                    documentation = preview
-                            and { kind = cmp.lsp.MarkupKind.Markdown, value = preview }
+                    kind = CompletionItemKind.File,
+                    documentation = preview and { kind = MarkupKind.Markdown, value = preview }
                         or nil,
                 })
             end
@@ -581,32 +582,24 @@ local function build_items(file_paths, bib_results, bib_count, base, implicit_ex
     return items
 end
 
----@class MkdnflowCmpSource
-local source = {}
+local M = {}
 
---- Create a new completion source instance
----@return MkdnflowCmpSource
-source.new = function()
-    return setmetatable({}, { __index = source })
-end
-
---- Declare characters that should trigger completion.
+--- Trigger characters for completion engines.
 --- `^` triggers footnote `[^` completions; `#` triggers heading anchor `](#`
---- and `[[#` completions. The existing `@` trigger works without being declared
---- here; adding it could change offset semantics.
+--- and `[[#` completions.
+--- Note: '@' is intentionally omitted here. It works implicitly in nvim-cmp
+--- without declaration. The blink adapter adds '@' explicitly because blink
+--- only triggers on declared trigger characters for non-keyword chars.
 ---@return string[]
-function source:get_trigger_characters()
+M.get_trigger_characters = function()
     return { '^', '#' }
 end
 
---- Provide completion items when triggered by `@` (files + bib), `[^` (footnotes),
---- or `](#` / `[[#` (heading anchors).
---- File scanning and bib reading are performed asynchronously via vim.uv to
---- avoid blocking the editor. Footnote and heading scanning are synchronous (buffer-local).
----@param params table nvim-cmp completion parameters
----@param callback fun(items: table[]) Callback to return completion items
-function source:complete(params, callback)
-    local line = params.context.cursor_before_line
+--- Engine-agnostic completion entry point.
+---@param ctx {line_before_cursor: string, line_after_cursor: string, cursor_row_0: integer}
+---@param callback fun(items: table[])
+M.complete = function(ctx, callback)
+    local line = ctx.line_before_cursor
     if not line then
         callback({})
         return
@@ -627,7 +620,7 @@ function source:complete(params, callback)
     -- Markdown-style heading anchor trigger: ](#
     -- Matches ](#  but NOT ](filename#  (requires # immediately after open-paren)
     if line:match('%]%(#[^%)]*$') then
-        local after = (params.context.cursor_after_line or '')
+        local after = ctx.line_after_cursor or ''
         local has_closing = after:match('^%)') ~= nil
         local title = line:match('%[(.-)%]%(#[^%)]*$')
         local has_title = title ~= nil and title ~= ''
@@ -636,7 +629,7 @@ function source:complete(params, callback)
         -- For the no-title case, compute where to insert the display text
         local title_insert_col, cursor_row_0
         if not has_title then
-            cursor_row_0 = params.context.cursor.line
+            cursor_row_0 = ctx.cursor_row_0
             -- Find the position of [ before ]( — the title goes right after [
             local bracket_pos = line:find('%[%]%(#[^%)]*$')
             if bracket_pos then
@@ -663,7 +656,7 @@ function source:complete(params, callback)
     -- Wiki-style heading anchor trigger: [[#
     -- Matches [[#  but NOT [[filename#  (requires # immediately after [[)
     if line:match('%[%[#[^%]|]*$') then
-        local after = (params.context.cursor_after_line or '')
+        local after = ctx.line_after_cursor or ''
         local has_closing = after:match('^%]%]') ~= nil
         local compact = require('mkdnflow').config.links.compact or false
         local headings = scan_headings()
@@ -763,11 +756,16 @@ function source:complete(params, callback)
     end
 end
 
-local M = {}
-
---- Initialize cmp module: register as a completion source
+--- Module init: attempt to register with nvim-cmp if available.
+--- Called by load_module() when modules.completion is enabled.
+--- If nvim-cmp is not installed, this silently does nothing — blink.cmp
+--- users don't need nvim-cmp, and blink loads its adapter directly.
 M.init = function()
-    cmp.register_source('mkdnflow', source.new())
+    local ok, cmp = pcall(require, 'cmp')
+    if ok then
+        local source = require('mkdnflow.completion.cmp')
+        cmp.register_source('mkdnflow', source.new())
+    end
 end
 
 return M

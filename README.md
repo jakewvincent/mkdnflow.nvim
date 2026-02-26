@@ -253,7 +253,7 @@ the help files.
         templates = true,
         to_do = true,
         yaml = false,
-        cmp = false,
+        completion = false,
     },
     create_dirs = true,
     silent = false,
@@ -523,7 +523,7 @@ require('mkdnflow').setup({
 | `modules.tables` | `boolean` | **`true`** (default): `tables` module is enabled (required for table management, navigation, formatting, etc.).<br>`false`: Disable `tables` module functionality. |
 | `modules.templates` | `boolean` | **`true`** (default): `templates` module is enabled (required for new-file template formatting and injection when following links to non-existent files).<br>`false`: Disable `templates` module functionality. Template injection will be skipped even if `new_file_template.enabled` is `true`. |
 | `modules.yaml` | `boolean` | `true`: `yaml` module is enabled (required for parsing yaml headers).<br>**`false`** (default): Disable `yaml` module functionality. |
-| `modules.cmp` | `boolean` | `true`: `cmp` module is enabled (required if you wish to enable completion for `nvim-cmp`).<br>**`false`** (default): Disable `cmp` module functionality. |
+| `modules.completion` | `boolean` | `true`: Completion module is enabled. Automatically registers with `nvim-cmp` if installed; `blink.cmp` users should also set this to `true` (see completion setup below).<br>**`false`** (default): Disable completion module functionality. |
 | `modules.notebook` | `boolean` | **`true`** (default): `notebook` module is enabled. Provides shared cross-file primitives for scanning notebook files, headings, and links. This module has zero cost at load time (no autocommands, keymaps, or side effects) and serves as infrastructure for other features.<br>`false`: Disable `notebook` module functionality. |
 | `modules.backlinks` | `boolean` | **`true`** (default): `backlinks` module is enabled. Provides a side panel showing all files in the notebook that link to the current file. Requires the `notebook` module.<br>`false`: Disable `backlinks` module functionality. |
 
@@ -1034,26 +1034,59 @@ See descriptions of commands and mappings below.
 
 #### 🔮 Completion setup
 
-To enable completion via `cmp` using the provided source, add `mkdnflow` as a
-source in your `cmp` setup function. You may also want to modify the formatting
-to see which completions are coming from Mkdnflow:
+Mkdnflow provides completion for file links, bib citations (`@`), footnotes
+(`[^`), and heading anchors (`](#` / `[[#`). Both **nvim-cmp** and **blink.cmp**
+are supported.
+
+#### nvim-cmp
+
+Set `modules.completion = true` in your mkdnflow config, then add `mkdnflow`
+as a source in your `cmp` setup:
 
 ```lua
+-- mkdnflow setup
+require('mkdnflow').setup({
+    modules = { completion = true },
+})
+
+-- nvim-cmp setup
 cmp.setup({
-    -- Add 'mkdnflow' as a completion source
     sources = cmp.config.sources({
         { name = 'mkdnflow' },
     }),
-    -- Completion source attribution
     formatting = {
         format = function(entry, vim_item)
             vim_item.menu = ({
-                -- Other attributions
                 mkdnflow = '[Mkdnflow]',
             })[entry.source_name]
             return vim_item
         end
     }
+})
+```
+
+#### blink.cmp
+
+Set `modules.completion = true` in your mkdnflow config, then register the
+source in your blink.cmp setup:
+
+```lua
+-- mkdnflow setup
+require('mkdnflow').setup({
+    modules = { completion = true },
+})
+
+-- blink.cmp setup
+require('blink.cmp').setup({
+    sources = {
+        default = { 'lsp', 'mkdnflow' },
+        providers = {
+            mkdnflow = {
+                name = 'Mkdnflow',
+                module = 'mkdnflow.completion.blink',
+            },
+        },
+    },
 })
 ```
 

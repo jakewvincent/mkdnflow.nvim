@@ -820,27 +820,62 @@ sections:
             content:
               - type: prose
                 text: |
-                  To enable completion via `cmp` using the provided source, add `mkdnflow` as a
-                  source in your `cmp` setup function. You may also want to modify the formatting
-                  to see which completions are coming from Mkdnflow:
+                  Mkdnflow provides completion for file links, bib citations (`@`), footnotes
+                  (`[^`), and heading anchors (`](#` / `[[#`). Both **nvim-cmp** and **blink.cmp**
+                  are supported.
+              - type: prose
+                text: |
+                  #### nvim-cmp
+
+                  Set `modules.completion = true` in your mkdnflow config, then add `mkdnflow`
+                  as a source in your `cmp` setup:
               - type: code
                 language: lua
                 code: |
+                  -- mkdnflow setup
+                  require('mkdnflow').setup({
+                      modules = { completion = true },
+                  })
+
+                  -- nvim-cmp setup
                   cmp.setup({
-                      -- Add 'mkdnflow' as a completion source
                       sources = cmp.config.sources({
                           { name = 'mkdnflow' },
                       }),
-                      -- Completion source attribution
                       formatting = {
                           format = function(entry, vim_item)
                               vim_item.menu = ({
-                                  -- Other attributions
                                   mkdnflow = '[Mkdnflow]',
                               })[entry.source_name]
                               return vim_item
                           end
                       }
+                  })
+              - type: prose
+                text: |
+                  #### blink.cmp
+
+                  Set `modules.completion = true` in your mkdnflow config, then register the
+                  source in your blink.cmp setup:
+              - type: code
+                language: lua
+                code: |
+                  -- mkdnflow setup
+                  require('mkdnflow').setup({
+                      modules = { completion = true },
+                  })
+
+                  -- blink.cmp setup
+                  require('blink.cmp').setup({
+                      sources = {
+                          default = { 'lsp', 'mkdnflow' },
+                          providers = {
+                              mkdnflow = {
+                                  name = 'Mkdnflow',
+                                  module = 'mkdnflow.completion.blink',
+                              },
+                          },
+                      },
                   })
               - type: admonition
                 kind: warning

@@ -35,7 +35,7 @@ local default_config = {
         templates = true,
         to_do = true,
         yaml = false,
-        cmp = false,
+        completion = false,
         notebook = true,
         backlinks = true,
     },
@@ -629,7 +629,7 @@ local function activate()
     init.tables = load_module('tables', init.config.modules.tables)
     init.templates = load_module('templates', init.config.modules.templates)
     init.yaml = load_module('yaml', init.config.modules.yaml)
-    init.cmp = load_module('cmp', init.config.modules.cmp)
+    init.completion = load_module('completion', init.config.modules.completion)
     init.notebook = load_module('notebook', init.config.modules.notebook)
     init.backlinks = load_module('backlinks', init.config.modules.backlinks)
     init.to_do = load_module('to_do', init.config.modules.to_do)

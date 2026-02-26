@@ -102,7 +102,7 @@ T['get_files_items'] = new_set()
 
 T['get_files_items']['includes subdirectory in link path'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false },
         silent = true,
     }]])
@@ -115,7 +115,7 @@ end
 
 T['get_files_items']['root-level file has no directory prefix'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false },
         silent = true,
     }]])
@@ -127,7 +127,7 @@ end
 
 T['get_files_items']['does not apply transform_on_create to existing files'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = {
             transform_on_create = function(text)
                 return 'TRANSFORMED_' .. text
@@ -144,7 +144,7 @@ end
 
 T['get_files_items']['finds files in all subdirectories'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false },
         silent = true,
     }]])
@@ -163,7 +163,7 @@ T['notebook_extensions'] = new_set()
 
 T['notebook_extensions']['includes rmd files by default'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false },
         silent = true,
     }]])
@@ -175,7 +175,7 @@ end
 
 T['notebook_extensions']['excludes non-notebook files'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false },
         silent = true,
     }]])
@@ -189,7 +189,7 @@ end
 
 T['notebook_extensions']['excludes rmd when disabled'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         filetypes = { markdown = true, rmd = false },
         links = { transform_on_create = false },
         silent = true,
@@ -206,7 +206,7 @@ T['implicit_extension'] = new_set()
 
 T['implicit_extension']['strips extension when implicit_extension is set'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false, implicit_extension = 'md' },
         silent = true,
     }]])
@@ -219,7 +219,7 @@ end
 
 T['implicit_extension']['strips extension from subdirectory paths'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false, implicit_extension = 'md' },
         silent = true,
     }]])
@@ -231,7 +231,7 @@ end
 
 T['implicit_extension']['keeps extension when implicit_extension is nil'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false, implicit_extension = nil },
         silent = true,
     }]])
@@ -248,7 +248,7 @@ T['link_style'] = new_set()
 
 T['link_style']['uses markdown style by default'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false },
         silent = true,
     }]])
@@ -260,7 +260,7 @@ end
 
 T['link_style']['uses wiki style when configured'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { style = 'wiki', transform_on_create = false },
         silent = true,
     }]])
@@ -272,7 +272,7 @@ end
 
 T['link_style']['wiki style includes subdirectory path'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { style = 'wiki', transform_on_create = false },
         silent = true,
     }]])
@@ -284,7 +284,7 @@ end
 
 T['link_style']['compact wiki style omits path'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { style = 'wiki', compact = true, transform_on_create = false },
         silent = true,
     }]])
@@ -302,7 +302,7 @@ T['base_directory'] = new_set()
 T['base_directory']['falls back to initial_dir with default config'] = function()
     -- Default path_resolution.primary is 'first', so it should use initial_dir
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false },
         silent = true,
     }]])
@@ -332,7 +332,7 @@ T['base_directory']['returns empty when scanning empty directory'] = function()
         vim.api.nvim_buf_set_name(0, _G._empty_dir .. '/test.md')
         vim.bo.filetype = 'markdown'
         require('mkdnflow').setup({
-            modules = { cmp = true },
+            modules = { completion = true },
             links = { transform_on_create = false },
             silent = true,
         })
@@ -359,7 +359,7 @@ T['documentation'] = new_set()
 
 T['documentation']['includes file preview in documentation'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false },
         silent = true,
     }]])
@@ -379,7 +379,7 @@ T['trigger'] = new_set()
 
 T['trigger']['returns empty without @ trigger'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { transform_on_create = false },
         silent = true,
     }]])
@@ -423,7 +423,7 @@ T['parse_bib'] = new_set({
 T['parse_bib']['nonexistent bib path does not error'] = function()
     child.lua([[
         require('mkdnflow').setup({
-            modules = { bib = true, cmp = true },
+            modules = { bib = true, completion = true },
             bib = {
                 default_path = '/tmp/nonexistent_' .. vim.fn.getpid() .. '.bib',
                 find_in_root = false,
@@ -449,7 +449,7 @@ end
 -- =============================================================================
 T['integration'] = new_set()
 
-T['integration']['cmp module can be enabled'] = function()
+T['integration']['completion module can be enabled'] = function()
     child.restart({ '-u', 'scripts/minimal_init.lua' })
     child.lua([[
         _success = pcall(function()
@@ -463,7 +463,7 @@ T['integration']['cmp module can be enabled'] = function()
             vim.api.nvim_buf_set_name(0, 'test.md')
             vim.bo.filetype = 'markdown'
             require('mkdnflow').setup({
-                modules = { cmp = true },
+                modules = { completion = true },
                 silent = true,
             })
         end)
@@ -471,15 +471,15 @@ T['integration']['cmp module can be enabled'] = function()
     eq(child.lua_get('_success'), true)
 end
 
-T['integration']['cmp module disabled by default'] = function()
+T['integration']['completion module disabled by default'] = function()
     child.restart({ '-u', 'scripts/minimal_init.lua' })
     child.lua([[
         vim.api.nvim_buf_set_name(0, 'test.md')
         vim.bo.filetype = 'markdown'
         require('mkdnflow').setup({ silent = true })
     ]])
-    local cmp_enabled = child.lua_get('require("mkdnflow").config.modules.cmp')
-    eq(cmp_enabled, false)
+    local enabled = child.lua_get('require("mkdnflow").config.modules.completion')
+    eq(enabled, false)
 end
 
 -- =============================================================================
@@ -510,7 +510,7 @@ T['footnote_completion'] = new_set({
     hooks = {
         pre_case = function()
             setup_cmp_child([[{
-                modules = { cmp = true },
+                modules = { completion = true },
                 silent = true,
             }]])
         end,
@@ -590,7 +590,7 @@ end
 
 T['footnote_completion']['@ trigger does not return footnote items'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         silent = true,
     }]])
     child.lua([[
@@ -645,7 +645,7 @@ T['footnote_undefined'] = new_set({
     hooks = {
         pre_case = function()
             setup_cmp_child([[{
-                modules = { cmp = true },
+                modules = { completion = true },
                 silent = true,
             }]])
         end,
@@ -782,7 +782,7 @@ T['heading_completion'] = new_set({
     hooks = {
         pre_case = function()
             setup_cmp_child([[{
-                modules = { cmp = true },
+                modules = { completion = true },
                 silent = true,
             }]])
         end,
@@ -948,7 +948,7 @@ end
 
 T['heading_completion']['wiki-style compact'] = function()
     setup_cmp_child([[{
-        modules = { cmp = true },
+        modules = { completion = true },
         links = { style = 'wiki', compact = true },
         silent = true,
     }]])

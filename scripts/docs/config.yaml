@@ -80,11 +80,11 @@ modules:
       `true`: `yaml` module is enabled (required for parsing yaml headers).
       **`false`** (default): Disable `yaml` module functionality.
 
-  - name: modules.cmp
+  - name: modules.completion
     type: boolean
     description: |
-      `true`: `cmp` module is enabled (required if you wish to enable completion for `nvim-cmp`).
-      **`false`** (default): Disable `cmp` module functionality.
+      `true`: Completion module is enabled. Automatically registers with `nvim-cmp` if installed; `blink.cmp` users should also set this to `true` (see completion setup below).
+      **`false`** (default): Disable completion module functionality.
 
   - name: modules.notebook
     type: boolean

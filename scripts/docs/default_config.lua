@@ -14,7 +14,7 @@
         templates = true,
         to_do = true,
         yaml = false,
-        cmp = false,
+        completion = false,
     },
     create_dirs = true,
     silent = false,

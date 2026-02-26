@@ -75,6 +75,8 @@ M.deprecations = {
         path = { 'new_file_template', 'placeholders', 'after' },
         new_path = { 'new_file_template', 'placeholders' },
     },
+    -- modules
+    { path = { 'modules', 'cmp' }, new_path = { 'modules', 'completion' } },
     -- mappings
     { path = { 'mappings', 'MkdnCR' }, new_path = { 'mappings', 'MkdnEnter' } },
 }
@@ -565,16 +567,19 @@ M.userConfigCheck = function(user_config)
         end
 
         --
-        local cmp, _ = pcall(require, 'cmp')
-        if user_config.modules and user_config.modules.cmp and not cmp then
-            vim.notify(
-                "⬇️  cmp module is enabled, but require('cmp') failed.",
-                vim.log.levels.WARN,
-                {
-                    title = 'mkdnflow.nvim',
-                }
+    end
+
+    -- COMPAT(added=v2.23, remove=v3.0): modules.cmp → modules.completion
+    if user_config.modules and user_config.modules.cmp ~= nil then
+        if user_config.modules.completion == nil then
+            user_config.modules.completion = user_config.modules.cmp
+        end
+        user_config.modules.cmp = nil
+        if not user_config.silent then
+            warn(
+                "⬇️  'modules.cmp' is deprecated. Use 'modules.completion' instead. "
+                    .. 'See :h mkdnflow-configuration.'
             )
-            user_config.cmp = false
         end
     end
     return user_config
