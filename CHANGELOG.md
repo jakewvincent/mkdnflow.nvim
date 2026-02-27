@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.22.2](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.22.1...v2.22.2) (2026-02-27)
+
+
+### Bug Fixes
+
+* **paths:** guard against nil dir when activating on non-file buffers ([60bdca9](https://github.com/jakewvincent/mkdnflow.nvim/commit/60bdca9aca4917eaf023ede2c29aac1a8318cee6))
+* **to_do:** make match ID tracking window-local ([bc5fc64](https://github.com/jakewvincent/mkdnflow.nvim/commit/bc5fc64acf7cc913610ef6b2dd5f91f35a41a892))
+
 ## [2.22.1](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.22.0...v2.22.1) (2026-02-25)
 
 
