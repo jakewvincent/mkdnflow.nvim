@@ -117,9 +117,9 @@ path_resolution:
   - name: path_resolution.fallback
     type: string
     description: |
-      `'first'`: (see above)
-      **`'current'`** (default): (see above)
-      `'root'`: (see above)
+      `'first'`: Links will be resolved relative to the first-opened file.
+      **`'current'`** (default): Links will be resolved relative to the current file.
+      The fallback strategy is used when the primary strategy cannot resolve a path (e.g. when `primary` is `'root'` but no root marker is found). Since `'root'` cannot fall back to itself, only `'first'` and `'current'` are valid here.
 
   - name: path_resolution.root_marker
     type: string | boolean

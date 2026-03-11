@@ -733,11 +733,15 @@ path_resolution.primary              *Mkdnflow-config-path-resolution-primary*
 path_resolution.fallback            *Mkdnflow-config-path-resolution-fallback*
     Type: string
 
-    `'first'`: (see above)
+    `'first'`: Links will be resolved relative to the first-opened file.
 
-    `'current'`: (default): (see above)
+    `'current'`: (default): Links will be resolved relative to the current
+    file.
 
-    `'root'`: (see above)
+    The fallback strategy is used when the primary strategy cannot resolve a
+    path (e.g. when `primary` is `'root'` but no root marker is found). Since
+    `'root'` cannot fall back to itself, only `'first'` and `'current'` are
+    valid here.
 
 path_resolution.root_marker      *Mkdnflow-config-path-resolution-root-marker*
     Type: string` | `boolean
