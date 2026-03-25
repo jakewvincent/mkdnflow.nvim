@@ -25,17 +25,6 @@ local function can_create_manual_folds()
     return foldmethod == 'manual' or foldmethod == 'marker'
 end
 
---- Get the heading level of a markdown line
----@param line? string The line text to check
----@return integer level The heading level (1-6), or 99 if not a heading
-M.getHeadingLevel = function(line)
-    local level
-    if line then
-        level = line:match('^%s-(#+)')
-    end
-    return (level and string.len(level)) or 99
-end
-
 --- Get the row range of a markdown section (from heading to next same-or-higher-level heading)
 ---@param start_row? integer The 1-indexed row of the heading (defaults to cursor row)
 ---@return integer[]|nil range A two-element array {start_row, end_row}, or nil if not on a heading
@@ -45,7 +34,7 @@ local get_section_range = function(start_row)
     local line, n_lines =
         vim.api.nvim_buf_get_lines(0, start_row - 1, start_row, false)[1],
         vim.api.nvim_buf_line_count(0)
-    local heading_level = M.getHeadingLevel(line)
+    local heading_level = utils.getHeadingLevel(line)
     if heading_level > 0 then
         local continue, in_fenced_code_block = true, utils.cursorInCodeBlock(start_row)
         local end_row = start_row + 1

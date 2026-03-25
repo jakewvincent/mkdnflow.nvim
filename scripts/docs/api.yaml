@@ -267,6 +267,15 @@ cursormovement:
     example: |
       require('mkdnflow').cursor.goTo("%[.*%](.*)", false) -- Go to next markdown link
 
+  - signature: "require('mkdnflow').cursor.goToSame(reverse)"
+    description: Moves the cursor to the next or previous heading of the same level.
+    params:
+      - name: reverse
+        type: boolean
+        description: If true, search backward.
+    example: |
+      require('mkdnflow').cursor.goTo(false) -- Go to next heading of the same level
+
   - signature: "require('mkdnflow').cursor.toNextLink()"
     description: Moves the cursor to the next link in the file.
 

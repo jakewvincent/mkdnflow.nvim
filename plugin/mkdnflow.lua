@@ -254,6 +254,12 @@ if vim.fn.exists('g:loaded_mkdnflow') == 0 then
             cursor.toHeading(nil, {})
         end
     end, {})
+    user_command('MkdnNextHeadingSame', function(opts)
+        mkdnflow.cursor.goToSame(false)
+    end, {})
+    user_command('MkdnPrevHeadingSame', function(opts)
+        mkdnflow.cursor.goToSame(true)
+    end, {})
     user_command('MkdnIncreaseHeading', function(opts)
         local cursor = require_module('cursor')
         if cursor then

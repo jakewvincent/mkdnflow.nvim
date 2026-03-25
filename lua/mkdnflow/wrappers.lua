@@ -138,7 +138,7 @@ M.followOrCreateLinksOrToggleFolds = function(args)
             config.modules.folds
             and not on_fold
             and not in_fenced_code_block
-            and require('mkdnflow').folds.getHeadingLevel(line) < 99
+            and utils.getHeadingLevel(line) < 99
         then
             require('mkdnflow').folds.foldSection()
         elseif config.modules.folds and on_fold then

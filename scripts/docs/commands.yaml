@@ -28,6 +28,16 @@ commands:
     description: |
       Move the cursor to the beginning of the previous heading (if there is one).
 
+  - name: MkdnNextHeadingSame
+    default_mapping: "{ 'n', '][' }"
+    description: |
+      Moves the cursor to the next heading of the same level (if there is one).
+
+  - name: MkdnPrevHeadingSame
+    default_mapping: "{ 'n', '[]' }"
+    description: |
+      Moves the cursor to the previous heading of the same level (if there is one).
+
   - name: MkdnGoBack
     default_mapping: "{ 'n', '<BS>' }"
     description: |
