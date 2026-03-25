@@ -46,7 +46,7 @@ local get_section_range = function(start_row)
                     in_fenced_code_block = not in_fenced_code_block
                 end
                 if
-                    M.getHeadingLevel(next_line[1]) <= heading_level and not in_fenced_code_block
+                    utils.getHeadingLevel(next_line[1]) <= heading_level and not in_fenced_code_block
                 then
                     continue = false
                 else
@@ -74,7 +74,7 @@ local get_nearest_heading = function()
             -- Flip the truth value
             in_fenced_code_block = not in_fenced_code_block
         end
-        if M.getHeadingLevel(prev_line) < 99 and not in_fenced_code_block then
+        if utils.getHeadingLevel(prev_line) < 99 and not in_fenced_code_block then
             continue = false
             return row
         else
@@ -107,7 +107,7 @@ M.foldSection = function()
     local line = vim.api.nvim_get_current_line()
     local in_fenced_code_block = utils.cursorInCodeBlock(row)
     local range
-    if M.getHeadingLevel(line) < 99 and not in_fenced_code_block then
+    if utils.getHeadingLevel(line) < 99 and not in_fenced_code_block then
         range = get_section_range()
     else
         local start_row = get_nearest_heading()

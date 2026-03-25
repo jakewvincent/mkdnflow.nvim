@@ -45,48 +45,48 @@ local T = new_set({
 T['getHeadingLevel'] = new_set()
 
 T['getHeadingLevel']['returns 1 for H1'] = function()
-    local result = child.lua_get([[require('mkdnflow.folds').getHeadingLevel('# Heading')]])
+    local result = child.lua_get([[require('mkdnflow.utils').getHeadingLevel('# Heading')]])
     eq(result, 1)
 end
 
 T['getHeadingLevel']['returns 2 for H2'] = function()
-    local result = child.lua_get([[require('mkdnflow.folds').getHeadingLevel('## Heading')]])
+    local result = child.lua_get([[require('mkdnflow.utils').getHeadingLevel('## Heading')]])
     eq(result, 2)
 end
 
 T['getHeadingLevel']['returns 3 for H3'] = function()
-    local result = child.lua_get([[require('mkdnflow.folds').getHeadingLevel('### Heading')]])
+    local result = child.lua_get([[require('mkdnflow.utils').getHeadingLevel('### Heading')]])
     eq(result, 3)
 end
 
 T['getHeadingLevel']['returns 6 for H6'] = function()
-    local result = child.lua_get([[require('mkdnflow.folds').getHeadingLevel('###### Heading')]])
+    local result = child.lua_get([[require('mkdnflow.utils').getHeadingLevel('###### Heading')]])
     eq(result, 6)
 end
 
 T['getHeadingLevel']['returns 99 for non-heading'] = function()
-    local result = child.lua_get([[require('mkdnflow.folds').getHeadingLevel('Regular text')]])
+    local result = child.lua_get([[require('mkdnflow.utils').getHeadingLevel('Regular text')]])
     eq(result, 99)
 end
 
 T['getHeadingLevel']['returns 99 for empty string'] = function()
-    local result = child.lua_get([[require('mkdnflow.folds').getHeadingLevel('')]])
+    local result = child.lua_get([[require('mkdnflow.utils').getHeadingLevel('')]])
     eq(result, 99)
 end
 
 T['getHeadingLevel']['returns 99 for nil'] = function()
-    local result = child.lua_get([[require('mkdnflow.folds').getHeadingLevel(nil)]])
+    local result = child.lua_get([[require('mkdnflow.utils').getHeadingLevel(nil)]])
     eq(result, 99)
 end
 
 T['getHeadingLevel']['handles leading whitespace'] = function()
-    local result = child.lua_get([[require('mkdnflow.folds').getHeadingLevel('  ## Heading')]])
+    local result = child.lua_get([[require('mkdnflow.utils').getHeadingLevel('  ## Heading')]])
     eq(result, 2)
 end
 
 T['getHeadingLevel']['handles hash without space'] = function()
     -- This might be treated as a heading depending on implementation
-    local result = child.lua_get([[require('mkdnflow.folds').getHeadingLevel('#NoSpace')]])
+    local result = child.lua_get([[require('mkdnflow.utils').getHeadingLevel('#NoSpace')]])
     -- Check if it's recognized as heading level 1 or not
     eq(result, 1) -- Actually it matches the pattern
 end
@@ -94,7 +94,7 @@ end
 T['getHeadingLevel']['handles multiple hashes in text'] = function()
     -- Pattern matches leading hashes only
     local result =
-        child.lua_get([[require('mkdnflow.folds').getHeadingLevel('# Heading ## with hashes')]])
+        child.lua_get([[require('mkdnflow.utils').getHeadingLevel('# Heading ## with hashes')]])
     eq(result, 1)
 end
 

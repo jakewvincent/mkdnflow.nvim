@@ -29,7 +29,6 @@ local M = {}
 ---@return string heading_text The heading text (without # prefix), or '' if none found
 ---@private
 local function get_heading_context()
-    local folds = require('mkdnflow.folds')
     local utils = require('mkdnflow.utils')
     local row = vim.api.nvim_win_get_cursor(0)[1]
     local in_fenced_code_block = utils.cursorInCodeBlock(row)
@@ -39,7 +38,7 @@ local function get_heading_context()
         if line:find('^```') then
             in_fenced_code_block = not in_fenced_code_block
         end
-        if folds.getHeadingLevel(line) < 99 and not in_fenced_code_block then
+        if utils.getHeadingLevel(line) < 99 and not in_fenced_code_block then
             return line:match('^%s*#+%s*(.*)') or ''
         end
         row = row - 1

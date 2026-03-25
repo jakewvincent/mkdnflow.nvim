@@ -78,6 +78,8 @@ local groups = {
         { action = 'prev-link', cmd = 'MkdnPrevLink', desc = 'Jump to previous link' },
         { action = 'next-heading', cmd = 'MkdnNextHeading', desc = 'Jump to next heading' },
         { action = 'prev-heading', cmd = 'MkdnPrevHeading', desc = 'Jump to previous heading' },
+        { action = 'next-heading-same', cmd = 'MkdnNextHeadingSame', desc = 'Jump to next heading of same level' },
+        { action = 'prev-heading-same', cmd = 'MkdnPrevHeadingSame', desc = 'Jump to previous heading of same level' },
     },
     heading = {
         { action = 'increase', cmd = 'MkdnIncreaseHeading', desc = 'Increase heading level' },

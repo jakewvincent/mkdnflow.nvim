@@ -476,6 +476,8 @@ the documentation for the configuration options below or in the help files.
             MkdnYankFileAnchorLink = { 'n', 'yfa' },
             MkdnNextHeading = { 'n', ']]' },
             MkdnPrevHeading = { 'n', '[[' },
+            MkdnNextHeadingSame = { 'n', '][' },
+            MkdnPrevHeadingSame = { 'n', '[]' },
             MkdnIncreaseHeading = { { 'n', 'v' }, '+' },
             MkdnDecreaseHeading = { { 'n', 'v' }, '-' },
             MkdnIncreaseHeadingOp = { { 'n', 'v' }, 'g+' },
@@ -1906,6 +1908,8 @@ mappings ~
             MkdnYankFileAnchorLink = { 'n', 'yfa' },
             MkdnNextHeading = { 'n', ']]' },
             MkdnPrevHeading = { 'n', '[[' },
+            MkdnNextHeadingSame = { 'n', '][' },
+            MkdnPrevHeadingSame = { 'n', '[]' },
             MkdnIncreaseHeading = { { 'n', 'v' }, '+' },
             MkdnDecreaseHeading = { { 'n', 'v' }, '-' },
             MkdnIncreaseHeadingOp = { { 'n', 'v' }, 'g+' },
@@ -2068,6 +2072,17 @@ Configuration options.
     Default mapping: { 'n', '[[' }
 
     Move the cursor to the beginning of the previous heading (if there is
+    one).
+
+:MkdnNextHeadingSame                        *Mkdnflow-cmd-MkdnNextHeadingSame*
+    Default mapping: { 'n', '][' }
+
+    Moves the cursor to the next heading of the same level (if there is one).
+
+:MkdnPrevHeadingSame                        *Mkdnflow-cmd-MkdnPrevHeadingSame*
+    Default mapping: { 'n', '[]' }
+
+    Moves the cursor to the previous heading of the same level (if there is
     one).
 
 :MkdnGoBack                                          *Mkdnflow-cmd-MkdnGoBack*
@@ -2999,6 +3014,18 @@ Moves the cursor to the next or previous occurrence of the specified pattern.
 
 >
 require('mkdnflow').cursor.goTo("%[.*%](.*)", false) -- Go to next markdown link
+<
+
+`require('mkdnflow').cursor.goToSame(reverse)`^
+
+
+Moves the cursor to the next or previous heading of the same level.
+
+- **Parameters:**
+    - `reverse`: (boolean) If true, search backward.
+
+>
+require('mkdnflow').cursor.goToSame(false) -- Go to next heading of the same level
 <
 
 `require('mkdnflow').cursor.toNextLink()`^

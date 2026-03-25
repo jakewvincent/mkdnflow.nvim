@@ -448,6 +448,8 @@ the help files.
         MkdnYankFileAnchorLink = { 'n', 'yfa' },
         MkdnNextHeading = { 'n', ']]' },
         MkdnPrevHeading = { 'n', '[[' },
+        MkdnNextHeadingSame = { 'n', '][' },
+        MkdnPrevHeadingSame = { 'n', '[]' },
         MkdnIncreaseHeading = { { 'n', 'v' }, '+' },
         MkdnDecreaseHeading = { { 'n', 'v' }, '-' },
         MkdnIncreaseHeadingOp = { { 'n', 'v' }, 'g+' },
@@ -987,6 +989,8 @@ require('mkdnflow').setup({
         MkdnYankFileAnchorLink = { 'n', 'yfa' },
         MkdnNextHeading = { 'n', ']]' },
         MkdnPrevHeading = { 'n', '[[' },
+        MkdnNextHeadingSame = { 'n', '][' },
+        MkdnPrevHeadingSame = { 'n', '[]' },
         MkdnIncreaseHeading = { { 'n', 'v' }, '+' },
         MkdnDecreaseHeading = { { 'n', 'v' }, '-' },
         MkdnIncreaseHeadingOp = { { 'n', 'v' }, 'g+' },
@@ -1114,6 +1118,8 @@ Configuration options.
 | `MkdnPrevLink` | `{ 'n', '<S-Tab>' }` | Move the cursor to the beginning of the previous link (if there is one). |
 | `MkdnNextHeading` | `{ 'n', ']]' }` | Move the cursor to the beginning of the next heading (if there is one). |
 | `MkdnPrevHeading` | `{ 'n', '[[' }` | Move the cursor to the beginning of the previous heading (if there is one). |
+| `MkdnNextHeadingSame` | `{ 'n', '][' }` | Moves the cursor to the next heading of the same level (if there is one). |
+| `MkdnPrevHeadingSame` | `{ 'n', '[]' }` | Moves the cursor to the previous heading of the same level (if there is one). |
 | `MkdnGoBack` | `{ 'n', '<BS>' }` | Open the historically last-active buffer in the current window.<br><br>Note: The back-end function for `:MkdnGoBack` (`require('mkdnflow').buffers.goBack()`) returns a boolean indicating the success of `goBack()`. This may be useful if you wish to remap `<BS>` such that when `goBack()` is unsuccessful, another function is performed. |
 | `MkdnGoForward` | `{ 'n', '<Del>' }` | Open the buffer that was historically navigated away from in the current window. |
 | `MkdnCreateLink` | -- | Create a link from the text under the cursor (in normal mode) or from the visual selection (in visual mode). Accepts optional arguments to override the link style and/or transform scope, in any order: `:MkdnCreateLink wiki`, `:MkdnCreateLink filename`, or `:MkdnCreateLink wiki filename`. Abbreviations are accepted (e.g. `:MkdnCreateLink w f`). |
@@ -1588,6 +1594,17 @@ Moves the cursor to the next or previous occurrence of the specified pattern.
 
 ```lua
 require('mkdnflow').cursor.goTo("%[.*%](.*)", false) -- Go to next markdown link
+```
+
+`require('mkdnflow').cursor.goToSame(reverse)`
+
+Moves the cursor to the next or previous heading of the same level.
+
+- **Parameters:**
+    - `reverse`: (boolean) If true, search backward.
+
+```lua
+require('mkdnflow').cursor.goToSame(false) -- Go to next heading of the same level
 ```
 
 `require('mkdnflow').cursor.toNextLink()`

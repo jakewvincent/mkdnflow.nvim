@@ -19,7 +19,7 @@
 --
 -- Dependencies:
 --   - links (always loaded as a core module in mkdnflow.lua:541)
---   - folds.getHeadingLevel (pure string match, safe even if modules.folds = false)
+--   - utils.getHeadingLevel (pure string match, always available)
 --
 -- Known limitations:
 --   - ref_style_link and shortcut_ref_link source resolution calls get_ref() which
@@ -145,12 +145,12 @@ end
 M.scanHeadings = function(lines, opts)
     opts = opts or {}
     local with_anchor = opts.with_anchor ~= false -- default true
-    local folds = require('mkdnflow.folds')
+    local utils = require('mkdnflow.utils')
     local links_mod = with_anchor and require('mkdnflow.links') or nil
     local headings = {}
 
     iterate_content_lines(lines, opts, function(line, line_index)
-        local level = folds.getHeadingLevel(line)
+        local level = utils.getHeadingLevel(line)
         if level < 99 then
             local text = line:gsub('^#+ *', '')
             local anchor = nil

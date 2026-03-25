@@ -371,9 +371,7 @@ local go_to_heading = function(anchor_text, reverse, level)
             if has_heading and not in_fenced_code_block then
                 if anchor_text == nil then
                     -- Send the cursor to the heading
-                    -- local new_line = vim.api.nvim_get_current_line()
-                    -- local heading_level = utils.getHeadingLevel(new_line)
-                    local new_line = vim.api.nvim_buf_get_lines(0, row-1, row, false)[1]
+                    local new_line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
                     local heading_level = utils.getHeadingLevel(new_line)
                     if level == nil or heading_level == level then
                         vim.api.nvim_win_set_cursor(0, { row, 0 })
@@ -441,25 +439,29 @@ end
 --- Go to the next or previous heading of the same level
 ---@param reverse? boolean If true, search backward
 M.goToSame = function(reverse)
-     -- save start position to jump back if no headings
     local start_pos = vim.api.nvim_win_get_cursor(0)
 
-    -- Scan backwards to find the closest heading
-    -- (including current line)
-    local line
-    local level = 99 -- default return value for invalid level
-    local row = vim.api.nvim_win_get_cursor(0)[1]
-    while (level == 99) and row > 0 do
-        line = vim.api.nvim_buf_get_lines(0, row-1, row, false)[1]
+    -- Scan backwards to find the current section's heading (including current line)
+    local level = 99
+    local heading_row = start_pos[1]
+    while level == 99 and heading_row > 0 do
+        local line = vim.api.nvim_buf_get_lines(0, heading_row - 1, heading_row, false)[1]
         level = utils.getHeadingLevel(line)
-        row = row - 1
+        if level == 99 then
+            heading_row = heading_row - 1
+        end
     end
-    -- no parent heading found... return early
-    if row == 0 and (level == 99) then
+
+    if level == 99 then
         return
     end
-    -- Now search for the next heading
-    go_to_heading(nil, reverse, level)
+
+    -- Move cursor to the heading so go_to_heading searches from the right position
+    vim.api.nvim_win_set_cursor(0, { heading_row, 0 })
+    local found = go_to_heading(nil, reverse, level)
+    if not found then
+        vim.api.nvim_win_set_cursor(0, start_pos)
+    end
 end
 
 --- Jump to a Pandoc-style bracketed span or heading with a matching ID attribute
