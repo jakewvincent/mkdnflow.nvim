@@ -3443,6 +3443,7 @@ Competition                                     *Mkdnflow-related-competition*
 - Neorg
 - markdown.nvim
 - Vimwiki
+- mdnotes.nvim
 - follow-md-links.nvim
 
 

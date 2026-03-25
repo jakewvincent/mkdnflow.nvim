@@ -1950,6 +1950,7 @@ For a detailed history of changes, see
 - [Neorg](https://github.com/nvim-neorg/neorg)
 - [markdown.nvim](https://github.com/tadmccorkle/markdown.nvim)
 - [Vimwiki](https://github.com/vimwiki/vimwiki)
+- [mdnotes.nvim](https://github.com/ymich9963/mdnotes.nvim)
 - [follow-md-links.nvim](https://github.com/jghauser/follow-md-links.nvim)
 
 ### Complementary plugins

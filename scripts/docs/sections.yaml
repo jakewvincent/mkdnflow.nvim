@@ -1327,6 +1327,7 @@ sections:
               - text: "[Neorg](https://github.com/nvim-neorg/neorg)"
               - text: "[markdown.nvim](https://github.com/tadmccorkle/markdown.nvim)"
               - text: "[Vimwiki](https://github.com/vimwiki/vimwiki)"
+              - text: "[mdnotes.nvim](https://github.com/ymich9963/mdnotes.nvim)"
               - text: "[follow-md-links.nvim](https://github.com/jghauser/follow-md-links.nvim)"
 
       - title: Complementary plugins
