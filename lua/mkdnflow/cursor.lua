@@ -637,7 +637,13 @@ end
 ---@param full_path? boolean If true, prepend the full buffer path to the anchor (default false)
 M.yankAsAnchorLink = function(full_path)
     full_path = full_path or false
-    local register = require('mkdnflow').config.cursor.yank_register or '"'
+    local register
+    -- prioritize yank_register over clipboard register
+    if not string.find(vim.v.register, '[*"+]') then
+        register = vim.v.register
+    else
+        register = require('mkdnflow').config.cursor.yank_register or vim.v.register
+    end
     -- Get the row number and the line contents
     local row = vim.api.nvim_win_get_cursor(0)[1]
     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)
