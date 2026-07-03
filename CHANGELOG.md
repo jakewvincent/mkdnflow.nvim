@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.22.3](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.22.2...v2.22.3) (2026-03-25)
+
+
+### Bug Fixes
+
+* **cursor:** polish same-level heading navigation from PR [#336](https://github.com/jakewvincent/mkdnflow.nvim/issues/336) ([f207326](https://github.com/jakewvincent/mkdnflow.nvim/commit/f20732686f70f60f18f09f4befe984ae63a99201))
+
 ## [2.22.2](https://github.com/jakewvincent/mkdnflow.nvim/compare/v2.22.1...v2.22.2) (2026-02-27)
 
 
